@@ -21,13 +21,16 @@ class UserController {
                     session.user = user
                     redirect action: "show"
                 } else {
-                    render view: "index", model: [message: "User has not been saved."]
+                    flash.message = "User has not been saved."
+                    redirect uri: "/"
                 }
             } else {
-                render view: "index", model: [message: "This E-mail has already been used."]
+                flash.message = "This E-mail has already been used."
+                redirect uri: "/"
             }
         } else {
-            render view: "index", model: [message: "Please provide either E-mail or Password."]
+            flash.message = "Please provide either E-mail or Password."
+            redirect uri: "/"
         }
     }
 
@@ -39,16 +42,18 @@ class UserController {
                 session.user = user
                 redirect action: 'show', id: user.id
             } else {
-                render view: "index", model: [message: "User with this login and pass doesn't exist."]
+                flash.message = "User with this login and pass doesn't exist."
+                redirect uri: "/"
             }
         } else {
-            render view: "index", model: [message: "Please provide either E-mail or Password."]
+            flash.message = "Please provide either E-mail or Password."
+            redirect uri: "/"
         }
     }
 
     def logout() {
         session.user = null
-        redirect action: 'index'
+        redirect uri: "/"
     }
 
     def show(String id) {
@@ -64,7 +69,7 @@ class UserController {
             if (session.user) {
                 [user: session.user, id: session.user.id]
             } else {
-                redirect action: 'index'
+                redirect uri: "/"
             }
         }
     }
