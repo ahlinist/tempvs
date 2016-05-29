@@ -8,7 +8,9 @@ class UserController {
 
     def index() {
         if (session.user) {
-            redirect action: 'show', id: session.user.id
+            redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
+        } else {
+            redirect uri: "/"
         }
     }
 
@@ -40,7 +42,7 @@ class UserController {
 
             if (user) {
                 session.user = user
-                redirect action: 'show', id: user.id
+                redirect action: 'show', id: user.userProfile.customId ?: user.id
             } else {
                 flash.message = "User with this login and pass doesn't exist."
                 redirect uri: "/"
@@ -61,13 +63,13 @@ class UserController {
             User user = userService.getUser(id)
 
             if (user) {
-                [user: user, id: user.id]
+                [user: user, id: user.userProfile.customId ?: user.id]
             } else {
                 [id: id, message:"No user with id: ${id}"]
             }
         } else {
             if (session.user) {
-                [user: session.user, id: session.user.id]
+                [user: session.user, id: session.user.userProfile.customId ?: session.user.id]
             } else {
                 redirect uri: "/"
             }

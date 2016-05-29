@@ -11,7 +11,13 @@ class UserService {
     }
 
     User getUser(String id) {
-        User.get(id)
+        User user = UserProfile.findByCustomId(id)?.user
+
+        if (!user) {
+            user = User.get(id)
+        }
+
+        return user
     }
 
     Boolean checkIfUserExists(email) {
@@ -23,7 +29,7 @@ class UserService {
     }
 
     def saveUserProfile(Long userProfileId, Map params) {
-        List profileProps = ['firstName', 'lastName', 'profileEmail', 'location']
+        List profileProps = ['firstName', 'lastName', 'profileEmail', 'location', 'customId']
         UserProfile userProfile = UserProfile.get(userProfileId)
 
         profileProps.each {

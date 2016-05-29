@@ -10,7 +10,7 @@
         <div>${user.email}</div>
       </div>
       <div>
-        <g:if test="${session.user && (session.user.id == id)}">
+        <g:if test="${session.user && (session.user.id == id || session.user.userProfile.customId)}">
           <g:link action="editUserProfile"><g:message code="user.profile.edit.label" /></g:link>
         </g:if>
       </div>

@@ -7,14 +7,15 @@ class UserProfile extends BasePersistent {
     String lastName
     String profileEmail
     String location
+    String customId
 
     static belongsTo = [user: User]
 
     static constraints = {
         firstName nullable: true
         lastName nullable: true
-        profileEmail nullable: true
+        profileEmail nullable: true, unique: true
         location nullable: true
-        //user nullable: true
+        customId nullable: true, unique: true
     }
 }

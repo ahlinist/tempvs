@@ -6,11 +6,12 @@
     <body>
       <div>
         <g:form action="saveUserProfile">
-          <div><g:field type="text" name="firstName" placeholder="First Name" value="${userProfile.firstName}"/></div>
-          <div><g:field type="text" name="lastName" placeholder="Last Name" value="${userProfile.lastName}"/></div>
-          <div><g:field type="email" name="profileEmail" placeholder="Profile E-mail" value="${userProfile.email}"/> Will be displayed.</div>
-          <div><g:field type="text" name="location" placeholder="Location" value="${userProfile.location}"/></div>
-          <div><g:submitButton name="saveUserProfile" value="Create User Profile" /></div>
+          <div><g:field type="text" name="firstName" placeholder="${message(code:'user.profile.firstName.placeholder')}" value="${userProfile.firstName}"/></div>
+          <div><g:field type="text" name="lastName" placeholder="${message(code:'user.profile.lastName.placeholder')}" value="${userProfile.lastName}"/></div>
+          <div><g:field type="email" name="profileEmail" placeholder="${message(code:'user.profile.profileEmail.placeholder')}" value="${userProfile.profileEmail}"/></div>
+          <div><g:field type="text" name="location" placeholder="${message(code:'user.profile.location.placeholder')}" value="${userProfile.location}"/></div>
+          <div><g:field type="text" name="customId" placeholder="${message(code:'user.profile.location.placeholder')}" value="${userProfile.location}"/></div>
+          <div><g:submitButton name="saveUserProfile" value="${message(code:'user.profile.save.button')}" /></div>
         </g:form>
       </div>
     </body>
