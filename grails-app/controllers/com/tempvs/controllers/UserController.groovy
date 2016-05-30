@@ -7,7 +7,7 @@ class UserController {
     def userService
 
     def index() {
-        if (session.user) {
+        if (session.user?.attach()) {
             redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
         } else {
             redirect uri: "/"
@@ -69,7 +69,7 @@ class UserController {
             }
         } else {
             if (session.user) {
-                [user: session.user, id: session.user.userProfile.customId ?: session.user.id]
+                redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
             } else {
                 redirect uri: "/"
             }
@@ -77,7 +77,7 @@ class UserController {
     }
 
     def editUserProfile() {
-        session.user ? [userProfile: session.user.userProfile] : redirect(action: "index")
+        session.user?.attach() ? [userProfile: session.user.userProfile] : redirect(uri: "/")
     }
 
     def saveUserProfile(){
