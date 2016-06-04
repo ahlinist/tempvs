@@ -24,8 +24,10 @@ class UserService {
         User.findByEmail(email) || UserProfile.findByProfileEmail(email)
     }
 
-    User createUser(String email, String password) {
-        return new User(email: email, password: password, userProfile: new UserProfile()).save()
+    User createUser(props) {
+        User user = new User(props)
+        user.userProfile = new UserProfile(props)
+        return user
     }
 
     def saveUserProfile(Long userProfileId, Map params) {

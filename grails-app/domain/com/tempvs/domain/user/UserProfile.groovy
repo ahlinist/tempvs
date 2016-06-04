@@ -12,8 +12,6 @@ class UserProfile extends BasePersistent {
     static belongsTo = [user: User]
 
     static constraints = {
-        firstName nullable: true
-        lastName nullable: true
         profileEmail nullable: true, unique: true
         location nullable: true
         customId nullable: true, unique: true

@@ -10,30 +10,26 @@ class UserController {
         if (session.user?.attach()) {
             redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
         } else {
-            redirect uri: "/"
+            redirect action: "login"
         }
     }
 
-    def register(String email, String password) {
-        if (email && password) {
-            if (!userService.checkIfUserExists(email)) {
-                User user = userService.createUser(email, password)
-
-                if (user) {
-                    session.user = user
-                    redirect action: "show"
-                } else {
-                    flash.message = "User has not been saved."
-                    redirect uri: "/"
-                }
-            } else {
-                flash.message = "This E-mail has already been used."
-                redirect uri: "/"
-            }
-        } else {
-            flash.message = "Please provide either E-mail or Password."
-            redirect uri: "/"
+    def register(UserRegisterCommand urc) {
+        if (userService.checkIfUserExists(urc.email)) {
+            render view: 'login', model: [user: urc, registerActive: true, emailUsed:'user.email.used']
+            return
         }
+
+        if (!urc.hasErrors()) {
+            User user = userService.createUser(urc.properties)
+
+            if (user.validate() && user.save()) {
+                session.user = user
+                redirect action: 'show'
+            }
+        }
+
+        render view: 'login', model: [user: urc, registerActive: true, registrationFailed:'user.registration.failed']
     }
 
     def login(String email, String password) {
@@ -44,12 +40,8 @@ class UserController {
                 session.user = user
                 redirect action: 'show', id: user.userProfile.customId ?: user.id
             } else {
-                flash.message = "User with this login and pass doesn't exist."
-                redirect uri: "/"
+                render view: 'login', model: [loginFailed:'user.notFound']
             }
-        } else {
-            flash.message = "Please provide either E-mail or Password."
-            redirect uri: "/"
         }
     }
 
@@ -71,17 +63,30 @@ class UserController {
             if (session.user) {
                 redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
             } else {
-                redirect uri: "/"
+                redirect action: 'login'
             }
         }
     }
 
     def editUserProfile() {
-        session.user?.attach() ? [userProfile: session.user.userProfile] : redirect(uri: "/")
+        session.user?.attach() ? [userProfile: session.user.userProfile] : redirect(action: "login")
     }
 
     def saveUserProfile(){
         session.user.userProfile = userService.saveUserProfile(session.user.userProfile.id, params)
         redirect action: 'editUserProfile'
+    }
+}
+
+class UserRegisterCommand {
+    String email
+    String password
+    String repeatPassword
+    String firstName
+    String lastName
+
+    static constraints = {
+        importFrom User
+        importFrom UserProfile
     }
 }

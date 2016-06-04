@@ -1,7 +1,0 @@
-5/22 00:26:51.618  Connecting to Battle.net...
-5/22 00:26:51.670      querying gateway rubattle.net
-5/22 00:26:56.755      searching for the fastest server
-5/22 00:26:56.826      Connected to server 212.42.38.154
-5/22 00:26:56.836      accessing accounts
-5/22 00:26:56.997      Checking for the latest version
-5/22 00:26:57.376      Connected to Battle.net
