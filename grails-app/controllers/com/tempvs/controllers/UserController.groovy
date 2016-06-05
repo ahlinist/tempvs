@@ -47,7 +47,7 @@ class UserController {
 
     def logout() {
         session.user = null
-        redirect uri: "/"
+        redirect action: 'login'
     }
 
     def show(String id) {
@@ -69,12 +69,42 @@ class UserController {
     }
 
     def editUserProfile() {
-        session.user?.attach() ? [userProfile: session.user.userProfile] : redirect(action: "login")
+        if (session.user) {
+            [userProfile: session.user.userProfile]
+        } else {
+            redirect action: "login"
+        }
     }
 
-    def saveUserProfile(){
-        session.user.userProfile = userService.saveUserProfile(session.user.userProfile.id, params)
-        redirect action: 'editUserProfile'
+    def editUser() {
+        if (session.user) {
+            [user: session.user]
+        } else {
+            redirect action: "login"
+        }
+    }
+
+    def saveUserProfile() {
+        if (session.user) {
+            if (session.user.email == params.profileEmail || session.user.userProfile.profileEmail == params.profileEmail || !userService.checkIfUserExists(params.profileEmail)) {
+                UserProfile userProfile = userService.saveUserProfile(session.user?.userProfile?.id, params)
+
+                if (userProfile) {
+                    session.user.userProfile = userProfile
+                    render view: 'editUserProfile',
+                            model: [userProfile: userProfile, userProfileUpdated: 'user.userProfile.updated']
+                    return
+                } else {
+                    render view: 'editUserProfile',
+                            model: [userProfile: session.user.userProfile, editUserProfileFailed:'user.editUserProfile.failed']
+                }
+            } else {
+                render view: 'editUserProfile',
+                        model: [userProfile: session.user.userProfile, editUserProfileFailed:'user.editUserProfile.email.used']
+            }
+        } else {
+            redirect action: "login"
+        }
     }
 }
 
@@ -87,6 +117,8 @@ class UserRegisterCommand {
 
     static constraints = {
         importFrom User
-        importFrom UserProfile
+        repeatPassword validator: {repPass, urc ->
+            return repPass == urc.password
+        }
     }
 }

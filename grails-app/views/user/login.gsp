@@ -30,10 +30,10 @@
                 <g:field class="col-sm-12"  type="password" name="repeatPassword" placeholder="${message(code:'user.repeatPassword.placeholder')}" value="${user?.repeatPassword}" />
               </div>
               <div>
-                <g:field class="col-sm-12"  type="text" name="firstName" placeholder="${message(code:'user.profile.firstName.placeholder')}" value="${user?.firstName}" />
+                <g:field class="col-sm-12"  type="text" name="firstName" placeholder="${message(code:'user.firstName.placeholder')}" value="${user?.firstName}" />
               </div>
               <div>
-                <g:field class="col-sm-12"  type="text" name="lastName" placeholder="${message(code:'user.profile.lastName.placeholder')}" value="${user?.lastName}" />
+                <g:field class="col-sm-12"  type="text" name="lastName" placeholder="${message(code:'user.lastName.placeholder')}" value="${user?.lastName}" />
               </div>
               <g:actionSubmit class="col-sm-12" name="register" value="${message(code:'user.register.button')}" />
             </div>

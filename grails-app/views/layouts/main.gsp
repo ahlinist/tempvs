@@ -8,8 +8,10 @@
     <g:layoutHead/>
 </head>
 <body class="row">
-    <g:link class="btn btn-default pull-left" action="show"><g:message code="user.show.profile" /></g:link>
-    <g:link class="btn btn-primary pull-right" action="logout"><g:message code="user.logout.button" /></g:link>
+    <g:link class="btn btn-default pull-left" controller="user" action="show"><g:message code="user.show.profile.button" /></g:link>
+    <g:link class="btn btn-default pull-left" controller="user" action="editUser"><g:message code="user.edit.button" /></g:link>
+    <g:link class="btn btn-default pull-left" controller="user" action="editUserProfile"><g:message code="user.profile.edit.button" /></g:link>
+    <g:link class="btn btn-primary pull-right" controller="user" action="logout"><g:message code="user.logout.button" /></g:link>
 
     <br/>
 <br/>
