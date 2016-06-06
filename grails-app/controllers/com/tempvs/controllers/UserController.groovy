@@ -1,7 +1,6 @@
 package com.tempvs.controllers
 
 import com.tempvs.domain.user.User
-import com.tempvs.domain.user.UserProfile
 
 class UserController {
     def userService
@@ -76,6 +75,30 @@ class UserController {
         }
     }
 
+    def updateUserProfile() {
+        if (session.user) {
+            if (session.user.email == params.profileEmail ||
+                    session.user.userProfile.profileEmail == params.profileEmail ||
+                    !userService.checkIfUserExists(params.profileEmail)) {
+                User user = userService.updateUserProfile(session.user.id, params)
+
+                if (user.userProfile) {
+                    session.user = user
+                    flash.success = 'user.userProfile.updated'
+                } else {
+                    flash.error = 'user.editUserProfile.failed'
+                }
+            } else {
+                flash.error = 'user.editUserProfile.email.used'
+            }
+
+            redirect action: 'editUserProfile'
+        } else {
+            redirect action: "login"
+        }
+    }
+
+
     def editUser() {
         if (session.user) {
             [user: session.user]
@@ -84,24 +107,71 @@ class UserController {
         }
     }
 
-    def saveUserProfile() {
+    def updateEmail(String email) {
         if (session.user) {
-            if (session.user.email == params.profileEmail || session.user.userProfile.profileEmail == params.profileEmail || !userService.checkIfUserExists(params.profileEmail)) {
-                UserProfile userProfile = userService.saveUserProfile(session.user?.userProfile?.id, params)
+            if (session.user.email == email ) {
+            } else if (session.user.userProfile.profileEmail == email || !userService.checkIfUserExists(email)) {
+                User user = userService.updateEmail(session.user.id, email)
 
-                if (userProfile) {
-                    session.user.userProfile = userProfile
-                    render view: 'editUserProfile',
-                            model: [userProfile: userProfile, userProfileUpdated: 'user.userProfile.updated']
-                    return
+                if (user) {
+                    session.user = user
+                    flash.emailSuccess = 'user.edit.email.success.message'
                 } else {
-                    render view: 'editUserProfile',
-                            model: [userProfile: session.user.userProfile, editUserProfileFailed:'user.editUserProfile.failed']
+                    flash.emailError = 'user.edit.email.failed.message'
                 }
             } else {
-                render view: 'editUserProfile',
-                        model: [userProfile: session.user.userProfile, editUserProfileFailed:'user.editUserProfile.email.used']
+                flash.emailError = 'user.edit.email.used.message'
             }
+
+            redirect action: 'editUser'
+        } else {
+            redirect action: "login"
+        }
+    }
+
+    def updatePassword(String currentPassword, String password, String repeatPassword) {
+        if (session.user) {
+            if (currentPassword && password && repeatPassword) {
+                User user = userService.getUser(session.user.id)
+                if (user.password == userService.encrypt(currentPassword)) {
+                    if (password == repeatPassword) {
+                        if (userService.updatePassword(user.id, password)) {
+                            flash.passwordSuccess = 'user.edit.password.success.message'
+                        } else {
+                            flash.passwordError = 'user.edit.password.failed.message'
+                        }
+                    } else {
+                        flash.passwordError = 'user.edit.password.repeat.message'
+                    }
+                } else {
+                    flash.passwordError = 'user.edit.password.dontmatch.message'
+                }
+            } else {
+                flash.passwordError = 'user.edit.password.empty.message'
+            }
+
+            redirect action: 'editUser'
+        } else {
+            redirect action: "login"
+        }
+    }
+
+    def updateName(String firstName, String lastName) {
+        if (session.user) {
+            if (firstName && lastName) {
+                User user = userService.updateName(session.user.id, firstName, lastName)
+
+                if (user) {
+                    session.user = user
+                    flash.nameSuccess = 'user.edit.name.success.message'
+                } else {
+                    flash.nameError = 'user.edit.name.failed.message'
+                }
+            } else {
+                flash.nameError = 'user.edit.name.empty.message'
+            }
+
+            redirect action: 'editUser'
         } else {
             redirect action: "login"
         }
