@@ -6,11 +6,7 @@ class UserController {
     def userService
 
     def index() {
-        if (session.user?.attach()) {
-            redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
-        } else {
-            redirect action: "login"
-        }
+        redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
     }
 
     def register(UserRegisterCommand urc) {
@@ -68,113 +64,89 @@ class UserController {
     }
 
     def editUserProfile() {
-        if (session.user) {
-            [userProfile: session.user.userProfile]
-        } else {
-            redirect action: "login"
-        }
+        [userProfile: session.user.userProfile]
     }
 
     def updateUserProfile() {
-        if (session.user) {
-            if (session.user.email == params.profileEmail ||
-                    session.user.userProfile.profileEmail == params.profileEmail ||
-                    !userService.checkIfUserExists(params.profileEmail)) {
-                User user = userService.updateUserProfile(session.user.id, params)
+        if (session.user.email == params.profileEmail ||
+                session.user.userProfile.profileEmail == params.profileEmail ||
+                !userService.checkIfUserExists(params.profileEmail)) {
+            User user = userService.updateUserProfile(session.user.id, params)
 
-                if (user.userProfile) {
-                    session.user = user
-                    flash.success = 'user.userProfile.updated'
-                } else {
-                    flash.error = 'user.editUserProfile.failed'
-                }
+            if (user.userProfile) {
+                session.user = user
+                flash.success = 'user.userProfile.updated'
             } else {
-                flash.error = 'user.editUserProfile.email.used'
+                flash.error = 'user.editUserProfile.failed'
             }
-
-            redirect action: 'editUserProfile'
         } else {
-            redirect action: "login"
+            flash.error = 'user.editUserProfile.email.used'
         }
+
+        redirect action: 'editUserProfile'
     }
 
 
     def editUser() {
-        if (session.user) {
-            [user: session.user]
-        } else {
-            redirect action: "login"
-        }
+        [user: session.user]
     }
 
     def updateEmail(String email) {
-        if (session.user) {
-            if (session.user.email == email ) {
-            } else if (session.user.userProfile.profileEmail == email || !userService.checkIfUserExists(email)) {
-                User user = userService.updateEmail(session.user.id, email)
+        if (session.user.email == email) {
+        } else if (session.user.userProfile.profileEmail == email || !userService.checkIfUserExists(email)) {
+            User user = userService.updateEmail(session.user.id, email)
 
-                if (user) {
-                    session.user = user
-                    flash.emailSuccess = 'user.edit.email.success.message'
-                } else {
-                    flash.emailError = 'user.edit.email.failed.message'
-                }
+            if (user) {
+                session.user = user
+                flash.emailSuccess = 'user.edit.email.success.message'
             } else {
-                flash.emailError = 'user.edit.email.used.message'
+                flash.emailError = 'user.edit.email.failed.message'
             }
-
-            redirect action: 'editUser'
         } else {
-            redirect action: "login"
+            flash.emailError = 'user.edit.email.used.message'
         }
+
+        redirect action: 'editUser'
     }
 
     def updatePassword(String currentPassword, String password, String repeatPassword) {
-        if (session.user) {
-            if (currentPassword && password && repeatPassword) {
-                User user = userService.getUser(session.user.id)
-                if (user.password == userService.encrypt(currentPassword)) {
-                    if (password == repeatPassword) {
-                        if (userService.updatePassword(user.id, password)) {
-                            flash.passwordSuccess = 'user.edit.password.success.message'
-                        } else {
-                            flash.passwordError = 'user.edit.password.failed.message'
-                        }
+        if (currentPassword && password && repeatPassword) {
+            User user = userService.getUser(session.user.id)
+            if (user.password == userService.encrypt(currentPassword)) {
+                if (password == repeatPassword) {
+                    if (userService.updatePassword(user.id, password)) {
+                        flash.passwordSuccess = 'user.edit.password.success.message'
                     } else {
-                        flash.passwordError = 'user.edit.password.repeat.message'
+                        flash.passwordError = 'user.edit.password.failed.message'
                     }
                 } else {
-                    flash.passwordError = 'user.edit.password.dontmatch.message'
+                    flash.passwordError = 'user.edit.password.repeat.message'
                 }
             } else {
-                flash.passwordError = 'user.edit.password.empty.message'
+                flash.passwordError = 'user.edit.password.dontmatch.message'
             }
-
-            redirect action: 'editUser'
         } else {
-            redirect action: "login"
+            flash.passwordError = 'user.edit.password.empty.message'
         }
+
+        redirect action: 'editUser'
     }
 
     def updateName(String firstName, String lastName) {
-        if (session.user) {
-            if (firstName && lastName) {
-                User user = userService.updateName(session.user.id, firstName, lastName)
+        if (firstName && lastName) {
+            User user = userService.updateName(session.user.id, firstName, lastName)
 
-                if (user) {
-                    session.user = user
-                    flash.nameSuccess = 'user.edit.name.success.message'
-                } else {
-                    flash.nameError = 'user.edit.name.failed.message'
-                }
+            if (user) {
+                session.user = user
+                flash.nameSuccess = 'user.edit.name.success.message'
             } else {
-                flash.nameError = 'user.edit.name.empty.message'
+                flash.nameError = 'user.edit.name.failed.message'
             }
-
-            redirect action: 'editUser'
         } else {
-            redirect action: "login"
+            flash.nameError = 'user.edit.name.empty.message'
         }
+
+        redirect action: 'editUser'
     }
 }
 
