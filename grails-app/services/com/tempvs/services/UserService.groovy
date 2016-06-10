@@ -1,5 +1,6 @@
 package com.tempvs.services
 
+import com.tempvs.controllers.UserRegisterCommand
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import grails.transaction.Transactional
@@ -33,9 +34,10 @@ class UserService {
         User.findByEmail(email) || UserProfile.findByProfileEmail(email)
     }
 
-    User createUser(command) {
+    User createUser(UserRegisterCommand command) {
         User user = new User(command)
         user.password = encrypt(user.password)
+        user.lastActive = new Date()
         user.userProfile = new UserProfile()
         return user
     }
@@ -75,6 +77,15 @@ class UserService {
 
         if (user) {
             user.password = encrypt(password)
+            user.save()
+        }
+    }
+
+    void updateLastActive(Long id){
+        User user = getUser(id)
+
+        if (user) {
+            user.lastActive = new Date()
             user.save()
         }
     }

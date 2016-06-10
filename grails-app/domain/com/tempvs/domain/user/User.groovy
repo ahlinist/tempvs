@@ -7,6 +7,7 @@ class User extends BasePersistent{
     String lastName
     String email
     String password
+    Date lastActive
 
     static hasOne = [userProfile: UserProfile]
 

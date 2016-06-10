@@ -6,7 +6,8 @@ class BootStrap {
         User user = new User(firstName: 'Anton',
                 lastName: 'Hlinisty',
                 email:'anton.hlinisty@gmail.com',
-                password: 'passW0rd!'.encodeAsMD5())
+                password: 'passW0rd!'.encodeAsMD5(),
+                lastActive: new Date())
         user.userProfile = new UserProfile(customId: 'albvs')
         user.save()
     }
