@@ -2,6 +2,9 @@ package com.tempvs.controllers
 
 import com.tempvs.domain.user.User
 
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
 class UserController {
     def userService
 
@@ -18,13 +21,13 @@ class UserController {
         if (!urc.hasErrors()) {
             User user = userService.createUser(urc.properties)
 
-            if (user.validate() && user.save()) {
+            if (user) {
                 session.user = user
                 redirect action: 'show'
             }
         }
 
-        render view: 'login', model: [user: urc, registerActive: true, registrationFailed:'user.registration.failed']
+        render view: 'login', model: [user: urc, registerActive: true, registrationFailed: 'user.registration.failed']
     }
 
     def login(String email, String password) {
@@ -64,7 +67,7 @@ class UserController {
     }
 
     def editUserProfile() {
-        [userProfile: session.user.userProfile]
+        [user: session.user]
     }
 
     def updateUserProfile() {
@@ -86,6 +89,35 @@ class UserController {
         redirect action: 'editUserProfile'
     }
 
+    def updateAvatar() {
+        User user
+        def multiPartFile = request.getFile('avatar')
+
+        if (!multiPartFile?.empty) {
+            user = userService.updateAvatar(session.user.id, multiPartFile)
+
+            if (user) {
+                session.user = user
+                flash.avatarSuccess = 'user.profile.update.avatar.success.message'
+            } else {
+                flash.avatarError = 'user.profile.update.avatar.error.message'
+            }
+        } else {
+            flash.avatarError = 'user.profile.update.avatar.empty.message'
+        }
+
+        redirect action: 'editUserProfile'
+    }
+
+    def getAvatar() {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(ImageIO.read(new File(userService.getAvatar(session.user.id))), "jpg", baos );
+        byte[] imageInByte = baos.toByteArray();
+        response.setHeader('Content-length', imageInByte.length.toString())
+        response.contentType = 'image/jpg' // or the appropriate image content type
+        response.outputStream << imageInByte
+        response.outputStream.flush()
+    }
 
     def editUser() {
         [user: session.user]

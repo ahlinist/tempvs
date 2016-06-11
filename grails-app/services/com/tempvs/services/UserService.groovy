@@ -4,10 +4,13 @@ import com.tempvs.controllers.UserRegisterCommand
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import grails.transaction.Transactional
+import grails.web.context.ServletContextHolder
 import org.codehaus.groovy.runtime.InvokerHelper
 
 @Transactional
 class UserService {
+    def grailsApplication
+
     User getUser(String email, String password) {
         User.findByEmailAndPassword(email, encrypt(password))
     }
@@ -34,12 +37,12 @@ class UserService {
         User.findByEmail(email) || UserProfile.findByProfileEmail(email)
     }
 
-    User createUser(UserRegisterCommand command) {
-        User user = new User(command)
+    User createUser(Map properties) {
+        User user = new User(properties)
         user.password = encrypt(user.password)
         user.lastActive = new Date()
         user.userProfile = new UserProfile()
-        return user
+        return user.save()
     }
 
     User updateUserProfile(Long id, Map params) {
@@ -51,6 +54,30 @@ class UserService {
         } else {
             return null
         }
+    }
+
+    User updateAvatar(Long id, multiPartFile) {
+        User user = getUser(id)
+
+        if (user) {
+            String imageName = new Date().time.toString().concat('.jpg')
+            String destination = "/home/albvs/storage/grails/images/users/${user.id}/avatars/"
+            def directory = new File(destination)
+
+            if(!directory.exists()){
+                directory.mkdirs()
+            }
+
+            multiPartFile.transferTo(new File("${destination}${imageName}"))
+            user.userProfile.avatar = "${destination}${imageName}"
+            return user.save()
+        }
+    }
+
+    String getAvatar(Long id) {
+        User user = getUser(id)
+
+        return user.userProfile.avatar
     }
 
     User updateEmail(Long id, String email) {

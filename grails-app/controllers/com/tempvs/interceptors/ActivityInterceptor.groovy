@@ -13,12 +13,14 @@ class ActivityInterceptor {
     }
 
     boolean before() {
-        User user = (User) session['user']
+        if (session) {
+            User user = (User) session['user']
 
-        if (user) {
-            userService.updateLastActive(user.id)
+            if (user) {
+                userService.updateLastActive(user.id)
+            }
+
+            true
         }
-
-        true
     }
 }

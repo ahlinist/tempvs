@@ -8,6 +8,9 @@
     <g:layoutHead/>
 </head>
 <body class="row">
+    <g:if test="${user?.userProfile?.avatar}">
+      <img class="pull-left" src="${createLink(controller:'user', action:'getAvatar')}" />
+    </g:if>
     <g:link class="btn btn-default pull-left" controller="user" action="show"><g:message code="user.show.profile.button" /></g:link>
     <g:link class="btn btn-default pull-left" controller="user" action="editUser"><g:message code="user.edit.button" /></g:link>
     <g:link class="btn btn-default pull-left" controller="user" action="editUserProfile"><g:message code="user.profile.edit.button" /></g:link>
