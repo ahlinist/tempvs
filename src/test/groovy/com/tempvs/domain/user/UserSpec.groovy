@@ -1,5 +1,6 @@
 package com.tempvs.domain.user
 
+import com.tempvs.controllers.UserRegisterCommand
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -8,15 +9,22 @@ import spock.lang.Specification
  */
 @TestFor(User)
 class UserSpec extends Specification {
+    String email = 'test@mail.com'
+    String password = 'passW0rd'
 
     def setup() {
+        def urc = new UserRegisterCommand(email: email,
+                password: password,
+                repeatPassword: password,
+                firstName: 'Test_first_name', lastName: 'Test_last_name')
+        new User(urc.properties).save()
     }
 
     def cleanup() {
     }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
+    void "DB contains user with given email"() {
+        expect:"DB contains user with given email"
+            User.findByEmail(email).email == 'email'
     }
 }

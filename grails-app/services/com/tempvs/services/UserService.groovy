@@ -1,16 +1,12 @@
 package com.tempvs.services
 
-import com.tempvs.controllers.UserRegisterCommand
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import grails.transaction.Transactional
-import grails.web.context.ServletContextHolder
 import org.codehaus.groovy.runtime.InvokerHelper
 
 @Transactional
 class UserService {
-    def grailsApplication
-
     User getUser(String email, String password) {
         User.findByEmailAndPassword(email, encrypt(password))
     }

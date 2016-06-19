@@ -21,7 +21,6 @@ class UserIntegrationSpec extends Specification {
                                           password: password,
                                           repeatPassword: password,
                                           firstName: 'Test_first_name', lastName: 'Test_last_name')
-
         userService.createUser(urc.properties)
     }
 
