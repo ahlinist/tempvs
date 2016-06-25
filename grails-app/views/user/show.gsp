@@ -5,13 +5,15 @@
         <meta name="layout" content="main"/>
     </head>
     <body>
-      <g:set var="profile" value="${user.userProfile}" />
       <g:if test="${user}">
+      <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
+      <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
+
         <div>
           <div>${user.firstName} ${user.lastName}</div>
-          <div>Last Active: ${user.lastActive}</div>
-          <div>${profile.profileEmail}</div>
-          <div>${profile.location}</div>
+          <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${user.lastActive}" /></div>
+          <div>${user.userProfile.profileEmail}</div>
+          <div>${user.userProfile.location}</div>
         </div>
       </g:if>
     </body>

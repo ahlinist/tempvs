@@ -19,3 +19,25 @@ if (typeof jQuery !== 'undefined') {
         });
     })(jQuery);
 }
+
+$(function (){
+    incrementMinutes()
+});
+
+function incrementMinutes() {
+    setTimeout(function() {
+        $('.incrementMinutes').each(
+            function() {
+                var minutesAgo = parseInt($(this).attr('minutes'));
+
+                if (minutesAgo < 30) {
+                    $(this).attr("minutes", minutesAgo + 1).text(minutesAgo + 1 + ' ' + $('#mins-ago').text());
+                } else {
+                    $(this).text($('#half-hour-ago').text()).removeClass('incrementMinutes').removeAttr('minutes');
+                }
+            }
+        );
+
+        incrementMinutes();
+    }, 60000);
+}
