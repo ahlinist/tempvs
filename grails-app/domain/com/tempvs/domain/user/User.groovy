@@ -1,18 +1,36 @@
 package com.tempvs.domain.user
 
-import com.tempvs.domain.BasePersistent
+import groovy.transform.EqualsAndHashCode
+import groovy.transform.ToString
 
-class User extends BasePersistent{
-    String firstName
-    String lastName
-    String email
-    String password
-    Date lastActive
+@EqualsAndHashCode(includes='email')
+@ToString(includes='email', includeNames=true, includePackage=false)
+class User implements Serializable {
 
-    static hasOne = [userProfile: UserProfile]
+	private static final long serialVersionUID = 1
 
-    static constraints = {
-        email email: true, unique: true, blank: false
-        password blank:false
-    }
+	String firstName
+	String lastName
+	String email
+	String password
+	boolean enabled = true
+	boolean accountExpired
+	boolean accountLocked
+	boolean passwordExpired
+	Date lastActive
+
+	static hasOne = [userProfile: UserProfile]
+
+	Set<Role> getAuthorities() {
+		UserRole.findAllByUser(this)*.role
+	}
+
+	static constraints = {
+		password blank: false, password: true
+		email email: true, unique: true, blank: false
+	}
+
+	static mapping = {
+		password column: '`password`'
+	}
 }

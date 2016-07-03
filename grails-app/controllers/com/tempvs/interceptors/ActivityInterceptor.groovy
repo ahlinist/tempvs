@@ -2,25 +2,25 @@ package com.tempvs.interceptors
 
 import com.tempvs.domain.user.User
 import com.tempvs.services.UserService
+import grails.plugin.springsecurity.SpringSecurityService
 import groovy.transform.CompileStatic
 
 @CompileStatic
 class ActivityInterceptor {
     UserService userService
+    SpringSecurityService springSecurityService
 
     ActivityInterceptor() {
         matchAll().excludes(controller: "user", action: ~/(login|register)/)
     }
 
     boolean before() {
-        if (session) {
-            User user = (User) session['user']
+        User currentUser = (User) springSecurityService.currentUser
 
-            if (user) {
-                userService.updateLastActive(user.id)
-            }
-
-            true
+        if (currentUser) {
+            userService.updateLastActive(currentUser.id)
         }
+
+        true
     }
 }

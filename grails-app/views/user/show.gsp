@@ -6,8 +6,8 @@
     </head>
     <body>
       <g:if test="${user}">
-      <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
-      <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
+        <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
+        <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
 
         <div>
           <div>${user.firstName} ${user.lastName}</div>
@@ -16,5 +16,8 @@
           <div>${user.userProfile.location}</div>
         </div>
       </g:if>
+      <g:elseif test="${message}">
+        ${message}
+      </g:elseif>
     </body>
 </html>

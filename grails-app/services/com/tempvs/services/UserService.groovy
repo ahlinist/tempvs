@@ -7,8 +7,10 @@ import org.codehaus.groovy.runtime.InvokerHelper
 
 @Transactional
 class UserService {
+    def springSecurityService
+
     User getUser(String email, String password) {
-        User.findByEmailAndPassword(email, encrypt(password))
+        User.findByEmailAndPassword(email, encodePassword(password))
     }
 
     User getUser(String id) {
@@ -25,8 +27,8 @@ class UserService {
         User.get(id)
     }
 
-    String encrypt(String password) {
-        password.encodeAsMD5()
+    String encodePassword(String password) {
+        springSecurityService.encodePassword(password)
     }
 
     Boolean checkIfUserExists(String email) {
@@ -35,7 +37,7 @@ class UserService {
 
     User createUser(Map properties) {
         User user = new User(properties)
-        user.password = encrypt(user.password)
+        user.password = encodePassword(user.password)
         user.lastActive = new Date()
         user.userProfile = new UserProfile()
         return user.save()
@@ -99,7 +101,7 @@ class UserService {
         User user = getUser(id)
 
         if (user) {
-            user.password = encrypt(password)
+            user.password = encodePassword(password)
             user.save()
         }
     }

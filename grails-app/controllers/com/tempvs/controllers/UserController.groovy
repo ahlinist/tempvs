@@ -7,9 +7,11 @@ import java.awt.image.BufferedImage
 
 class UserController {
     def userService
+    def springSecurityService
+    def passwordEncoder
 
     def index() {
-        redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
+        redirect action: 'show', id: springSecurityService.currentUser.userProfile.customId ?: springSecurityService.currentUser.id
     }
 
     def register(UserRegisterCommand urc) {
@@ -22,62 +24,53 @@ class UserController {
             User user = userService.createUser(urc.properties)
 
             if (user) {
-                session.user = user
-                redirect action: 'show'
+                redirect controller: 'user', action: 'show', id: user.id
             }
         }
 
         render view: 'login', model: [user: urc, registerActive: true, registrationFailed: 'user.registration.failed']
     }
 
-    def login(String email, String password) {
-        if (email && password) {
-            User user = userService.getUser(email, password)
-
-            if (user) {
-                session.user = user
-                redirect action: 'show', id: user.userProfile.customId ?: user.id
-            } else {
-                render view: 'login', model: [loginFailed:'user.notFound']
-            }
-        }
-    }
-
-    def logout() {
-        session.user = null
-        redirect action: 'login'
+    def login() {
     }
 
     def show(String id) {
-        if (id) {
-            User user = userService.getUser(id)
+        User currentUser = springSecurityService.currentUser
 
-            if (user) {
-                [user: user, id: user.userProfile.customId ?: user.id]
+        if (id) {
+            if (currentUser?.userProfile?.customId == id || currentUser?.id as String == id) {
+                [user: currentUser, id: currentUser.userProfile.customId ?: currentUser.id]
             } else {
-                [id: id, message:"No user with id: ${id}"]
+                User updatedUser = userService.getUser(id)
+
+                if (updatedUser) {
+                    [user: updatedUser, id: updatedUser.userProfile.customId ?: updatedUser.id]
+                } else {
+                    [id: id, message: "No user with id: ${id}"]
+                }
             }
         } else {
-            if (session.user) {
-                redirect action: 'show', id: session.user.userProfile.customId ?: session.user.id
+            if (currentUser) {
+                redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
             } else {
-                redirect action: 'login'
+                redirect controller: 'user', action: 'login'
             }
         }
     }
 
     def editUserProfile() {
-        [user: session.user]
+        [user: springSecurityService.currentUser]
     }
 
     def updateUserProfile() {
-        if (session.user.email == params.profileEmail ||
-                session.user.userProfile.profileEmail == params.profileEmail ||
-                !userService.checkIfUserExists(params.profileEmail)) {
-            User user = userService.updateUserProfile(session.user.id, params)
+        User currentUser = springSecurityService.currentUser
 
-            if (user.userProfile) {
-                session.user = user
+        if (currentUser.email == params.profileEmail ||
+                currentUser.userProfile.profileEmail == params.profileEmail ||
+                !userService.checkIfUserExists(params.profileEmail)) {
+            User updatedUser = userService.updateUserProfile(currentUser.id, params)
+
+            if (updatedUser.userProfile) {
                 flash.success = 'user.userProfile.updated'
             } else {
                 flash.error = 'user.editUserProfile.failed'
@@ -90,14 +83,13 @@ class UserController {
     }
 
     def updateAvatar() {
-        User user
+        User currentUser = springSecurityService.currentUser
         def multiPartFile = request.getFile('avatar')
 
         if (!multiPartFile?.empty) {
-            user = userService.updateAvatar(session.user.id, multiPartFile)
+            User updatedUser = userService.updateAvatar(currentUser.id, multiPartFile)
 
-            if (user) {
-                session.user = user
+            if (updatedUser) {
                 flash.avatarSuccess = 'user.profile.update.avatar.success.message'
             } else {
                 flash.avatarError = 'user.profile.update.avatar.error.message'
@@ -110,8 +102,9 @@ class UserController {
     }
 
     def getAvatar() {
+        User currentUser = springSecurityService.currentUser
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(ImageIO.read(new File(userService.getAvatar(session.user.id))), "jpg", baos );
+        ImageIO.write(ImageIO.read(new File(userService.getAvatar(currentUser.id))), "jpg", baos );
         byte[] imageInByte = baos.toByteArray();
         response.setHeader('Content-length', imageInByte.length.toString())
         response.contentType = 'image/jpg' // or the appropriate image content type
@@ -120,16 +113,15 @@ class UserController {
     }
 
     def editUser() {
-        [user: session.user]
+        [user: springSecurityService.currentUser]
     }
 
     def updateEmail(String email) {
-        if (session.user.email == email) {
-        } else if (session.user.userProfile.profileEmail == email || !userService.checkIfUserExists(email)) {
-            User user = userService.updateEmail(session.user.id, email)
+        User currentUser = springSecurityService.currentUser
 
-            if (user) {
-                session.user = user
+        if (currentUser.email == email) {
+        } else if (currentUser.userProfile.profileEmail == email || !userService.checkIfUserExists(email)) {
+            if (userService.updateEmail(currentUser.id, email)) {
                 flash.emailSuccess = 'user.edit.email.success.message'
             } else {
                 flash.emailError = 'user.edit.email.failed.message'
@@ -142,11 +134,12 @@ class UserController {
     }
 
     def updatePassword(String currentPassword, String password, String repeatPassword) {
+        User currentUser = springSecurityService.currentUser
+
         if (currentPassword && password && repeatPassword) {
-            User user = userService.getUser(session.user.id)
-            if (user.password == userService.encrypt(currentPassword)) {
+            if (passwordEncoder.isPasswordValid(currentUser.password, currentPassword, null)) {
                 if (password == repeatPassword) {
-                    if (userService.updatePassword(user.id, password)) {
+                    if (userService.updatePassword(currentUser.id, password)) {
                         flash.passwordSuccess = 'user.edit.password.success.message'
                     } else {
                         flash.passwordError = 'user.edit.password.failed.message'
@@ -166,10 +159,7 @@ class UserController {
 
     def updateName(String firstName, String lastName) {
         if (firstName && lastName) {
-            User user = userService.updateName(session.user.id, firstName, lastName)
-
-            if (user) {
-                session.user = user
+            if (userService.updateName(springSecurityService.currentUser.id, firstName, lastName)) {
                 flash.nameSuccess = 'user.edit.name.success.message'
             } else {
                 flash.nameError = 'user.edit.name.failed.message'
