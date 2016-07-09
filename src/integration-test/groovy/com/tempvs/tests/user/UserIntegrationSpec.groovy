@@ -11,6 +11,7 @@ import spock.lang.*
 @Rollback
 class UserIntegrationSpec extends Specification {
     def userService
+    def passwordEncoder
     Boolean userExistedBefore
     String email = 'test@mail.com'
     String password = 'passW0rd'
@@ -44,7 +45,7 @@ class UserIntegrationSpec extends Specification {
 
     void "User with given password created"() {
         expect:"User with ${password} password created"
-            User.findByEmail(email).password == userService.encrypt(password)
+            passwordEncoder.isPasswordValid(User.findByEmail(email).password, password, null)
     }
 
     void "Created user has userProfile"() {

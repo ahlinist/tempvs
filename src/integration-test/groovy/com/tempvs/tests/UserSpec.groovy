@@ -24,20 +24,27 @@ class UserSpec extends GebSpec {
         register "testUser@gmail.com", "passW0rd!", 'Test', 'User'
 
         then:"user's name is present on show page"
-        $('#test').text() == 'test'
+        $('div').findAll{it.text().contains("Test User")}
     }
 
-/*    void "login to tempvs"() {
+    void "logoff"() {
+        when:"go to logoff url"
+        go "/logoff"
+
+        then:"redirected to login page"
+        $('form').@action == '/login/authenticate'
+    }
+
+    void "login to tempvs"() {
         when:"user logged in"
-            login "anton.hlinisty@gmail.com", "passW0rd!"
+        login "testUser@gmail.com", "passW0rd!"
 
         then:"user's name is present on show page"
-        	$('#fullname').text() == 'Anton Hlinisty'
-    }*/
+        $('div').findAll{it.text().contains("Test User")}
+    }
 
     private register(String email, String password, String firstName, String lastName) {
-        go "/"
-        $('#registerTab').click()
+        go "/user/register"
         $('input[name=email]').value(email)
         $('input[name=password]').value(password)
         $('input[name=repeatPassword]').value(password)
@@ -46,10 +53,10 @@ class UserSpec extends GebSpec {
         $('input[name=register]').click()
     }
 
-/*    private login(String email, String password) {
+    private login(String email, String password) {
         go "/"
-        $('input[name=email]').value(email)
+        $('input[name=username]').value(email)
         $('input[name=password]').value(password)
         $('input[name=login]').click()
-    }*/
+    }
 }

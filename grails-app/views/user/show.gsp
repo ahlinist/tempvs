@@ -10,7 +10,7 @@
         <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
 
         <div>
-          <div>${user.firstName} ${user.lastName}</div>
+          <div id="fullName">${user.firstName} ${user.lastName}</div>
           <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${user.lastActive}" /></div>
           <div>${user.userProfile.profileEmail}</div>
           <div>${user.userProfile.location}</div>

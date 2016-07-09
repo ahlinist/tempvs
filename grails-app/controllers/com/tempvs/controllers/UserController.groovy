@@ -15,20 +15,24 @@ class UserController {
     }
 
     def register(UserRegisterCommand urc) {
-        if (userService.checkIfUserExists(urc.email)) {
-            render view: 'login', model: [user: urc, registerActive: true, emailUsed:'user.email.used']
-            return
-        }
+        if (params.register) {
+            if (urc.email) {
+                if (userService.checkIfUserExists(urc.email)) {
+                    return [user: urc, emailUsed:'user.email.used']
+                }
+            }
 
-        if (!urc.hasErrors()) {
-            User user = userService.createUser(urc.properties)
+            if (!urc.hasErrors()) {
+                User user = userService.createUser(urc.properties)
 
-            if (user) {
-                redirect controller: 'user', action: 'show', id: user.id
+                if (user) {
+                    springSecurityService.reauthenticate(urc.email, urc.password)
+                    redirect controller: 'user', action: 'show', id: user.id
+                }
+            } else {
+                return [user: urc, registrationFailed: 'user.registration.failed']
             }
         }
-
-        render view: 'login', model: [user: urc, registerActive: true, registrationFailed: 'user.registration.failed']
     }
 
     def login() {
