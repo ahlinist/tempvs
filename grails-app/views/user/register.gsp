@@ -53,11 +53,6 @@
                   <g:message code="${emailUsed}" />
                 </div>
               </g:if>
-              <g:if test="${loginFailed}">
-                <div class="alert alert-danger text-center">
-                  <g:message code="${loginFailed}" />
-                </div>
-              </g:if>
         </div>
       </div>
       <div class="col-sm-3">

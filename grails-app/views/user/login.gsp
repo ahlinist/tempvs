@@ -31,16 +31,6 @@
                 </div>
               <g:submitButton class="col-sm-12" name="login" value="${message(code:'user.login.button')}"/>
               </g:form>
-              <g:if test="${registrationFailed}">
-                <div class="alert alert-danger text-center">
-                    <g:message code="${registrationFailed}" />
-                </div>
-              </g:if>
-              <g:if test="${emailUsed}">
-                <div class="alert alert-danger text-center">
-                  <g:message code="${emailUsed}" />
-                </div>
-              </g:if>
               <g:if test="${loginFailed}">
                 <div class="alert alert-danger text-center">
                   <g:message code="${loginFailed}" />

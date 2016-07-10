@@ -1,6 +1,7 @@
 package com.tempvs.controllers
 
 import com.tempvs.domain.user.User
+import com.tempvs.domain.user.UserProfile
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -185,6 +186,7 @@ class UserRegisterCommand {
 
     static constraints = {
         importFrom User
+        importFrom UserProfile
         repeatPassword validator: {repPass, urc ->
             return repPass == urc.password
         }

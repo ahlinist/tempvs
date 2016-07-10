@@ -3,6 +3,8 @@ package com.tempvs.domain.user
 import com.tempvs.domain.BasePersistent
 
 class UserProfile extends BasePersistent {
+    String firstName
+    String lastName
     String profileEmail
     String location
     String customId

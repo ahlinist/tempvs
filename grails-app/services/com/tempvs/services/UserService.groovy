@@ -39,7 +39,7 @@ class UserService {
         User user = new User(properties)
         user.password = encodePassword(user.password)
         user.lastActive = new Date()
-        user.userProfile = new UserProfile()
+        user.userProfile = new UserProfile(properties)
         return user.save()
     }
 

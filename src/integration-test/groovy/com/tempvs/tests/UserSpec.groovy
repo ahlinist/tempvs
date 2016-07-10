@@ -19,6 +19,22 @@ class UserSpec extends GebSpec {
     def cleanup() {
     }
 
+    void "register with non valid email"() {
+        when:"attemp to register"
+        register "fakeEmail", "password", 'Test', 'User'
+
+        then:"returned back to register page with alert msg"
+        ($('form').@action == '/user/register') && $('div').findAll{it.@class.contains("alert-danger")}
+    }
+
+    void "login as non-existant user"() {
+        when:"logging in"
+        login 'fakeEmail', 'password'
+
+        then:"return back to login page"
+        $('form').@action == '/login/authenticate'
+    }
+
     void "register to tempvs"() {
         when:"user logged in"
         register "testUser@gmail.com", "passW0rd!", 'Test', 'User'
@@ -54,7 +70,7 @@ class UserSpec extends GebSpec {
     }
 
     private login(String email, String password) {
-        go "/"
+        go "/user/login"
         $('input[name=username]').value(email)
         $('input[name=password]').value(password)
         $('input[name=login]').click()
