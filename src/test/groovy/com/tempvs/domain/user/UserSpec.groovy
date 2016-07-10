@@ -1,6 +1,5 @@
 package com.tempvs.domain.user
 
-import com.tempvs.controllers.UserRegisterCommand
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -9,15 +8,14 @@ import spock.lang.Specification
  */
 @TestFor(User)
 class UserSpec extends Specification {
-    String email = 'test@mail.com'
-    String password = 'passW0rd'
+    String EMAIL = 'test@mail.com'
+    String INVALID_EMAIL = 'test-email.com'
+    String PASSWORD = 'passW0rd'
 
     def setup() {
-        def urc = new UserRegisterCommand(email: email,
-                password: password,
-                repeatPassword: password,
-                firstName: 'Test_first_name', lastName: 'Test_last_name')
-        new User(urc.properties).save()
+        createUser(EMAIL, PASSWORD)
+        createUser(EMAIL, PASSWORD)
+        createUser(INVALID_EMAIL, PASSWORD)
     }
 
     def cleanup() {
@@ -25,6 +23,22 @@ class UserSpec extends Specification {
 
     void "DB contains user with given email"() {
         expect:"DB contains user with given email"
-            User.findByEmail(email).email == 'email'
+        User.findByEmail(EMAIL)
+    }
+
+    void "users with only unique emails are saved"() {
+        expect:"only one user with given email"
+        User.findAllByEmail(EMAIL).size() == 1
+    }
+
+    void "user with invalid email not saved"() {
+        expect:"user with invalid email not saved"
+        !User.findByEmail(INVALID_EMAIL)
+    }
+
+    private void createUser(String email, String password){
+        User user = new User(email: email, password: password, lastActive: new Date())
+        user.userProfile = new UserProfile(firstName:'firstName', lastName: 'lastName')
+        user.save(flush:true)
     }
 }
