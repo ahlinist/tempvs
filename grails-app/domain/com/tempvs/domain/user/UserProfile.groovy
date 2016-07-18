@@ -4,6 +4,7 @@ import com.tempvs.domain.BasePersistent
 
 class UserProfile extends BasePersistent {
     String firstName
+    String middleName
     String lastName
     String profileEmail
     String location
@@ -13,7 +14,9 @@ class UserProfile extends BasePersistent {
     static belongsTo = [user: User]
 
     static constraints = {
-        profileEmail nullable: true, unique: true
+        middleName nullable: true
+        lastName nullable: true
+        profileEmail nullable: true, unique: true, email: true
         location nullable: true
         customId nullable: true, unique: true
         avatar nullable: true
