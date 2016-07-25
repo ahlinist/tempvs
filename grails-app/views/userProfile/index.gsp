@@ -44,33 +44,47 @@
           <g:form action="updateUserProfile">
             <div class="row">
               <div class="col-sm-6">
+                <label for="firstName"><g:message code="user.profile.firstName.label" /></label>
+              </div>
+              <div class="col-sm-6">
+                <g:textField class="col-sm-12" name="firstName" value="${userProfile.firstName}" />
+              </div>
+              <div class="col-sm-6">
+                <label for="lastName"><g:message code="user.profile.lastName.label" /></label>
+              </div>
+              <div class="col-sm-6">
+                <g:textField class="col-sm-12" name="lastName" value="${userProfile.lastName}" />
+              </div>
+              <div class="col-sm-6">
                 <label for="email"><g:message code="user.profile.profileEmail.label" /></label>
               </div>
               <div class="col-sm-6">
-                <g:field class="col-sm-12" type="email" name="profileEmail" value="${user.userProfile.profileEmail}"/>
+                <g:field class="col-sm-12" type="email" name="profileEmail" value="${userProfile.profileEmail}"/>
               </div>
               <div class="col-sm-6">
                 <label for="location"><g:message code="user.profile.location.label" /></label>
               </div>
               <div class="col-sm-6">
-                <g:textField class="col-sm-12" name="location" value="${user.userProfile.location}"/>
+                <g:textField class="col-sm-12" name="location" value="${userProfile.location}"/>
               </div>
               <div class="col-sm-6">
                 <label for="customId"><g:message code="user.profile.customId.label" /></label>
               </div>
               <div class="col-sm-6">
-                <g:textField class="col-sm-12" name="customId" value="${user.userProfile.customId}"/>
+                <g:textField class="col-sm-12" name="customId" value="${userProfile.customId}"/>
               </div>
             <g:submitButton class="btn btn-primary" name="updateUserProfile" value="${message(code:'user.profile.update.button')}" />
             </div>
           </g:form>
           <g:if test="${flash.error}">
             <div class="alert alert-danger text-center">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
               <g:message code="${flash.error}" />
             </div>
           </g:if>
           <g:if test="${flash.success}">
             <div class="alert alert-success text-center">
+              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
               <g:message code="${flash.success}" />
             </div>
           </g:if>

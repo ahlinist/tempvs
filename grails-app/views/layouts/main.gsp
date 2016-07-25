@@ -9,12 +9,13 @@
   <body class="container">
     <div class="row">
       <sec:ifLoggedIn>
-    <g:if test="${user?.userProfile?.avatar}">
-      <img class="pull-left" src="${createLink(controller:'user', action:'getAvatar')}" />
-    </g:if>
+      <g:set var="avatar" value="${createLink(controller:'userProfile', action:'getAvatar')}" />
+      <g:if test="${avatar}">
+        <img class="pull-left" src="${avatar}" />
+      </g:if>
     <g:link class="btn btn-default pull-left" controller="user" action="show"><g:message code="user.show.profile.button" /></g:link>
     <g:link class="btn btn-default pull-left" controller="user" action="editUser"><g:message code="user.edit.button" /></g:link>
-    <g:link class="btn btn-default pull-left" controller="user" action="editUserProfile"><g:message code="user.profile.edit.button" /></g:link>
+    <g:link class="btn btn-default pull-left" controller="userProfile"><g:message code="user.profile.edit.button" /></g:link>
     <g:link class="btn btn-primary pull-right" uri="/logoff"><g:message code="user.logout.button" /></g:link>
       </sec:ifLoggedIn>
       <sec:ifNotLoggedIn>

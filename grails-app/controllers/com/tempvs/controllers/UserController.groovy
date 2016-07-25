@@ -3,9 +3,6 @@ package com.tempvs.controllers
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 
-import javax.imageio.ImageIO
-import java.awt.image.BufferedImage
-
 class UserController {
     def userService
     def springSecurityService
@@ -61,60 +58,6 @@ class UserController {
                 redirect controller: 'user', action: 'login'
             }
         }
-    }
-
-    def editUserProfile() {
-        [user: springSecurityService.currentUser]
-    }
-
-    def updateUserProfile() {
-        User currentUser = springSecurityService.currentUser
-
-        if (currentUser.email == params.profileEmail ||
-                currentUser.userProfile.profileEmail == params.profileEmail ||
-                !userService.checkIfUserExists(params.profileEmail)) {
-            User updatedUser = userService.updateUserProfile(currentUser.id, params)
-
-            if (updatedUser.userProfile) {
-                flash.success = 'user.userProfile.updated'
-            } else {
-                flash.error = 'user.editUserProfile.failed'
-            }
-        } else {
-            flash.error = 'user.editUserProfile.email.used'
-        }
-
-        redirect action: 'editUserProfile'
-    }
-
-    def updateAvatar() {
-        User currentUser = springSecurityService.currentUser
-        def multiPartFile = request.getFile('avatar')
-
-        if (!multiPartFile?.empty) {
-            User updatedUser = userService.updateAvatar(currentUser.id, multiPartFile)
-
-            if (updatedUser) {
-                flash.avatarSuccess = 'user.profile.update.avatar.success.message'
-            } else {
-                flash.avatarError = 'user.profile.update.avatar.error.message'
-            }
-        } else {
-            flash.avatarError = 'user.profile.update.avatar.empty.message'
-        }
-
-        redirect action: 'editUserProfile'
-    }
-
-    def getAvatar() {
-        User currentUser = springSecurityService.currentUser
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(ImageIO.read(new File(userService.getAvatar(currentUser.id))), "jpg", baos );
-        byte[] imageInByte = baos.toByteArray();
-        response.setHeader('Content-length', imageInByte.length.toString())
-        response.contentType = 'image/jpg' // or the appropriate image content type
-        response.outputStream << imageInByte
-        response.outputStream.flush()
     }
 
     def editUser() {

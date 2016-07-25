@@ -3,15 +3,10 @@ package com.tempvs.services
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import grails.transaction.Transactional
-import org.codehaus.groovy.runtime.InvokerHelper
 
 @Transactional
 class UserService {
     def springSecurityService
-
-    User getUser(String email, String password) {
-        User.findByEmailAndPassword(email, encodePassword(password))
-    }
 
     User getUser(String id) {
         User user = UserProfile.findByCustomId(id)?.user
@@ -41,41 +36,6 @@ class UserService {
         user.lastActive = new Date()
         user.userProfile = new UserProfile(properties)
         return user.save()
-    }
-
-    User updateUserProfile(Long id, Map params) {
-        User user = getUser(id)
-
-        if (user?.userProfile) {
-            InvokerHelper.setProperties(user?.userProfile, params.findAll{ it.value })
-            user.save()
-        } else {
-            return null
-        }
-    }
-
-    User updateAvatar(Long id, multiPartFile) {
-        User user = getUser(id)
-
-        if (user) {
-            String imageName = new Date().time.toString().concat('.jpg')
-            String destination = "/home/albvs/storage/grails/images/users/${user.id}/avatars/"
-            def directory = new File(destination)
-
-            if(!directory.exists()){
-                directory.mkdirs()
-            }
-
-            multiPartFile.transferTo(new File("${destination}${imageName}"))
-            user.userProfile.avatar = "${destination}${imageName}"
-            return user.save()
-        }
-    }
-
-    String getAvatar(Long id) {
-        User user = getUser(id)
-
-        return user.userProfile.avatar
     }
 
     User updateEmail(Long id, String email) {

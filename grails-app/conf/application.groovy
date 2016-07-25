@@ -9,21 +9,19 @@ grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.tempvs.dom
 grails.plugin.springsecurity.authority.className = 'com.tempvs.domain.user.Role'
 grails.plugin.springsecurity.requestMap.className = 'com.tempvs.domain.user.Requestmap'
 
-
-
 grails.plugin.springsecurity.securityConfigType = "InterceptUrlMap"
 
 grails.plugin.springsecurity.interceptUrlMap = [
-		[pattern: '/user/login',     	access: ['permitAll']],
-        [pattern: '/user/register',  	access: ['permitAll']],
-        [pattern: '/user/show/**',   	access: ['permitAll']],
-		[pattern: '/user/getAvatar/**', access: ['permitAll']],
-		[pattern: '/assets/**',      	access: ['permitAll']],
-		[pattern: '/**/js/**',       	access: ['permitAll']],
-		[pattern: '/**/css/**',      	access: ['permitAll']],
-		[pattern: '/**/images/**',   	access: ['permitAll']],
-		[pattern: '/**/favicon.ico', 	access: ['permitAll']],
-		[pattern: '/**',             	access: ['isAuthenticated()']],
+		[pattern: '/user/login',     		access: ['permitAll']],
+        [pattern: '/user/register',  		access: ['permitAll']],
+        [pattern: '/user/show/**',   		access: ['permitAll']],
+		[pattern: '/userProfile/getAvatar', access: ['permitAll']],
+		[pattern: '/assets/**',      		access: ['permitAll']],
+		[pattern: '/**/js/**',       		access: ['permitAll']],
+		[pattern: '/**/css/**',      		access: ['permitAll']],
+		[pattern: '/**/images/**',   		access: ['permitAll']],
+		[pattern: '/**/favicon.ico', 		access: ['permitAll']],
+		[pattern: '/**',             		access: ['isAuthenticated()']],
 ]
 
 /*grails.plugin.springsecurity.filterChain.chainMap = [

@@ -78,35 +78,6 @@
               </g:if>
               <g:submitButton class="btn btn-primary" name="updatePassword" value="${message(code:'user.edit.password.button')}" />
           </g:form>
-          <g:form action="updateName">
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="firstName"><g:message code="user.edit.firstName.label" /></label>
-              </div>
-              <div class="col-sm-6">
-                <g:textField class="col-sm-12" name="firstName" value="${user?.firstName}" />
-              </div>
-              <div class="col-sm-6">
-                <label for="lastName"><g:message code="user.edit.lastName.label" /></label>
-              </div>
-              <div class="col-sm-6">
-                <g:textField class="col-sm-12" name="lastName" value="${user?.lastName}" />
-              </div>
-            </div>
-            <g:if test="${flash.nameError}">
-              <div class="alert alert-danger text-center">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <g:message code="${flash.nameError}" />
-              </div>
-            </g:if>
-            <g:if test="${flash.nameSuccess}">
-              <div class="alert alert-success text-center">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <g:message code="${flash.nameSuccess}" />
-              </div>
-            </g:if>
-            <g:submitButton class="btn btn-primary" name="updateName" value="${message(code:'user.edit.name.button')}" />
-          </g:form>
         </div>
         <div class="col-sm-2">
         </div>
