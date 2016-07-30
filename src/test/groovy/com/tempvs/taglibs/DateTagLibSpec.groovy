@@ -1,4 +1,4 @@
-package com.tempvs
+package com.tempvs.taglibs
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification

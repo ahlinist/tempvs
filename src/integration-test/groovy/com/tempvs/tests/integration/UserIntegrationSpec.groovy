@@ -1,4 +1,4 @@
-package com.tempvs.tests.user
+package com.tempvs.tests.integration
 
 import com.tempvs.controllers.UserRegisterCommand
 import com.tempvs.domain.user.User

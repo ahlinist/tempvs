@@ -81,13 +81,13 @@ class UserController {
         redirect action: 'editUser'
     }
 
-    def updatePassword(String currentPassword, String password, String repeatPassword) {
+    def updatePassword(String currentPassword, String newPassword, String repeatNewPassword) {
         User currentUser = springSecurityService.currentUser
 
-        if (currentPassword && password && repeatPassword) {
+        if (currentPassword && newPassword && repeatNewPassword) {
             if (passwordEncoder.isPasswordValid(currentUser.password, currentPassword, null)) {
-                if (password == repeatPassword) {
-                    if (userService.updatePassword(currentUser.id, password)) {
+                if (newPassword == repeatNewPassword) {
+                    if (userService.updatePassword(currentUser.id, newPassword)) {
                         flash.passwordSuccess = 'user.edit.password.success.message'
                     } else {
                         flash.passwordError = 'user.edit.password.failed.message'

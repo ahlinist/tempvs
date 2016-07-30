@@ -52,16 +52,16 @@
                 <g:passwordField class="col-sm-12" name="currentPassword" />
               </div>
               <div class="col-sm-6">
-                <label for="password"><g:message code="user.edit.password.label" /></label>
+                <label for="password"><g:message code="user.edit.newPassword.label" /></label>
               </div>
               <div class="col-sm-6">
-                <g:passwordField class="col-sm-12" name="password" />
+                <g:passwordField class="col-sm-12" name="newPassword" />
               </div>
               <div class="col-sm-6">
-                <label for="repeatPassword"><g:message code="user.edit.repeatPassword.label" /></label>
+                <label for="repeatNewPassword"><g:message code="user.edit.repeatNewPassword.label" /></label>
               </div>
               <div class="col-sm-6">
-                <g:passwordField class="col-sm-12" name="repeatPassword" />
+                <g:passwordField class="col-sm-12" name="repeatNewPassword" />
               </div>
             </div>
               <g:if test="${flash.passwordError}">

@@ -1,4 +1,4 @@
-package com.tempvs
+package com.tempvs.taglibs
 
 import groovy.time.TimeCategory
 
