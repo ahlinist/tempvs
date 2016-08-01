@@ -1,6 +1,5 @@
 package com.tempvs.tests.integration
 
-import com.tempvs.controllers.UserRegisterCommand
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import grails.test.mixin.integration.Integration
@@ -12,44 +11,41 @@ import spock.lang.*
 class UserIntegrationSpec extends Specification {
     def userService
     def passwordEncoder
-    Boolean userExistedBefore
-    String email = 'test@mail.com'
-    String password = 'passW0rd'
+    String EMAIL = 'test@mail.com'
+    String NOT_EMAIL = 'not email'
+    String PASSWORD = 'passW0rd'
+    String FIRST_NAME = 'Test_first_name'
 
     def setup() {
-        userExistedBefore = userService.checkIfUserExists(email)
-        def urc = new UserRegisterCommand(email: email,
-                                          password: password,
-                                          repeatPassword: password,
-                                          firstName: 'Test_first_name', lastName: 'Test_last_name')
-        userService.createUser(urc.properties)
+        userService.createUser(email: EMAIL, password: PASSWORD, firstName: FIRST_NAME)
+        userService.createUser(email: NOT_EMAIL, password: PASSWORD, firstName: FIRST_NAME)
     }
 
     def cleanup() {
     }
 
-    void "User with given email did not exist before running the test"() {
-        expect: "User with given email did not exist before running the test"
-        userExistedBefore == false
+    void "User with incorrect email is not created"() {
+        expect: "User with incorrect email is not created"
+        !User.findByEmail(NOT_EMAIL)
     }
 
     void "User with given email created"() {
-        expect:"User with 'test@mail.com' email created"
-            User.findByEmail(email) != null
+        expect: "User with 'test@mail.com' email created"
+        User.findByEmail(EMAIL)
     }
 
     void "User's password encrypted"() {
-        expect:"User's password was encrypted"
-            User.findByEmail(email).password != password
+        expect: "User's password was encrypted"
+        User.findByEmail(EMAIL).password != PASSWORD
     }
 
     void "User with given password created"() {
-        expect:"User with ${password} password created"
-            passwordEncoder.isPasswordValid(User.findByEmail(email).password, password, null)
+        expect: "User with given password created"
+        passwordEncoder.isPasswordValid(User.findByEmail(EMAIL).password, PASSWORD, null)
     }
 
     void "Created user has userProfile"() {
-        expect:"Created user has userProfile"
-            User.findByEmail(email).userProfile instanceof UserProfile
+        expect: "Created user has userProfile"
+        User.findByEmail(EMAIL).userProfile
     }
 }

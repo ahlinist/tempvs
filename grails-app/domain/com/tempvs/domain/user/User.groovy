@@ -15,7 +15,7 @@ class User implements Serializable {
 	boolean accountExpired
 	boolean accountLocked
 	boolean passwordExpired
-	Date lastActive
+	Date lastActive = new Date()
 
 	static hasOne = [userProfile: UserProfile]
 

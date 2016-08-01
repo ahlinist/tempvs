@@ -43,10 +43,10 @@ class UserController {
             if (currentUser?.userProfile?.customId == id || currentUser?.id as String == id) {
                 [user: currentUser, id: currentUser.userProfile.customId ?: currentUser.id]
             } else {
-                User updatedUser = userService.getUser(id)
+                User user = userService.getUser(id)
 
-                if (updatedUser) {
-                    [user: updatedUser, id: updatedUser.userProfile.customId ?: updatedUser.id]
+                if (user) {
+                    [user: user, id: user.userProfile.customId ?: user.id]
                 } else {
                     [id: id, message: "No user with id: ${id}"]
                 }
@@ -54,8 +54,6 @@ class UserController {
         } else {
             if (currentUser) {
                 redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
-            } else {
-                redirect controller: 'user', action: 'login'
             }
         }
     }
@@ -69,7 +67,7 @@ class UserController {
 
         if (currentUser.email == email) {
         } else if (currentUser.userProfile.profileEmail == email || !userService.checkIfUserExists(email)) {
-            if (userService.updateEmail(currentUser.id, email)) {
+            if (userService.updateEmail(email)) {
                 flash.emailSuccess = 'user.edit.email.success.message'
             } else {
                 flash.emailError = 'user.edit.email.failed.message'
@@ -87,7 +85,7 @@ class UserController {
         if (currentPassword && newPassword && repeatNewPassword) {
             if (passwordEncoder.isPasswordValid(currentUser.password, currentPassword, null)) {
                 if (newPassword == repeatNewPassword) {
-                    if (userService.updatePassword(currentUser.id, newPassword)) {
+                    if (userService.updatePassword(newPassword)) {
                         flash.passwordSuccess = 'user.edit.password.success.message'
                     } else {
                         flash.passwordError = 'user.edit.password.failed.message'
@@ -107,7 +105,7 @@ class UserController {
 
     def updateName(String firstName, String lastName) {
         if (firstName && lastName) {
-            if (userService.updateName(springSecurityService.currentUser.id, firstName, lastName)) {
+            if (userService.updateName(firstName, lastName)) {
                 flash.nameSuccess = 'user.edit.name.success.message'
             } else {
                 flash.nameError = 'user.edit.name.failed.message'
