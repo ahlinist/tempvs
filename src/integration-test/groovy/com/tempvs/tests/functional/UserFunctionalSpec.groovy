@@ -45,7 +45,7 @@ class UserFunctionalSpec extends GebSpec {
     }
 
     void "register to tempvs"() {
-        when:"user logged in"
+        when:"user registers"
         register EMAIL, PASSWORD, FIRST_NAME
 
         then:"user's name is present on show page"
@@ -53,7 +53,10 @@ class UserFunctionalSpec extends GebSpec {
     }
 
     void "login to tempvs"() {
-        when:"user logged in"
+        when: "logoff"
+        logoff()
+
+        and:"user logged in"
         login EMAIL, PASSWORD
 
         then:"user's name is present on show page"
