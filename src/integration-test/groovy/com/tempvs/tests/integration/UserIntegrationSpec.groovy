@@ -1,7 +1,6 @@
 package com.tempvs.tests.integration
 
 import com.tempvs.domain.user.User
-import com.tempvs.domain.user.UserProfile
 import grails.test.mixin.integration.Integration
 import grails.transaction.*
 import spock.lang.*
@@ -11,7 +10,7 @@ import spock.lang.*
 class UserIntegrationSpec extends Specification {
     def userService
     def passwordEncoder
-    String EMAIL = 'test@mail.com'
+    String EMAIL = 'userIntegrationTest@mail.com'
     String NOT_EMAIL = 'not email'
     String PASSWORD = 'passW0rd'
     String FIRST_NAME = 'Test_first_name'

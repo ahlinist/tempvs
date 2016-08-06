@@ -12,9 +12,9 @@ import geb.spock.*
 @Integration
 @Rollback
 class UserFunctionalSpec extends GebSpec {
-    String EMAIL = 'testUser@gmail.com'
+    String EMAIL = 'userFunctionalTest@gmail.com'
     String EMAIL_FOR_FAIL = 'fakeEmail'
-    String NEW_EMAIL = 'newTestUser@gmail.com'
+    String NEW_EMAIL = 'newUserFunctionalTest@gmail.com'
     String PASSWORD = 'passW0rd!'
     String INCORRECT_PASSWORD = 'incorrectPassword'
     String NEW_PASSWORD = 'newPassw0rd!'
