@@ -12,7 +12,7 @@ class UserProfileService {
         UserProfile userProfile = springSecurityService.currentUser?.userProfile
 
         if (userProfile) {
-            InvokerHelper.setProperties(userProfile, params.findAll{ it.value })
+            InvokerHelper.setProperties(userProfile, params)
             userProfile.save()
         } else {
             return null

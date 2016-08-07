@@ -8,8 +8,10 @@ import grails.transaction.Transactional
 class UserService {
     def springSecurityService
 
-    User getUser(id) {
-        UserProfile.findByCustomId(id)?.user ?: User.get(id)
+    User getUser(String id) {
+        try {
+            UserProfile.findByCustomId(id)?.user ?: User.get(id as Long)
+        } catch (NumberFormatException e) {}
     }
 
     String encodePassword(String password) {

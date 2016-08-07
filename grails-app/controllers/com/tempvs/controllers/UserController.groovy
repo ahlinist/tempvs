@@ -8,9 +8,7 @@ class UserController {
     def springSecurityService
     def passwordEncoder
 
-    def index() {
-        redirect action: 'show', id: springSecurityService.currentUser.userProfile.customId ?: springSecurityService.currentUser.id
-    }
+    static defaultAction = "show"
 
     def register(UserRegisterCommand urc) {
         if (params.register) {
@@ -54,6 +52,8 @@ class UserController {
         } else {
             if (currentUser) {
                 redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
+            } else {
+                redirect action: 'login'
             }
         }
     }
