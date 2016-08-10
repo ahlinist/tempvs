@@ -58,7 +58,7 @@ class UserController {
         }
     }
 
-    def editUser() {
+    def edit() {
         [user: springSecurityService.currentUser]
     }
 
@@ -76,7 +76,7 @@ class UserController {
             flash.emailError = 'user.edit.email.used.message'
         }
 
-        redirect action: 'editUser'
+        redirect action: 'edit'
     }
 
     def updatePassword(String currentPassword, String newPassword, String repeatNewPassword) {
@@ -100,7 +100,7 @@ class UserController {
             flash.passwordError = 'user.edit.password.empty.message'
         }
 
-        redirect action: 'editUser'
+        redirect action: 'edit'
     }
 
     def updateName(String firstName, String lastName) {
@@ -114,7 +114,7 @@ class UserController {
             flash.nameError = 'user.edit.name.empty.message'
         }
 
-        redirect action: 'editUser'
+        redirect action: 'edit'
     }
 }
 

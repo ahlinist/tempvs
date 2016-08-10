@@ -163,7 +163,7 @@ class UserFunctionalSpec extends GebSpec {
     }
 
     private changePassword(String currentPassword, String newPassword, String repeatNewPassword) {
-        go '/user/editUser'
+        go '/user/edit'
         $('input[name=currentPassword]').value(currentPassword)
         $('input[name=newPassword]').value(newPassword)
         $('input[name=repeatNewPassword]').value(repeatNewPassword)
@@ -171,7 +171,7 @@ class UserFunctionalSpec extends GebSpec {
     }
 
     private changeEmail(String email) {
-        go '/user/editUser'
+        go '/user/edit'
         $('input[name=email]').value(email)
         $('input[name=updateEmail]').click()
     }

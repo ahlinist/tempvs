@@ -56,7 +56,12 @@
                 <g:textField class="col-sm-12" name="lastName" value="${userProfile.lastName}" />
               </div>
               <div class="col-sm-6">
-                <label for="email"><g:message code="user.profile.profileEmail.label" /></label>
+                <label for="email">
+                  <g:message code="user.profile.profileEmail.label" />
+                  (<a href="#" style="color:#3B6182;" onclick="$('input[name=profileEmail]').val('${userProfile.user.email}')">
+                    <g:message code="user.profile.useLoginEmail.link"/>
+                  </a>)
+                </label>
               </div>
               <div class="col-sm-6">
                 <g:field class="col-sm-12" type="email" name="profileEmail" value="${userProfile.profileEmail}"/>
