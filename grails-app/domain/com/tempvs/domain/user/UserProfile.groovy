@@ -16,7 +16,7 @@ class UserProfile extends BasePersistent {
         lastName nullable: true
         profileEmail nullable: true, unique: true, email: true
         location nullable: true
-        customId nullable: true, unique: true, matches: /^\d*[a-zA-Z.-_][a-zA-Z\d.-_]*$/
+        customId nullable: true, unique: true, matches: /^(?![0-9]*$)[a-zA-Z0-9.-_]+$/
         avatar nullable: true
     }
 }

@@ -17,14 +17,16 @@ class UserIntegrationSpec extends Specification {
 
     def setup() {
         userService.createUser(email: EMAIL, password: PASSWORD, firstName: FIRST_NAME)
-        userService.createUser(email: NOT_EMAIL, password: PASSWORD, firstName: FIRST_NAME)
     }
 
     def cleanup() {
     }
 
     void "User with incorrect email is not created"() {
-        expect: "User with incorrect email is not created"
+        when: "Create user with incorrect email"
+        userService.createUser(email: NOT_EMAIL, password: PASSWORD, firstName: FIRST_NAME)
+
+        then: "User with incorrect email is not created"
         !User.findByEmail(NOT_EMAIL)
     }
 
@@ -41,10 +43,5 @@ class UserIntegrationSpec extends Specification {
     void "User with given password created"() {
         expect: "User with given password created"
         passwordEncoder.isPasswordValid(User.findByEmail(EMAIL).password, PASSWORD, null)
-    }
-
-    void "Created user has userProfile"() {
-        expect: "Created user has userProfile"
-        User.findByEmail(EMAIL).userProfile
     }
 }
