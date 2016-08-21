@@ -1,12 +1,10 @@
 package com.tempvs.controllers
 
-import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import javax.imageio.ImageIO
 
 class UserProfileController {
     def springSecurityService
-    def userService
     def userProfileService
     String DEFAULT_AVATAR = '/home/albvs/storage/grails/images/defaultAvatar.jpg'
 
@@ -15,21 +13,9 @@ class UserProfileController {
     }
 
     def updateUserProfile(UserProfileCommand upc) {
-        User currentUser = springSecurityService.currentUser
-
-        if (currentUser.email == upc.profileEmail ||
-                currentUser.userProfile.profileEmail == upc.profileEmail ||
-                !userService.checkIfUserExists(upc.profileEmail)) {
-            if (userProfileService.updateUserProfile(upc.properties)) {
-                flash.success = 'user.userProfile.updated'
-            } else {
-                flash.error = 'user.editUserProfile.failed'
-            }
-        } else {
-            flash.error = 'user.editUserProfile.email.used'
-        }
-
-        redirect action: 'index'
+        UserProfile userProfile = userProfileService.updateUserProfile(upc.properties)
+        render view: 'index', model: [userProfile: userProfile,
+                                      success: userProfile.hasErrors() ? '' : 'user.userProfile.updated']
     }
 
     def updateAvatar() {

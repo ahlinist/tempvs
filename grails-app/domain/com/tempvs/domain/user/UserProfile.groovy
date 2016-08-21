@@ -16,9 +16,8 @@ class UserProfile extends BasePersistent {
         lastName nullable: true
         profileEmail nullable: true, unique: true, email: true, validator: {profileEmail, userProfile ->
             User user = User.findByEmail(profileEmail)
-            (!user || user?.userProfile == userProfile) ? true : false
+            !user || (user?.userProfile == userProfile)
         }
-
         location nullable: true
         customId nullable: true, unique: true, matches: /^(?![0-9]*$)[a-zA-Z0-9.-_]+$/
         avatar nullable: true

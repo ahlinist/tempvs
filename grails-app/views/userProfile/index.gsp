@@ -81,18 +81,8 @@
             <g:submitButton class="btn btn-primary" name="updateUserProfile" value="${message(code:'user.profile.update.button')}" />
             </div>
           </g:form>
-          <g:if test="${flash.error}">
-            <div class="alert alert-danger text-center">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <g:message code="${flash.error}" />
-            </div>
-          </g:if>
-          <g:if test="${flash.success}">
-            <div class="alert alert-success text-center">
-              <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <g:message code="${flash.success}" />
-            </div>
-          </g:if>
+          <g:render template="../templates/errors" model="[errorBean: userProfile]" />
+          <g:render template="../templates/success" model="[success: success]" />
         </div>
         <div class="col-sm-2">
         </div>

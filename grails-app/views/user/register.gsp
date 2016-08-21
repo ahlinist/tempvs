@@ -43,16 +43,7 @@
                 </div>
                 <g:submitButton class="col-sm-12" name="register" value="${message(code:'user.register.button')}" />
               </g:form>
-              <g:if test="${registrationFailed}">
-                <div class="alert alert-danger text-center">
-                    <g:message code="${registrationFailed}" />
-                </div>
-              </g:if>
-              <g:if test="${emailUsed}">
-                <div class="alert alert-danger text-center">
-                  <g:message code="${emailUsed}" />
-                </div>
-              </g:if>
+              <g:render template="../templates/errors" model="[errorBean: user]"/>
         </div>
       </div>
       <div class="col-sm-3">

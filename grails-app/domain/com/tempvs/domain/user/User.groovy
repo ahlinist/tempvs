@@ -27,7 +27,7 @@ class User implements Serializable {
 		password blank: false, password: true
 		email email: true, unique: true, blank: false, validator: {email, user ->
 			UserProfile userProfile = UserProfile.findByProfileEmail(email)
-			(!userProfile ||userProfile?.user == user) ? true : false
+			!userProfile || (userProfile?.user == user)
 		}
 	}
 }

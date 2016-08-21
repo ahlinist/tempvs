@@ -29,18 +29,8 @@
                 <g:field class="col-sm-12" type="email" name="email" value="${user?.email}" />
               </div>
             </div>
-            <g:if test="${flash.emailError}">
-              <div class="alert alert-danger text-center">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <g:message code="${flash.emailError}" />
-              </div>
-            </g:if>
-            <g:if test="${flash.emailSuccess}">
-              <div class="alert alert-success text-center">
-                <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                <g:message code="${flash.emailSuccess}" />
-              </div>
-            </g:if>
+            <g:render template="../templates/errors" model="[errorBean: user]" />
+            <g:render template="../templates/success" model="[success: emailSuccess]" />
             <g:submitButton class="btn btn-primary" name="updateEmail" value="${message(code:'user.edit.email.button')}" />
           </g:form>
           <g:form action="updatePassword">
@@ -64,20 +54,10 @@
                 <g:passwordField class="col-sm-12" name="repeatNewPassword" />
               </div>
             </div>
-              <g:if test="${flash.passwordError}">
-                <div class="alert alert-danger text-center">
-                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                  <g:message code="${flash.passwordError}" />
-                </div>
-              </g:if>
-              <g:if test="${flash.passwordSuccess}">
-                <div class="alert alert-success text-center">
-                  <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                  <g:message code="${flash.passwordSuccess}" />
-                </div>
-              </g:if>
               <g:submitButton class="btn btn-primary" name="updatePassword" value="${message(code:'user.edit.password.button')}" />
           </g:form>
+          <g:render template="../templates/errors" model="[errorBean: upc]" />
+          <g:render template="../templates/success" model="[success: passwordSuccess]" />
         </div>
         <div class="col-sm-2">
         </div>

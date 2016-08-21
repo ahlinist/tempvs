@@ -2,6 +2,7 @@ package com.tempvs.controllers
 
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
+import grails.util.Holders
 
 class UserController {
     def userService
@@ -12,21 +13,15 @@ class UserController {
 
     def register(UserRegisterCommand urc) {
         if (params.register) {
-            if (urc.email) {
-                if (userService.checkIfUserExists(urc.email)) {
-                    return [user: urc, emailUsed:'user.email.used']
-                }
-            }
-
             if (!urc.hasErrors()) {
                 User user = userService.createUser(urc.properties)
 
-                if (user) {
+                if (!user.hasErrors()) {
                     springSecurityService.reauthenticate(urc.email, urc.password)
-                    redirect controller: 'user', action: 'show', id: user.id
+                    redirect controller: 'user'
                 }
             } else {
-                return [user: urc, registrationFailed: 'user.registration.failed']
+                [user: urc]
             }
         }
     }
@@ -63,58 +58,35 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        User currentUser = springSecurityService.currentUser
-
-        if (currentUser.email == email) {
-        } else if (currentUser.userProfile.profileEmail == email || !userService.checkIfUserExists(email)) {
-            if (userService.updateEmail(email)) {
-                flash.emailSuccess = 'user.edit.email.success.message'
-            } else {
-                flash.emailError = 'user.edit.email.failed.message'
-            }
-        } else {
-            flash.emailError = 'user.edit.email.used.message'
-        }
-
-        redirect action: 'edit'
+        User user = userService.updateEmail(email)
+        render view: 'edit', model: [user: user, emailSuccess: user.hasErrors() ? '' : 'user.edit.email.success.message']
     }
 
-    def updatePassword(String currentPassword, String newPassword, String repeatNewPassword) {
-        User currentUser = springSecurityService.currentUser
+    def updatePassword(UserPasswordCommand upc) {
+        String success = ''
 
-        if (currentPassword && newPassword && repeatNewPassword) {
-            if (passwordEncoder.isPasswordValid(currentUser.password, currentPassword, null)) {
-                if (newPassword == repeatNewPassword) {
-                    if (userService.updatePassword(newPassword)) {
-                        flash.passwordSuccess = 'user.edit.password.success.message'
-                    } else {
-                        flash.passwordError = 'user.edit.password.failed.message'
-                    }
-                } else {
-                    flash.passwordError = 'user.edit.password.repeat.message'
-                }
-            } else {
-                flash.passwordError = 'user.edit.password.dontmatch.message'
-            }
-        } else {
-            flash.passwordError = 'user.edit.password.empty.message'
+        if (upc.validate()) {
+            userService.updatePassword(upc.newPassword)
+            success = 'user.edit.password.success.message'
         }
 
-        redirect action: 'edit'
+        render view: 'edit', model: [upc: upc, user: springSecurityService.currentUser, passwordSuccess: success]
     }
+}
 
-    def updateName(String firstName, String lastName) {
-        if (firstName && lastName) {
-            if (userService.updateName(firstName, lastName)) {
-                flash.nameSuccess = 'user.edit.name.success.message'
-            } else {
-                flash.nameError = 'user.edit.name.failed.message'
-            }
-        } else {
-            flash.nameError = 'user.edit.name.empty.message'
+class UserPasswordCommand {
+    String currentPassword
+    String newPassword
+    String repeatNewPassword
+
+    static constraints = {
+        currentPassword validator: { currPass, upc ->
+            Holders.applicationContext.passwordEncoder.isPasswordValid(
+                    Holders.applicationContext.springSecurityService.currentUser.password, currPass, null)
         }
-
-        redirect action: 'edit'
+        repeatNewPassword validator: { repPass, upc ->
+            upc.newPassword == repPass
+        }
     }
 }
 
@@ -128,8 +100,8 @@ class UserRegisterCommand {
     static constraints = {
         importFrom User
         importFrom UserProfile
-        repeatPassword validator: {repPass, urc ->
-            return repPass == urc.password
+        repeatPassword validator: { repPass, urc ->
+            repPass == urc.password
         }
     }
 }

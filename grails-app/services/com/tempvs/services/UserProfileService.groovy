@@ -10,13 +10,9 @@ class UserProfileService {
 
     UserProfile updateUserProfile(Map params) {
         UserProfile userProfile = springSecurityService.currentUser?.userProfile
-
-        if (userProfile) {
-            InvokerHelper.setProperties(userProfile, params)
-            userProfile.save()
-        } else {
-            return null
-        }
+        InvokerHelper.setProperties(userProfile, params)
+        userProfile.save()
+        return userProfile
     }
 
     UserProfile updateAvatar(multiPartFile) {
