@@ -6,7 +6,6 @@ import javax.imageio.ImageIO
 class UserProfileController {
     def springSecurityService
     def userProfileService
-    String DEFAULT_AVATAR = '/home/albvs/storage/grails/images/defaultAvatar.jpg'
 
     def index() {
         [userProfile: springSecurityService.currentUser.userProfile]
@@ -36,7 +35,7 @@ class UserProfileController {
 
     def getAvatar() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        ImageIO.write(ImageIO.read(new File(userProfileService.getOwnAvatar() ?: DEFAULT_AVATAR)), "jpg", baos)
+        ImageIO.write(ImageIO.read(new File(userProfileService.getOwnAvatar())), "jpg", baos)
         byte[] imageInByte = baos.toByteArray()
         response.with{
             setHeader('Content-length', imageInByte.length.toString())
