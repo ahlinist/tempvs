@@ -1,6 +1,7 @@
 package com.tempvs.domain.user
 
 import com.tempvs.domain.BasePersistent
+import com.tempvs.domain.image.Avatar
 
 class UserProfile extends BasePersistent {
     String firstName
@@ -8,9 +9,9 @@ class UserProfile extends BasePersistent {
     String profileEmail
     String location
     String customId
-    String avatar
 
     static belongsTo = [user: User]
+    static hasOne = [avatar: Avatar]
 
     static constraints = {
         lastName nullable: true

@@ -1,5 +1,6 @@
 package com.tempvs.services
 
+import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import grails.transaction.Transactional
@@ -19,11 +20,9 @@ class UserService {
 
         user.with{
             password = springSecurityService.encodePassword(user.password)
-            user.userProfile = new UserProfile(properties)
-            save()
+            userProfile = new UserProfile(properties + [avatar: new Avatar()])
+            save(flush: true)
         }
-
-        return user
     }
 
     User updateEmail(String email) {
@@ -42,7 +41,10 @@ class UserService {
 
     void updateLastActive(){
         User user = springSecurityService.currentUser
-        user.lastActive = new Date()
-        user.save()
+
+        if (user) {
+            user.lastActive = new Date()
+            user.save()
+        }
     }
 }

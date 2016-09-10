@@ -6,14 +6,16 @@ import javax.imageio.ImageIO
 class UserProfileController {
     def springSecurityService
     def userProfileService
+    def imageService
+
 
     def index() {
-        [userProfile: springSecurityService.currentUser.userProfile]
+        [user: springSecurityService.currentUser]
     }
 
     def updateUserProfile(UserProfileCommand upc) {
         UserProfile userProfile = userProfileService.updateUserProfile(upc.properties)
-        render view: 'index', model: [userProfile: userProfile,
+        render view: 'index', model: [user: userProfile.user,
                                       success: userProfile.hasErrors() ? '' : 'user.userProfile.updated']
     }
 
@@ -21,7 +23,7 @@ class UserProfileController {
         def multiPartFile = request.getFile('avatar')
 
         if (!multiPartFile?.empty) {
-            if (userProfileService.updateAvatar(multiPartFile)) {
+            if (imageService.updateAvatar(multiPartFile)) {
                 flash.avatarSuccess = 'user.profile.update.avatar.success.message'
             } else {
                 flash.avatarError = 'user.profile.update.avatar.error.message'
@@ -35,7 +37,7 @@ class UserProfileController {
 
     def getAvatar() {
         ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        ImageIO.write(ImageIO.read(new File(userProfileService.getOwnAvatar())), "jpg", baos)
+        ImageIO.write(ImageIO.read(new File(imageService.getOwnAvatar().pathToFile)), "jpg", baos)
         byte[] imageInByte = baos.toByteArray()
         response.with{
             setHeader('Content-length', imageInByte.length.toString())

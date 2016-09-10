@@ -16,6 +16,7 @@
       </style>
     </head>
     <body>
+      <g:set var="userProfile" value="${user.userProfile}" />
       <div class="row">
         <div class="col-sm-2">
         </div>
