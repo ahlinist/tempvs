@@ -20,7 +20,7 @@ class UserProfile extends BasePersistent {
             !user || (user?.userProfile == userProfile)
         }
         location nullable: true
-        customId nullable: true, unique: true, matches: /^(?![0-9]*$)[a-zA-Z0-9.-_]+$/
+        customId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
         avatar nullable: true
     }
 }

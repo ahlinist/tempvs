@@ -1,5 +1,6 @@
 package com.tempvs.controllers
 
+import com.tempvs.ajax.AjaxJSONResponse
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import grails.util.Holders
@@ -8,6 +9,8 @@ class UserController {
     def userService
     def springSecurityService
     def passwordEncoder
+    private static final String EMAIL_UPDATED_MESSAGE = 'user.edit.email.success.message'
+    private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
 
     static defaultAction = "show"
 
@@ -58,22 +61,13 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        User user = userService.updateEmail(email)
-        render view: 'edit', model: [user: user, emailSuccess: user.hasErrors() ? '' : 'user.edit.email.success.message']
+        render new AjaxJSONResponse().init(userService.updateEmail(email), EMAIL_UPDATED_MESSAGE)
     }
 
     def updatePassword(UserPasswordCommand upc) {
-        String success = ''
-
-        if (upc.validate()) {
-            userService.updatePassword(upc.newPassword)
-            success = 'user.edit.password.success.message'
-        }
-
-        render view: 'edit', model: [upc: upc, user: springSecurityService.currentUser, passwordSuccess: success]
+        render new AjaxJSONResponse().init(upc.validate() ? userService.updatePassword(upc.newPassword) : upc, PASSWORD_UPDATED_MESSAGE)
     }
 }
-
 class UserPasswordCommand {
     String currentPassword
     String newPassword

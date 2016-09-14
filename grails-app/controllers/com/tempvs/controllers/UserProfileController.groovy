@@ -1,5 +1,6 @@
 package com.tempvs.controllers
 
+import com.tempvs.ajax.AjaxJSONResponse
 import com.tempvs.domain.user.UserProfile
 import javax.imageio.ImageIO
 
@@ -7,32 +8,20 @@ class UserProfileController {
     def springSecurityService
     def userProfileService
     def imageService
-
+    private static final String USER_PROFILE_UPDATED_MESSAGE = 'user.userProfile.updated'
+    private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
 
     def index() {
         [user: springSecurityService.currentUser]
     }
 
     def updateUserProfile(UserProfileCommand upc) {
-        UserProfile userProfile = userProfileService.updateUserProfile(upc.properties)
-        render view: 'index', model: [user: userProfile.user,
-                                      success: userProfile.hasErrors() ? '' : 'user.userProfile.updated']
+        render new AjaxJSONResponse().init(userProfileService.updateUserProfile(upc.properties), USER_PROFILE_UPDATED_MESSAGE)
     }
 
     def updateAvatar() {
         def multiPartFile = request.getFile('avatar')
-
-        if (!multiPartFile?.empty) {
-            if (imageService.updateAvatar(multiPartFile)) {
-                flash.avatarSuccess = 'user.profile.update.avatar.success.message'
-            } else {
-                flash.avatarError = 'user.profile.update.avatar.error.message'
-            }
-        } else {
-            flash.avatarError = 'user.profile.update.avatar.empty.message'
-        }
-
-        redirect action: 'index'
+        render new AjaxJSONResponse().initImage(multiPartFile, imageService.updateAvatar(multiPartFile), AVATAR_UPDATED_MESSAGE)
     }
 
     def getAvatar() {

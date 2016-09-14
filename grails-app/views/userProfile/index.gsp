@@ -21,7 +21,7 @@
         <div class="col-sm-2">
         </div>
         <div class="col-sm-8">
-          <g:uploadForm action="updateAvatar">
+          <g:uploadForm action="updateAvatar" onsubmit="sendAjaxRequest(this); return false;">
             <div class="row">
               <div class="col-sm-6">
                 <label for="avatar"><g:message code="user.profile.avatar.label" /></label>
@@ -29,20 +29,10 @@
               <div class="col-sm-6">
                 <g:field class="col-sm-12" name="avatar" type="file" />
               </div>
-              <g:submitButton class="btn btn-primary" name="updateAvatar" value="${message(code:'user.profile.update.avatar.button')}" />
             </div>
+            <g:render template="../templates/ajaxTools" model="[button: 'user.profile.update.avatar.button']" />
           </g:uploadForm>
-          <g:if test="${flash.avatarError}">
-            <div class="alert alert-danger text-center">
-              <g:message code="${flash.avatarError}" />
-            </div>
-          </g:if>
-          <g:if test="${flash.avatarSuccess}">
-            <div class="alert alert-success text-center">
-              <g:message code="${flash.avatarSuccess}" />
-            </div>
-          </g:if>
-          <g:form action="updateUserProfile">
+          <g:form action="updateUserProfile" onsubmit="sendAjaxRequest(this); return false;">
             <div class="row">
               <div class="col-sm-6">
                 <label for="firstName"><g:message code="user.profile.firstName.label" /></label>
@@ -79,11 +69,9 @@
               <div class="col-sm-6">
                 <g:textField class="col-sm-12" name="customId" value="${userProfile.customId}"/>
               </div>
-            <g:submitButton class="btn btn-primary" name="updateUserProfile" value="${message(code:'user.profile.update.button')}" />
             </div>
+            <g:render template="../templates/ajaxTools" model="[button: 'user.profile.update.button']" />
           </g:form>
-          <g:render template="../templates/errors" model="[errorBean: userProfile]" />
-          <g:render template="../templates/success" model="[success: success]" />
         </div>
         <div class="col-sm-2">
         </div>
