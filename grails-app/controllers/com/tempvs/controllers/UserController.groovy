@@ -1,30 +1,32 @@
 package com.tempvs.controllers
 
-import com.tempvs.ajax.AjaxJSONResponse
+import com.tempvs.ajax.AjaxResponse
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
+import grails.converters.JSON
 import grails.util.Holders
 
 class UserController {
     def userService
     def springSecurityService
-    def passwordEncoder
     private static final String EMAIL_UPDATED_MESSAGE = 'user.edit.email.success.message'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
 
     static defaultAction = "show"
 
     def register(UserRegisterCommand urc) {
-        if (params.register) {
-            if (!urc.hasErrors()) {
+        if (params.isAjaxRequest) {
+            if (urc.validate()) {
                 User user = userService.createUser(urc.properties)
 
-                if (!user.hasErrors()) {
+                if (!user?.hasErrors()) {
                     springSecurityService.reauthenticate(urc.email, urc.password)
-                    redirect controller: 'user'
+                    render [redirect:'/user/show'] as JSON
+                } else {
+                    render new AjaxResponse(user) as JSON
                 }
             } else {
-                [user: urc]
+                render new AjaxResponse(urc) as JSON
             }
         }
     }
@@ -61,11 +63,11 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        render new AjaxJSONResponse().init(userService.updateEmail(email), EMAIL_UPDATED_MESSAGE)
+        render new AjaxResponse(userService.updateEmail(email), EMAIL_UPDATED_MESSAGE) as JSON
     }
 
     def updatePassword(UserPasswordCommand upc) {
-        render new AjaxJSONResponse().init(upc.validate() ? userService.updatePassword(upc.newPassword) : upc, PASSWORD_UPDATED_MESSAGE)
+        render new AjaxResponse(upc.validate() ? userService.updatePassword(upc.newPassword) : upc, PASSWORD_UPDATED_MESSAGE) as JSON
     }
 }
 class UserPasswordCommand {

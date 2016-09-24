@@ -10,7 +10,7 @@
       </div>
       <div class="col-sm-6">
         <div class="row">
-              <g:form controller="user" action="register" method="POST">
+              <g:form action="register" onsubmit="sendAjaxRequest(this); return false;">
                 <div class="col-sm-6">
                   <label for="email"><g:message code="user.email.label" /></label>
                 </div>
@@ -41,9 +41,8 @@
                 <div>
                   <g:textField class="col-sm-6" name="lastName" value="${user?.lastName}" />
                 </div>
-                <g:submitButton class="col-sm-12" name="register" value="${message(code:'user.register.button')}" />
+                <g:render template="../templates/ajaxTools" model="[button: 'user.register.button']" />
               </g:form>
-              <g:render template="../templates/errors" model="[errorBean: user]"/>
         </div>
       </div>
       <div class="col-sm-3">

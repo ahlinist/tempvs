@@ -19,9 +19,13 @@ function sendAjaxRequest(form) {
             spinner.fadeOut();
         },
         success: function(response) {
-            $.each(response.messages, function(index, message) {
-                renderAjaxResponseMessage(form, response.success ? 'success' :'danger', message);
-            });
+            if (response.redirect) {
+                window.location.href = response.redirect;
+            } else {
+                $.each(response.messages, function(index, message) {
+                    renderAjaxResponseMessage(form, response.success ? 'success' :'danger', message);
+                });
+            }
         },
         error: function() {
             renderAjaxResponseMessage(form, 'danger', 'Something went wrong :(');

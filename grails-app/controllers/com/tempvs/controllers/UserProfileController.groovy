@@ -1,7 +1,9 @@
 package com.tempvs.controllers
 
-import com.tempvs.ajax.AjaxJSONResponse
+import com.tempvs.ajax.AjaxResponse
 import com.tempvs.domain.user.UserProfile
+import grails.converters.JSON
+
 import javax.imageio.ImageIO
 
 class UserProfileController {
@@ -16,12 +18,12 @@ class UserProfileController {
     }
 
     def updateUserProfile(UserProfileCommand upc) {
-        render new AjaxJSONResponse().init(userProfileService.updateUserProfile(upc.properties), USER_PROFILE_UPDATED_MESSAGE)
+        render new AjaxResponse(userProfileService.updateUserProfile(upc.properties), USER_PROFILE_UPDATED_MESSAGE) as JSON
     }
 
     def updateAvatar() {
         def multiPartFile = request.getFile('avatar')
-        render new AjaxJSONResponse().initImage(multiPartFile, imageService.updateAvatar(multiPartFile), AVATAR_UPDATED_MESSAGE)
+        render new AjaxResponse(imageService.updateAvatar(multiPartFile), AVATAR_UPDATED_MESSAGE, multiPartFile) as JSON
     }
 
     def getAvatar() {
