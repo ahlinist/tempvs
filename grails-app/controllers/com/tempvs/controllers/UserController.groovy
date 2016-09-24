@@ -21,7 +21,7 @@ class UserController {
 
                 if (!user?.hasErrors()) {
                     springSecurityService.reauthenticate(urc.email, urc.password)
-                    render [redirect:'/user/show'] as JSON
+                    render([redirect:'/user/show'] as JSON)
                 } else {
                     render new AjaxResponse(user) as JSON
                 }
