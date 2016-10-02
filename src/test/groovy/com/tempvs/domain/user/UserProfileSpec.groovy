@@ -1,5 +1,7 @@
 package com.tempvs.domain.user
 
+import com.tempvs.tests.unit.UnitTestUtils
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -7,41 +9,38 @@ import spock.lang.Specification
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
 @TestFor(UserProfile)
+@Mock(User)
 class UserProfileSpec extends Specification {
-    String EMAIL_FOR_FAIL = 'fail@mail.com'
-    String EMAIL_FOR_SUCCESS = 'success@mail.com'
-    String PASSWORD = 'passW0rd'
-    String FIRST_NAME = 'testFirstName'
-    String MIDDLE_NAME = 'testMiddleName'
-    String LAST_NAME = 'testLastName'
-    String CUSTOM_ID = 'testCustomId'
-    String PROFILE_EMAIL = 'profile@mail.com'
-    String LOCATION = 'testLocation'
+    private static final String EMAIL_FOR_FAIL = 'fail@mail.com'
+    private static final String EMAIL_FOR_SUCCESS = 'success@mail.com'
+    private static final String PASSWORD = 'passW0rd'
+    private static final String FIRST_NAME = 'testFirstName'
+    private static final String LAST_NAME = 'testLastName'
+    private static final String CUSTOM_ID = 'testCustomId'
+    private static final String PROFILE_EMAIL = 'profile@mail.com'
+    private static final String LOCATION = 'testLocation'
 
     def setup() {
-        createUser(EMAIL_FOR_FAIL, PASSWORD, '', '', '', '', '', LOCATION)
-        createUser(EMAIL_FOR_SUCCESS, PASSWORD, FIRST_NAME, MIDDLE_NAME,
-                   LAST_NAME, CUSTOM_ID, PROFILE_EMAIL, '')
     }
 
     def cleanup() {
     }
 
     void "test fail on first name missing"() {
-        expect:"userProfile creation failed"
-            !UserProfile.findByLocation(LOCATION)
+        when:"creating a user without firstname"
+            UnitTestUtils.createUser(EMAIL_FOR_FAIL, PASSWORD, null, null, null, null, null)
+
+
+        then:"userProfile creation failed"
+            //!UserProfile.findByLocation(LOCATION)
+            UserProfile.list().size() == 0
     }
 
     void "userProfile created"() {
-        expect: "pass all values and userProfile is created"
-            UserProfile.findByFirstName(FIRST_NAME)
-    }
+        when:"creating valid user"
+            UnitTestUtils.createUser(EMAIL_FOR_SUCCESS, PASSWORD, FIRST_NAME, LAST_NAME, CUSTOM_ID, PROFILE_EMAIL, LOCATION)
 
-    private void createUser(String email, String password, String firstName, String lastName,
-                            String middleName, String customId, String profileEmail, String location){
-        UserProfile userProfile = new UserProfile(firstName:firstName, middleName: middleName, lastName: lastName,
-                                           customId:customId, profileEmail: profileEmail, location:location)
-        userProfile.user = new User(email: email, password: password, lastActive: new Date())
-        userProfile.save(flush:true)
+        then: "pass all values and userProfile is created"
+            UserProfile.findByFirstName(FIRST_NAME)
     }
 }

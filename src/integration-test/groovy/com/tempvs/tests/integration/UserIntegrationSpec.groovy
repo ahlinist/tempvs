@@ -1,13 +1,16 @@
 package com.tempvs.tests.integration
 
+import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
+import grails.test.mixin.Mock
 import grails.test.mixin.integration.Integration
 import grails.transaction.*
 import spock.lang.*
 
 @Integration
 @Rollback
+@Mock([User, UserProfile, Avatar])
 class UserIntegrationSpec extends Specification {
     def userService
     def springSecurityService
@@ -27,6 +30,10 @@ class UserIntegrationSpec extends Specification {
     }
 
     def cleanup() {
+        Avatar.list().each {
+            it.delete()
+        }
+
         UserProfile.list().each {
             it.delete()
         }
