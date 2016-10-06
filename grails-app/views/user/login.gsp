@@ -11,31 +11,11 @@
       <div class="col-sm-6">
         <div class="row">
               <g:form uri="/login/authenticate" method="POST">
-                <div class="col-sm-6">
-                  <label for="username"><g:message code="user.email.label" /></label>
-                </div>
-                <div>
-                  <g:field class="col-sm-6" type="email" name="username" value="${user?.email}" />
-                </div>
-                <div class="col-sm-6">
-                  <label for="password"><g:message code="user.password.label" /></label>
-                </div>
-                <div>
-                  <g:passwordField class="col-sm-6" name="password" value="${user?.password}" />
-                </div>
-                <div class="col-sm-6">
-                  <label for="remember-me"><g:message code="user.login.rememberMe.label" /></label>
-                </div>
-                <div class="pull-right">
-                  <g:checkBox name="remember-me"/>
-                </div>
-              <g:submitButton class="col-sm-12" name="login" value="${message(code:'user.login.button')}"/>
+                <tempvs:formField type="email" name="username" label="user.email.label" />
+                <tempvs:formField type="password" name="password" label="user.password.label" />
+                <tempvs:formField type="checkbox" name="remember-me" label="user.login.rememberMe.label" />
+                <g:submitButton class="col-sm-12" name="login" value="${message(code:'user.login.button')}"/>
               </g:form>
-              <g:if test="${loginFailed}">
-                <div class="alert alert-danger text-center">
-                  <g:message code="${loginFailed}" />
-                </div>
-              </g:if>
         </div>
       </div>
       <div class="col-sm-3">
