@@ -14,7 +14,7 @@
                 <tempvs:formField type="email" name="username" label="user.email.label" />
                 <tempvs:formField type="password" name="password" label="user.password.label" />
                 <tempvs:formField type="checkbox" name="remember-me" label="user.login.rememberMe.label" />
-                <g:submitButton class="col-sm-12" name="login" value="${message(code:'user.login.button')}"/>
+                <g:submitButton class="col-sm-12 disableable" name="login" value="${message(code:'user.login.button')}"/>
               </g:form>
         </div>
       </div>

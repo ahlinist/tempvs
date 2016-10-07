@@ -11,6 +11,11 @@
 //= require_self
 
 $(function (){
+    //preventing double clicking
+    $('.disableable').click(function() {
+        $(this).attr("disabled", true);
+    });
+
     incrementMinutes()
 });
 
