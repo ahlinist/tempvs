@@ -28,9 +28,9 @@ class DateTagLib {
                     model = [classes:'incrementMinutes', minutes: minutes, value: "${minutes} ${g.message(code: MINUTES_AGO)}"]
                 } else if (targetDate > 1.hour.ago) {
                     model = [value: g.message(code: HALF_HOUR_AGO)]
-                } else if (targetDate > 1.day.ago) {
+                } else if (targetDate > 24.hours.ago) {
                     model = [value: "${(currentDate - targetDate).hours} ${g.message(code: HOURS_AGO)}"]
-                } else if (targetDate > 2.days.ago) {
+                } else if (targetDate > 48.hours.ago) {
                     model = [value: g.message(code: YESTERDAY)]
                 } else {
                     model = [value: targetDate.format(DATE_FORMAT)]
