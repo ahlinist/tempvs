@@ -28,11 +28,10 @@ class UserProfileSpec extends Specification {
 
     void "test fail on first name missing"() {
         when:"creating a user without firstname"
-            UnitTestUtils.createUser(EMAIL_FOR_FAIL, PASSWORD, null, null, null, null, null)
+            UnitTestUtils.createUser(EMAIL_FOR_FAIL, PASSWORD, null)
 
 
         then:"userProfile creation failed"
-            //!UserProfile.findByLocation(LOCATION)
             UserProfile.list().size() == 0
     }
 

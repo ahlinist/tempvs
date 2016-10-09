@@ -13,7 +13,6 @@ import spock.lang.Specification
 @Mock(User)
 class AvatarSpec extends Specification {
     private static final String EMAIL = 'test@mail.com'
-    private static final String PASSWORD = 'passW0rd'
 
     def setup() {
     }
@@ -31,7 +30,7 @@ class AvatarSpec extends Specification {
 
     void "created user has avatar"() {
         when:"creating a user"
-            UnitTestUtils.createUser(EMAIL, PASSWORD)
+            UnitTestUtils.createUser(EMAIL)
 
         then:"user has avatar in it's profile"
             User.findByEmail(EMAIL).userProfile.avatar

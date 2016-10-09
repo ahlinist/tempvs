@@ -32,7 +32,7 @@ class UserSpec extends Specification {
 
     void "user created"() {
         when:"creating a user"
-            UnitTestUtils.createUser(EMAIL, PASSWORD)
+            UnitTestUtils.createUser(EMAIL)
 
         then:"DB contains user with given email"
             User.findByEmail(EMAIL)
@@ -40,10 +40,10 @@ class UserSpec extends Specification {
 
     void "users with only unique emails are saved"() {
         given:"created user"
-            UnitTestUtils.createUser(EMAIL, PASSWORD)
+            UnitTestUtils.createUser(EMAIL)
 
         when:"duplicating the existent user"
-            UnitTestUtils.createUser(EMAIL, PASSWORD)
+            UnitTestUtils.createUser(EMAIL)
 
 
         then:"only one user with given email"
@@ -52,7 +52,7 @@ class UserSpec extends Specification {
 
     void "user with invalid email is not saved"() {
         when:"creating a user with non-valid email"
-            UnitTestUtils.createUser(INVALID_EMAIL, PASSWORD)
+            UnitTestUtils.createUser(INVALID_EMAIL)
 
 
         then:"user with invalid email not saved"
