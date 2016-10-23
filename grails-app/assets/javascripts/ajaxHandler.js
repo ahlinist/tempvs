@@ -1,8 +1,3 @@
-$('.ajax-form').submit(function() {
-    sendAjaxRequest(this);
-    return false;
-});
-
 function sendAjaxRequest(form) {
     var spinner = $(form).find('.ajaxSpinner');
     var submitButton = $(form).find('.submit-button')

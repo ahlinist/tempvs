@@ -14,7 +14,6 @@ class UserProfile extends BasePersistent {
     static hasOne = [avatar: Avatar]
 
     static constraints = {
-        lastName nullable: true
         profileEmail nullable: true, unique: true, email: true, validator: {profileEmail, userProfile ->
             User user = User.findByEmail(profileEmail)
             !user || (user?.userProfile == userProfile)

@@ -4,7 +4,11 @@ class FormToolsTagLib {
     static defaultEncodeAs = [taglib:'raw']
     static namespace = 'tempvs'
 
-    def formField = {attrs ->
+    def ajaxForm = { attrs, body ->
+        out << render(template: '/templates/form/ajax/ajaxForm', model: attrs + [body: body()])
+    }
+
+    def formField = { attrs ->
         out << render(template: '/templates/form/formField', model: attrs)
     }
 

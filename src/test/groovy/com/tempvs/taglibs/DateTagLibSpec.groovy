@@ -46,7 +46,7 @@ class DateTagLibSpec extends Specification {
         calculateDate([number: 2, UoM: 'hour']) | '2 HOURS_AGO'
         calculateDate([number: 20, UoM: 'hour']) | '20 HOURS_AGO'
         calculateDate([number: 30, UoM: 'hour']) | 'YESTERDAY'
-        calculateDate([number: 50, UoM: 'hour']) | (new Date() -2).format(DATE_FORMAT)
+        calculateDate([number: 2, UoM: 'day']) | (new Date() -2).format(DATE_FORMAT)
     }
 
     private Date calculateDate(Map params) {
