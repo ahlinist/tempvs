@@ -6,10 +6,12 @@ import grails.transaction.Transactional
 @Transactional
 class ImageService {
     def springSecurityService
+    private static final String IMAGE_EMPTY = 'upload.image.empty'
 
     Avatar updateAvatar(multiPartFile) {
+        Avatar avatar = springSecurityService.currentUser.userProfile.avatar
+
         if (!multiPartFile?.empty) {
-            Avatar avatar = springSecurityService.currentUser.userProfile.avatar
             String imageName = "${new Date().time}.jpg"
             String destination = "/home/albvs/storage/grails/images/users/${avatar.userProfile.user.id}/avatars/"
             String pathToFile = destination.concat imageName
@@ -21,8 +23,12 @@ class ImageService {
 
             multiPartFile.transferTo new File(pathToFile)
             avatar.pathToFile = pathToFile
-            avatar.save()
+            avatar.save(flush: true)
+        } else {
+            avatar.errors.rejectValue('pathToFile', IMAGE_EMPTY)
         }
+
+        avatar
     }
 
     Avatar getOwnAvatar() {

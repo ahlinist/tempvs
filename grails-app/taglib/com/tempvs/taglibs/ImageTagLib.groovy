@@ -9,7 +9,7 @@ class ImageTagLib {
         Map model
 
         if (springSecurityService.currentUser?.userProfile?.avatar?.pathToFile) {
-            model = [classes: 'pull-left', src: '/userProfile/getAvatar']
+            model = [classes: 'pull-left', src: '/user/getAvatar']
         } else {
             model = [classes: 'pull-left', src: '/assets/defaultAvatar.jpg']
         }
