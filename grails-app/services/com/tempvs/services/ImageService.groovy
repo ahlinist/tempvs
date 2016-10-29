@@ -25,7 +25,7 @@ class ImageService {
             avatar.pathToFile = pathToFile
             avatar.save(flush: true)
         } else {
-            avatar.errors.rejectValue('pathToFile', IMAGE_EMPTY)
+            avatar.errors.rejectValue('id', IMAGE_EMPTY)
         }
 
         avatar
