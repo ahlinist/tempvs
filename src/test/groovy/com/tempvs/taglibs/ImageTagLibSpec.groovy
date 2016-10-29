@@ -30,6 +30,6 @@ class ImageTagLibSpec extends Specification {
         tagLib.springSecurityService.currentUser.userProfile.avatar.pathToFile = 'some_file_path'
 
         expect: "avatar is queried"
-        tagLib.userPic().toString().contains '/userProfile/getAvatar'
+        tagLib.userPic().toString().contains '/user/getAvatar'
     }
 }
