@@ -1,12 +1,12 @@
 <!DOCTYPE html>
+<g:set var="profile" value="${user.userProfile}" />
 <html>
     <head>
-        <title>title</title>
-        <meta name="layout" content="main"/>
+      <meta name="layout" content="main"/>
+      <title>Tempvs - ${profile.firstName} ${profile.lastName}</title>
     </head>
     <body>
       <g:if test="${user}">
-        <g:set var="profile" value="${user.userProfile}" />
         <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
         <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
 
