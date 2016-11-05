@@ -57,7 +57,7 @@ class UserController {
 
                         break
                     case UPDATE_EMAIL_ACTION:
-                        User user = userService.updateEmail(emailVerification.destination)
+                        User user = userService.updateEmail(emailVerification.userId, emailVerification.destination)
 
                         if (user?.hasErrors()) {
                             [message: EMAIL_UPDATE_FAILED]
@@ -67,7 +67,7 @@ class UserController {
 
                         break
                     case UPDATE_PROFILE_EMAIL_ACTION:
-                        UserProfile userProfile = userService.updateProfileEmail(emailVerification.destination)
+                        UserProfile userProfile = userService.updateProfileEmail(emailVerification.userId, emailVerification.destination)
 
                         if (userProfile?.hasErrors()) {
                             [message: PROFILE_EMAIL_UPDATE_FAILED]
@@ -121,7 +121,7 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        Map props = [email: springSecurityService.currentUser.email,
+        Map props = [userId: springSecurityService.currentUser.id,
                      destination: email,
                      action: UPDATE_EMAIL_ACTION]
         render new AjaxResponseHandler().composeJson(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
@@ -140,7 +140,7 @@ class UserController {
     }
 
     def updateProfileEmail(String profileEmail) {
-        Map props = [email: springSecurityService.currentUser.email,
+        Map props = [userId: springSecurityService.currentUser.id,
                      destination: profileEmail,
                      action: UPDATE_PROFILE_EMAIL_ACTION]
         render new AjaxResponseHandler().composeJson(userService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)

@@ -19,7 +19,7 @@ class UserService {
     }
 
     EmailVerification createEmailVerification(Map properties) {
-        String verificationCode = properties.email.encodeAsMD5() + new Date().time
+        String verificationCode = properties.destination.encodeAsMD5() + new Date().time
         EmailVerification emailVerification = new EmailVerification(properties + [verificationCode: verificationCode])
 
         if (emailVerification.save(flush: true)) {
@@ -46,10 +46,14 @@ class UserService {
         user
     }
 
-    User updateEmail(String email) {
-        User user = springSecurityService.currentUser
-        user.email = email
-        user.save(flush: true)
+    User updateEmail(Long userId, String newEmail) {
+        User user = User.get(userId)
+
+        if (user) {
+            user.email = newEmail
+            user.save(flush: true)
+        }
+
         user
     }
 
@@ -69,11 +73,11 @@ class UserService {
         }
     }
 
-    UserProfile updateProfileEmail(String profileEmail) {
-        UserProfile userProfile = springSecurityService.currentUser.userProfile
+    UserProfile updateProfileEmail(Long userId, String newProfileEmail) {
+        UserProfile userProfile = User.get(userId).userProfile
 
         if (userProfile) {
-            userProfile.profileEmail = profileEmail
+            userProfile.profileEmail = newProfileEmail
             userProfile.save(flush: true)
         }
 

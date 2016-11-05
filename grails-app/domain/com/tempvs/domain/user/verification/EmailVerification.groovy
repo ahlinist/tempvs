@@ -3,6 +3,7 @@ package com.tempvs.domain.user.verification
 import com.tempvs.domain.BasePersistent
 
 class EmailVerification extends BasePersistent {
+    Long userId
     String email
     String destination
     String password
@@ -12,7 +13,8 @@ class EmailVerification extends BasePersistent {
     String verificationCode
 
     static constraints = {
-        email nullable: true
+        userId nullable: true, unique: ['action', 'destination']
+        email nullable: true, email: true, unique: ['action', 'destination']
         action inList: ['registerUser', 'updateEmail', 'updateProfileEmail'], validator: { action, emailVerification ->
             if (action == 'registerUser') {
                 emailVerification.password && emailVerification.firstName && emailVerification.lastName
@@ -20,7 +22,7 @@ class EmailVerification extends BasePersistent {
                 true
             }
         }
-        destination email: true, unique: ['action', 'email']
+        destination email: true, unique: ['action', 'userId']
         firstName nullable: true
         lastName nullable: true
         password nullable: true
