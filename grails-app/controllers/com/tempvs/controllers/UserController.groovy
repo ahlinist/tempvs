@@ -4,6 +4,7 @@ import com.tempvs.ajax.AjaxResponseHandler
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
+import grails.converters.JSON
 import grails.util.Holders
 
 import javax.imageio.ImageIO
@@ -25,6 +26,7 @@ class UserController {
     private static final String REGISTER_USER_ACTION = 'registerUser'
     private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
+    private static final String EMAIL_UPDATE_DUPLICATE= 'user.edit.email.duplicate'
 
     static defaultAction = "show"
 
@@ -121,10 +123,14 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        Map props = [userId: springSecurityService.currentUser.id,
-                     destination: email,
-                     action: UPDATE_EMAIL_ACTION]
-        render new AjaxResponseHandler().composeJson(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+        if (email == springSecurityService.currentUser.email) {
+            render([messages: [g.message(code: EMAIL_UPDATE_DUPLICATE)]] as JSON)
+        } else {
+            Map props = [userId: springSecurityService.currentUser.id,
+                         destination: email,
+                         action: UPDATE_EMAIL_ACTION]
+            render new AjaxResponseHandler().composeJson(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+        }
     }
 
     def updatePassword(UserPasswordCommand upc) {
@@ -189,10 +195,11 @@ class UserRegisterCommand {
 
     static constraints = {
         password blank: false, password: true
-        email email: true, unique: true, blank: false, validator: {email, user ->
+        email email: true, blank: false, validator: {email, urc ->
+            User user = User.findByEmail(email)
             UserProfile userProfile = UserProfile.findByProfileEmail(email)
             EmailVerification emailVerification = EmailVerification.findByEmail(email)
-            (!userProfile || (userProfile?.user == user)) && !emailVerification
+            !user && !userProfile && !emailVerification
         }
         repeatPassword validator: { repPass, urc ->
             repPass == urc.password

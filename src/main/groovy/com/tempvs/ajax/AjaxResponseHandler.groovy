@@ -8,7 +8,7 @@ class AjaxResponseHandler {
     Boolean success = Boolean.TRUE
     Set messages = []
 
-    JSON composeJson(instance, String successMessage) {
+    JSON composeJson(instance, String successMessage = null) {
         if (instance.hasErrors()) {
             this.success = Boolean.FALSE
 

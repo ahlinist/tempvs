@@ -42,7 +42,6 @@ class UserSpec extends Specification {
         when:"Duplicating the existent user"
         UnitTestUtils.createUser(EMAIL)
 
-
         then:"Only one user with given email"
         User.findAllByEmail(EMAIL).size() == 1
 
@@ -56,7 +55,6 @@ class UserSpec extends Specification {
     void "User with invalid email is not saved"() {
         when:"Creating a user with non-valid email"
         UnitTestUtils.createUser(INVALID_EMAIL)
-
 
         then:"User with invalid email not saved"
         !User.findByEmail(INVALID_EMAIL)

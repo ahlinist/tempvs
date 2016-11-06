@@ -13,11 +13,17 @@ class EmailVerification extends BasePersistent {
     String verificationCode
 
     static constraints = {
-        userId nullable: true, unique: ['action', 'destination']
-        email nullable: true, email: true, unique: ['action', 'destination']
-        action inList: ['registerUser', 'updateEmail', 'updateProfileEmail'], validator: { action, emailVerification ->
+        userId nullable: true, validator: { userId, verification ->
+            if (verification.action == 'registerUser') {
+                true
+            } else {
+                userId == null ? false : true
+            }
+        }
+        email nullable: true, email: true, unique: ['destination']
+        action inList: ['registerUser', 'updateEmail', 'updateProfileEmail'], validator: { action, verification ->
             if (action == 'registerUser') {
-                emailVerification.password && emailVerification.firstName && emailVerification.lastName
+                verification.email && verification.password && verification.firstName && verification.lastName
             } else {
                 true
             }
