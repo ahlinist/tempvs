@@ -3,7 +3,7 @@ function sendAjaxRequest(form) {
     var submitButton = $(form).find('.submit-button')
 
     $.ajax({
-        url: $(form).attr('action'),
+        url: form.action,
         type: 'post',
         data: new FormData(form),
         dataType: 'json',
@@ -23,17 +23,43 @@ function sendAjaxRequest(form) {
                 window.location.href = response.redirect;
             } else {
                 $.each(response.messages, function(index, message) {
-                    renderAjaxResponseMessage(form, response.success ? 'success' :'danger', message);
+                    renderResponseMessage(form, response.success ? 'success' :'danger', message);
                 });
             }
         },
         error: function() {
-            renderAjaxResponseMessage(form, 'danger', 'Something went wrong :(');
+            renderResponseMessage(form, 'danger', 'Something went wrong :(');
         }
     });
 };
 
-function renderAjaxResponseMessage(form, alertType, message) {
-    $(form).append('<div class="alert alert-' + alertType + ' text-center">' +
-        '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>' + message + '</div>');
+function renderResponseMessage(form, alertType, message) {
+    var alertBox = createAlertBox(alertType, message);
+    form.append(alertBox);
+    $(alertBox).hide().fadeIn();
+
+    if (alertType == 'success') {
+        $(alertBox).delay(2000).fadeOut();
+    }
+
+    $("a.close").click(function (e) {
+        $(this).parent().fadeOut();
+    });
+}
+
+function createAlertBox(alertType, message) {
+    var alertBox = document.createElement('div');
+    alertBox.display = 'none';
+    alertBox.className = 'alert alert-' + alertType + ' text-center';
+    alertBox.append(createCloseLink());
+    alertBox.innerHTML += message;
+    return alertBox;
+}
+
+function createCloseLink() {
+    var closeLink = document.createElement('a');
+    closeLink.href = '#';
+    closeLink.className = 'close';
+    closeLink.innerHTML = '&times;';
+    return closeLink;
 }
