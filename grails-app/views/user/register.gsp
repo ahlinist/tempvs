@@ -3,7 +3,6 @@
   <head>
     <meta name="layout" content="main"/>
     <title>Tempvs - Register</title>
-    <asset:stylesheet src="form.css"/>
   </head>
   <body>
     <div class="container">
