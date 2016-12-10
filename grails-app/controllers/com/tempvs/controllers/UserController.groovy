@@ -1,6 +1,5 @@
 package com.tempvs.controllers
 
-import com.tempvs.ajax.AjaxResponseHandler
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
@@ -14,6 +13,8 @@ class UserController {
     def springSecurityService
     def passwordEncoder
     def imageService
+    def ajaxResponseService
+
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String REGISTER_USER_MESSAGE_SENT = 'user.register.verification.sent.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
@@ -36,9 +37,9 @@ class UserController {
         if (params.isAjaxRequest) {
             if (urc.validate()) {
                 Map props = urc.properties + [action: REGISTER_USER_ACTION, destination: urc.email]
-                render new AjaxResponseHandler().composeJson(userService.createEmailVerification(props), REGISTER_USER_MESSAGE_SENT)
+                render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), REGISTER_USER_MESSAGE_SENT)
             } else {
-                render new AjaxResponseHandler().composeJson(urc)
+                render ajaxResponseService.composeJsonResponse(urc)
             }
         }
     }
@@ -109,7 +110,7 @@ class UserController {
                     render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
                 }
             } else {
-                render new AjaxResponseHandler().composeJson(lc)
+                render ajaxResponseService.composeJsonResponse(lc)
             }
         }
     }
@@ -149,12 +150,12 @@ class UserController {
             Map props = [userId: springSecurityService.currentUser.id,
                          destination: email,
                          action: UPDATE_EMAIL_ACTION]
-            render new AjaxResponseHandler().composeJson(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+            render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
         }
     }
 
     def updatePassword(UserPasswordCommand upc) {
-        render new AjaxResponseHandler().composeJson(upc.validate() ? userService.updatePassword(upc.newPassword) : upc, PASSWORD_UPDATED_MESSAGE)
+        render ajaxResponseService.composeJsonResponse(upc.validate() ? userService.updatePassword(upc.newPassword) : upc, PASSWORD_UPDATED_MESSAGE)
     }
 
     def profile() {
@@ -162,19 +163,19 @@ class UserController {
     }
 
     def updateUserProfile(UserProfileCommand upc) {
-        render new AjaxResponseHandler().composeJson(userService.updateUserProfile(upc.properties), USER_PROFILE_UPDATED_MESSAGE)
+        render ajaxResponseService.composeJsonResponse(userService.updateUserProfile(upc.properties), USER_PROFILE_UPDATED_MESSAGE)
     }
 
     def updateProfileEmail(String profileEmail) {
         Map props = [userId: springSecurityService.currentUser.id,
                      destination: profileEmail,
                      action: UPDATE_PROFILE_EMAIL_ACTION]
-        render new AjaxResponseHandler().composeJson(userService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
+        render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
     }
 
     def updateAvatar() {
         def multiPartFile = request.getFile('avatar')
-        render new AjaxResponseHandler().composeJson(imageService.updateAvatar(multiPartFile), AVATAR_UPDATED_MESSAGE)
+        render ajaxResponseService.composeJsonResponse(imageService.updateAvatar(multiPartFile), AVATAR_UPDATED_MESSAGE)
     }
 
     def getAvatar() {

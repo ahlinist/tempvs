@@ -1,3 +1,6 @@
-// Place your Spring DSL code here
+import com.tempvs.ajax.AjaxResponseFactory
+
 beans = {
+    ajaxResponseFactory(AjaxResponseFactory) {
+    }
 }
