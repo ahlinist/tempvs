@@ -27,7 +27,7 @@ class UserController {
     private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String NO_SUCH_USER_SHOW = 'user.show.noSuchUser.message'
+    private static final String NO_SUCH_USER = 'user.show.noSuchUser.message'
 
     static defaultAction = "show"
 
@@ -93,7 +93,7 @@ class UserController {
                 if (user) {
                     [user: user, id: user.userProfile.customId ?: user.id]
                 } else {
-                    [id: id, message: NO_SUCH_USER_SHOW, args: [id]]
+                    [id: id, message: NO_SUCH_USER, args: [id]]
                 }
             }
         } else {

@@ -7,7 +7,7 @@ import grails.converters.JSON
 
 class AuthController {
     private static final String REGISTER_USER_MESSAGE_SENT = 'user.register.verification.sent.message'
-    private static final String NO_SUCH_USER_LOGIN = 'user.login.noSuchUser.message'
+    private static final String NO_SUCH_USER = 'user.login.noSuchUser.message'
     private static final String REGISTER_USER_ACTION = 'registerUser'
 
     static defaultAction = "login"
@@ -27,10 +27,10 @@ class AuthController {
                         springSecurityService.reauthenticate(lc.email, lc.password)
                         render([redirect: g.createLink(controller: 'user')] as JSON)
                     } else {
-                        render([messages: [g.message(code: NO_SUCH_USER_LOGIN)]] as JSON)
+                        render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
                     }
                 } else {
-                    render([messages: [g.message(code: NO_SUCH_USER_LOGIN)]] as JSON)
+                    render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
                 }
             } else {
                 render ajaxResponseService.composeJsonResponse(lc)
