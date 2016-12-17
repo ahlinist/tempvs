@@ -11,12 +11,10 @@ import javax.imageio.ImageIO
 class UserController {
     def userService
     def springSecurityService
-    def passwordEncoder
     def imageService
     def ajaxResponseService
 
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
-    private static final String REGISTER_USER_MESSAGE_SENT = 'user.register.verification.sent.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'user.edit.profileEmail.verification.sent.message'
     private static final String USER_CREATION_FAILED = 'user.register.userCreation.failed.message'
@@ -29,21 +27,9 @@ class UserController {
     private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String NO_SUCH_USER_LOGIN = 'user.login.noSuchUser.message'
     private static final String NO_SUCH_USER_SHOW = 'user.show.noSuchUser.message'
 
     static defaultAction = "show"
-
-    def register(UserRegisterCommand urc) {
-        if (params.isAjaxRequest) {
-            if (urc.validate()) {
-                Map props = urc.properties + [action: REGISTER_USER_ACTION, destination: urc.email]
-                render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), REGISTER_USER_MESSAGE_SENT)
-            } else {
-                render ajaxResponseService.composeJsonResponse(urc)
-            }
-        }
-    }
 
     def verify(String id) {
         if (id) {
@@ -95,27 +81,6 @@ class UserController {
         }
     }
 
-    def login(LoginCommand lc) {
-        if (params.isAjaxRequest) {
-            if (lc.validate()) {
-                User user = userService.getUserByEmail(lc.email)
-
-                if (user) {
-                    if (passwordEncoder.isPasswordValid(user.password, lc.password, null)) {
-                        springSecurityService.reauthenticate(lc.email, lc.password)
-                        render([redirect: g.createLink(controller: 'user')] as JSON)
-                    } else {
-                        render([messages: [g.message(code: NO_SUCH_USER_LOGIN)]] as JSON)
-                    }
-                } else {
-                    render([messages: [g.message(code: NO_SUCH_USER_LOGIN)]] as JSON)
-                }
-            } else {
-                render ajaxResponseService.composeJsonResponse(lc)
-            }
-        }
-    }
-
     def show(String id) {
         User currentUser = springSecurityService.currentUser
 
@@ -135,7 +100,7 @@ class UserController {
             if (currentUser) {
                 redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
             } else {
-                redirect action: 'login'
+                redirect controller: 'auth', action: 'login'
             }
         }
     }
@@ -208,27 +173,6 @@ class UserPasswordCommand {
     }
 }
 
-class UserRegisterCommand {
-    String email
-    String password
-    String firstName
-    String lastName
-    String repeatPassword
-
-    static constraints = {
-        password blank: false, password: true
-        email email: true, blank: false, validator: {email, urc ->
-            User user = User.findByEmail(email)
-            UserProfile userProfile = UserProfile.findByProfileEmail(email)
-            EmailVerification emailVerification = EmailVerification.findByEmail(email)
-            !user && !userProfile && !emailVerification
-        }
-        repeatPassword validator: { repPass, urc ->
-            repPass == urc.password
-        }
-    }
-}
-
 class UserProfileCommand {
     String firstName
     String lastName
@@ -237,13 +181,5 @@ class UserProfileCommand {
 
     static constraints = {
         importFrom UserProfile
-    }
-}
-
-class LoginCommand {
-    String email
-    String password
-
-    static constraints = {
     }
 }

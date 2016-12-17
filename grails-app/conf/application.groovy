@@ -2,9 +2,9 @@
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.tempvs.domain.user.User'
 grails.plugin.springsecurity.userLookup.usernamePropertyName = 'email'
 grails.plugin.springsecurity.userLookup.passwordPropertyName = 'password'
-grails.plugin.springsecurity.auth.loginFormUrl = "/user/login"
-grails.plugin.springsecurity.failureHandler.defaultFailureUrl = "/user/login"
-grails.plugin.springsecurity.successHandler.defaultTargetUrl = "/user/show"
+grails.plugin.springsecurity.auth.loginFormUrl = "/auth/login"
+grails.plugin.springsecurity.failureHandler.defaultFailureUrl = "/auth/login"
+grails.plugin.springsecurity.successHandler.defaultTargetUrl = "/auth/show"
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.tempvs.domain.user.UserRole'
 grails.plugin.springsecurity.authority.className = 'com.tempvs.domain.user.Role'
 grails.plugin.springsecurity.requestMap.className = 'com.tempvs.domain.user.Requestmap'
@@ -12,8 +12,8 @@ grails.plugin.springsecurity.requestMap.className = 'com.tempvs.domain.user.Requ
 grails.plugin.springsecurity.securityConfigType = "InterceptUrlMap"
 
 grails.plugin.springsecurity.interceptUrlMap = [
-		[pattern: '/user/login',     				access: ['permitAll']],
-        [pattern: '/user/register',  				access: ['permitAll']],
+		[pattern: '/auth/login',     				access: ['permitAll']],
+        [pattern: '/auth/register',  				access: ['permitAll']],
 		[pattern: '/user/verify/**',				access: ['permitAll']],
 		[pattern: '/user/show/**',   				access: ['permitAll']],
 		[pattern: '/userProfile/getAvatar', 		access: ['permitAll']],

@@ -5,7 +5,7 @@
     <asset:stylesheet src="application.css"/>
   </head>
   <body>
-  <g:link controller='user' action='login'>login</g:link>
+  <g:link controller='auth' action='login'>login</g:link>
 
  <asset:javascript src="application.js"/>
    </body>

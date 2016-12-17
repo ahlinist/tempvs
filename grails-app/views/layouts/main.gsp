@@ -18,8 +18,8 @@
         <g:link class="btn btn-primary disableable pull-right" uri="/logoff"><g:message code="user.logout.button" /></g:link>
       </sec:ifLoggedIn>
       <sec:ifNotLoggedIn>
-        <g:link class="btn btn-default disableable pull-right" controller="user" action="register"><g:message code="user.register.link" /></g:link>
-        <g:link class="btn btn-default disableable pull-right" controller="user" action="login"><g:message code="user.login.link" /></g:link>
+        <g:link class="btn btn-default disableable pull-right" controller="auth" action="register"><g:message code="user.register.link" /></g:link>
+        <g:link class="btn btn-default disableable pull-right" controller="auth" action="login"><g:message code="user.login.link" /></g:link>
       </sec:ifNotLoggedIn>
     </div>
     <hr/>
