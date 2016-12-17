@@ -29,7 +29,8 @@ class UserController {
     private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String NO_SUCH_USER = 'user.login.noSuchUser.message'
+    private static final String NO_SUCH_USER_LOGIN = 'user.login.noSuchUser.message'
+    private static final String NO_SUCH_USER_SHOW = 'user.show.noSuchUser.message'
 
     static defaultAction = "show"
 
@@ -97,17 +98,17 @@ class UserController {
     def login(LoginCommand lc) {
         if (params.isAjaxRequest) {
             if (lc.validate()) {
-                User user = User.findByEmail(lc.email)
+                User user = userService.getUserByEmail(lc.email)
 
                 if (user) {
                     if (passwordEncoder.isPasswordValid(user.password, lc.password, null)) {
                         springSecurityService.reauthenticate(lc.email, lc.password)
                         render([redirect: g.createLink(controller: 'user')] as JSON)
                     } else {
-                        render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
+                        render([messages: [g.message(code: NO_SUCH_USER_LOGIN)]] as JSON)
                     }
                 } else {
-                    render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
+                    render([messages: [g.message(code: NO_SUCH_USER_LOGIN)]] as JSON)
                 }
             } else {
                 render ajaxResponseService.composeJsonResponse(lc)
@@ -127,7 +128,7 @@ class UserController {
                 if (user) {
                     [user: user, id: user.userProfile.customId ?: user.id]
                 } else {
-                    [id: id, message: "No user with id: ${id}"]
+                    [id: id, message: NO_SUCH_USER_SHOW, args: [id]]
                 }
             }
         } else {

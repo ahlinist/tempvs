@@ -18,6 +18,10 @@ class UserService {
         } catch (NumberFormatException e) {}
     }
 
+    User getUserByEmail(String email) {
+        User.findByEmail(email)
+    }
+
     EmailVerification createEmailVerification(Map properties) {
         String verificationCode = properties.destination.encodeAsMD5() + new Date().time
         EmailVerification emailVerification = new EmailVerification(properties + [verificationCode: verificationCode])

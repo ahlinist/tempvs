@@ -1,9 +1,16 @@
 <!DOCTYPE html>
-<g:set var="profile" value="${user.userProfile}" />
+<g:set var="profile" value="${user?.userProfile}" />
 <html>
     <head>
       <meta name="layout" content="main"/>
-      <title>Tempvs - ${profile.firstName} ${profile.lastName}</title>
+      <title>
+        <g:if test="${profile}">
+          Tempvs - ${profile.firstName} ${profile.lastName}
+        </g:if>
+        <g:else>
+          Tempvs
+        </g:else>
+      </title>
     </head>
     <body>
       <g:if test="${user}">
@@ -18,7 +25,7 @@
         </div>
       </g:if>
       <g:elseif test="${message}">
-        ${message}
+        <g:message code="${message}" args="${args}" />
       </g:elseif>
     </body>
 </html>
