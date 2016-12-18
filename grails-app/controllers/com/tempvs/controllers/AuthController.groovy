@@ -25,7 +25,7 @@ class AuthController {
                 if (user) {
                     if (passwordEncoder.isPasswordValid(user.password, lc.password, null)) {
                         springSecurityService.reauthenticate(lc.email, lc.password)
-                        render([redirect: g.createLink(controller: 'user')] as JSON)
+                        render([redirect: g.createLink(controller: 'user', action: 'show')] as JSON)
                     } else {
                         render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
                     }
