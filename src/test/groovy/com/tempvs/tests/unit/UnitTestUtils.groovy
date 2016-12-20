@@ -3,6 +3,7 @@ package com.tempvs.tests.unit
 import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
+import com.tempvs.domain.user.verification.EmailVerification
 
 class UnitTestUtils {
     public static final String CUSTOM_ID = 'defaultTestCustomId'
@@ -11,6 +12,8 @@ class UnitTestUtils {
     public static final String FIRST_NAME = 'defaultFirstName'
     public static final String LAST_NAME = 'defaultLastName'
     public static final String LOCATION = 'defaultLocation'
+    public static final String DESTINATION = 'defaultDestination@email.com'
+    public static final String REGISTER_USER_ACTION = 'registerUser'
 
     static User createUser(String email = EMAIL,String password = PASSWORD, String firstName = FIRST_NAME,
                            String lastName = LAST_NAME, String customId = CUSTOM_ID, String profileEmail = null,
@@ -19,5 +22,21 @@ class UnitTestUtils {
         user.userProfile = new UserProfile(firstName:firstName, lastName: lastName, customId:customId,
                 profileEmail: profileEmail, location:location, avatar: new Avatar())
         user.save(flush:true)
+    }
+
+    static EmailVerification createEmailVerification(Map props = null){
+        props = props ?: [
+                destination: DESTINATION,
+                action: REGISTER_USER_ACTION,
+                email: DESTINATION,
+                password: PASSWORD,
+                firstName: FIRST_NAME,
+                lastName: LAST_NAME,
+        ]
+
+        String verificationCode = props.destination.encodeAsMD5() + new Date().time
+        EmailVerification emailVerification = new EmailVerification(props + [verificationCode: verificationCode])
+
+        emailVerification.save(flush: true)
     }
 }
