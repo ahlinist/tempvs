@@ -145,9 +145,7 @@ class UserController {
     }
 
     def getAvatar() {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()
-        ImageIO.write(ImageIO.read(new File(imageService.getOwnAvatar().pathToFile)), "jpg", baos)
-        byte[] imageInByte = baos.toByteArray()
+        byte[] imageInByte = imageService.getOwnAvatar()
         response.with{
             setHeader('Content-length', imageInByte.length.toString())
             contentType = 'image/jpg' // or the appropriate image content type

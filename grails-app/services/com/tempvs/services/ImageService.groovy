@@ -3,6 +3,8 @@ package com.tempvs.services
 import com.tempvs.domain.image.Avatar
 import grails.transaction.Transactional
 
+import javax.imageio.ImageIO
+
 @Transactional
 class ImageService {
     def springSecurityService
@@ -31,7 +33,14 @@ class ImageService {
         avatar
     }
 
-    Avatar getOwnAvatar() {
-        springSecurityService.currentUser?.userProfile?.avatar
+    byte[] getOwnAvatar() {
+        Avatar avatar = springSecurityService.currentUser?.userProfile?.avatar
+        ByteArrayOutputStream baos = new ByteArrayOutputStream()
+
+        if (avatar?.pathToFile) {
+            ImageIO.write(ImageIO.read(new File(avatar?.pathToFile)), "jpg", baos)
+        }
+
+        baos.toByteArray()
     }
 }
