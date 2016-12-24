@@ -8,6 +8,8 @@ import spock.lang.Specification
  */
 @TestFor(FormToolsTagLib)
 class FormToolsTagLibSpec extends Specification {
+    private static final String TEST_MESSAGE = 'testMsg'
+    private static final String SPINNER = 'spinner.gif'
 
     def setup() {
     }
@@ -15,25 +17,25 @@ class FormToolsTagLibSpec extends Specification {
     def cleanup() {
     }
 
-    void "test tempvs:ajaxSubmitButton"() {
-        when: "apply tempvs:ajaxSubmitButton"
-        def template = applyTemplate('<tempvs:ajaxSubmitButton value="testMsg" />')
+    void "Test tempvs:ajaxSubmitButton"() {
+        when: 'Applying tempvs:ajaxSubmitButton'
+        def template = applyTemplate("<tempvs:ajaxSubmitButton value='${TEST_MESSAGE}' />")
 
-        then:
-        template.contains 'testMsg'
+        then: 'Rendered template contains test message'
+        template.contains TEST_MESSAGE
 
-        and:
-        template.contains 'spinner.gif'
+        and: 'Rendered template contains spinner'
+        template.contains SPINNER
     }
 
-    void "test tempvs:formField"() {
-        when: ""
+    void "Test tempvs:formField"() {
+        when: 'Applying tempvs:formField'
         def template = applyTemplate('<tempvs:formField type="text" name="name" value="" label="label" />')
 
-        then:
+        then: 'Rendered template contains input fields'
         template.contains '<input'
 
-        and:
+        and: 'Rendered template contains attributes of text type'
         template.contains 'type="text"'
     }
 }

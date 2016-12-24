@@ -25,8 +25,8 @@ class DateTagLibSpec extends Specification {
     def cleanup() {
     }
 
-    void "test tempvs:dateFromNow tag"() {
-        given: "populate messagesources"
+    void "Test tempvs:dateFromNow tag"() {
+        given: "Populate messagesources"
         messageSource.addMessage RIGHT_NOW, request.locale, 'RIGHT_NOW'
         messageSource.addMessage MINUTES_AGO, request.locale, 'MINUTES_AGO'
         messageSource.addMessage HALF_HOUR_AGO, request.locale, 'HALF_HOUR_AGO'

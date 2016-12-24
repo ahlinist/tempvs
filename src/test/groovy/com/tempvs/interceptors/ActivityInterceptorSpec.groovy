@@ -18,24 +18,24 @@ class ActivityInterceptorSpec extends Specification {
     }
 
     void "Test activity interceptor matching"() {
-        when:"A request matches the interceptor"
-            withRequest(controller:'user', action:'edit')
+        when: "A request matches the interceptor"
+        withRequest(controller:'user', action:'edit')
 
-        then:"The interceptor does match"
-            interceptor.doesMatch()
+        then: "The interceptor does match"
+        interceptor.doesMatch()
     }
 
     void "Interceptor doesn't match the excluded actions"() {
-        when:"A request doesn't match the 'register' action"
-            withRequest(controller:'user', action:'register')
+        when: "A request doesn't match the 'register' action"
+        withRequest(controller:'user', action:'register')
 
-        then:"The interceptor does match"
-            !interceptor.doesMatch()
+        then: "The interceptor does match"
+        !interceptor.doesMatch()
 
-        when:"A request doesn't match the login action"
-            withRequest(controller:'user', action:'login')
+        when: "A request doesn't match the login action"
+        withRequest(controller:'user', action:'login')
 
-        then:"The interceptor does match"
-            !interceptor.doesMatch()
+        then: "The interceptor does match"
+        !interceptor.doesMatch()
     }
 }

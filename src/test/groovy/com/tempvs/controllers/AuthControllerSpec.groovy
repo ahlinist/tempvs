@@ -3,6 +3,7 @@ package com.tempvs.controllers
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.tests.unit.UnitTestUtils
+import com.tempvs.tests.unit.user.WithUser
 import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -13,13 +14,11 @@ import spock.lang.Specification
  */
 @TestFor(AuthController)
 @Mock([User, UserProfile])
-class AuthControllerSpec extends Specification {
+class AuthControllerSpec extends Specification implements WithUser {
     private static final String INCORRECT = 'incorrect'
     private static final String NO_SUCH_USER_LOGIN = 'user.login.noSuchUser.message'
     private static final String MOCKED_RESPONSE = 'mocked_response'
     private static final String SHOW_PAGE_URL = '/user/show'
-
-    private static User mockedUser
 
     def setup() {
         controller.ajaxResponseService = [composeJsonResponse: { obj, string = null ->
@@ -129,13 +128,5 @@ class AuthControllerSpec extends Specification {
 
     private static JSON getNoSuchUserJson() {
         [messages: [NO_SUCH_USER_LOGIN]] as JSON
-    }
-
-    private static User getUser() {
-        if (!this.mockedUser) {
-            this.mockedUser = UnitTestUtils.createUser()
-        }
-
-        return this.mockedUser
     }
 }

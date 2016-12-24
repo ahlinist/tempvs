@@ -4,6 +4,7 @@ import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
 import com.tempvs.tests.unit.UnitTestUtils
+import com.tempvs.tests.unit.user.WithUser
 import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -14,7 +15,7 @@ import spock.lang.Specification
  */
 @TestFor(UserController)
 @Mock([User, UserProfile, EmailVerification])
-class UserControllerSpec extends Specification {
+class UserControllerSpec extends Specification implements WithUser {
     private static final String EXISTENT_CUSTOM_ID = UnitTestUtils.CUSTOM_ID
     private static final String NON_EXISTENT_CUSTOM_ID = 'non-existentTestCustomId'
     private static final String MOCKED_RESPONSE = 'mocked_response'
@@ -25,8 +26,6 @@ class UserControllerSpec extends Specification {
     private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
     private static final String SHOW_PAGE_URL = '/user/show'
     private static final String LOGIN_PAGE_URL = '/auth/login'
-
-    private static User mockedUser
 
     def setup() {
         controller.springSecurityService = [
@@ -231,13 +230,5 @@ class UserControllerSpec extends Specification {
 
     private static JSON getEmailUpdateDuplicateJson() {
         [messages: [EMAIL_UPDATE_DUPLICATE]] as JSON
-    }
-
-    private static User getUser() {
-        if (!this.mockedUser) {
-            this.mockedUser = UnitTestUtils.createUser()
-        }
-
-        return this.mockedUser
     }
 }
