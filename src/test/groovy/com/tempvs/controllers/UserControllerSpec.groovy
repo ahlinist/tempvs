@@ -24,7 +24,12 @@ class UserControllerSpec extends Specification implements WithUser {
     private static final String NO_SUCH_USER_SHOW = 'user.show.noSuchUser.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
+    private static final String USER_CREATION_FAILED = 'user.register.userCreation.failed.message'
+    private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
+    private static final String PROFILE_EMAIL_UPDATE_FAILED = 'userProfile.edit.email.failed.message'
     private static final String SHOW_PAGE_URL = '/user/show'
+    private static final String EDIT_USER_PAGE_URL = '/user/edit'
+    private static final String EDIT_PROFILE_PAGE_URL = '/user/profile'
     private static final String LOGIN_PAGE_URL = '/auth/login'
 
     def setup() {
@@ -37,9 +42,17 @@ class UserControllerSpec extends Specification implements WithUser {
                 getUser: { id ->
                     user
                 },
-                updateUserProfile: { obj -> },
-                createEmailVerification: {obj -> },
-                createUser: {obj -> user}
+                updateUserProfile: { arg -> },
+                createEmailVerification: { arg -> },
+                createUser: { arg ->
+                    user
+                },
+                updateEmail: { arg1 , arg2 ->
+                    user
+                },
+                updateProfileEmail:  { arg1 , arg2 ->
+                    user.userProfile
+                }
         ]
 
         controller.ajaxResponseService = [composeJsonResponse: { obj, str = null ->
@@ -175,7 +188,7 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Update avatar"() {
         given: 'Mock imageService'
-        controller.imageService = [updateAvatar: { obj -> }]
+        controller.imageService = [updateAvatar: { arg -> }]
 
         when: 'Call updateAvatar()'
         controller.updateAvatar()
@@ -191,7 +204,7 @@ class UserControllerSpec extends Specification implements WithUser {
         when: 'Call getAvatar()'
         controller.getAvatar()
 
-        then: 'Mocked JSON response returned'
+        then: 'Response of image/jpg type returned'
         controller.modelAndView == null
         response.redirectedUrl == null
         response.contentType == 'image/jpg'
@@ -201,7 +214,7 @@ class UserControllerSpec extends Specification implements WithUser {
         when: 'Call verify()'
         def model = controller.verify()
 
-        then: 'Mocked JSON response returned'
+        then: 'Warning returned'
         controller.modelAndView == null
         response.redirectedUrl == null
         model == [message: NO_VERIFICATION_CODE]
@@ -212,20 +225,98 @@ class UserControllerSpec extends Specification implements WithUser {
         params.id = FAKE_VER_CODE
         def model = controller.verify()
 
-        then: 'Mocked JSON response returned'
+        then: 'Warning returned'
         controller.modelAndView == null
         response.redirectedUrl == null
         model == [message: NO_VERIFICATION_CODE]
     }
 
-    void "Check verify() with register user entry"() {
-        when: 'Call verify() with registerUser verification code'
+    void "Check verify() with correct register user entry"() {
+        when: 'Call verify() for registerUser action'
         params.id = UnitTestUtils.createEmailVerification().verificationCode
         controller.verify()
 
-        then: 'Mocked JSON response returned'
+        then: 'Redirected to show page'
         controller.modelAndView == null
         response.redirectedUrl == SHOW_PAGE_URL
+    }
+
+    void "Check verify() with incorrect register user entry"() {
+        given: 'Mock incorrect user'
+        controller.userService = [
+                createUser: {obj -> incorrectUser}
+        ]
+
+        when: 'Call verify() for registerUser action'
+        params.id = UnitTestUtils.createEmailVerification().verificationCode
+        def model = controller.verify()
+
+        then: 'Warning message returned'
+        controller.modelAndView == null
+        response.redirectedUrl == null
+        model == [message: USER_CREATION_FAILED]
+    }
+
+    void "Check verify() with correct update email entry"() {
+        when: 'Call verify() for updateEmail action'
+        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
+        controller.verify()
+
+        then: 'Redirected to edit user page'
+        controller.modelAndView == null
+        response.redirectedUrl == EDIT_USER_PAGE_URL
+    }
+
+    void "Check verify() with incorrect update email entry"() {
+        given: 'Mock incorrect user'
+        controller.userService = [
+                updateEmail: { arg1, arg2 -> incorrectUser}
+        ]
+
+        when: 'Call verify() for updateEmail action'
+        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
+        def model = controller.verify()
+
+        then: 'Warning message returned'
+        controller.modelAndView == null
+        response.redirectedUrl == null
+        model == [message: EMAIL_UPDATE_FAILED]
+    }
+
+    void "Check verify() with correct update profileEmail entry"() {
+        when: 'Call verify() for updateProfileEmail action'
+        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
+        controller.verify()
+
+        then: 'Redirected to profile page'
+        controller.modelAndView == null
+        response.redirectedUrl == EDIT_PROFILE_PAGE_URL
+    }
+
+    void "Check verify() with incorrect update profileEmail entry"() {
+        given: 'Mock incorrect user'
+        controller.userService = [
+                updateProfileEmail: { arg1, arg2 ->
+                    UserProfile userProfile = new UserProfile()
+                    userProfile.save()
+                    userProfile
+                }
+        ]
+
+        when: 'Call verify() for updateProfileEmail action'
+        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
+        def model = controller.verify()
+
+        then: 'Warning message returned'
+        controller.modelAndView == null
+        response.redirectedUrl == null
+        model == [message: PROFILE_EMAIL_UPDATE_FAILED]
+    }
+
+    private static User getIncorrectUser() {
+        User incorrectUser = new User()
+        incorrectUser.save()
+        incorrectUser
     }
 
     private static JSON getEmailUpdateDuplicateJson() {

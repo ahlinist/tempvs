@@ -6,8 +6,6 @@ import com.tempvs.domain.user.verification.EmailVerification
 import grails.converters.JSON
 import grails.util.Holders
 
-import javax.imageio.ImageIO
-
 class UserController {
     def userService
     def springSecurityService
@@ -32,6 +30,8 @@ class UserController {
     static defaultAction = "show"
 
     def verify(String id) {
+        String message
+
         if (id) {
             EmailVerification emailVerification = EmailVerification.findByVerificationCode(id)
 
@@ -41,7 +41,7 @@ class UserController {
                         User user = userService.createUser(emailVerification.properties)
 
                         if (user?.hasErrors()) {
-                            [message: USER_CREATION_FAILED]
+                            message = USER_CREATION_FAILED
                         } else {
                             springSecurityService.reauthenticate(emailVerification.email, emailVerification.password)
                             redirect controller: 'user'
@@ -52,7 +52,7 @@ class UserController {
                         User user = userService.updateEmail(emailVerification.userId, emailVerification.destination)
 
                         if (user?.hasErrors()) {
-                            [message: EMAIL_UPDATE_FAILED]
+                            message = EMAIL_UPDATE_FAILED
                         } else {
                             redirect controller: 'user', action: 'edit'
                         }
@@ -62,7 +62,7 @@ class UserController {
                         UserProfile userProfile = userService.updateProfileEmail(emailVerification.userId, emailVerification.destination)
 
                         if (userProfile?.hasErrors()) {
-                            [message: PROFILE_EMAIL_UPDATE_FAILED]
+                            message = PROFILE_EMAIL_UPDATE_FAILED
                         } else {
                             redirect controller: 'user', action: 'profile'
                         }
@@ -74,11 +74,13 @@ class UserController {
 
                 emailVerification.delete(flush: true)
             } else {
-                [message: NO_VERIFICATION_CODE]
+                message = NO_VERIFICATION_CODE
             }
         } else {
-            [message: NO_VERIFICATION_CODE]
+            message = NO_VERIFICATION_CODE
         }
+
+        [message: message]
     }
 
     def show(String id) {
