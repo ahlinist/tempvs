@@ -2,8 +2,6 @@ package com.tempvs.services
 
 import com.tempvs.ajax.AjaxResponseFactory
 import com.tempvs.domain.user.User
-import com.tempvs.domain.user.UserProfile
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -12,7 +10,6 @@ import spock.lang.Specification
  */
 
 @TestFor(AjaxResponseService)
-@Mock([User, UserProfile])
 class AjaxResponseServiceSpec extends Specification {
     private static final SUCCESS_MESSAGE = 'Success Message'
 
