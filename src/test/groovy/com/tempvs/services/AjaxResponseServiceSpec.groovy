@@ -1,9 +1,8 @@
 package com.tempvs.services
 
+import com.tempvs.ajax.AjaxResponseFactory
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
-import com.tempvs.tests.unit.UnitTestUtils
-import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -16,29 +15,36 @@ import spock.lang.Specification
 @Mock([User, UserProfile])
 class AjaxResponseServiceSpec extends Specification {
     private static final SUCCESS_MESSAGE = 'Success Message'
-    private static final FAIL_MESSAGE = 'Fail Message'
 
     def setup() {
-        service.ajaxResponseFactory = [newInstance:{ instance, successMessage = null ->
-            Boolean success = instance.validate()
-            [success: success, messages: [success ? successMessage : FAIL_MESSAGE]]
-        }]
     }
 
     def cleanup() {
     }
 
-    void "Check JSON response for correct user"() {
-        expect:"Service returned success for correct user"
-        JSON response = service.composeJsonResponse(UnitTestUtils.createUser(), SUCCESS_MESSAGE)
-        response.target.success == Boolean.TRUE
-        response.target.messages == [SUCCESS_MESSAGE]
+    void "Check composeJsonResponse() for 2 args"() {
+        given: 'Mocking the factory'
+        def ajaxResponseFactory = Mock(AjaxResponseFactory)
+        service.ajaxResponseFactory = ajaxResponseFactory
+        def user = Mock(User)
+
+        when: 'Service returned success for 2 args call'
+        service.composeJsonResponse(user, SUCCESS_MESSAGE)
+
+        then: 'AjaxResponseFactory is invoked'
+        1 * ajaxResponseFactory.newInstance(user, SUCCESS_MESSAGE)
     }
 
-    void "Check JSON response for incorrect user"() {
-        expect:"Service returned fail for incorrect user"
-        JSON response = service.composeJsonResponse(new User())
-        response.target.success == Boolean.FALSE
-        response.target.messages == [FAIL_MESSAGE]
+    void "Check composeJsonResponse() for 1 arg"() {
+        given: 'Mocking the factory'
+        def ajaxResponseFactory = Mock(AjaxResponseFactory)
+        service.ajaxResponseFactory = ajaxResponseFactory
+        def user = Mock(User)
+
+        when: 'Service returned success for 1 arg'
+        service.composeJsonResponse(user)
+
+        then: 'AjaxResponseFactory is invoked'
+        1 * ajaxResponseFactory.newInstance(user, null)
     }
 }
