@@ -14,6 +14,8 @@ class TestingUtils {
     public static final String PROFILE_EMAIL = 'defaultProfileEmail@mail.com'
     public static final String LOCATION = 'defaultLocation'
     public static final String DESTINATION = 'defaultDestination@email.com'
+    public static final String UPDATE_EMAIL_DESTINATION = 'defaultUpdateEmailDestination@email.com'
+    public static final String UPDATE_PROFILE_EMAIL_DESTINATION = 'defaultUpdateProfileEmailDestination@email.com'
     public static final String REGISTER_USER_ACTION = 'registerUser'
     public static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     public static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
@@ -38,13 +40,13 @@ class TestingUtils {
     ]
     public static final Map DEFAULT_EMAIL_VERIFICATION_PROPS = [
             userId:         USER_ID,
-            destination:    DESTINATION,
+            destination:    UPDATE_EMAIL_DESTINATION,
             action:         UPDATE_EMAIL_ACTION,
     ]
 
     public static final Map DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS = [
             userId:         USER_ID,
-            destination:    DESTINATION,
+            destination:    UPDATE_PROFILE_EMAIL_DESTINATION,
             action:         UPDATE_PROFILE_EMAIL_ACTION,
     ]
 
