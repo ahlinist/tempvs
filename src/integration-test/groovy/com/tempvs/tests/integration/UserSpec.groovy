@@ -4,6 +4,7 @@ import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
+import com.tempvs.tests.utils.TestingUtils
 import grails.test.mixin.Mock
 import grails.test.mixin.integration.Integration
 import grails.transaction.*
@@ -17,144 +18,165 @@ class UserSpec extends Specification {
     def springSecurityService
     def passwordEncoder
     def mailService
-    private static final String EMAIL = 'userIntegrationTest@mail.com'
-    private static final String EMAIL_FOR_VERIFICATION = 'userIntegrationVerificationTest@mail.com'
-    private static final String EMAIL_FOR_VERIFICATION_2 = 'userIntegrationVerificationTest2@mail.com'
-    private static final String EMAIL_FOR_VERIFICATION_3 = 'userIntegrationVerificationTest2@mail.com'
-    private static final String EMAIL_FOR_UPDATE = 'userIntegrationTestUpdated@mail.com'
-    private static final String PROFILE_EMAIL = 'userIntegrationTestProfileEmail@mail.com'
-    private static final String PASSWORD = 'passW0rd'
-    private static final String NEW_PASSWORD = 'newPassW0rd'
-    private static final String FIRST_NAME = 'Test_first_name'
-    private static final String LAST_NAME = 'Test_last_name'
-    private static final String CUSTOM_ID = 'test.Custom-Id_12'
-    private static final String REGISTER_USER_ACTION = 'registerUser'
-    private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
-    private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
-    private static Map fieldMap = [firstName: 'TestFirstName2', lastName: 'TestLastName',
-                    location: 'testLocation', customId: CUSTOM_ID]
+
+    private static final String UPDATED = 'updated'
+
+    private static Map userProfileUpdateFields = [
+            firstName: UPDATED + TestingUtils.FIRST_NAME,
+            lastName:  UPDATED + TestingUtils.LAST_NAME,
+            location:  UPDATED + TestingUtils.LOCATION,
+            customId:  UPDATED + TestingUtils.CUSTOM_ID
+    ]
+    private static Map registerVerificationParams = [
+            email: TestingUtils.DESTINATION,
+            destination: TestingUtils.DESTINATION,
+            action: TestingUtils.REGISTER_USER_ACTION,
+            firstName: TestingUtils.FIRST_NAME,
+            lastName: TestingUtils.LAST_NAME,
+            password: TestingUtils.PASSWORD
+    ]
+    private static Map emailUpdateVerificationParams = [
+            destination: TestingUtils.DESTINATION,
+            action: TestingUtils.UPDATE_EMAIL_ACTION
+    ]
+    private static Map profileEmailUpdateVerificationParams = [
+            destination: TestingUtils.DESTINATION,
+            action: TestingUtils.UPDATE_PROFILE_EMAIL_ACTION
+    ]
 
     def setup() {
-        userService.createUser(email: EMAIL, password: PASSWORD, firstName: FIRST_NAME, lastName: LAST_NAME)
-        springSecurityService.reauthenticate(EMAIL, PASSWORD)
+        userService.createUser(TestingUtils.DEFAULT_USER_PROPS)
+        springSecurityService.reauthenticate(TestingUtils.EMAIL, TestingUtils.PASSWORD)
     }
 
     def cleanup() {
     }
 
-    void "User with given email created"() {
-        expect: "User with ${EMAIL} email exists in DB and has firstname in profile"
-        User.findByEmail(EMAIL).userProfile.firstName == FIRST_NAME
+    void "Check user creation"() {
+        given: 'Find created user in DB'
+        User user = User.findByEmail(TestingUtils.EMAIL)
+
+        expect: "Valid user created"
+        user.validate()
+
+        and: "Password encrypted"
+        user.password != TestingUtils.PASSWORD
+        passwordEncoder.isPasswordValid(user.password, TestingUtils.PASSWORD, null)
+
+        and: "User's profile contains proper first and last names"
+        user.userProfile.firstName == TestingUtils.FIRST_NAME
+        user.userProfile.lastName == TestingUtils.LAST_NAME
     }
 
-    void "User's password encrypted"() {
-        expect: "User exists"
-        User.findByEmail(EMAIL)
+    void "Update user's email"(){
+        given: 'Find created user in DB'
+        User user = User.findByEmail(TestingUtils.EMAIL)
+        String updatedEmail = UPDATED + TestingUtils.EMAIL
 
-        and: "Password is not equal the initial one"
-        User.findByEmail(EMAIL).password != PASSWORD
-
-        and: "Password is encrypted"
-        passwordEncoder.isPasswordValid(User.findByEmail(EMAIL)?.password, PASSWORD, null)
-    }
-
-    void "Update user email"(){
         when: "Update email"
-        userService.updateEmail(User.findByEmail(EMAIL).id, EMAIL_FOR_UPDATE)
+        userService.updateEmail(user.id, updatedEmail)
 
         then: "Find user with updated email in DB"
-        User.findByEmail(EMAIL_FOR_UPDATE)
+        User.findByEmail(updatedEmail)
 
         and: "Find no user with old email"
-        !User.findByEmail(EMAIL)
-    }
-
-    void "Update profile email" () {
-        when: 'Changing profile email'
-        userService.updateProfileEmail(User.findByEmail(EMAIL).id, PROFILE_EMAIL)
-
-        then: 'Profile email is persisted'
-        User.findByEmail(EMAIL).userProfile.profileEmail == PROFILE_EMAIL
+        !User.findByEmail(TestingUtils.EMAIL)
     }
 
     void "Change password"() {
+        given: 'Find created user in DB'
+        User user = User.findByEmail(TestingUtils.EMAIL)
+        String newPassword = UPDATED + TestingUtils.PASSWORD
+
         when: "Change password"
-        userService.updatePassword(NEW_PASSWORD)
+        userService.updatePassword(newPassword)
 
         then: "New password is encrypted"
-        User.findByEmail(EMAIL).password != NEW_PASSWORD
+        user.password != newPassword
 
         and: "New password is valid"
-        passwordEncoder.isPasswordValid(User.findByEmail(EMAIL)?.password, NEW_PASSWORD, null)
+        passwordEncoder.isPasswordValid(user.password, newPassword, null)
 
         and: "Old password is not valid"
-        !passwordEncoder.isPasswordValid(User.findByEmail(EMAIL)?.password, PASSWORD, null)
+        !passwordEncoder.isPasswordValid(user.password, TestingUtils.PASSWORD, null)
+    }
+
+    void "Update profile email" () {
+        given: 'Find created user in DB'
+        User user = User.findByEmail(TestingUtils.EMAIL)
+        String oldProfileEmail = user.userProfile.profileEmail
+        String updatedProfileEmail = UPDATED + TestingUtils.PROFILE_EMAIL
+
+        when: 'Changing profile email'
+        userService.updateProfileEmail(user.id, updatedProfileEmail)
+
+        then: 'Profile email is persisted'
+        user.userProfile.profileEmail == updatedProfileEmail
+
+        and: 'No user with old profile email exists'
+        !UserProfile.findByProfileEmail(oldProfileEmail)
     }
 
     void "Update user profile fields"() {
+        given: 'Find created user in DB'
+        User user = User.findByEmail(TestingUtils.EMAIL)
+
         when: "Assign values"
-        userService.updateUserProfile(fieldMap)
+        userService.updateUserProfile(userProfileUpdateFields)
 
         then: "Values are saved in DB"
-        User.findByEmail(EMAIL).userProfile."${fieldName}" == fieldValue
+        user.userProfile."${fieldName}" == fieldValue
 
         where:
         fieldName            | fieldValue
-        'firstName'          | fieldMap.firstName
-        'lastName'           | fieldMap.lastName
-        'customId'           | fieldMap.customId
-        'location'           | fieldMap.location
+        'firstName'          | userProfileUpdateFields.firstName
+        'lastName'           | userProfileUpdateFields.lastName
+        'customId'           | userProfileUpdateFields.customId
+        'location'           | userProfileUpdateFields.location
     }
 
-    void "Create email verification entries"() {
-        given: 'Initializing verification params'
-        Map registerParams = [email: EMAIL_FOR_VERIFICATION, destination: EMAIL_FOR_VERIFICATION, action: REGISTER_USER_ACTION,
-                              firstName: FIRST_NAME, lastName: LAST_NAME, password: PASSWORD]
-        Map profileEmailUpdateParams = [destination: EMAIL_FOR_VERIFICATION_2, action: UPDATE_PROFILE_EMAIL_ACTION]
-        Map emailUpdateParams = [destination: EMAIL_FOR_VERIFICATION_3, action: UPDATE_EMAIL_ACTION]
-
-        and: 'Turning off the email sending'
-        userService.mailService.metaClass.sendMail = { Closure c-> return true}
+    void "Check email verifications"() {
+        given: 'Turning off the email sending'
+        userService.mailService.metaClass.sendMail = { Closure c-> }
 
         when: 'Create the corresponding notification'
-        userService.createEmailVerification(registerParams)
+        userService.createEmailVerification(registerVerificationParams)
 
         then: 'Email notification objects found in DB with the generated verificationCode'
-        String code1 = EmailVerification.findByEmailAndAction(EMAIL_FOR_VERIFICATION, REGISTER_USER_ACTION).verificationCode
+        String code1 = EmailVerification.
+                findByEmailAndAction(TestingUtils.DESTINATION, TestingUtils.REGISTER_USER_ACTION).verificationCode
 
         when: 'Create new user via email verification object conversion'
         Long userId = userService.createUser(EmailVerification.findByVerificationCode(code1).properties).id
 
         then: 'Find the user in DB'
-        User.findByEmail(EMAIL_FOR_VERIFICATION)
+        User.findByEmail(TestingUtils.DESTINATION)
 
         when: 'Creating email and profileEmail update notifications'
-        userService.createEmailVerification(profileEmailUpdateParams + [userId: userId])
-        userService.createEmailVerification(emailUpdateParams + [userId: userId])
-
-        and: 'Picking the verification codes'
-        String code2 = EmailVerification.findByUserIdAndAction(userId, UPDATE_PROFILE_EMAIL_ACTION).verificationCode
-        String code3 = EmailVerification.findByUserIdAndAction(userId, UPDATE_EMAIL_ACTION).verificationCode
+        userService.createEmailVerification(profileEmailUpdateVerificationParams + [userId: userId])
+        userService.createEmailVerification(emailUpdateVerificationParams + [userId: userId])
 
         then: 'Checking if the verifications have been created'
-        code2
-        code3
+        String code2 = EmailVerification.
+                findByUserIdAndAction(userId, TestingUtils.UPDATE_PROFILE_EMAIL_ACTION).verificationCode
+        String code3 = EmailVerification.
+                findByUserIdAndAction(userId, TestingUtils.UPDATE_EMAIL_ACTION).verificationCode
 
         when: 'Change profile email'
         EmailVerification verification4profileEmail = EmailVerification.findByVerificationCode(code2)
         userService.updateProfileEmail(verification4profileEmail.userId, verification4profileEmail.destination)
 
         then: 'UserProfile has an updated email'
-        User.findByEmail(EMAIL_FOR_VERIFICATION).userProfile.profileEmail == EMAIL_FOR_VERIFICATION_2
+        User.findByEmail(TestingUtils.DESTINATION).userProfile.profileEmail == TestingUtils.UPDATE_PROFILE_EMAIL_DESTINATION
 
         when: 'Change email'
         EmailVerification verification4email = EmailVerification.findByVerificationCode(code3)
         userService.updateEmail(verification4email.userId, verification4email.destination)
 
         then: 'No user with old email found'
-        !User.findByEmail(EMAIL_FOR_VERIFICATION)
+        !User.findByEmail(TestingUtils.DESTINATION)
 
         and: 'User with new email found'
-        User.findByEmail(EMAIL_FOR_VERIFICATION_3)
+        User.findByEmail(TestingUtils.UPDATE_EMAIL_DESTINATION)
     }
 }
