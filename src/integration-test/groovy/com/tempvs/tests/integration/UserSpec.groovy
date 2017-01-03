@@ -36,11 +36,11 @@ class UserSpec extends Specification {
             password: TestingUtils.PASSWORD
     ]
     private static Map emailUpdateVerificationParams = [
-            destination: TestingUtils.DESTINATION,
+            destination: TestingUtils.UPDATE_EMAIL_DESTINATION,
             action: TestingUtils.UPDATE_EMAIL_ACTION
     ]
     private static Map profileEmailUpdateVerificationParams = [
-            destination: TestingUtils.DESTINATION,
+            destination: TestingUtils.UPDATE_PROFILE_EMAIL_DESTINATION,
             action: TestingUtils.UPDATE_PROFILE_EMAIL_ACTION
     ]
 
@@ -66,6 +66,20 @@ class UserSpec extends Specification {
         and: "User's profile contains proper first and last names"
         user.userProfile.firstName == TestingUtils.FIRST_NAME
         user.userProfile.lastName == TestingUtils.LAST_NAME
+    }
+
+    void "Check user retrieving functionality"() {
+        given: 'Find created user in DB'
+        User user = User.findByEmail(TestingUtils.EMAIL)
+
+        expect: 'User is retrieved by id'
+        userService.getUser(user.id as String)
+
+        and: 'User is retrieved by customId'
+        userService.getUser(user.userProfile.customId)
+
+        and: 'User is retrieved by email'
+        userService.getUserByEmail(user.email)
     }
 
     void "Update user's email"(){
