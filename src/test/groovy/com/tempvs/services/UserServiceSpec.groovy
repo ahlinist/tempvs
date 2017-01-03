@@ -55,7 +55,7 @@ class UserServiceSpec extends Specification implements WithUser {
 
     void "Check creation of email verification"() {
         setup: 'Initial setup'
-        service.mailService = [sendMail: {}]
+        service.mailService = [sendMail: { Closure c-> }]
         GroovySpy(EmailVerification, global: true)
 
         when: 'Calling createEmailVerification()'
