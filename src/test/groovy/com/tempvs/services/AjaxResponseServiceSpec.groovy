@@ -20,7 +20,7 @@ class AjaxResponseServiceSpec extends Specification {
     }
 
     void "Check composeJsonResponse() for 2 args"() {
-        given: 'Mocking the factory'
+        given: 'Initial setup'
         def ajaxResponseFactory = Mock(AjaxResponseFactory)
         service.ajaxResponseFactory = ajaxResponseFactory
         def user = Mock(User)
@@ -33,7 +33,7 @@ class AjaxResponseServiceSpec extends Specification {
     }
 
     void "Check composeJsonResponse() for 1 arg"() {
-        given: 'Mocking the factory'
+        given: 'Initial setup'
         def ajaxResponseFactory = Mock(AjaxResponseFactory)
         service.ajaxResponseFactory = ajaxResponseFactory
         def user = Mock(User)
