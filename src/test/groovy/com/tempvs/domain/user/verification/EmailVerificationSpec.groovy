@@ -1,6 +1,6 @@
 package com.tempvs.domain.user.verification
 
-import com.tempvs.tests.unit.UnitTestUtils
+import com.tempvs.tests.utils.TestingUtils
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -19,42 +19,42 @@ class EmailVerificationSpec extends Specification {
 
     void "RegisterUser verification created"() {
         expect:'RegisterUser verification created'
-        UnitTestUtils.createEmailVerification()
+        TestingUtils.createEmailVerification()
     }
 
     void "UpdateEmail verification created"() {
         expect:'UpdateEmail verification created'
-        UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS)
+        TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS)
     }
 
     void "UpdateProfileEmail verification created"() {
         expect:'UpdateProfileEmail verification created'
-        UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS)
+        TestingUtils.createEmailVerification(TestingUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS)
     }
 
     void "Only single entry is created for the same email and action"() {
         given: 'Create verification entry'
-        UnitTestUtils.createEmailVerification()
+        TestingUtils.createEmailVerification()
 
         expect:'Duplicate is not created'
-        !UnitTestUtils.createEmailVerification()
+        !TestingUtils.createEmailVerification()
     }
 
     void "Only single entry is created for the same verification code"() {
         given: 'Create verification entry'
-        Map props = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).properties
+        Map props = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).properties
         props.destination = ADDITIONAL_DESTINATION
-        props.userId = UnitTestUtils.USER_ID + 1
-        props.action = UnitTestUtils.UPDATE_PROFILE_EMAIL_ACTION
+        props.userId = TestingUtils.USER_ID + 1
+        props.action = TestingUtils.UPDATE_PROFILE_EMAIL_ACTION
 
         expect: 'VerificationCode duplicate is not created'
-        !UnitTestUtils.createEmailVerification(props)
+        !TestingUtils.createEmailVerification(props)
     }
 
     void "Verifications for different actions are created for the same mail"() {
         expect:"Create profile email update verification"
-        UnitTestUtils.createEmailVerification()
-        UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS)
-        UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS)
+        TestingUtils.createEmailVerification()
+        TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS)
+        TestingUtils.createEmailVerification(TestingUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS)
     }
 }

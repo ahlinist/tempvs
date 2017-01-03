@@ -1,14 +1,14 @@
-package com.tempvs.tests.unit.user
+package com.tempvs.tests.utils.user
 
 import com.tempvs.domain.user.User
-import com.tempvs.tests.unit.UnitTestUtils
+import com.tempvs.tests.utils.TestingUtils
 
 trait WithUser {
     private static User user
 
     static User getUser() {
         if (!this.user) {
-            this.user = UnitTestUtils.createUser()
+            this.user = TestingUtils.createUser()
         }
 
         this.user.save(flush: true)

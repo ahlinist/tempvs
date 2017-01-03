@@ -3,8 +3,8 @@ package com.tempvs.controllers
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
-import com.tempvs.tests.unit.UnitTestUtils
-import com.tempvs.tests.unit.user.WithUser
+import com.tempvs.tests.utils.TestingUtils
+import com.tempvs.tests.utils.user.WithUser
 import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -16,7 +16,7 @@ import spock.lang.Specification
 @TestFor(UserController)
 @Mock([User, UserProfile, EmailVerification])
 class UserControllerSpec extends Specification implements WithUser {
-    private static final String EXISTENT_CUSTOM_ID = UnitTestUtils.CUSTOM_ID
+    private static final String EXISTENT_CUSTOM_ID = TestingUtils.CUSTOM_ID
     private static final String NON_EXISTENT_CUSTOM_ID = 'non-existentTestCustomId'
     private static final String MOCKED_RESPONSE = 'mocked_response'
     private static final String UPDATED = 'updated'
@@ -136,7 +136,7 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Update user email with duplicate"() {
         when: 'Call updateEmail() with param'
-        params.email = UnitTestUtils.EMAIL
+        params.email = TestingUtils.EMAIL
         controller.updateEmail()
 
         then: 'Warning message returned'
@@ -145,7 +145,7 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Update user email"() {
         when: 'Call updateEmail() with param'
-        params.email = UPDATED + UnitTestUtils.EMAIL
+        params.email = UPDATED + TestingUtils.EMAIL
         controller.updateEmail()
 
         then: 'Mocked JSON response returned'
@@ -233,7 +233,7 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Check verify() with correct register user entry"() {
         when: 'Call verify() for registerUser action'
-        params.id = UnitTestUtils.createEmailVerification().verificationCode
+        params.id = TestingUtils.createEmailVerification().verificationCode
         controller.verify()
 
         then: 'Redirected to show page'
@@ -248,7 +248,7 @@ class UserControllerSpec extends Specification implements WithUser {
         ]
 
         when: 'Call verify() for registerUser action'
-        params.id = UnitTestUtils.createEmailVerification().verificationCode
+        params.id = TestingUtils.createEmailVerification().verificationCode
         def model = controller.verify()
 
         then: 'Warning message returned'
@@ -259,7 +259,7 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Check verify() with correct update email entry"() {
         when: 'Call verify() for updateEmail action'
-        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
+        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
         controller.verify()
 
         then: 'Redirected to edit user page'
@@ -274,7 +274,7 @@ class UserControllerSpec extends Specification implements WithUser {
         ]
 
         when: 'Call verify() for updateEmail action'
-        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
+        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
         def model = controller.verify()
 
         then: 'Warning message returned'
@@ -285,7 +285,7 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Check verify() with correct update profileEmail entry"() {
         when: 'Call verify() for updateProfileEmail action'
-        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
+        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
         controller.verify()
 
         then: 'Redirected to profile page'
@@ -304,7 +304,7 @@ class UserControllerSpec extends Specification implements WithUser {
         ]
 
         when: 'Call verify() for updateProfileEmail action'
-        params.id = UnitTestUtils.createEmailVerification(UnitTestUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
+        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
         def model = controller.verify()
 
         then: 'Warning message returned'

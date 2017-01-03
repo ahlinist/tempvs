@@ -2,8 +2,8 @@ package com.tempvs.controllers
 
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
-import com.tempvs.tests.unit.UnitTestUtils
-import com.tempvs.tests.unit.user.WithUser
+import com.tempvs.tests.utils.TestingUtils
+import com.tempvs.tests.utils.user.WithUser
 import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -27,7 +27,7 @@ class AuthControllerSpec extends Specification implements WithUser {
 
         controller.userService = [
                 getUserByEmail:{ email ->
-                    if (email == UnitTestUtils.EMAIL) {
+                    if (email == TestingUtils.EMAIL) {
                         return user
                     }
                 }
@@ -73,7 +73,7 @@ class AuthControllerSpec extends Specification implements WithUser {
     void "Pass invalid params into login form"() {
         when: 'Passing non-valid params'
         params.isAjaxRequest = Boolean.TRUE
-        params.email = UnitTestUtils.EMAIL
+        params.email = TestingUtils.EMAIL
         controller.login()
 
         then: 'Mocked JSON response returned'
@@ -83,8 +83,8 @@ class AuthControllerSpec extends Specification implements WithUser {
     void "Pass valid params but with incorrect email into login form"() {
         when: 'Passing email for existent user'
         params.isAjaxRequest = Boolean.TRUE
-        params.email = INCORRECT + UnitTestUtils.EMAIL
-        params.password = UnitTestUtils.PASSWORD
+        params.email = INCORRECT + TestingUtils.EMAIL
+        params.password = TestingUtils.PASSWORD
         controller.login()
 
         then: 'JSON response with the corresponding message returned'
@@ -96,8 +96,8 @@ class AuthControllerSpec extends Specification implements WithUser {
     void "Pass valid params but with incorrect pass into login form"() {
         when: 'Passing email for existent user'
         params.isAjaxRequest = Boolean.TRUE
-        params.email = UnitTestUtils.EMAIL
-        params.password = INCORRECT + UnitTestUtils.PASSWORD
+        params.email = TestingUtils.EMAIL
+        params.password = INCORRECT + TestingUtils.PASSWORD
         controller.login()
 
         then: 'JSON response with the corresponding message returned'
@@ -112,8 +112,8 @@ class AuthControllerSpec extends Specification implements WithUser {
 
         when: 'Passing email for existent user'
         params.isAjaxRequest = Boolean.TRUE
-        params.email = UnitTestUtils.EMAIL
-        params.password = UnitTestUtils.PASSWORD
+        params.email = TestingUtils.EMAIL
+        params.password = TestingUtils.PASSWORD
         controller.login()
 
         then: 'JSON response with show page redirect returned'

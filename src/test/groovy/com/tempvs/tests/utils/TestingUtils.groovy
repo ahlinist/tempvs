@@ -1,11 +1,11 @@
-package com.tempvs.tests.unit
+package com.tempvs.tests.utils
 
 import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
 
-class UnitTestUtils {
+class TestingUtils {
     public static final String EMAIL = 'defaultTest@mail.com'
     public static final String PASSWORD = 'defaultPassW0rd!'
     public static final String FIRST_NAME = 'defaultFirstName'

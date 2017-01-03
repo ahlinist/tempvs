@@ -4,8 +4,8 @@ import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
-import com.tempvs.tests.unit.UnitTestUtils
-import com.tempvs.tests.unit.user.WithUser
+import com.tempvs.tests.utils.TestingUtils
+import com.tempvs.tests.utils.user.WithUser
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -31,26 +31,26 @@ class UserServiceSpec extends Specification implements WithUser {
 
     void "Check getUser() method for id"() {
         when: 'getUser() is called'
-        service.getUser(UnitTestUtils.USER_ID as String)
+        service.getUser(TestingUtils.USER_ID as String)
 
         then: 'User is queried in the DB'
-        1 * User.get(UnitTestUtils.USER_ID) >> Mock(User)
+        1 * User.get(TestingUtils.USER_ID) >> Mock(User)
     }
 
     void "Check getUser() method for customId"() {
         when: 'getUser() is called'
-        service.getUser(UnitTestUtils.CUSTOM_ID)
+        service.getUser(TestingUtils.CUSTOM_ID)
 
         then: 'User is queried in the DB'
-        1 * UserProfile.findByCustomId(UnitTestUtils.CUSTOM_ID) >> Mock(User)
+        1 * UserProfile.findByCustomId(TestingUtils.CUSTOM_ID) >> Mock(User)
     }
 
     void "Check getUserByEmail()"() {
         when: 'getUserByEmail() is called'
-        service.getUserByEmail(UnitTestUtils.EMAIL)
+        service.getUserByEmail(TestingUtils.EMAIL)
 
         then: 'User is queried in the DB'
-        1 * User.findByEmail(UnitTestUtils.EMAIL) >> Mock(User)
+        1 * User.findByEmail(TestingUtils.EMAIL) >> Mock(User)
     }
 
     void "Check creation of email verification"() {
@@ -59,7 +59,7 @@ class UserServiceSpec extends Specification implements WithUser {
         GroovySpy(EmailVerification, global: true)
 
         when: 'Calling createEmailVerification()'
-        def result = service.createEmailVerification(UnitTestUtils.DEFAULT_EMAIL_VERIFICATION_PROPS)
+        def result = service.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS)
 
         then: 'Verification constructor invoked and code generated'
         1 * new EmailVerification(_)
@@ -76,7 +76,7 @@ class UserServiceSpec extends Specification implements WithUser {
         ]
 
         when: 'Invoking createUser()'
-        def result = service.createUser(UnitTestUtils.DEFAULT_USER_PROPS)
+        def result = service.createUser(TestingUtils.DEFAULT_USER_PROPS)
 
         then: "Appropriate constructors are called"
         1 * new User(_)

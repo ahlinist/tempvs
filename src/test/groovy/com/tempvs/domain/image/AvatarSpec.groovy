@@ -2,8 +2,7 @@ package com.tempvs.domain.image
 
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
-import com.tempvs.tests.unit.UnitTestUtils
-import com.tempvs.tests.unit.user.WithUser
+import com.tempvs.tests.utils.user.WithUser
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
