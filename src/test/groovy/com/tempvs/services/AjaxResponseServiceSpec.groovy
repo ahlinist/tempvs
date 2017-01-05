@@ -1,8 +1,10 @@
 package com.tempvs.services
 
-import com.tempvs.ajax.AjaxResponseFactory
 import com.tempvs.domain.user.User
 import grails.test.mixin.TestFor
+import org.springframework.context.MessageSource
+import org.springframework.context.MessageSourceResolvable
+import org.springframework.context.i18n.LocaleContextHolder
 import spock.lang.Specification
 
 /**
@@ -12,6 +14,7 @@ import spock.lang.Specification
 @TestFor(AjaxResponseService)
 class AjaxResponseServiceSpec extends Specification {
     private static final SUCCESS_MESSAGE = 'Success Message'
+    private static final DEFAULT_SUCCESS_MESSAGE = 'Success'
 
     def setup() {
     }
@@ -21,27 +24,35 @@ class AjaxResponseServiceSpec extends Specification {
 
     void "Check composeJsonResponse() for 2 args"() {
         given: 'Initial setup'
-        def ajaxResponseFactory = Mock(AjaxResponseFactory)
-        service.ajaxResponseFactory = ajaxResponseFactory
+        def messageSource = Mock(MessageSource)
+        service.messageSource = messageSource
         def user = Mock(User)
 
         when: 'Service returned success for 2 args call'
-        service.composeJsonResponse(user, SUCCESS_MESSAGE)
+        def result = service.composeJsonResponse(user, SUCCESS_MESSAGE)
 
         then: 'AjaxResponseFactory is invoked'
-        1 * ajaxResponseFactory.newInstance(user, SUCCESS_MESSAGE)
+        1 * user.hasErrors()
+        1 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale)
+        result.target.success == Boolean.TRUE
     }
 
     void "Check composeJsonResponse() for 1 arg"() {
         given: 'Initial setup'
-        def ajaxResponseFactory = Mock(AjaxResponseFactory)
-        service.ajaxResponseFactory = ajaxResponseFactory
-        def user = Mock(User)
+        def messageSource = Mock(MessageSource)
+        def messageSourceResolvable = Mock(MessageSourceResolvable)
+        service.messageSource = messageSource
+        def user = [:]
+        user.hasErrors = { return Boolean.TRUE }
+        user.errors = [allErrors:[messageSourceResolvable, messageSourceResolvable]]
 
         when: 'Service returned success for 1 arg'
-        service.composeJsonResponse(user)
+        def result = service.composeJsonResponse(user)
 
         then: 'AjaxResponseFactory is invoked'
-        1 * ajaxResponseFactory.newInstance(user, null)
+        0 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale)
+        2 * messageSource.getMessage(messageSourceResolvable, LocaleContextHolder.locale)
+        result.target.success == Boolean.FALSE
     }
 }
+

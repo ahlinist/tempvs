@@ -8,6 +8,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 class AjaxResponseService {
     def messageSource
 
+    private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
+
     JSON composeJsonResponse(instance, String successMessage = null) {
         Boolean success = Boolean.TRUE
         Set messages = []
@@ -15,11 +17,11 @@ class AjaxResponseService {
         if (instance.hasErrors()) {
             success = Boolean.FALSE
 
-            instance.errors.allErrors.each {
-                messages << messageSource.getMessage(it, LocaleContextHolder.locale)
+            instance.errors.allErrors.each { error ->
+                messages << messageSource.getMessage(error, LocaleContextHolder.locale)
             }
         } else {
-            messages << messageSource.getMessage(successMessage, null, LocaleContextHolder.locale)
+            messages << messageSource.getMessage(successMessage, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale)
         }
 
         [success: success, messages: messages] as JSON
