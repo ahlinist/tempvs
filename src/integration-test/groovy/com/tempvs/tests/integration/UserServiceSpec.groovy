@@ -27,14 +27,6 @@ class UserSpec extends Specification {
             location:  UPDATED + TestingUtils.LOCATION,
             customId:  UPDATED + TestingUtils.CUSTOM_ID
     ]
-    private static Map registerVerificationParams = [
-            email: TestingUtils.DESTINATION,
-            destination: TestingUtils.DESTINATION,
-            action: TestingUtils.REGISTER_USER_ACTION,
-            firstName: TestingUtils.FIRST_NAME,
-            lastName: TestingUtils.LAST_NAME,
-            password: TestingUtils.PASSWORD
-    ]
     private static Map emailUpdateVerificationParams = [
             destination: TestingUtils.UPDATE_EMAIL_DESTINATION,
             action: TestingUtils.UPDATE_EMAIL_ACTION
@@ -154,7 +146,7 @@ class UserSpec extends Specification {
         userService.mailService.metaClass.sendMail = { Closure c-> }
 
         when: 'Create the corresponding notification'
-        userService.createEmailVerification(registerVerificationParams)
+        userService.createEmailVerification(TestingUtils.DEFAULT_REGISTER_VERIFICATION_PROPS)
 
         then: 'Email notification objects found in DB with the generated verificationCode'
         String code1 = EmailVerification.
