@@ -4,7 +4,7 @@ import geb.Page
 
 class RegisterPage extends Page {
     static url = '/auth/register'
-    static at = { title == "Tempvs - Register" }
+    static at = { $("meta", name: "location").@content == '/auth/register' }
 
     static content = {
         registerForm {$('form[action="/user/register"]')}
