@@ -3,6 +3,7 @@ package com.tempvs.controllers
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
+import com.tempvs.services.UserService
 import com.tempvs.tests.utils.TestingUtils
 import com.tempvs.tests.utils.user.WithUser
 import grails.converters.JSON
@@ -23,10 +24,11 @@ class UserControllerSpec extends Specification implements WithUser {
     private static final String FAKE_VER_CODE = 'verificationCode'
     private static final String NO_SUCH_USER_SHOW = 'user.show.noSuchUser.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
+    private static final String EMAIL_USED = 'user.email.used'
     private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
     private static final String USER_CREATION_FAILED = 'user.register.userCreation.failed.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
-    private static final String PROFILE_EMAIL_UPDATE_FAILED = 'userProfile.edit.email.failed.message'
+    private static final String PROFILE_EMAIL_UPDATE_FAILED = 'user.editUserProfile.failed'
     private static final String SHOW_PAGE_URL = '/user/show'
     private static final String EDIT_USER_PAGE_URL = '/user/edit'
     private static final String EDIT_PROFILE_PAGE_URL = '/user/profile'
@@ -40,6 +42,9 @@ class UserControllerSpec extends Specification implements WithUser {
 
         controller.userService = [
                 getUser: { id ->
+                    user
+                },
+                getUserByEmail: { email ->
                     user
                 },
                 updateUserProfile: { arg -> },
@@ -134,16 +139,35 @@ class UserControllerSpec extends Specification implements WithUser {
         model == [user:user]
     }
 
-    void "Update user email with duplicate"() {
+    void "Try to update user's email with duplicate"() {
         when: 'Call updateEmail() with param'
         params.email = TestingUtils.EMAIL
         controller.updateEmail()
 
-        then: 'Warning message returned'
+        then: 'JSON with error message returned'
         response.text == emailUpdateDuplicateJson as String
     }
 
-    void "Update user email"() {
+    void "Try to update user's email to non-unique one"() {
+        given: 'Create additional user'
+        Map paramMap = TestingUtils.DEFAULT_USER_PROPS.clone()
+        paramMap.EMAIL = UPDATED + TestingUtils.EMAIL
+        paramMap.PROFILE_EMAIL = UPDATED + TestingUtils.PROFILE_EMAIL
+        paramMap.CUSTOM_ID = null
+        TestingUtils.createUser(paramMap)
+
+        when: 'Call updateEmail() with non-unique email'
+        params.email = UPDATED + TestingUtils.EMAIL
+        controller.updateEmail()
+
+        then: 'JSON with error message returned'
+        response.text == emailUsedJson as String
+    }
+
+    void "Update user's email"() {
+        given: 'Mocking the userService'
+        controller.userService = Mock(UserService)
+
         when: 'Call updateEmail() with param'
         params.email = UPDATED + TestingUtils.EMAIL
         controller.updateEmail()
@@ -178,8 +202,37 @@ class UserControllerSpec extends Specification implements WithUser {
         response.json.success == MOCKED_RESPONSE
     }
 
-    void "Update profileEmail"() {
+    void "Try to update profileEmail with duplicate"() {
+        when: 'Call updateProfileEmail() with param'
+        params.profileEmail = TestingUtils.PROFILE_EMAIL
+        controller.updateProfileEmail()
+
+        then: 'JSON with error message returned'
+        response.text == emailUpdateDuplicateJson as String
+    }
+
+    void "Try to update profileEmail with non-unique value"() {
+        given: 'Create additional user'
+        Map paramMap = TestingUtils.DEFAULT_USER_PROPS.clone()
+        paramMap.EMAIL = UPDATED + TestingUtils.EMAIL
+        paramMap.PROFILE_EMAIL = UPDATED + TestingUtils.PROFILE_EMAIL
+        paramMap.CUSTOM_ID = null
+        TestingUtils.createUser(paramMap)
+
         when: 'Call updateProfileEmail()'
+        params.profileEmail = UPDATED + TestingUtils.PROFILE_EMAIL
+        controller.updateProfileEmail()
+
+        then: 'JSON with error message returned'
+        response.text == emailUsedJson as String
+    }
+
+    void "Update profileEmail"() {
+        given: 'Mocking the userService'
+        controller.userService = Mock(UserService)
+
+        when: 'Call updateProfileEmail()'
+        params.profileEmail = UPDATED + TestingUtils.PROFILE_EMAIL
         controller.updateProfileEmail()
 
         then: 'Mocked JSON response returned'
@@ -321,5 +374,9 @@ class UserControllerSpec extends Specification implements WithUser {
 
     private static JSON getEmailUpdateDuplicateJson() {
         [messages: [EMAIL_UPDATE_DUPLICATE]] as JSON
+    }
+
+    private static JSON getEmailUsedJson() {
+        [messages: [EMAIL_USED]] as JSON
     }
 }

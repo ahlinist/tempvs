@@ -18,7 +18,8 @@ class UserController {
     private static final String USER_CREATION_FAILED = 'user.register.userCreation.failed.message'
     private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
-    private static final String PROFILE_EMAIL_UPDATE_FAILED = 'userProfile.edit.email.failed.message'
+    private static final String EMAIL_USED = 'user.email.used'
+    private static final String PROFILE_EMAIL_UPDATE_FAILED = 'user.editUserProfile.failed'
     private static final String USER_PROFILE_UPDATED_MESSAGE = 'user.userProfile.updated'
     private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
     private static final String REGISTER_USER_ACTION = 'registerUser'
@@ -112,13 +113,20 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        if (email == springSecurityService.currentUser.email) {
+        User currentUser = springSecurityService.currentUser
+
+        if (email == currentUser.email) {
             render([messages: [g.message(code: EMAIL_UPDATE_DUPLICATE)]] as JSON)
         } else {
-            Map props = [userId: springSecurityService.currentUser.id,
-                         destination: email,
-                         action: UPDATE_EMAIL_ACTION]
-            render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+            if (userService.getUserByEmail(email) ||
+                    (userService.getUserByProfileEmail(email) && currentUser.userProfile.profileEmail != email)) {
+                render([messages: [g.message(code: EMAIL_USED)]] as JSON)
+            } else {
+                Map props = [userId: currentUser.id,
+                             destination: email,
+                             action: UPDATE_EMAIL_ACTION]
+                render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+            }
         }
     }
 
@@ -135,10 +143,21 @@ class UserController {
     }
 
     def updateProfileEmail(String profileEmail) {
-        Map props = [userId: springSecurityService.currentUser.id,
-                     destination: profileEmail,
-                     action: UPDATE_PROFILE_EMAIL_ACTION]
-        render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
+        User currentUser = springSecurityService.currentUser
+
+        if (profileEmail == currentUser.userProfile.profileEmail) {
+            render([messages: [g.message(code: EMAIL_UPDATE_DUPLICATE)]] as JSON)
+        } else {
+            if (userService.getUserByEmail(profileEmail) && currentUser.email != profileEmail ||
+                    (userService.getUserByProfileEmail(profileEmail))) {
+                render([messages: [g.message(code: EMAIL_USED)]] as JSON)
+            } else {
+                Map props = [userId: currentUser.id,
+                             destination: profileEmail,
+                             action: UPDATE_PROFILE_EMAIL_ACTION]
+                render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
+            }
+        }
     }
 
     def updateAvatar() {

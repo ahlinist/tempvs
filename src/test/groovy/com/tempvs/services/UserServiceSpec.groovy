@@ -53,6 +53,14 @@ class UserServiceSpec extends Specification implements WithUser {
         1 * User.findByEmail(TestingUtils.EMAIL) >> Mock(User)
     }
 
+    void "Check getUserByProfileEmail()"() {
+        when: 'getUserByProfileEmail() is called'
+        service.getUserByProfileEmail(TestingUtils.PROFILE_EMAIL)
+
+        then: 'User is queried in the DB'
+        1 * UserProfile.findByProfileEmail(TestingUtils.PROFILE_EMAIL) >> Mock(User)
+    }
+
     void "Check creation of email verification"() {
         setup: 'Initial setup'
         service.mailService = [sendMail: { Closure c-> }]

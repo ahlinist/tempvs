@@ -72,6 +72,9 @@ class UserSpec extends Specification {
 
         and: 'User is retrieved by email'
         userService.getUserByEmail(user.email)
+
+        and: 'User is retrieved by profileEmail'
+        userService.getUserByProfileEmail(user.userProfile.profileEmail)
     }
 
     void "Update user's email"(){

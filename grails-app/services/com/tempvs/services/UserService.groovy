@@ -22,6 +22,10 @@ class UserService {
         User.findByEmail(email)
     }
 
+    User getUserByProfileEmail(String profileEmail) {
+        UserProfile.findByProfileEmail(profileEmail)?.user
+    }
+
     EmailVerification createEmailVerification(Map properties) {
         String verificationCode = properties.destination.encodeAsMD5() + new Date().time
         EmailVerification emailVerification = new EmailVerification(properties + [verificationCode: verificationCode])
