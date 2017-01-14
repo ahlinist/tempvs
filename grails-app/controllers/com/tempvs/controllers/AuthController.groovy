@@ -61,8 +61,6 @@ class LoginCommand {
 class RegisterCommand {
     String email
     String password
-    String firstName
-    String lastName
     String repeatPassword
 
     static constraints = {

@@ -27,13 +27,13 @@ class ActivityInterceptorSpec extends Specification {
 
     void "Interceptor doesn't match the excluded actions"() {
         when: "A request doesn't match the 'register' action"
-        withRequest(controller:'user', action:'register')
+        withRequest(controller:'auth', action:'register')
 
         then: "The interceptor does match"
         !interceptor.doesMatch()
 
         when: "A request doesn't match the login action"
-        withRequest(controller:'user', action:'login')
+        withRequest(controller:'auth', action:'login')
 
         then: "The interceptor does match"
         !interceptor.doesMatch()

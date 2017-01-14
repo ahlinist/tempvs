@@ -15,7 +15,6 @@ class UserController {
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'user.edit.profileEmail.verification.sent.message'
-    private static final String USER_CREATION_FAILED = 'user.register.userCreation.failed.message'
     private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String EMAIL_USED = 'user.email.used'
@@ -31,30 +30,25 @@ class UserController {
     static defaultAction = "show"
 
     def verify(String id) {
-        String message
+        Map result = [:]
 
         if (id) {
-            EmailVerification emailVerification = EmailVerification.findByVerificationCode(id)
+            EmailVerification emailVerification = userService.getVerification(id)
 
             if (emailVerification) {
                 switch (emailVerification.action) {
                     case REGISTER_USER_ACTION:
-                        User user = userService.createUser(emailVerification.properties)
-
-                        if (user?.hasErrors()) {
-                            message = USER_CREATION_FAILED
-                        } else {
-                            springSecurityService.reauthenticate(emailVerification.email, emailVerification.password)
-                            redirect controller: 'user'
-                        }
+                        session.emailVerification = emailVerification
+                        result = [createUser: Boolean.TRUE ]
 
                         break
                     case UPDATE_EMAIL_ACTION:
                         User user = userService.updateEmail(emailVerification.userId, emailVerification.destination)
 
                         if (user?.hasErrors()) {
-                            message = EMAIL_UPDATE_FAILED
+                            result = [message: EMAIL_UPDATE_FAILED]
                         } else {
+                            emailVerification.delete(flush: true)
                             redirect controller: 'user', action: 'edit'
                         }
 
@@ -63,8 +57,9 @@ class UserController {
                         UserProfile userProfile = userService.updateProfileEmail(emailVerification.userId, emailVerification.destination)
 
                         if (userProfile?.hasErrors()) {
-                            message = PROFILE_EMAIL_UPDATE_FAILED
+                            result = [message: PROFILE_EMAIL_UPDATE_FAILED]
                         } else {
+                            emailVerification.delete(flush: true)
                             redirect controller: 'user', action: 'profile'
                         }
 
@@ -72,16 +67,29 @@ class UserController {
                     default:
                         break
                 }
-
-                emailVerification.delete(flush: true)
             } else {
-                message = NO_VERIFICATION_CODE
+                result = [message: NO_VERIFICATION_CODE]
             }
         } else {
-            message = NO_VERIFICATION_CODE
+            result = [message: NO_VERIFICATION_CODE]
         }
 
-        [message: message]
+        result
+    }
+
+    def createUser(String firstName, String lastName) {
+        EmailVerification emailVerification = session.emailVerification
+
+        User user = userService.createUser(emailVerification.properties +
+                [firstName: firstName, lastName: lastName])
+
+        if (user?.hasErrors()) {
+            render ajaxResponseService.composeJsonResponse(user)
+        } else {
+            emailVerification.delete(flush: true)
+            springSecurityService.reauthenticate(emailVerification.email, emailVerification.password)
+            render([redirect: g.createLink(controller: 'user', action: 'show')] as JSON)
+        }
     }
 
     def show(String id) {

@@ -20,10 +20,21 @@ class UserServiceSpec extends Specification implements WithUser {
     private static final String NEW_EMAIL = 'newEmail@mail.com'
     private static final String NEW_PROFILE_EMAIL = 'newProfileEmail@mail.com'
     private static final String NEW_PASSWORD = 'newPassword'
+    private static final String VERIFICATION_CODE = 'verificationCode'
 
     def setup() {
         GroovySpy(User, global: true)
         GroovySpy(UserProfile, global: true)
+        GroovySpy(EmailVerification, global: true)
+        GroovySpy(Avatar, global: true)
+
+        service.mailService = [sendMail: { Closure c-> }]
+
+        service.springSecurityService = [
+                encodePassword: { arg ->
+                    arg
+                }
+        ]
     }
 
     def cleanup() {
@@ -62,10 +73,6 @@ class UserServiceSpec extends Specification implements WithUser {
     }
 
     void "Check creation of email verification"() {
-        setup: 'Initial setup'
-        service.mailService = [sendMail: { Closure c-> }]
-        GroovySpy(EmailVerification, global: true)
-
         when: 'Calling createEmailVerification()'
         def result = service.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS)
 
@@ -75,14 +82,6 @@ class UserServiceSpec extends Specification implements WithUser {
     }
 
     void "Check user creation"() {
-        setup: 'Initial setup'
-        GroovySpy(Avatar, global: true)
-        service.springSecurityService = [
-                encodePassword: { arg ->
-                    arg
-                }
-        ]
-
         when: 'Invoking createUser()'
         def result = service.createUser(TestingUtils.DEFAULT_USER_PROPS)
 
@@ -105,12 +104,7 @@ class UserServiceSpec extends Specification implements WithUser {
 
     void "Check password update"() {
         setup: 'Setting up currentUser'
-        service.springSecurityService = [
-                encodePassword: { arg ->
-                    arg
-                },
-                currentUser: user
-        ]
+        service.springSecurityService.currentUser = getUser()
 
         expect: "updatePassword() changes user's password"
         service.updatePassword(NEW_PASSWORD).password == NEW_PASSWORD
@@ -121,7 +115,7 @@ class UserServiceSpec extends Specification implements WithUser {
 
     void "Check updateLastActive()"() {
         given: 'Initial settings'
-        service.springSecurityService = [currentUser: user]
+        service.springSecurityService.currentUser = user
         Date lastActiveOld = user.lastActive
 
         when: 'Invoking updateLastActive()'
@@ -141,12 +135,20 @@ class UserServiceSpec extends Specification implements WithUser {
 
     void "Check update of user's profile"() {
         setup: 'Setting up currentUser'
-        service.springSecurityService = [currentUser: user]
+        service.springSecurityService.currentUser = user
 
         expect: "updateUserProfile() changes user's password"
         service.updateUserProfile([location: 'newLocation']).location == 'newLocation'
 
         and: 'userProfile with updated location is found in the DB'
         UserProfile.findByLocation('newLocation')
+    }
+
+    void "Check getVerification()"() {
+        when: 'Invoking getVerification()'
+        service.getVerification(VERIFICATION_CODE)
+
+        then: "Appropriate constructors are called"
+        1 * EmailVerification.findByVerificationCode(VERIFICATION_CODE) >> Mock(EmailVerification)
     }
 }

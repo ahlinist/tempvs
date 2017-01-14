@@ -26,7 +26,6 @@ class UserControllerSpec extends Specification implements WithUser {
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
-    private static final String USER_CREATION_FAILED = 'user.register.userCreation.failed.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'user.editUserProfile.failed'
     private static final String SHOW_PAGE_URL = '/user/show'
@@ -38,6 +37,13 @@ class UserControllerSpec extends Specification implements WithUser {
         controller.springSecurityService = [
                 currentUser: user,
                 reauthenticate:{arg1, arg2 -> }
+        ]
+
+        controller.imageService = [
+                updateAvatar: { arg -> },
+                getOwnAvatar: {
+                    new ByteArrayOutputStream().toByteArray()
+                }
         ]
 
         controller.userService = [
@@ -57,6 +63,9 @@ class UserControllerSpec extends Specification implements WithUser {
                 },
                 updateProfileEmail:  { arg1 , arg2 ->
                     user.userProfile
+                },
+                getVerification: { verificationCode ->
+                    EmailVerification.findByVerificationCode(verificationCode)
                 }
         ]
 
@@ -240,9 +249,6 @@ class UserControllerSpec extends Specification implements WithUser {
     }
 
     void "Update avatar"() {
-        given: 'Mock imageService'
-        controller.imageService = [updateAvatar: { arg -> }]
-
         when: 'Call updateAvatar()'
         controller.updateAvatar()
 
@@ -251,9 +257,6 @@ class UserControllerSpec extends Specification implements WithUser {
     }
 
     void "Get avatar"() {
-        given: 'Mock imageService'
-        controller.imageService = [getOwnAvatar: {new ByteArrayOutputStream().toByteArray()}]
-
         when: 'Call getAvatar()'
         controller.getAvatar()
 
@@ -287,27 +290,12 @@ class UserControllerSpec extends Specification implements WithUser {
     void "Check verify() with correct register user entry"() {
         when: 'Call verify() for registerUser action'
         params.id = TestingUtils.createEmailVerification().verificationCode
-        controller.verify()
+        def result = controller.verify()
 
         then: 'Redirected to show page'
         controller.modelAndView == null
-        response.redirectedUrl == SHOW_PAGE_URL
-    }
-
-    void "Check verify() with incorrect register user entry"() {
-        given: 'Mock incorrect user'
-        controller.userService = [
-                createUser: {obj -> incorrectUser}
-        ]
-
-        when: 'Call verify() for registerUser action'
-        params.id = TestingUtils.createEmailVerification().verificationCode
-        def model = controller.verify()
-
-        then: 'Warning message returned'
-        controller.modelAndView == null
         response.redirectedUrl == null
-        model == [message: USER_CREATION_FAILED]
+        result == [createUser: Boolean.TRUE]
     }
 
     void "Check verify() with correct update email entry"() {
@@ -322,18 +310,18 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Check verify() with incorrect update email entry"() {
         given: 'Mock incorrect user'
-        controller.userService = [
-                updateEmail: { arg1, arg2 -> incorrectUser}
-        ]
+        controller.userService.updateEmail = { arg1, arg2 ->
+            incorrectUser
+        }
 
         when: 'Call verify() for updateEmail action'
         params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
-        def model = controller.verify()
+        def result = controller.verify()
 
         then: 'Warning message returned'
         controller.modelAndView == null
         response.redirectedUrl == null
-        model == [message: EMAIL_UPDATE_FAILED]
+        result == [message: EMAIL_UPDATE_FAILED]
     }
 
     void "Check verify() with correct update profileEmail entry"() {
@@ -348,22 +336,45 @@ class UserControllerSpec extends Specification implements WithUser {
 
     void "Check verify() with incorrect update profileEmail entry"() {
         given: 'Mock incorrect user'
-        controller.userService = [
-                updateProfileEmail: { arg1, arg2 ->
-                    UserProfile userProfile = new UserProfile()
-                    userProfile.save()
-                    userProfile
-                }
-        ]
+        controller.userService.updateProfileEmail = { arg1, arg2 ->
+            incorrectUserProfile
+        }
 
         when: 'Call verify() for updateProfileEmail action'
         params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
-        def model = controller.verify()
+        def result = controller.verify()
 
         then: 'Warning message returned'
         controller.modelAndView == null
         response.redirectedUrl == null
-        model == [message: PROFILE_EMAIL_UPDATE_FAILED]
+        result == [message: PROFILE_EMAIL_UPDATE_FAILED]
+    }
+
+    void "Check createUser() for correct user"() {
+        given: 'Mock verification in session'
+        controller.session.emailVerification = TestingUtils.createEmailVerification()
+
+        when: 'Invoking createUser()'
+        controller.createUser()
+
+        then: 'JSON response with show page redirect returned'
+        controller.modelAndView == null
+        response.redirectedUrl == null
+        response.text == showPageRedirectJson as String
+    }
+
+    void "Check createUser() for incorrect user"() {
+        given: 'Mock verification in session and incorrect user'
+        controller.session.emailVerification = TestingUtils.createEmailVerification()
+        controller.userService.createUser = { arg ->
+            incorrectUser
+        }
+
+        when: 'Invoking createUser()'
+        controller.createUser()
+
+        then: 'JSON response with show page redirect returned'
+        response.json.success == MOCKED_RESPONSE
     }
 
     private static User getIncorrectUser() {
@@ -372,11 +383,21 @@ class UserControllerSpec extends Specification implements WithUser {
         incorrectUser
     }
 
+    private static UserProfile getIncorrectUserProfile() {
+        UserProfile userProfile = new UserProfile()
+        userProfile.save()
+        userProfile
+    }
+
     private static JSON getEmailUpdateDuplicateJson() {
         [messages: [EMAIL_UPDATE_DUPLICATE]] as JSON
     }
 
     private static JSON getEmailUsedJson() {
         [messages: [EMAIL_USED]] as JSON
+    }
+
+    private static JSON getShowPageRedirectJson() {
+        [redirect: SHOW_PAGE_URL] as JSON
     }
 }

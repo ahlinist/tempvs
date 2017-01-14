@@ -4,9 +4,7 @@ import grails.test.mixin.integration.Integration
 import grails.transaction.*
 
 import geb.spock.*
-import com.tempvs.tests.functional.pages.LoginPage
-import com.tempvs.tests.functional.pages.RegisterPage
-import com.tempvs.tests.functional.pages.ShowPage
+import com.tempvs.tests.functional.pages.*
 
 /**
  * See http://www.gebish.org/manual/current/ for more instructions
@@ -37,7 +35,15 @@ class UserFunctionalSpec extends GebSpec {
         at RegisterPage
     }
 
-    void "Show page with id of non-existent user generates error message"() {
+    void "Verify page is available for non-logged users"() {
+        when: 'Browser is pointed to /auth/register'
+        to VerifyPage
+
+        then: 'Register page is rendered'
+        at VerifyPage
+    }
+
+    void "Show page with id is available for non-logged users"() {
         when: 'Browser is pointed to /user/show/1'
         to ShowPage, 1
 

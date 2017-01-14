@@ -23,7 +23,7 @@ class EmailVerification extends BasePersistent {
         email nullable: true, email: true, unique: ['destination']
         action inList: ['registerUser', 'updateEmail', 'updateProfileEmail'], validator: { action, verification ->
             if (action == 'registerUser') {
-                verification.email && verification.password && verification.firstName && verification.lastName
+                verification.email && verification.password
             } else {
                 true
             }

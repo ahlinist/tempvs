@@ -13,7 +13,7 @@ import spock.lang.*
 @Integration
 @Rollback
 @Mock([User, UserProfile, Avatar])
-class UserSpec extends Specification {
+class UserServiceSpec extends Specification {
     def userService
     def springSecurityService
     def passwordEncoder
@@ -48,16 +48,24 @@ class UserSpec extends Specification {
         given: 'Find created user in DB'
         User user = User.findByEmail(TestingUtils.EMAIL)
 
-        expect: "Valid user created"
+        expect: 'Valid user created'
         user.validate()
 
-        and: "Password encrypted"
+        and: 'Password encrypted'
         user.password != TestingUtils.PASSWORD
         passwordEncoder.isPasswordValid(user.password, TestingUtils.PASSWORD, null)
 
         and: "User's profile contains proper first and last names"
         user.userProfile.firstName == TestingUtils.FIRST_NAME
         user.userProfile.lastName == TestingUtils.LAST_NAME
+    }
+
+    void "Check verification creation"() {
+        given: 'Create verification'
+        EmailVerification emailVerification = TestingUtils.createEmailVerification()
+
+        expect: 'Verification retrieved'
+        userService.getVerification(emailVerification.verificationCode) instanceof EmailVerification
     }
 
     void "Check user retrieving functionality"() {
@@ -82,13 +90,13 @@ class UserSpec extends Specification {
         User user = User.findByEmail(TestingUtils.EMAIL)
         String updatedEmail = UPDATED + TestingUtils.EMAIL
 
-        when: "Update email"
+        when: 'Update email'
         userService.updateEmail(user.id, updatedEmail)
 
-        then: "Find user with updated email in DB"
+        then: 'Find user with updated email in DB'
         User.findByEmail(updatedEmail)
 
-        and: "Find no user with old email"
+        and: 'Find no user with old email'
         !User.findByEmail(TestingUtils.EMAIL)
     }
 

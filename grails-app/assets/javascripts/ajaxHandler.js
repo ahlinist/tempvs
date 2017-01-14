@@ -38,10 +38,6 @@ function renderResponseMessage(form, alertType, message) {
     form.append(alertBox);
     $(alertBox).hide().fadeIn();
 
-    if (alertType == 'success') {
-        $(alertBox).delay(2000).fadeOut();
-    }
-
     $("a.close").click(function (e) {
         $(this).parent().fadeOut();
     });

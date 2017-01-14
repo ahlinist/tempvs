@@ -28,9 +28,12 @@ class AjaxResponseServiceSpec extends Specification {
     }
 
     void "Check composeJsonResponse() for correct instance"() {
-        expect: 'Invoking composeJsonResponse() for correct emailVerification returns successful JSON'
-        ajaxResponseService.composeJsonResponse(TestingUtils.createEmailVerification(), SUCCESS_MESSAGE).toString() ==
-                successfulJson.toString()
+        when:'Invoking composeJsonResponse() for correct emailVerification'
+        def result = ajaxResponseService.composeJsonResponse(TestingUtils.createEmailVerification(), SUCCESS_MESSAGE)
+
+        then: 'Successful JSON is returned'
+        result.target.success == successfulJson.target.success
+        result.target.messages as Set == successfulJson.target.messages as Set
     }
 
     void "Check composeJsonResponse() for incorrect instance"() {
