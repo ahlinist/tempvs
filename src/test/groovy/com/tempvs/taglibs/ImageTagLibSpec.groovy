@@ -13,27 +13,27 @@ import spock.lang.Specification
 @TestFor(ImageTagLib)
 @Mock([User, UserProfile])
 class ImageTagLibSpec extends Specification implements WithUser {
-    private static final String FILE_PATH = 'some_file_path'
     private static final String AVATAR_URL = '/user/getAvatar'
-    private static final String DEFAULT_AVATAR_URL = '/assets/defaultAvatar.jpg'
 
     def setup() {
-        tagLib.springSecurityService = [currentUser: user]
     }
 
     def cleanup() {
     }
 
-    void "If user has no avatar - the default one is shown"() {
-        expect: "Default avatar is shown"
-        tagLib.userPic().toString().contains DEFAULT_AVATAR_URL
+    void "If user is not logged in - nothing is returned"() {
+        given: "Setting up the user"
+        tagLib.springSecurityService = [currentUser: null]
+
+        expect: "Nothing returned"
+        !tagLib.userPic()
     }
 
-    void "If user has avatar - it is queried"() {
-        given: "Assigning avatar to user"
-        user.userProfile.avatar.pathToFile = FILE_PATH
+    void "If user is logged in - userPic is queried"() {
+        given: "Setting up the user"
+        tagLib.springSecurityService = [currentUser: user]
 
-        expect: "Avatar is queried"
+        expect: "UserPic is queried"
         tagLib.userPic().toString().contains AVATAR_URL
     }
 }

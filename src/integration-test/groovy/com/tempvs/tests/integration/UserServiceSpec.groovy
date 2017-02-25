@@ -1,18 +1,17 @@
 package com.tempvs.tests.integration
 
-import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
 import com.tempvs.tests.utils.TestingUtils
 import grails.test.mixin.Mock
 import grails.test.mixin.integration.Integration
-import grails.transaction.*
-import spock.lang.*
+import grails.transaction.Rollback
+import spock.lang.Specification
 
 @Integration
 @Rollback
-@Mock([User, UserProfile, Avatar])
+@Mock([User, UserProfile])
 class UserServiceSpec extends Specification {
     def userService
     def springSecurityService

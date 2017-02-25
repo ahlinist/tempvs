@@ -1,6 +1,5 @@
 package com.tempvs.tests.utils
 
-import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
@@ -52,7 +51,7 @@ class TestingUtils {
 
     static User createUser(Map props = DEFAULT_USER_PROPS){
         User user = new User(props)
-        user.userProfile = new UserProfile(props + [avatar: new Avatar()])
+        user.userProfile = new UserProfile(props)
         user.save(flush:true)
     }
 

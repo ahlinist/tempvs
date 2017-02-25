@@ -1,6 +1,5 @@
 package com.tempvs.services
 
-import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
@@ -51,7 +50,7 @@ class UserService {
 
         user.with{
             password = springSecurityService.encodePassword(user.password)
-            userProfile = new UserProfile(properties + [avatar: new Avatar()])
+            userProfile = new UserProfile(properties)
             save(flush: true)
         }
 

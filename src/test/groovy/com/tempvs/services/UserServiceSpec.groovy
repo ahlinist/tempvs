@@ -1,6 +1,5 @@
 package com.tempvs.services
 
-import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
@@ -26,7 +25,6 @@ class UserServiceSpec extends Specification implements WithUser {
         GroovySpy(User, global: true)
         GroovySpy(UserProfile, global: true)
         GroovySpy(EmailVerification, global: true)
-        GroovySpy(Avatar, global: true)
 
         service.mailService = [sendMail: { Closure c-> }]
 
@@ -88,7 +86,6 @@ class UserServiceSpec extends Specification implements WithUser {
         then: "Appropriate constructors are called"
         1 * new User(_)
         1 * new UserProfile(_)
-        1 * new Avatar()
 
         and: 'User is returned'
         result instanceof User

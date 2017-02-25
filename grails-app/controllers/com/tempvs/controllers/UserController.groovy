@@ -21,6 +21,8 @@ class UserController {
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'user.editUserProfile.failed'
     private static final String USER_PROFILE_UPDATED_MESSAGE = 'user.userProfile.updated'
     private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
+    private static final String AVATAR_UPDATED_FAILED_MESSAGE = 'user.profile.update.avatar.failed.message'
+    private static final String IMAGE_EMPTY = 'upload.image.empty'
     private static final String REGISTER_USER_ACTION = 'registerUser'
     private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
@@ -169,8 +171,25 @@ class UserController {
     }
 
     def updateAvatar() {
+        Boolean success
+        String message
+
         def multiPartFile = request.getFile('avatar')
-        render ajaxResponseService.composeJsonResponse(imageService.updateAvatar(multiPartFile), AVATAR_UPDATED_MESSAGE)
+
+        if (!multiPartFile?.empty) {
+            if (imageService.updateAvatar(multiPartFile)) {
+                success = Boolean.TRUE
+                message = AVATAR_UPDATED_MESSAGE
+            } else {
+                success = Boolean.FALSE
+                message = AVATAR_UPDATED_FAILED_MESSAGE
+            }
+        } else {
+            success = Boolean.FALSE
+            message = IMAGE_EMPTY
+        }
+
+        render ajaxResponseService.renderMessage(success, message)
     }
 
     def getAvatar() {

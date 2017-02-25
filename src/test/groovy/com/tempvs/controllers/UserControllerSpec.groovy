@@ -66,12 +66,17 @@ class UserControllerSpec extends Specification implements WithUser {
                 },
                 getVerification: { verificationCode ->
                     EmailVerification.findByVerificationCode(verificationCode)
-                }
+                },
         ]
 
-        controller.ajaxResponseService = [composeJsonResponse: { obj, str = null ->
-            [success: MOCKED_RESPONSE] as JSON
-        }]
+        controller.ajaxResponseService = [
+                renderMessage: { Boolean success, String message ->
+                    [success: MOCKED_RESPONSE] as JSON
+                },
+                composeJsonResponse: { obj, String successMessage = null ->
+                    [success: MOCKED_RESPONSE] as JSON
+                },
+        ]
     }
 
     def cleanup() {

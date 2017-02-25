@@ -1,46 +1,36 @@
 package com.tempvs.services
 
-import com.tempvs.domain.image.Avatar
+import com.mongodb.DB
+import com.mongodb.Mongo
+import com.mongodb.gridfs.GridFS
+import com.mongodb.gridfs.GridFSDBFile
+import com.mongodb.gridfs.GridFSInputFile
+import com.tempvs.domain.user.User
 import grails.transaction.Transactional
-
-import javax.imageio.ImageIO
+import org.apache.commons.io.IOUtils
 
 @Transactional
 class ImageService {
     def springSecurityService
-    private static final String IMAGE_EMPTY = 'upload.image.empty'
+    Mongo mongo = new Mongo("localhost", 27017);
+    DB db = mongo.getDB("imagedb");
 
-    Avatar updateAvatar(multiPartFile) {
-        Avatar avatar = springSecurityService.currentUser.userProfile.avatar
+    Boolean updateAvatar(multiPartFile) {
+        User user = springSecurityService.currentUser
 
-        if (!multiPartFile?.empty) {
-            String imageName = "${new Date().time}.jpg"
-            String destination = "/home/albvs/storage/grails/images/users/${avatar.userProfile.user.id}/avatars/"
-            String pathToFile = destination.concat imageName
-            File directory = new File(destination)
-
-            if(!directory.exists()){
-                directory.mkdirs()
-            }
-
-            multiPartFile.transferTo new File(pathToFile)
-            avatar.pathToFile = pathToFile
-            avatar.save(flush: true)
-        } else {
-            avatar.errors.rejectValue('id', IMAGE_EMPTY)
-        }
-
-        avatar
+        String fileName = "user/avatar/${user.id}"
+        GridFS gfsPhoto = new GridFS(db, "photo");
+        GridFSInputFile gfsFile = gfsPhoto.createFile(multiPartFile.bytes);
+        gfsFile.setFilename(fileName);
+        gfsFile.save();
+        return true
     }
 
     byte[] getOwnAvatar() {
-        Avatar avatar = springSecurityService.currentUser?.userProfile?.avatar
-        ByteArrayOutputStream baos = new ByteArrayOutputStream()
-
-        if (avatar?.pathToFile) {
-            ImageIO.write(ImageIO.read(new File(avatar?.pathToFile)), "jpg", baos)
-        }
-
-        baos.toByteArray()
+        User user = springSecurityService.currentUser
+        String fileName = "user/avatar/${user.id}"
+        GridFS gfsPhoto = new GridFS(db, "photo");
+        GridFSDBFile imageForOutput = gfsPhoto.findOne(fileName);
+        IOUtils.toByteArray(imageForOutput.inputStream);
     }
 }

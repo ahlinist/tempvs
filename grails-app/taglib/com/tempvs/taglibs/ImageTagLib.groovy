@@ -6,14 +6,8 @@ class ImageTagLib {
     def springSecurityService
 
     String userPic = {
-        Map model
-
-        if (springSecurityService.currentUser?.userProfile?.avatar?.pathToFile) {
-            model = [classes: 'pull-left', src: '/user/getAvatar']
-        } else {
-            model = [classes: 'pull-left', src: '/assets/defaultAvatar.jpg']
+        if (springSecurityService.currentUser) {
+            out << render(template: '/templates/image/userIcon', model: [classes: 'pull-left', src: '/user/getAvatar'])
         }
-
-        out << render(template: '/templates/image/userIcon', model:model)
     }
 }

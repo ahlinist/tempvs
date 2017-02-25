@@ -1,11 +1,12 @@
 package com.tempvs.domain.user
 
+import com.tempvs.domain.BasePersistent
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
 @EqualsAndHashCode(includes='email')
 @ToString(includes='email', includeNames=true, includePackage=false)
-class User implements Serializable {
+class User extends BasePersistent implements Serializable {
 
 	private static final long serialVersionUID = 1
 

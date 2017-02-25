@@ -1,20 +1,19 @@
 package com.tempvs.tests.integration
 
-import com.tempvs.domain.image.Avatar
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
 import com.tempvs.tests.utils.TestingUtils
+import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.integration.Integration
-import grails.transaction.*
-import grails.converters.JSON
+import grails.transaction.Rollback
 import org.springframework.context.i18n.LocaleContextHolder
-import spock.lang.*
+import spock.lang.Specification
 
 @Integration
 @Rollback
-@Mock([User, UserProfile, Avatar])
+@Mock([User, UserProfile, EmailVerification])
 class AjaxResponseServiceSpec extends Specification {
     def ajaxResponseService
     def messageSource
