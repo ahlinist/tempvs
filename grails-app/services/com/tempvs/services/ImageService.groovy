@@ -1,36 +1,44 @@
 package com.tempvs.services
 
-import com.mongodb.DB
-import com.mongodb.Mongo
+import com.mongodb.BasicDBObject
 import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSInputFile
-import com.tempvs.domain.user.User
 import grails.transaction.Transactional
 import org.apache.commons.io.IOUtils
 
 @Transactional
 class ImageService {
     def springSecurityService
-    Mongo mongo = new Mongo("localhost", 27017);
-    DB db = mongo.getDB("imagedb");
+    def mongoDB
+    private static final String AVATAR_PATH = 'avatar'
+    private static final String METADATA = 'metadata'
+    private static final String CURRENT_AVATAR = 'currentAvatar'
 
     Boolean updateAvatar(multiPartFile) {
-        User user = springSecurityService.currentUser
+        try {
+            GridFS gfsPhoto = new GridFS(mongoDB, "${AVATAR_PATH}_${springSecurityService.currentUser.id}")
+            GridFSInputFile newAvatar = gfsPhoto.createFile(multiPartFile.bytes)
+            newAvatar.setFilename(AVATAR_PATH)
+            newAvatar.setMetaData(new BasicDBObject(CURRENT_AVATAR, Boolean.TRUE.toString()))
+            GridFSDBFile currentAvatar = currentAvatar
+            currentAvatar?.setMetaData(new BasicDBObject(METADATA, new BasicDBObject(CURRENT_AVATAR, new String())))
+            currentAvatar?.save()
+            newAvatar.save()
+        } catch (Exception e) {
+            return Boolean.FALSE
+        }
 
-        String fileName = "user/avatar/${user.id}"
-        GridFS gfsPhoto = new GridFS(db, "photo");
-        GridFSInputFile gfsFile = gfsPhoto.createFile(multiPartFile.bytes);
-        gfsFile.setFilename(fileName);
-        gfsFile.save();
-        return true
+        return Boolean.TRUE
     }
 
     byte[] getOwnAvatar() {
-        User user = springSecurityService.currentUser
-        String fileName = "user/avatar/${user.id}"
-        GridFS gfsPhoto = new GridFS(db, "photo");
-        GridFSDBFile imageForOutput = gfsPhoto.findOne(fileName);
-        IOUtils.toByteArray(imageForOutput.inputStream);
+        IOUtils.toByteArray(currentAvatar.inputStream)
+    }
+
+    private GridFSDBFile getCurrentAvatar() {
+        GridFS gfsPhoto = new GridFS(mongoDB, "${AVATAR_PATH}_${springSecurityService.currentUser.id}")
+        BasicDBObject query = new BasicDBObject(METADATA, new BasicDBObject(CURRENT_AVATAR, Boolean.TRUE.toString()));
+        gfsPhoto.findOne(query)
     }
 }
