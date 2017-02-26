@@ -193,11 +193,12 @@ class UserController {
     }
 
     def getAvatar() {
-        byte[] imageInByte = imageService.getOwnAvatar()
+        byte[] imageInBytes = imageService.getOwnAvatar()
+
         response.with{
-            setHeader('Content-length', imageInByte.length.toString())
+            setHeader('Content-length', imageInBytes.length.toString())
             contentType = 'image/jpg' // or the appropriate image content type
-            outputStream << imageInByte
+            outputStream << imageInBytes
             outputStream.flush()
         }
     }
