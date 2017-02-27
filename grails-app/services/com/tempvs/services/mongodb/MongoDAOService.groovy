@@ -8,14 +8,10 @@ import com.mongodb.gridfs.GridFSInputFile
 
 class MongoDAOService {
     DB mongoDB
-    private static final String METADATA = 'metadata'
 
     Boolean save(GridFSFile gridFSFile, Map metaData = null) {
         if (gridFSFile) {
-            metaData?.each { propertyName, value ->
-                gridFSFile.metaData = new BasicDBObject((String) propertyName, value)
-            }
-
+            gridFSFile.metaData = new BasicDBObject(metaData)
             gridFSFile.save()
             Boolean.TRUE
         } else {
@@ -23,15 +19,8 @@ class MongoDAOService {
         }
     }
 
-    GridFSFile get(String collection, Map metaData) {
-        GridFS gridFS = new GridFS(mongoDB, collection)
-        BasicDBObject query
-
-        metaData.each { propertyName, value ->
-            query = new BasicDBObject(METADATA, new BasicDBObject((String) propertyName, value));
-        }
-
-        gridFS.findOne(query)
+    GridFSFile get(String collection, Map query) {
+        new GridFS(mongoDB, collection).findOne(new BasicDBObject(query))
     }
 
     GridFSFile create(InputStream inputStream, String collection, String fileName) {

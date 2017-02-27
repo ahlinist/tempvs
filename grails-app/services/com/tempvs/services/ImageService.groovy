@@ -11,12 +11,12 @@ class ImageService {
 
     Boolean updateAvatar(multiPartFile) {
         String collection = "${AVATAR_PATH}_${springSecurityService.currentUser.id}"
-        Map metaData = [currentAvatar: Boolean.TRUE]
+        Map query = [metadata: [currentAvatar: Boolean.TRUE]]
 
         InputStream inputStream = multiPartFile.inputStream
 
         try {
-            GridFSFile oldAvatar = mongoDAOService.get(collection, metaData)
+            GridFSFile oldAvatar = mongoDAOService.get(collection, query)
             GridFSFile newAvatar = mongoDAOService.create(multiPartFile.inputStream, collection, AVATAR_PATH)
             mongoDAOService.save(oldAvatar, [currentAvatar: null])
             mongoDAOService.save(newAvatar, [currentAvatar: Boolean.TRUE])
@@ -27,10 +27,10 @@ class ImageService {
 
     List<Byte> getOwnAvatar() {
         String collection = "${AVATAR_PATH}_${springSecurityService.currentUser.id}"
-        Map metaData = [currentAvatar: Boolean.TRUE]
+        Map query = [metadata: [currentAvatar: Boolean.TRUE]]
         List<Byte> fileInBytes
 
-        InputStream inputStream = mongoDAOService.get(collection, metaData)?.inputStream
+        InputStream inputStream = mongoDAOService.get(collection, query)?.inputStream
 
         if (inputStream) {
             fileInBytes = inputStream.bytes
