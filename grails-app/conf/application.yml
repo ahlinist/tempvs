@@ -195,5 +195,3 @@ grails:
 endpoints:
     jmx:
         unique-names: true
-tempvs:
-    defaultavatar: defaultAvatar.jpg

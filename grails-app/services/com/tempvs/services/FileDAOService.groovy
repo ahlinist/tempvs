@@ -9,14 +9,12 @@ import com.mongodb.gridfs.GridFSInputFile
 class FileDAOService {
     DB mongoDB
 
-    Boolean save(GridFSFile gridFSFile, Map metaData = null) {
-        if (gridFSFile) {
+    void save(GridFSFile gridFSFile, Map metaData = null) {
+        if (metaData) {
             gridFSFile.metaData = new BasicDBObject(metaData)
-            gridFSFile.save()
-            Boolean.TRUE
-        } else {
-            Boolean.FALSE
         }
+
+        gridFSFile.save()
     }
 
     GridFSFile get(String collection, Map query) {

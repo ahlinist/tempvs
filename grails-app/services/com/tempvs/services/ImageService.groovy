@@ -9,7 +9,7 @@ class ImageService {
     def fileDAOService
     private static final String AVATAR_PATH = 'avatar'
 
-    Boolean updateAvatar(InputStream inputStream) {
+    void updateAvatar(InputStream inputStream) {
         String collection = "${AVATAR_PATH}_${springSecurityService.currentUser.id}"
         Map query = [metadata: [currentAvatar: Boolean.TRUE]]
 
@@ -22,15 +22,7 @@ class ImageService {
     List<Byte> getOwnAvatar() {
         String collection = "${AVATAR_PATH}_${springSecurityService.currentUser.id}"
         Map query = [metadata: [currentAvatar: Boolean.TRUE]]
-        List<Byte> fileInBytes
 
-        InputStream inputStream = fileDAOService.get(collection, query)?.inputStream
-
-        if (inputStream) {
-            fileInBytes = inputStream.bytes
-            inputStream.close()
-        }
-
-        fileInBytes
+        fileDAOService.get(collection, query)?.inputStream?.bytes
     }
 }

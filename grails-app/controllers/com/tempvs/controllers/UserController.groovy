@@ -5,6 +5,7 @@ import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
 import grails.converters.JSON
 import grails.util.Holders
+import org.springframework.util.StreamUtils
 
 class UserController {
     def userService
@@ -29,7 +30,7 @@ class UserController {
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String NO_SUCH_USER = 'user.show.noSuchUser.message'
-    private static final String DEFAULT_AVATAR = Holders.grailsApplication.config.getProperty('tempvs.defaultavatar', 'defaultAvatar.jpg')
+    private static final String DEFAULT_AVATAR = 'defaultAvatar.jpg'
 
     static defaultAction = "show"
 
@@ -199,7 +200,9 @@ class UserController {
     }
 
     def getAvatar() {
-        byte[] imageInBytes = imageService.getOwnAvatar() ?: assetResourceLocator?.findAssetForURI(DEFAULT_AVATAR)?.getInputStream()?.bytes
+        byte[] imageInBytes = imageService.getOwnAvatar() ?:
+                assetResourceLocator?.findAssetForURI(DEFAULT_AVATAR)?.getInputStream()?.bytes ?:
+                        StreamUtils.emptyInput()
 
         response.with{
             setHeader('Content-length', imageInBytes.length.toString())
