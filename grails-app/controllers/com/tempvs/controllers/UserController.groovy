@@ -202,7 +202,7 @@ class UserController {
     def getAvatar() {
         byte[] imageInBytes = imageService.getOwnAvatar() ?:
                 assetResourceLocator?.findAssetForURI(DEFAULT_AVATAR)?.getInputStream()?.bytes ?:
-                        StreamUtils.emptyInput()
+                        StreamUtils.emptyInput().bytes
 
         response.with{
             setHeader('Content-length', imageInBytes.length.toString())
