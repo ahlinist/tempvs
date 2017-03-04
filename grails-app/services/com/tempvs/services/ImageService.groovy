@@ -26,8 +26,6 @@ class ImageService {
 
         InputStream inputStream = fileDAOService.get(collection, query)?.inputStream
 
-        //throw new RuntimeException(String.valueOf(inputStream.bytes.length))
-
         if (inputStream) {
             fileInBytes = inputStream.bytes
             inputStream.close()

@@ -11,6 +11,7 @@ class UserController {
     def springSecurityService
     def imageService
     def ajaxResponseService
+    def assetResourceLocator
 
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
@@ -28,6 +29,7 @@ class UserController {
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String NO_SUCH_USER = 'user.show.noSuchUser.message'
+    private static final String DEFAULT_AVATAR = Holders.grailsApplication.config.getProperty('tempvs.defaultavatar', 'defaultAvatar.jpg')
 
     static defaultAction = "show"
 
@@ -197,7 +199,7 @@ class UserController {
     }
 
     def getAvatar() {
-        byte[] imageInBytes = imageService.getOwnAvatar()
+        byte[] imageInBytes = imageService.getOwnAvatar() ?: assetResourceLocator?.findAssetForURI(DEFAULT_AVATAR)?.byteArray
 
         response.with{
             setHeader('Content-length', imageInBytes.length.toString())
