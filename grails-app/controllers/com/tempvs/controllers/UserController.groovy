@@ -173,16 +173,20 @@ class UserController {
     def updateAvatar() {
         Boolean success
         String message
-
         def multiPartFile = request.getFile('avatar')
 
         if (!multiPartFile?.empty) {
-            if (imageService.updateAvatar(multiPartFile)) {
+            InputStream inputStream = multiPartFile.inputStream
+
+            try {
+                imageService.updateAvatar(inputStream)
                 success = Boolean.TRUE
                 message = AVATAR_UPDATED_MESSAGE
-            } else {
+            } catch (Exception e) {
                 success = Boolean.FALSE
                 message = AVATAR_UPDATED_FAILED_MESSAGE
+            } finally {
+                inputStream?.close()
             }
         } else {
             success = Boolean.FALSE

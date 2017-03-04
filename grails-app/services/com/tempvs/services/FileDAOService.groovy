@@ -1,4 +1,4 @@
-package com.tempvs.services.mongodb
+package com.tempvs.services
 
 import com.mongodb.BasicDBObject
 import com.mongodb.DB
@@ -6,7 +6,7 @@ import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSFile
 import com.mongodb.gridfs.GridFSInputFile
 
-class MongoDAOService {
+class FileDAOService {
     DB mongoDB
 
     Boolean save(GridFSFile gridFSFile, Map metaData = null) {
