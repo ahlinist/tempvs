@@ -77,6 +77,9 @@ grails:
                 - pattern: /user/verify/**
                   access:
                       - permitAll
+                - pattern: /user/register
+                  access:
+                      - permitAll
                 - pattern: /user/createUser/**
                   access:
                       - permitAll

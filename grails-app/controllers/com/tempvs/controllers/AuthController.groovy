@@ -6,9 +6,9 @@ import com.tempvs.domain.user.verification.EmailVerification
 import grails.converters.JSON
 
 class AuthController {
-    private static final String REGISTER_USER_MESSAGE_SENT = 'user.register.verification.sent.message'
-    private static final String NO_SUCH_USER = 'user.login.noSuchUser.message'
-    private static final String REGISTER_USER_ACTION = 'registerUser'
+    private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
+    private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
+    private static final String REGISTER_ACTION = 'register'
 
     static defaultAction = "login"
 
@@ -38,13 +38,13 @@ class AuthController {
         }
     }
 
-    def register(RegisterCommand rc) {
+    def register(RequestRegistrationCommand rrc) {
         if (params.isAjaxRequest) {
-            if (rc.validate()) {
-                Map props = rc.properties + [action: REGISTER_USER_ACTION, destination: rc.email]
-                render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), REGISTER_USER_MESSAGE_SENT)
+            if (rrc.validate()) {
+                Map props = [action: REGISTER_ACTION, email: rrc.email]
+                render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
             } else {
-                render ajaxResponseService.composeJsonResponse(rc)
+                render ajaxResponseService.composeJsonResponse(rrc)
             }
         }
     }
@@ -58,21 +58,12 @@ class LoginCommand {
     }
 }
 
-class RegisterCommand {
+class RequestRegistrationCommand {
     String email
-    String password
-    String repeatPassword
 
     static constraints = {
-        password blank: false, password: true
-        email email: true, blank: false, validator: {email, urc ->
-            User user = User.findByEmail(email)
-            UserProfile userProfile = UserProfile.findByProfileEmail(email)
-            EmailVerification emailVerification = EmailVerification.findByEmail(email)
-            !user && !userProfile && !emailVerification
-        }
-        repeatPassword validator: { repPass, urc ->
-            repPass == urc.password
+        email email: true, blank: false, validator: { email, command ->
+            !User.findByEmail(email) && !UserProfile.findByProfileEmail(email) && !EmailVerification.findByEmail(email)
         }
     }
 }

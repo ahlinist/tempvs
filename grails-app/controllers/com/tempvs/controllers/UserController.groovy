@@ -25,46 +25,46 @@ class UserController {
     private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
     private static final String AVATAR_UPDATED_FAILED_MESSAGE = 'user.profile.update.avatar.failed.message'
     private static final String IMAGE_EMPTY = 'upload.image.empty'
-    private static final String REGISTER_USER_ACTION = 'registerUser'
+    private static final String REGISTER_ACTION = 'register'
     private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String NO_SUCH_USER = 'user.show.noSuchUser.message'
     private static final String DEFAULT_AVATAR = 'defaultAvatar.jpg'
+    private static final String AVATAR_FIELD = 'avatar'
 
     static defaultAction = "show"
 
     def verify(String id) {
-        Map result = [:]
-
         if (id) {
             EmailVerification emailVerification = userService.getVerification(id)
 
             if (emailVerification) {
-                switch (emailVerification.action) {
-                    case REGISTER_USER_ACTION:
-                        session.emailVerification = emailVerification
-                        result = [createUser: Boolean.TRUE ]
+                String email = emailVerification.email
+                String userId = emailVerification.userId
 
+                switch (emailVerification.action) {
+                    case REGISTER_ACTION:
+                        session.email = email
+
+                        render view: 'register', model: [email: email]
                         break
                     case UPDATE_EMAIL_ACTION:
-                        User user = userService.updateEmail(emailVerification.userId, emailVerification.destination)
+                        User user = userService.updateEmail(userId, email)
 
                         if (user?.hasErrors()) {
-                            result = [message: EMAIL_UPDATE_FAILED]
+                            [message: EMAIL_UPDATE_FAILED]
                         } else {
-                            emailVerification.delete(flush: true)
                             redirect controller: 'user', action: 'edit'
                         }
 
                         break
                     case UPDATE_PROFILE_EMAIL_ACTION:
-                        UserProfile userProfile = userService.updateProfileEmail(emailVerification.userId, emailVerification.destination)
+                        UserProfile userProfile = userService.updateProfileEmail(userId, email)
 
                         if (userProfile?.hasErrors()) {
-                            result = [message: PROFILE_EMAIL_UPDATE_FAILED]
+                            [message: PROFILE_EMAIL_UPDATE_FAILED]
                         } else {
-                            emailVerification.delete(flush: true)
                             redirect controller: 'user', action: 'profile'
                         }
 
@@ -72,28 +72,33 @@ class UserController {
                     default:
                         break
                 }
+
+                emailVerification.delete(flush: true)
             } else {
-                result = [message: NO_VERIFICATION_CODE]
+                [message: NO_VERIFICATION_CODE]
             }
         } else {
-            result = [message: NO_VERIFICATION_CODE]
+            [message: NO_VERIFICATION_CODE]
         }
-
-        result
     }
 
-    def createUser(String firstName, String lastName) {
-        EmailVerification emailVerification = session.emailVerification
+    def register(RegisterCommand rc) {
+        if (params.isAjaxRequest) {
+            if (rc.validate()) {
+                User user = userService.createUser(rc.properties + [email: session.email])
 
-        User user = userService.createUser(emailVerification.properties +
-                [firstName: firstName, lastName: lastName])
-
-        if (user?.hasErrors()) {
-            render ajaxResponseService.composeJsonResponse(user)
+                if (user?.hasErrors()) {
+                    render ajaxResponseService.composeJsonResponse(user)
+                } else {
+                    springSecurityService.reauthenticate(session.email, rc.password)
+                    session.email = null
+                    render([redirect: g.createLink(controller: 'user', action: 'show')] as JSON)
+                }
+            } else {
+                render ajaxResponseService.composeJsonResponse(rc)
+            }
         } else {
-            emailVerification.delete(flush: true)
-            springSecurityService.reauthenticate(emailVerification.email, emailVerification.password)
-            render([redirect: g.createLink(controller: 'user', action: 'show')] as JSON)
+            redirect action: 'show'
         }
     }
 
@@ -113,11 +118,7 @@ class UserController {
                 }
             }
         } else {
-            if (currentUser) {
-                redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
-            } else {
-                redirect controller: 'auth', action: 'login'
-            }
+            redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
         }
     }
 
@@ -135,9 +136,7 @@ class UserController {
                     (userService.getUserByProfileEmail(email) && currentUser.userProfile.profileEmail != email)) {
                 render([messages: [g.message(code: EMAIL_USED)]] as JSON)
             } else {
-                Map props = [userId: currentUser.id,
-                             destination: email,
-                             action: UPDATE_EMAIL_ACTION]
+                Map props = [userId: currentUser.id, email: email, action: UPDATE_EMAIL_ACTION]
                 render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
             }
         }
@@ -166,7 +165,7 @@ class UserController {
                 render([messages: [g.message(code: EMAIL_USED)]] as JSON)
             } else {
                 Map props = [userId: currentUser.id,
-                             destination: profileEmail,
+                             email: profileEmail,
                              action: UPDATE_PROFILE_EMAIL_ACTION]
                 render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
             }
@@ -176,7 +175,7 @@ class UserController {
     def updateAvatar() {
         Boolean success
         String message
-        def multiPartFile = request.getFile('avatar')
+        def multiPartFile = request.getFile(AVATAR_FIELD)
 
         if (!multiPartFile?.empty) {
             InputStream inputStream = multiPartFile.inputStream
@@ -237,5 +236,19 @@ class UserProfileCommand {
 
     static constraints = {
         importFrom UserProfile
+    }
+}
+
+class RegisterCommand {
+    String firstName
+    String lastName
+    String password
+    String repeatPassword
+
+    static constraints = {
+        password blank: false, password: true
+        repeatPassword validator: { repPass, urc ->
+            repPass == urc.password
+        }
     }
 }

@@ -10,9 +10,9 @@
       </div>
       <div class="col-sm-6">
         <tempvs:ajaxForm action="login">
-          <tempvs:formField type="email" name="email" label="user.email.label" />
-          <tempvs:formField type="password" name="password" label="user.password.label" />
-          <tempvs:ajaxSubmitButton value="user.login.button" />
+          <tempvs:formField type="email" name="email" label="auth.email.label" />
+          <tempvs:formField type="password" name="password" label="auth.password.label" />
+          <tempvs:ajaxSubmitButton value="auth.login.button" />
         </tempvs:ajaxForm>
       </div>
       <div class="col-sm-3">

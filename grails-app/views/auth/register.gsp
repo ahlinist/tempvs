@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="main"/>
-    <title>Tempvs - Register</title>
+    <title>Tempvs - Request registration</title>
   </head>
   <body>
     <div class="container">
@@ -10,10 +10,8 @@
       </div>
       <div class="col-sm-6">
         <tempvs:ajaxForm action="register">
-          <tempvs:formField type="email" name="email" label="user.email.label" />
-          <tempvs:formField type="password" name="password" label="user.password.label" />
-          <tempvs:formField type="password" name="repeatPassword" label="user.repeatPassword.label" />
-          <tempvs:ajaxSubmitButton value="user.register.button" />
+          <tempvs:formField type="email" name="email" label="auth.email.label" />
+          <tempvs:ajaxSubmitButton value="auth.request.registration.button" />
         </tempvs:ajaxForm>
       </div>
       <div class="col-sm-3">

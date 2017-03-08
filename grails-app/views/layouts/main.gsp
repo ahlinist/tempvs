@@ -16,11 +16,11 @@
         <g:link class="btn btn-default disableable pull-left" controller="user" action="show"><g:message code="user.show.profile.button" /></g:link>
         <g:link class="btn btn-default disableable pull-left" controller="user" action="edit"><g:message code="user.edit.button" /></g:link>
         <g:link class="btn btn-default disableable pull-left" controller="user" action="profile"><g:message code="user.profile.edit.button" /></g:link>
-        <g:link class="btn btn-primary disableable pull-right" uri="/logoff"><g:message code="user.logout.button" /></g:link>
+        <g:link class="btn btn-primary disableable pull-right" uri="/logoff"><g:message code="auth.logout.button" /></g:link>
       </sec:ifLoggedIn>
       <sec:ifNotLoggedIn>
-        <g:link class="btn btn-default disableable pull-right" controller="auth" action="register"><g:message code="user.register.link" /></g:link>
-        <g:link class="btn btn-default disableable pull-right" controller="auth" action="login"><g:message code="user.login.link" /></g:link>
+        <g:link class="btn btn-default disableable pull-right" controller="auth" action="register"><g:message code="auth.register.link" /></g:link>
+        <g:link class="btn btn-default disableable pull-right" controller="auth" action="login"><g:message code="auth.login.link" /></g:link>
       </sec:ifNotLoggedIn>
     </div>
     <hr/>
