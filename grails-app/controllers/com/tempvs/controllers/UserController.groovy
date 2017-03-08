@@ -118,7 +118,11 @@ class UserController {
                 }
             }
         } else {
-            redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
+            if (currentUser) {
+                redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
+            } else {
+                redirect controller: 'auth', action: 'login'
+            }
         }
     }
 

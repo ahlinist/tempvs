@@ -9,7 +9,7 @@
       <div class="col-sm-3">
       </div>
       <div class="col-sm-6">
-        <g:message code="user.confirm.registration.message" args="${email}"/>
+        <g:message code="user.confirm.registration.message" args="${[email]}"/>
         <br/>
         <g:message code="user.confirm.registration.instructions"/>
         <tempvs:ajaxForm action="register">
