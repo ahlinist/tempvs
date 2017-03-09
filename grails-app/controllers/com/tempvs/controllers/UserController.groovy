@@ -35,73 +35,6 @@ class UserController {
 
     static defaultAction = "show"
 
-    def verify(String id) {
-        if (id) {
-            EmailVerification emailVerification = userService.getVerification(id)
-
-            if (emailVerification) {
-                String email = emailVerification.email
-                String userId = emailVerification.userId
-
-                switch (emailVerification.action) {
-                    case REGISTER_ACTION:
-                        session.email = email
-
-                        render view: 'register', model: [email: email]
-                        break
-                    case UPDATE_EMAIL_ACTION:
-                        User user = userService.updateEmail(userId, email)
-
-                        if (user?.hasErrors()) {
-                            [message: EMAIL_UPDATE_FAILED]
-                        } else {
-                            redirect controller: 'user', action: 'edit'
-                        }
-
-                        break
-                    case UPDATE_PROFILE_EMAIL_ACTION:
-                        UserProfile userProfile = userService.updateProfileEmail(userId, email)
-
-                        if (userProfile?.hasErrors()) {
-                            [message: PROFILE_EMAIL_UPDATE_FAILED]
-                        } else {
-                            redirect controller: 'user', action: 'profile'
-                        }
-
-                        break
-                    default:
-                        break
-                }
-
-                emailVerification.delete(flush: true)
-            } else {
-                [message: NO_VERIFICATION_CODE]
-            }
-        } else {
-            [message: NO_VERIFICATION_CODE]
-        }
-    }
-
-    def register(RegisterCommand rc) {
-        if (params.isAjaxRequest) {
-            if (rc.validate()) {
-                User user = userService.createUser(rc.properties + [email: session.email])
-
-                if (user?.hasErrors()) {
-                    render ajaxResponseService.composeJsonResponse(user)
-                } else {
-                    springSecurityService.reauthenticate(session.email, rc.password)
-                    session.email = null
-                    render([redirect: g.createLink(controller: 'user', action: 'show')] as JSON)
-                }
-            } else {
-                render ajaxResponseService.composeJsonResponse(rc)
-            }
-        } else {
-            redirect action: 'show'
-        }
-    }
-
     def show(String id) {
         User currentUser = springSecurityService.currentUser
 
@@ -130,6 +63,10 @@ class UserController {
         [user: springSecurityService.currentUser]
     }
 
+    def profile() {
+        [user: springSecurityService.currentUser]
+    }
+
     def updateEmail(String email) {
         User currentUser = springSecurityService.currentUser
 
@@ -148,10 +85,6 @@ class UserController {
 
     def updatePassword(UserPasswordCommand upc) {
         render ajaxResponseService.composeJsonResponse(upc.validate() ? userService.updatePassword(upc.newPassword) : upc, PASSWORD_UPDATED_MESSAGE)
-    }
-
-    def profile() {
-        [user: springSecurityService.currentUser]
     }
 
     def updateUserProfile(UserProfileCommand upc) {
@@ -212,6 +145,73 @@ class UserController {
             contentType = 'image/jpg' // or the appropriate image content type
             outputStream << imageInBytes
             outputStream.flush()
+        }
+    }
+
+    def register(RegisterCommand rc) {
+        if (params.isAjaxRequest) {
+            if (rc.validate()) {
+                User user = userService.createUser(rc.properties + [email: session.email])
+
+                if (user?.hasErrors()) {
+                    render ajaxResponseService.composeJsonResponse(user)
+                } else {
+                    springSecurityService.reauthenticate(session.email, rc.password)
+                    session.email = null
+                    render([redirect: g.createLink(controller: 'user', action: 'show')] as JSON)
+                }
+            } else {
+                render ajaxResponseService.composeJsonResponse(rc)
+            }
+        } else {
+            redirect action: 'show'
+        }
+    }
+
+    def verify(String id) {
+        if (id) {
+            EmailVerification emailVerification = userService.getVerification(id)
+
+            if (emailVerification) {
+                String email = emailVerification.email
+                String userId = emailVerification.userId
+
+                switch (emailVerification.action) {
+                    case REGISTER_ACTION:
+                        session.email = email
+
+                        render view: 'register', model: [email: email]
+                        break
+                    case UPDATE_EMAIL_ACTION:
+                        User user = userService.updateEmail(userId, email)
+
+                        if (user?.hasErrors()) {
+                            [message: EMAIL_UPDATE_FAILED]
+                        } else {
+                            redirect controller: 'user', action: 'edit'
+                        }
+
+                        break
+                    case UPDATE_PROFILE_EMAIL_ACTION:
+                        UserProfile userProfile = userService.updateProfileEmail(userId, email)
+
+                        if (userProfile?.hasErrors()) {
+                            [message: PROFILE_EMAIL_UPDATE_FAILED]
+                        } else {
+                            redirect controller: 'user', action: 'profile'
+                        }
+
+                        break
+                    default:
+                        break
+                }
+
+                emailVerification.delete(flush: true)
+            } else {
+                [message: NO_VERIFICATION_CODE]
+            }
+        } else {
+            [message: NO_VERIFICATION_CODE]
         }
     }
 }
