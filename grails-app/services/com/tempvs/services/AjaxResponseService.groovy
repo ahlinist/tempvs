@@ -11,7 +11,7 @@ class AjaxResponseService {
     private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
     private static final String DEFAULT_FAIL_MESSAGE = 'Fail'
 
-    def composeJsonResponse(instance, String successMessage = null) {
+    JSON composeJsonResponse(instance, String successMessage = null) {
         Boolean success = Boolean.TRUE
         Set messages = []
 

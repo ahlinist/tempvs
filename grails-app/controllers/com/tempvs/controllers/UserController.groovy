@@ -37,22 +37,23 @@ class UserController {
 
     def show(String id) {
         User currentUser = springSecurityService.currentUser
+        String customId = currentUser?.userProfile?.customId
 
         if (id) {
-            if (currentUser?.userProfile?.customId == id || currentUser?.id as String == id) {
-                [user: currentUser, id: currentUser.userProfile.customId ?: currentUser.id]
+            if (customId == id || currentUser?.id as String == id) {
+                [user: currentUser, id: customId ?: currentUser.id]
             } else {
                 User user = userService.getUser(id)
 
                 if (user) {
-                    [user: user, id: user.userProfile.customId ?: user.id]
+                    [user: user, id: customId ?: user.id]
                 } else {
                     [id: id, message: NO_SUCH_USER, args: [id]]
                 }
             }
         } else {
             if (currentUser) {
-                redirect action: 'show', id: currentUser.userProfile.customId ?: currentUser.id
+                redirect action: 'show', id: customId ?: currentUser.id
             } else {
                 redirect controller: 'auth', action: 'login'
             }
