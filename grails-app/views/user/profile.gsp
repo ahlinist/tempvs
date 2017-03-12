@@ -10,7 +10,7 @@
         <div class="col-sm-2">
         </div>
         <div class="col-sm-8">
-          <tempvs:ajaxForm action="updateAvatar">
+          <tempvs:ajaxForm controller="image" action="updateAvatar">
             <tempvs:formField type="file" name="avatar" label="user.profile.avatar.label" />
             <tempvs:ajaxSubmitButton value="user.profile.update.avatar.button" />
           </tempvs:ajaxForm>

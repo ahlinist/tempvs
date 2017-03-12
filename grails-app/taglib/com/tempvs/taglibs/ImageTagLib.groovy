@@ -7,7 +7,8 @@ class ImageTagLib {
 
     String userPic = {
         if (springSecurityService.currentUser) {
-            out << render(template: '/templates/image/userIcon', model: [classes: 'pull-left', src: '/user/getAvatar'])
+            out << render(template: '/templates/image/userIcon',
+                    model: [classes: 'pull-left', src: g.createLink(controller: 'image', action: 'getAvatar')])
         }
     }
 }

@@ -5,14 +5,11 @@ import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
 import grails.converters.JSON
 import grails.util.Holders
-import org.springframework.util.StreamUtils
 
 class UserController {
     def userService
     def springSecurityService
-    def imageService
     def ajaxResponseService
-    def assetResourceLocator
 
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
@@ -22,16 +19,11 @@ class UserController {
     private static final String EMAIL_USED = 'user.email.used'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'user.editUserProfile.failed'
     private static final String USER_PROFILE_UPDATED_MESSAGE = 'user.userProfile.updated'
-    private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
-    private static final String AVATAR_UPDATED_FAILED_MESSAGE = 'user.profile.update.avatar.failed.message'
-    private static final String IMAGE_EMPTY = 'upload.image.empty'
     private static final String REGISTER_ACTION = 'register'
     private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
     private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String NO_SUCH_USER = 'user.show.noSuchUser.message'
-    private static final String DEFAULT_AVATAR = 'defaultAvatar.jpg'
-    private static final String AVATAR_FIELD = 'avatar'
 
     static defaultAction = "show"
 
@@ -110,45 +102,6 @@ class UserController {
         }
     }
 
-    def updateAvatar() {
-        Boolean success
-        String message
-        def multiPartFile = request.getFile(AVATAR_FIELD)
-
-        if (!multiPartFile?.empty) {
-            InputStream inputStream = multiPartFile.inputStream
-
-            try {
-                imageService.updateAvatar(inputStream)
-                success = Boolean.TRUE
-                message = AVATAR_UPDATED_MESSAGE
-            } catch (Exception e) {
-                success = Boolean.FALSE
-                message = AVATAR_UPDATED_FAILED_MESSAGE
-            } finally {
-                inputStream?.close()
-            }
-        } else {
-            success = Boolean.FALSE
-            message = IMAGE_EMPTY
-        }
-
-        render ajaxResponseService.renderMessage(success, message)
-    }
-
-    def getAvatar() {
-        byte[] imageInBytes = imageService.getOwnAvatar() ?:
-                assetResourceLocator?.findAssetForURI(DEFAULT_AVATAR)?.getInputStream()?.bytes ?:
-                        StreamUtils.emptyInput().bytes
-
-        response.with{
-            setHeader('Content-length', imageInBytes.length.toString())
-            contentType = 'image/jpg' // or the appropriate image content type
-            outputStream << imageInBytes
-            outputStream.flush()
-        }
-    }
-
     def register(RegisterCommand rc) {
         if (params.isAjaxRequest) {
             if (rc.validate()) {
@@ -170,12 +123,14 @@ class UserController {
     }
 
     def verify(String id) {
+        Map message
+
         if (id) {
             EmailVerification emailVerification = userService.getVerification(id)
 
             if (emailVerification) {
                 String email = emailVerification.email
-                String userId = emailVerification.userId
+                Long userId = emailVerification.userId
 
                 switch (emailVerification.action) {
                     case REGISTER_ACTION:
@@ -187,7 +142,7 @@ class UserController {
                         User user = userService.updateEmail(userId, email)
 
                         if (user?.hasErrors()) {
-                            [message: EMAIL_UPDATE_FAILED]
+                            message = [message: EMAIL_UPDATE_FAILED]
                         } else {
                             redirect controller: 'user', action: 'edit'
                         }
@@ -197,7 +152,7 @@ class UserController {
                         UserProfile userProfile = userService.updateProfileEmail(userId, email)
 
                         if (userProfile?.hasErrors()) {
-                            [message: PROFILE_EMAIL_UPDATE_FAILED]
+                            message = [message: PROFILE_EMAIL_UPDATE_FAILED]
                         } else {
                             redirect controller: 'user', action: 'profile'
                         }
@@ -209,11 +164,13 @@ class UserController {
 
                 emailVerification.delete(flush: true)
             } else {
-                [message: NO_VERIFICATION_CODE]
+                message = [message: NO_VERIFICATION_CODE]
             }
         } else {
-            [message: NO_VERIFICATION_CODE]
+            message = [message: NO_VERIFICATION_CODE]
         }
+
+        message
     }
 }
 
