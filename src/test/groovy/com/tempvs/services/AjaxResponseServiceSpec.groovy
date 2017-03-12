@@ -1,58 +1,70 @@
 package com.tempvs.services
 
 import com.tempvs.domain.user.User
+import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.springframework.context.MessageSource
-import org.springframework.context.MessageSourceResolvable
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.validation.FieldError
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 
 @TestFor(AjaxResponseService)
 class AjaxResponseServiceSpec extends Specification {
-    private static final SUCCESS_MESSAGE = 'Success Message'
-    private static final DEFAULT_SUCCESS_MESSAGE = 'Success'
+    private static final String SUCCESS_MESSAGE = 'Success Message'
+    private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
+    private static final String FAILED = 'failed'
+    private static final String ERRORS = 'errors'
+
+    def user = Mock(User)
+    def messageSource = Mock(MessageSource)
+    def fieldError = Mock(FieldError)
 
     def setup() {
+        service.messageSource = messageSource
     }
 
     def cleanup() {
     }
 
-    void "Check composeJsonResponse() for 2 args"() {
-        given: 'Initial setup'
-        def messageSource = Mock(MessageSource)
-        service.messageSource = messageSource
-        def user = Mock(User)
-
-        when: 'Service returned success for 2 args call'
+    void "Check successful composeJsonResponse() for 2 args"() {
+        when: 'composeJsonResponse() called for 2 args'
         def result = service.composeJsonResponse(user, SUCCESS_MESSAGE)
 
-        then: 'AjaxResponseFactory is invoked'
-        1 * user.hasErrors()
-        1 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale)
+        then: 'Ajax response returned'
+        1 * user.hasErrors() >> Boolean.FALSE
+        1 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale) >> SUCCESS_MESSAGE
+        0 * _
         result.target.success == Boolean.TRUE
+        result.target.messages == [SUCCESS_MESSAGE] as Set
+        result instanceof JSON
     }
 
-    void "Check composeJsonResponse() for 1 arg"() {
-        given: 'Initial setup'
-        def messageSource = Mock(MessageSource)
-        def messageSourceResolvable = Mock(MessageSourceResolvable)
-        service.messageSource = messageSource
-        def user = [:]
-        user.hasErrors = { return Boolean.TRUE }
-        user.errors = [allErrors:[messageSourceResolvable, messageSourceResolvable]]
-
-        when: 'Service returned success for 1 arg'
+    void "Check failed composeJsonResponse() for 1 arg"() {
+        when: 'composeJsonResponse() called for 1 arg'
         def result = service.composeJsonResponse(user)
 
-        then: 'AjaxResponseFactory is invoked'
-        0 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale)
-        2 * messageSource.getMessage(messageSourceResolvable, LocaleContextHolder.locale)
+        then: 'Ajax response returned'
+        1 * user.hasErrors() >> Boolean.TRUE
+        1 * user.getProperty(ERRORS) >> [allErrors:[fieldError, fieldError]]
+        2 * messageSource.getMessage(fieldError, LocaleContextHolder.locale) >> FAILED
+        0 * _
         result.target.success == Boolean.FALSE
+        result.target.messages == [FAILED, FAILED] as Set
+        result instanceof JSON
+    }
+
+    void "Check renderMessage() method"() {
+        when: 'renderMessage() called'
+        def result = service.renderMessage(Boolean.TRUE, SUCCESS_MESSAGE)
+
+        then: 'Ajax response returned'
+        1 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale) >> SUCCESS_MESSAGE
+        0 * _
+        result.target.success == Boolean.TRUE
+        result.target.messages == [SUCCESS_MESSAGE] as Set
+        result instanceof JSON
     }
 }
-
