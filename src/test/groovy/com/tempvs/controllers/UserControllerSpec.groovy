@@ -3,406 +3,435 @@ package com.tempvs.controllers
 import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
+import com.tempvs.services.AjaxResponseService
 import com.tempvs.services.UserService
-import com.tempvs.tests.utils.TestingUtils
-import com.tempvs.tests.utils.user.WithUser
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(UserController)
 @Mock([User, UserProfile, EmailVerification])
-class UserControllerSpec extends Specification implements WithUser {
-    private static final String EXISTENT_CUSTOM_ID = TestingUtils.CUSTOM_ID
-    private static final String NON_EXISTENT_CUSTOM_ID = 'non-existentTestCustomId'
-    private static final String MOCKED_RESPONSE = 'mocked_response'
-    private static final String UPDATED = 'updated'
-    private static final String FAKE_VER_CODE = 'verificationCode'
-    private static final String NO_SUCH_USER_SHOW = 'user.show.noSuchUser.message'
+class UserControllerSpec extends Specification {
+    private static final String LOGIN_PAGE_URI = '/auth/login'
+    private static final String SHOW_PAGE_URI = '/user/show'
+    private static final String EDIT_PAGE_URI = '/user/edit'
+    private static final String PROFILE_PAGE_URI = '/user/profile'
+    private static final String ID = 'id'
+    private static final String USER_PROFILE = 'userProfile'
+    private static final String CUSTOM_ID = 'customId'
+    private static final String EMAIL = 'email'
+    private static final String REGISTER_ACTION = 'register'
+    private static final String USER_ID = 'userId'
+    private static final String ACTION = 'action'
+    private static final String NEW_PASSWORD = 'newPassword'
+    private static final String UPDATE_EMAIL_ACTION = 'updateEmail'
+    private static final String PROFILE_EMAIL = 'profileEmail'
+    private static final String UPDATE_PROFILE_EMAIL_ACTION = 'updateProfileEmail'
+    private static final String NO_SUCH_USER = 'user.show.noSuchUser.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
+    private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
+    private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
+    private static final String USER_PROFILE_UPDATED_MESSAGE = 'user.userProfile.updated'
+    private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'user.edit.profileEmail.verification.sent.message'
     private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'user.editUserProfile.failed'
-    private static final String SHOW_PAGE_URL = '/user/show'
-    private static final String EDIT_USER_PAGE_URL = '/user/edit'
-    private static final String EDIT_PROFILE_PAGE_URL = '/user/profile'
-    private static final String LOGIN_PAGE_URL = '/auth/login'
+
+    def ajaxResponseService = Mock(AjaxResponseService)
+    def userService = Mock(UserService)
+    def springSecurityService = Mock(SpringSecurityService)
+    def user = Mock(User)
+    def userProfile = Mock(UserProfile)
+    def emailVerification = Mock(EmailVerification)
+    def json = Mock(JSON)
+    def userPasswordCommand = Mock(UserPasswordCommand)
+    def userProfileCommand = Mock(UserProfileCommand)
+    def registerCommand = Mock(RegisterCommand)
 
     def setup() {
-        controller.springSecurityService = [
-                currentUser: user,
-                reauthenticate:{arg1, arg2 -> }
-        ]
-
-        controller.imageService = [
-                updateAvatar: { arg -> },
-                getOwnAvatar: {
-                    new ByteArrayOutputStream().toByteArray()
-                }
-        ]
-
-        controller.userService = [
-                getUser: { id ->
-                    user
-                },
-                getUserByEmail: { email ->
-                    user
-                },
-                updateUserProfile: { arg -> },
-                createEmailVerification: { arg -> },
-                createUser: { arg ->
-                    user
-                },
-                updateEmail: { arg1 , arg2 ->
-                    user
-                },
-                updateProfileEmail:  { arg1 , arg2 ->
-                    user.userProfile
-                },
-                getVerification: { verificationCode ->
-                    EmailVerification.findByVerificationCode(verificationCode)
-                },
-        ]
-
-        controller.ajaxResponseService = [
-                renderMessage: { Boolean success, String message ->
-                    [success: MOCKED_RESPONSE] as JSON
-                },
-                composeJsonResponse: { obj, String successMessage = null ->
-                    [success: MOCKED_RESPONSE] as JSON
-                },
-        ]
+        controller.ajaxResponseService = ajaxResponseService
+        controller.userService = userService
+        controller.springSecurityService = springSecurityService
     }
 
     def cleanup() {
     }
 
-    void "Check show page being not logged in"() {
-        given:
-        controller.springSecurityService = [:]
-
-        when: 'Calling show() action'
-        controller.show()
-
-        then: 'Being redirected to login page'
-        response.redirectedUrl == LOGIN_PAGE_URL
-    }
-
-    void "Check show page being logged in"() {
+    void "Render show page being not logged in"() {
         when: 'Call show() action without id'
         controller.show()
 
         then: 'Request is redirected to login page'
-        response.redirectedUrl == "${SHOW_PAGE_URL}/${EXISTENT_CUSTOM_ID}"
+        1 * springSecurityService.currentUser
+        0 * _
+        response.redirectedUrl == LOGIN_PAGE_URI
     }
 
-    void "Check show page being not logged in, passing id of non-existent user"() {
-        given:
-        controller.userService = [getUser: { id -> }]
+    void "Render show page being logged in having customId in userProfile"() {
+        when: 'Call show() action without id'
+        controller.show()
 
+        then: 'Request is redirected to show/customId page'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(CUSTOM_ID) >> CUSTOM_ID
+        0 * _
+        response.redirectedUrl == "${SHOW_PAGE_URI}/${CUSTOM_ID}"
+    }
+
+    void "Render show page being logged in having no customId in userProfile"() {
+        when: 'Call show() action without id'
+        controller.show()
+
+        then: 'Request is redirected to show/id page'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(CUSTOM_ID)
+        1 * user.getProperty(ID) >> ID
+        0 * _
+        response.redirectedUrl == "${SHOW_PAGE_URI}/${ID}"
+    }
+
+    void "Render show page for non-existent id being not logged in"() {
         when: 'Call show() action with id'
-        params.id = NON_EXISTENT_CUSTOM_ID
-        def model = controller.show()
+        params.id = ID
+        Map model = controller.show()
 
-        then: 'Show page is rendered with a warning'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        model == [id: NON_EXISTENT_CUSTOM_ID, message: NO_SUCH_USER_SHOW, args: [NON_EXISTENT_CUSTOM_ID]]
+        then: 'Model is passed to show page'
+        1 * springSecurityService.currentUser
+        1 * userService.getUser(ID)
+        0 * _
+        model == [id: ID, message: NO_SUCH_USER, args: [ID]]
     }
 
-    void "Check show page being not logged in, passing id of existent user"() {
-        given: "Mock user"
-        controller.springSecurityService = [:]
-        controller.userService = [getUser: { id ->
-            user
-        }]
-
+    void "Render show page for existent id being not logged in"() {
         when: 'Call show() action with id'
-        params.id = EXISTENT_CUSTOM_ID
-        def model = controller.show()
+        params.id = ID
+        Map model = controller.show()
 
-        then: 'Show page is rendered with a warning'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        model == [id: EXISTENT_CUSTOM_ID, user: user]
+        then: 'Model is passed to show page'
+        1 * springSecurityService.currentUser
+        1 * userService.getUser(ID) >> user
+        1 * user.getProperty(ID) >> ID
+        0 * _
+        model == [user: user, id: ID]
     }
 
-    void "Check show page being logged in, passing own id"() {
+    void "Render show page for non-existent id being logged in having no customId"() {
         when: 'Call show() action with id'
-        params.id = EXISTENT_CUSTOM_ID
-        def model = controller.show()
+        params.id = ID
+        Map model = controller.show()
 
-        then: 'Request is redirected to login page'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        model == [user:user, id: EXISTENT_CUSTOM_ID]
+        then: 'Model is passed to show page'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(CUSTOM_ID)
+        1 * user.getProperty(ID)
+        1 * user.getProperty(ID) >> ID
+        1 * userService.getUser(ID) >> user
+        0 * _
+        model == [user: user, id: ID]
     }
 
-    void "Render edit user page"() {
-        when: 'Call edit()'
-        def model = controller.edit()
+    void "Render show page for non-existent id being logged in having customId"() {
+        when: 'Call show() action with own customId'
+        params.id = CUSTOM_ID
+        Map model = controller.show()
 
-        then: 'Edit page rendered'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        model == [user:user]
+        then: 'Model is passed to show page'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(CUSTOM_ID) >> CUSTOM_ID
+        0 * _
+        model == [user: user, id: CUSTOM_ID]
     }
 
-    void "Try to update user's email with duplicate"() {
-        when: 'Call updateEmail() with param'
-        params.email = TestingUtils.EMAIL
-        controller.updateEmail()
+    void "Render edit page"() {
+        when: 'Call edit() action'
+        Map model = controller.edit()
 
-        then: 'JSON with error message returned'
-        response.text == emailUpdateDuplicateJson as String
-    }
-
-    void "Try to update user's email to non-unique one"() {
-        given: 'Create additional user'
-        Map paramMap = TestingUtils.DEFAULT_USER_PROPS.clone()
-        paramMap.EMAIL = UPDATED + TestingUtils.EMAIL
-        paramMap.PROFILE_EMAIL = UPDATED + TestingUtils.PROFILE_EMAIL
-        paramMap.CUSTOM_ID = null
-        TestingUtils.createUser(paramMap)
-
-        when: 'Call updateEmail() with non-unique email'
-        params.email = UPDATED + TestingUtils.EMAIL
-        controller.updateEmail()
-
-        then: 'JSON with error message returned'
-        response.text == emailUsedJson as String
-    }
-
-    void "Update user's email"() {
-        given: 'Mocking the userService'
-        controller.userService = Mock(UserService)
-
-        when: 'Call updateEmail() with param'
-        params.email = UPDATED + TestingUtils.EMAIL
-        controller.updateEmail()
-
-        then: 'Mocked JSON response returned'
-        response.json.success == MOCKED_RESPONSE
-    }
-
-    void "Update user password incorrectly"() {
-        when: 'Call updatePassword()'
-        controller.updatePassword()
-
-        then: 'Mocked JSON response returned'
-        response.json.success == MOCKED_RESPONSE
+        then: 'Model is passed to edit page'
+        1 * springSecurityService.currentUser >> user
+        0 * _
+        model == [user: user]
     }
 
     void "Render profile page"() {
-        when: 'Call profile()'
-        def model = controller.profile()
+        when: 'Call editProfile() action'
+        Map model = controller.profile()
 
-        then: 'Edit page rendered'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        model == [user:user]
+        then: 'Model is passed to show page'
+        1 * springSecurityService.currentUser >> user
+        0 * _
+        model == [user: user]
     }
 
-    void "Update profile"() {
-        when: 'Call updateUserProfile()'
-        controller.updateUserProfile()
+    void "Check updateEmail action for duplicate"() {
+        when: 'Call updateEmail() action'
+        params.email = EMAIL
+        controller.updateEmail()
 
-        then: 'Mocked JSON response returned'
-        response.json.success == MOCKED_RESPONSE
+        then: 'JSON response received'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(EMAIL) >> EMAIL
+        0 * _
+        response.json.messages == [EMAIL_UPDATE_DUPLICATE]
     }
 
-    void "Try to update profileEmail with duplicate"() {
-        when: 'Call updateProfileEmail() with param'
-        params.profileEmail = TestingUtils.PROFILE_EMAIL
-        controller.updateProfileEmail()
+    void "Check updateEmail action for used email"() {
+        when: 'Call updateEmail() action'
+        params.email = EMAIL
+        controller.updateEmail()
 
-        then: 'JSON with error message returned'
-        response.text == emailUpdateDuplicateJson as String
+        then: 'JSON response received'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(EMAIL)
+        1 * userService.getUserByEmail(EMAIL) >> user
+        0 * _
+        response.json.messages == [EMAIL_USED]
     }
 
-    void "Try to update profileEmail with non-unique value"() {
-        given: 'Create additional user'
-        Map paramMap = TestingUtils.DEFAULT_USER_PROPS.clone()
-        paramMap.EMAIL = UPDATED + TestingUtils.EMAIL
-        paramMap.PROFILE_EMAIL = UPDATED + TestingUtils.PROFILE_EMAIL
-        paramMap.CUSTOM_ID = null
-        TestingUtils.createUser(paramMap)
+    void "Check updateEmail action"() {
+        when: 'Call updateEmail() action'
+        params.email = EMAIL
+        controller.updateEmail()
 
-        when: 'Call updateProfileEmail()'
-        params.profileEmail = UPDATED + TestingUtils.PROFILE_EMAIL
-        controller.updateProfileEmail()
-
-        then: 'JSON with error message returned'
-        response.text == emailUsedJson as String
+        then: 'JSON response received'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(EMAIL)
+        1 * userService.getUserByEmail(EMAIL)
+        1 * userService.getUserByProfileEmail(EMAIL)
+        1 * user.getProperty(ID) >> ID
+        1 * userService.createEmailVerification([userId: ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
+        1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
     }
 
-    void "Update profileEmail"() {
-        given: 'Mocking the userService'
-        controller.userService = Mock(UserService)
+    void "Check updatePassword action for invalid params"() {
+        when: 'Call updatePassword() action'
+        controller.updatePassword(userPasswordCommand)
 
-        when: 'Call updateProfileEmail()'
-        params.profileEmail = UPDATED + TestingUtils.PROFILE_EMAIL
-        controller.updateProfileEmail()
-
-        then: 'Mocked JSON response returned'
-        response.json.success == MOCKED_RESPONSE
+        then: 'JSON response received'
+        1 * userPasswordCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.composeJsonResponse(userPasswordCommand, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
     }
 
-    void "Update avatar"() {
-        when: 'Call updateAvatar()'
-        controller.updateAvatar()
+    void "Check updatePassword action for valid params"() {
+        when: 'Call updatePassword() action'
+        controller.updatePassword(userPasswordCommand)
 
-        then: 'Mocked JSON response returned'
-        response.json.success == MOCKED_RESPONSE
+        then: 'JSON response received'
+        1 * userPasswordCommand.validate() >> Boolean.TRUE
+        1 * userPasswordCommand.newPassword >> NEW_PASSWORD
+        1 * userService.updatePassword(NEW_PASSWORD) >> user
+        1 * ajaxResponseService.composeJsonResponse(user, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
     }
 
-    void "Get avatar"() {
-        when: 'Call getAvatar()'
-        controller.getAvatar()
+    void "Check updateUserProfile action"() {
+        when: 'Call updateUserProfile() action'
+        controller.updateUserProfile(userProfileCommand)
 
-        then: 'Response of image/jpg type returned'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        response.contentType == 'image/jpg'
+        then: 'JSON response received'
+        _ * userProfileCommand._ >> [:]
+        1 * userService.updateUserProfile(_ as Map) >> userProfile
+        1 * ajaxResponseService.composeJsonResponse(userProfile, USER_PROFILE_UPDATED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
     }
 
-    void "Check verify() without id"() {
-        when: 'Call verify()'
-        def model = controller.verify()
+    void "Check updateProfileEmail action for duplicate"() {
+        when: 'Call updateProfileEmail() action'
+        controller.updateProfileEmail(PROFILE_EMAIL)
 
-        then: 'Warning returned'
-        controller.modelAndView == null
-        response.redirectedUrl == null
+        then: 'JSON response received'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
+        0 * _
+        response.json.messages == [EMAIL_UPDATE_DUPLICATE]
+    }
+
+    void "Check updateProfileEmail action for used profileEmail"() {
+        when: 'Call updateProfileEmail() action'
+        controller.updateProfileEmail(PROFILE_EMAIL)
+
+        then: 'JSON response received'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(PROFILE_EMAIL)
+        1 * userService.getUserByEmail(PROFILE_EMAIL) >> user
+        1 * user.getProperty(EMAIL) >> PROFILE_EMAIL
+        1 * userService.getUserByProfileEmail(PROFILE_EMAIL) >> user
+        0 * _
+        response.json.messages == [EMAIL_USED]
+    }
+
+    void "Check updateProfileEmail action"() {
+        when: 'Call updateProfileEmail() action'
+        controller.updateProfileEmail(PROFILE_EMAIL)
+
+        then: 'JSON response received'
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(PROFILE_EMAIL)
+        1 * userService.getUserByEmail(PROFILE_EMAIL)
+        1 * userService.getUserByProfileEmail('profileEmail')
+        1 * user.getProperty(ID) >> ID
+        1 * userService.createEmailVerification(
+                [userId: ID, email: PROFILE_EMAIL, action: UPDATE_PROFILE_EMAIL_ACTION]) >> emailVerification
+        1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_PROFILE_EMAIL_MESSAGE_SENT) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Check register action against invalid command"() {
+        when: 'Call register() action'
+        params.isAjaxRequest = Boolean.TRUE
+        controller.register(registerCommand)
+
+        then: 'JSON response received'
+        1 * registerCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.composeJsonResponse(registerCommand) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Check register action against valid command and invalid user data"() {
+        when: 'Call register() action'
+        params.isAjaxRequest = Boolean.TRUE
+        controller.register(registerCommand)
+
+        then: 'JSON response received'
+        1 * registerCommand.validate() >> Boolean.TRUE
+        _ * registerCommand._
+        1 * userService.createUser(_ as Map) >> user
+        1 * user.hasErrors() >> Boolean.TRUE
+        1 * ajaxResponseService.composeJsonResponse(user) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Check register action against valid command and valid user data"() {
+        when: 'Call register() action'
+        params.isAjaxRequest = Boolean.TRUE
+        controller.register(registerCommand)
+
+        then: 'JSON response received'
+        1 * registerCommand.validate() >> Boolean.TRUE
+        _ * registerCommand._
+        1 * userService.createUser(_ as Map) >> user
+        1 * user.hasErrors() >> Boolean.FALSE
+        1 * springSecurityService.reauthenticate(*_)
+        0 * _
+        response.json.redirect == SHOW_PAGE_URI
+    }
+
+    void "Check verify action without id"() {
+        expect: 'verify() action returned the corresponding message'
+        controller.verify() == [message: NO_VERIFICATION_CODE]
+    }
+
+    void "Check verify action with invalid id"() {
+        when: 'Call verify() acrion with id'
+        params.id = ID
+        Map model = controller.verify()
+
+        then: 'If no verification found in db - the corresponding message is returned'
+        1 * userService.getVerification(ID) >> null
+        0 * _
         model == [message: NO_VERIFICATION_CODE]
     }
 
-    void "Check verify() with non-existent verification code"() {
-        when: 'Call verify() with fake id'
-        params.id = FAKE_VER_CODE
-        def model = controller.verify()
-
-        then: 'Warning returned'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        model == [message: NO_VERIFICATION_CODE]
-    }
-
-    void "Check verify() with correct register user entry"() {
-        when: 'Call verify() for registerUser action'
-        params.id = TestingUtils.createEmailVerification().verificationCode
-        def result = controller.verify()
-
-        then: 'Redirected to show page'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        result == [createUser: Boolean.TRUE]
-    }
-
-    void "Check verify() with correct update email entry"() {
-        when: 'Call verify() for updateEmail action'
-        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
+    void "Check verify action for user registration"() {
+        when: 'Call verify() acrion with id'
+        params.id = ID
         controller.verify()
 
-        then: 'Redirected to edit user page'
-        controller.modelAndView == null
-        response.redirectedUrl == EDIT_USER_PAGE_URL
+        then: 'If no verification found in db - the corresponding message is returned'
+        1 * userService.getVerification(ID) >> emailVerification
+        1 * emailVerification.getProperty(EMAIL)
+        1 * emailVerification.getProperty(USER_ID)
+        1 * emailVerification.getProperty(ACTION) >> REGISTER_ACTION
+        1 * emailVerification.delete(['flush':true])
+        0 * _
     }
 
-    void "Check verify() with incorrect update email entry"() {
-        given: 'Mock incorrect user'
-        controller.userService.updateEmail = { arg1, arg2 ->
-            incorrectUser
-        }
+    void "Check verify action fail for email change"() {
+        when: 'Call verify() acrion with id'
+        params.id = ID
+        Map model = controller.verify()
 
-        when: 'Call verify() for updateEmail action'
-        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_EMAIL_VERIFICATION_PROPS).verificationCode
-        def result = controller.verify()
-
-        then: 'Warning message returned'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        result == [message: EMAIL_UPDATE_FAILED]
+        then: 'If no verification found in db - the corresponding message is returned'
+        1 * userService.getVerification(ID) >> emailVerification
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getProperty(USER_ID) >> 1L
+        1 * emailVerification.getProperty(ACTION) >> UPDATE_EMAIL_ACTION
+        1 * userService.updateEmail(1L, EMAIL) >> user
+        1 * user.hasErrors() >> Boolean.TRUE
+        1 * emailVerification.delete(['flush':true])
+        0 * _
+        model == [message: EMAIL_UPDATE_FAILED]
     }
 
-    void "Check verify() with correct update profileEmail entry"() {
-        when: 'Call verify() for updateProfileEmail action'
-        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
+    void "Check verify action success for email change"() {
+        when: 'Call verify() acrion with id'
+        params.id = ID
         controller.verify()
 
-        then: 'Redirected to profile page'
-        controller.modelAndView == null
-        response.redirectedUrl == EDIT_PROFILE_PAGE_URL
+        then: 'If no verification found in db - the corresponding message is returned'
+        1 * userService.getVerification(ID) >> emailVerification
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getProperty(USER_ID) >> 1L
+        1 * emailVerification.getProperty(ACTION) >> UPDATE_EMAIL_ACTION
+        1 * userService.updateEmail(1L, EMAIL) >> user
+        1 * user.hasErrors() >> Boolean.FALSE
+        1 * emailVerification.delete(['flush':true])
+        0 * _
+        response.redirectedUrl == EDIT_PAGE_URI
     }
 
-    void "Check verify() with incorrect update profileEmail entry"() {
-        given: 'Mock incorrect user'
-        controller.userService.updateProfileEmail = { arg1, arg2 ->
-            incorrectUserProfile
-        }
+    void "Check verify action fail for profileEmail change"() {
+        when: 'Call verify() acrion with id'
+        params.id = ID
+        Map model = controller.verify()
 
-        when: 'Call verify() for updateProfileEmail action'
-        params.id = TestingUtils.createEmailVerification(TestingUtils.DEFAULT_PROFILE_EMAIL_VERIFICATION_PROPS).verificationCode
-        def result = controller.verify()
-
-        then: 'Warning message returned'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        result == [message: PROFILE_EMAIL_UPDATE_FAILED]
+        then: 'If no verification found in db - the corresponding message is returned'
+        1 * userService.getVerification(ID) >> emailVerification
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getProperty(USER_ID) >> 1L
+        1 * emailVerification.getProperty(ACTION) >> UPDATE_PROFILE_EMAIL_ACTION
+        1 * userService.updateProfileEmail(1L, EMAIL) >> userProfile
+        1 * userProfile.hasErrors() >> Boolean.TRUE
+        1 * emailVerification.delete(['flush':true])
+        0 * _
+        model == [message: PROFILE_EMAIL_UPDATE_FAILED]
     }
 
-    void "Check createUser() for correct user"() {
-        given: 'Mock verification in session'
-        controller.session.emailVerification = TestingUtils.createEmailVerification()
+    void "Check verify action success for profileEmail change"() {
+        when: 'Call verify() acrion with id'
+        params.id = ID
+        controller.verify()
 
-        when: 'Invoking createUser()'
-        controller.createUser()
-
-        then: 'JSON response with show page redirect returned'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        response.text == showPageRedirectJson as String
-    }
-
-    void "Check createUser() for incorrect user"() {
-        given: 'Mock verification in session and incorrect user'
-        controller.session.emailVerification = TestingUtils.createEmailVerification()
-        controller.userService.createUser = { arg ->
-            incorrectUser
-        }
-
-        when: 'Invoking createUser()'
-        controller.createUser()
-
-        then: 'JSON response with show page redirect returned'
-        response.json.success == MOCKED_RESPONSE
-    }
-
-    private static User getIncorrectUser() {
-        User incorrectUser = new User()
-        incorrectUser.save()
-        incorrectUser
-    }
-
-    private static UserProfile getIncorrectUserProfile() {
-        UserProfile userProfile = new UserProfile()
-        userProfile.save()
-        userProfile
-    }
-
-    private static JSON getEmailUpdateDuplicateJson() {
-        [messages: [EMAIL_UPDATE_DUPLICATE]] as JSON
-    }
-
-    private static JSON getEmailUsedJson() {
-        [messages: [EMAIL_USED]] as JSON
-    }
-
-    private static JSON getShowPageRedirectJson() {
-        [redirect: SHOW_PAGE_URL] as JSON
+        then: 'If no verification found in db - the corresponding message is returned'
+        1 * userService.getVerification(ID) >> emailVerification
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getProperty(USER_ID) >> 1L
+        1 * emailVerification.getProperty(ACTION) >> UPDATE_PROFILE_EMAIL_ACTION
+        1 * userService.updateProfileEmail(1L, EMAIL) >> userProfile
+        1 * userProfile.hasErrors() >> Boolean.FALSE
+        1 * emailVerification.delete(['flush':true])
+        0 * _
+        response.redirectedUrl == PROFILE_PAGE_URI
     }
 }
