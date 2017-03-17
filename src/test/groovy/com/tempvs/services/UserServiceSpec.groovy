@@ -23,7 +23,6 @@ class UserServiceSpec extends Specification {
     private static final String PASSWORD = 'password'
     private static final String VERIFICATION_CODE = 'verificationCode'
     private static final String USER_PROFILE = 'userProfile'
-    private static final String LAST_ACTIVE = 'lastActive'
 
     def springSecurityService = Mock(SpringSecurityService)
     def mailService = Mock(MailService)
@@ -216,5 +215,4 @@ class UserServiceSpec extends Specification {
         and:
         result == userProfile
     }
-
 }
