@@ -1,16 +1,13 @@
 package com.tempvs.taglibs
 
 import com.tempvs.domain.user.User
-import com.tempvs.domain.user.UserProfile
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 /**
  * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
  */
 @TestFor(ImageTagLib)
-@Mock([User, UserProfile])
 class ImageTagLibSpec extends Specification {
     private static final String AVATAR_URL = '/image/getAvatar'
 
