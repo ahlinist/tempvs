@@ -8,7 +8,7 @@ class ActivityInterceptor {
     UserService userService
 
     ActivityInterceptor() {
-        matchAll().excludes(controller: "auth", action: ~/(login|register)/)
+        matchAll().excludes(controller: ~/(auth|image)/)
     }
 
     boolean before() {

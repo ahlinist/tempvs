@@ -9,6 +9,9 @@ import spock.lang.Specification
  */
 @TestFor(ActivityInterceptor)
 class ActivityInterceptorSpec extends Specification {
+    private static final String AUTH = 'auth'
+    private static final String USER = 'user'
+    private static final String IMAGE = 'image'
 
     def setup() {
     }
@@ -18,24 +21,38 @@ class ActivityInterceptorSpec extends Specification {
     }
 
     void "Test activity interceptor matching"() {
-        when: "A request matches the interceptor"
-        withRequest(controller:'user', action:'edit')
+        when:
+        withRequest(controller: controller, action: action)
 
-        then: "The interceptor does match"
+        then:
         interceptor.doesMatch()
+
+        where:
+        controller | action
+        USER       | 'show'
+        USER       | 'edit'
+        USER       | 'profile'
+        USER       | 'updateEmail'
+        USER       | 'updatePassword'
+        USER       | 'updateUserProfile'
+        USER       | 'updateProfileEmail'
+        USER       | 'register'
+        USER       | 'verify'
+
     }
 
     void "Interceptor doesn't match the excluded actions"() {
-        when: "A request doesn't match the 'register' action"
-        withRequest(controller:'auth', action:'register')
+        when:
+        withRequest(controller: controller, action: action)
 
-        then: "The interceptor does match"
+        then:
         !interceptor.doesMatch()
 
-        when: "A request doesn't match the login action"
-        withRequest(controller:'auth', action:'login')
-
-        then: "The interceptor does match"
-        !interceptor.doesMatch()
+        where:
+        controller  | action
+        AUTH        | 'register'
+        AUTH        | 'login'
+        IMAGE       | 'updateAvatar'
+        IMAGE       | 'getAvatar'
     }
 }
