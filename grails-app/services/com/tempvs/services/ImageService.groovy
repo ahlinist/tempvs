@@ -1,19 +1,23 @@
 package com.tempvs.services
 
+import com.tempvs.image.Image
 import grails.transaction.Transactional
 
 @Transactional
 class ImageService {
     def springSecurityService
-    def fileDAOService
+    def imageDAO
     private static final String AVATAR_PATH = 'avatar'
 
     void updateAvatar(InputStream inputStream) {
         String collection = "${AVATAR_PATH}_${springSecurityService.currentUser.id}"
         Map query = [metadata: [currentAvatar: Boolean.TRUE]]
 
-        fileDAOService.save(fileDAOService.get(collection, query), [currentAvatar: null])
-        fileDAOService.save(fileDAOService.create(inputStream, collection, AVATAR_PATH), [currentAvatar: Boolean.TRUE])
+        Image currentAvatar = imageDAO.get(collection, query)
+        Image newAvatar = imageDAO.create(inputStream, collection, AVATAR_PATH)
+
+        imageDAO.save(currentAvatar, [currentAvatar: null])
+        imageDAO.save(newAvatar, [currentAvatar: Boolean.TRUE])
     }
 
     List<Byte> getOwnAvatar() {
@@ -21,7 +25,7 @@ class ImageService {
         Map query = [metadata: [currentAvatar: Boolean.TRUE]]
 
         try {
-            fileDAOService.get(collection, query)?.inputStream?.bytes
+            imageDAO.get(collection, query)?.bytes
         } catch (Exception e) {
             null
         }
