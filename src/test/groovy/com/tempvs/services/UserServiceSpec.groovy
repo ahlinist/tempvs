@@ -154,7 +154,7 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * User.get(LONG_ID) >> user
-        1 * user.setProperty(EMAIL, EMAIL)
+        1 * user.setEmail(EMAIL)
         1 * user.save([flush: true])
 
         and:
@@ -168,7 +168,7 @@ class UserServiceSpec extends Specification {
         then:
         1 * springSecurityService.currentUser >> user
         1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
-        1 * user.setProperty(PASSWORD, PASSWORD)
+        1 * user.setPassword(PASSWORD)
         1 * user.save([flush: true])
 
         and:
@@ -181,7 +181,7 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.setProperty(LAST_ACTIVE, _ as Date)
+        1 * user.setLastActive(_ as Date)
         1 * user.save([flush: true])
     }
 
@@ -192,7 +192,7 @@ class UserServiceSpec extends Specification {
         then:
         1 * User.get(LONG_ID) >> user
         1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * userProfile.setProperty(PROFILE_EMAIL, PROFILE_EMAIL)
+        1 * userProfile.setProfileEmail(PROFILE_EMAIL)
         1 * userProfile.save([flush: true])
 
         and:
