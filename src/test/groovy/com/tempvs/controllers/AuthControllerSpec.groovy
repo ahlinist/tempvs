@@ -16,7 +16,6 @@ import spock.lang.Specification
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(AuthController)
-@Mock([User, UserProfile])
 class AuthControllerSpec extends Specification {
     private static final String EMAIL = 'authUnitTest@email.com'
     private static final String PASSWORD = 'password'

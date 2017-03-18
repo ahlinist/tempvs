@@ -7,7 +7,6 @@ import com.tempvs.services.AjaxResponseService
 import com.tempvs.services.UserService
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -15,7 +14,6 @@ import spock.lang.Specification
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(UserController)
-@Mock([User, UserProfile, EmailVerification])
 class UserControllerSpec extends Specification {
     private static final String LOGIN_PAGE_URI = '/auth/login'
     private static final String SHOW_PAGE_URI = '/user/show'
