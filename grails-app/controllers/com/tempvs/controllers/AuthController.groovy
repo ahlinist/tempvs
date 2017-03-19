@@ -55,6 +55,7 @@ class LoginCommand {
     String password
 
     static constraints = {
+        email email: true
     }
 }
 

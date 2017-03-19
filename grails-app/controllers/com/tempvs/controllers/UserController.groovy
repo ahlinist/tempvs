@@ -4,7 +4,6 @@ import com.tempvs.domain.user.User
 import com.tempvs.domain.user.UserProfile
 import com.tempvs.domain.user.verification.EmailVerification
 import grails.converters.JSON
-import grails.util.Holders
 
 class UserController {
     def userService
@@ -175,14 +174,17 @@ class UserController {
 }
 
 class UserPasswordCommand {
+
+    static passwordEncoder
+    static springSecurityService
+
     String currentPassword
     String newPassword
     String repeatNewPassword
 
     static constraints = {
         currentPassword validator: { currPass, upc ->
-            Holders.applicationContext.passwordEncoder.isPasswordValid(
-                    Holders.applicationContext.springSecurityService.currentUser.password, currPass, null)
+            passwordEncoder.isPasswordValid(springSecurityService.currentUser.password, currPass, null)
         }
         repeatNewPassword validator: { repPass, upc ->
             upc.newPassword == repPass
