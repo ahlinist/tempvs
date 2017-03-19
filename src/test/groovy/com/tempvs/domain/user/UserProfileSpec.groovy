@@ -4,12 +4,11 @@ import com.tempvs.tests.utils.TestingUtils
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
 @TestFor(UserProfile)
-@Mock([User, UserRole])
+@Mock([User, UserProfile])
 class UserProfileSpec extends Specification {
     private static final String EMAIL_FOR_FAIL = 'fail@mail.com'
     private static final String NOT_EMAIL = 'not email'
@@ -22,43 +21,43 @@ class UserProfileSpec extends Specification {
     }
 
     void "Test fails when firstName is missing"() {
-        given: 'Prepare properties excluding firstName'
+        given:
         Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
         props.firstName = null
 
-        expect:"UserProfile creation failed"
+        expect:
         !TestingUtils.createUser(props)
     }
 
     void "Test fails when lastName is missing"() {
-        given: 'Prepare properties excluding firstName'
+        given:
         Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
         props.lastName = null
 
-        expect:"UserProfile creation failed"
+        expect:
         !TestingUtils.createUser(props)
     }
 
     void "User with incorrect email is not created"() {
-        given: 'Prepare properties with incorrect email'
+        given:
         Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
         props.email = NOT_EMAIL
 
-        expect: "User with incorrect email is not created"
+        expect:
         !TestingUtils.createUser(props)
     }
 
     void "UserProfile created"() {
-        expect: "Pass all values and userProfile is created"
+        expect:
         TestingUtils.createUser().userProfile
     }
 
     void "User can not be created with numeric customId"() {
-        given: 'Prepare properties with numeric customId'
+        given:
         Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
         props.customId = NUMERIC_CUSTOM_ID
 
-        expect: 'User is not created'
+        expect:
         !TestingUtils.createUser(props)
     }
 
@@ -74,14 +73,15 @@ class UserProfileSpec extends Specification {
         then: "UserProfile has not been saved"
         !UserProfile.findByCustomId(NUMERIC_CUSTOM_ID)
     }
-
+    
     void "Check if email update is rejected for non-unique profileEmail"() {
-        given: 'Prepare default user and properties with numeric customId'
-        Map props = TestingUtils.createUser().properties
+        given:
+        Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
         props.email = EMAIL_FOR_FAIL
         props.customId = null
 
-        expect: "User with non-unique profileEmail is not created"
+        expect:
+        TestingUtils.createUser()
         !TestingUtils.createUser(props)
     }
 }
