@@ -121,10 +121,6 @@ grails:
 #                      filters: none
 #                    - pattern: *//**//**
 #                      filters: JOINED_FILTERS
-    mongodb:
-        host: localhost
-        port: 27017
-        databaseName: tempvs
 info:
     app:
         name: '@info.app.name@'

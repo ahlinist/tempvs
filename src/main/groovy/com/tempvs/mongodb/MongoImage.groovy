@@ -1,9 +1,14 @@
 package com.tempvs.mongodb
 
+import com.mongodb.gridfs.GridFSFile
 import com.tempvs.image.Image
 
 class MongoImage implements Image {
     def gridFSFile
+
+    MongoImage(GridFSFile gridFSFile) {
+        this.gridFSFile = gridFSFile
+    }
 
     Boolean save() {
         gridFSFile.save()
@@ -14,6 +19,6 @@ class MongoImage implements Image {
     }
 
     List<Byte> getBytes() {
-        gridFSFile?.inputStream?.bytes
+        gridFSFile.inputStream?.bytes
     }
 }

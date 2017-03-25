@@ -10,6 +10,8 @@ class MongoImageDAO {
     def dBObjectFactory
     def imageFactory
 
+    private static final Boolean CLOSE_STREAM_ON_PERSIST = Boolean.TRUE
+
     Boolean save(Image image, Map metaData = null) {
         if (image) {
             if (metaData) {
@@ -24,12 +26,12 @@ class MongoImageDAO {
     Image get(String collection, Map query) {
         GridFS gridFS = gridFSFactory.getGridFS(collection)
         GridFSDBFile gridFSDBFile = gridFS.findOne(dBObjectFactory.createInstance(query))
-        imageFactory.getImage(gridFSDBFile)
+        imageFactory.createInstance(gridFSDBFile)
     }
 
     Image create(InputStream inputStream, String collection, String fileName) {
         GridFS gridFS = gridFSFactory.getGridFS(collection)
-        GridFSInputFile gridFSInputFile = gridFS.createFile(inputStream, fileName, Boolean.TRUE)
-        imageFactory.getImage(gridFSInputFile)
+        GridFSInputFile gridFSInputFile = gridFS.createFile(inputStream, fileName, CLOSE_STREAM_ON_PERSIST)
+        imageFactory.createInstance(gridFSInputFile)
     }
 }
