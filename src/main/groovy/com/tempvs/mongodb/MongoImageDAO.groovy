@@ -13,13 +13,16 @@ class MongoImageDAO {
     private static final Boolean CLOSE_STREAM_ON_PERSIST = Boolean.TRUE
 
     Boolean save(Image image, Map metaData = null) {
-        if (image) {
+        try {
             if (metaData) {
                 image.metaData = dBObjectFactory.createInstance(metaData)
             }
 
             image.save()
+
             Boolean.TRUE
+        } catch (Exception e) {
+            Boolean.FALSE
         }
     }
 

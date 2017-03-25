@@ -10,7 +10,7 @@ class MongoImage implements Image {
         this.gridFSFile = gridFSFile
     }
 
-    Boolean save() {
+    void save() {
         gridFSFile.save()
     }
 
