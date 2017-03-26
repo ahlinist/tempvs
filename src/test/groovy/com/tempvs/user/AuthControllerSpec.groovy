@@ -1,12 +1,7 @@
 package com.tempvs.user
 
-import com.tempvs.user.User
-import com.tempvs.user.verification.EmailVerification
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.user.UserService
-import com.tempvs.user.AuthController
-import com.tempvs.user.LoginCommand
-import com.tempvs.user.RequestRegistrationCommand
+import com.tempvs.user.verification.EmailVerification
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
@@ -44,15 +39,6 @@ class AuthControllerSpec extends Specification {
     def cleanup() {
     }
 
-    void "Render register page"() {
-        when: 'Register() action is called'
-        controller.register()
-
-        then: 'No modelAndView objects returned and no redirects happen'
-        controller.modelAndView == null
-        response.redirectedUrl == null
-    }
-
     void "Testing register() action with invalid params"() {
         when: 'Passing command mock'
         params.isAjaxRequest = Boolean.TRUE
@@ -77,15 +63,6 @@ class AuthControllerSpec extends Specification {
         1 * ajaxResponseService.composeJsonResponse(emailVerification, _ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-    }
-
-    void "Render login page"() {
-        when: 'Call login() action'
-        controller.login()
-
-        then: 'No modelAndView objects returned and no redirects happen'
-        controller.modelAndView == null
-        response.redirectedUrl == null
     }
 
     void "Testing login() for non-valid params"() {

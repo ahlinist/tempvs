@@ -8,12 +8,14 @@ class AuthController {
     private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
     private static final String REGISTER_ACTION = 'register'
 
-    static defaultAction = "login"
-
     def userService
     def springSecurityService
     def ajaxResponseService
     def passwordEncoder
+
+    def index() {
+
+    }
 
     def login(LoginCommand lc) {
         if (params.isAjaxRequest) {

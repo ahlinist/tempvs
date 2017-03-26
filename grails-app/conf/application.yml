@@ -61,11 +61,11 @@ grails:
                 passwordPropertyName: password
                 authorityJoinClassName: com.tempvs.user.UserRole
             auth:
-                loginFormUrl: /auth/login
+                loginFormUrl: /auth/index
             failureHandler:
-                defaultFailureUrl: /auth/login
+                defaultFailureUrl: /auth/index
             successHandler:
-                defaultTargetUrl: /auth/show
+                defaultTargetUrl: /user/show
             authority:
                 className: com.tempvs.user.Role
             requestMap:
