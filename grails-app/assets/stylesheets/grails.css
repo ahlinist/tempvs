@@ -32,16 +32,12 @@ pre {
     padding-right: 110px;
 }
 .navbar .container {
-    margin: 10px;
+    margin: 0;
 }
 .navbar-default a {
     color: #ffffff !important;
     font-size: 18px !important;
     text-decoration: none;
-}
-.grails-icon img {
-    width: 40px;
-
 }
 .navbar-default, .navbar-static-top {
     background-color: #4D8618;
@@ -380,16 +376,6 @@ body, html {
     font-size: 14px;
 }
 
-a {
-    color: #db4800;
-    text-decoration: underline;
-}
-
-a:hover {
-    color: #db4800;
-    text-decoration: none
-}
-
 h1 {
     font-size: 2.125em;
     margin: .67em 0
@@ -508,7 +494,7 @@ h8 {
     position: relative;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 5%
+    padding: 0;
 }
 
 .row:before, .row:after {
@@ -822,7 +808,7 @@ ul.nav-sidebar li.active a {
 }
 
 body {
-    background: #444
+    background: white;
 }
 
 html.noScroll {

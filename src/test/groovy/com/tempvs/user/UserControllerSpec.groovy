@@ -164,16 +164,6 @@ class UserControllerSpec extends Specification {
         model == [user: user]
     }
 
-    void "Render profile page"() {
-        when: 'Call editProfile() action'
-        Map model = controller.profile()
-
-        then: 'Model is passed to show page'
-        1 * springSecurityService.currentUser >> user
-        0 * _
-        model == [user: user]
-    }
-
     void "Check updateEmail action for duplicate"() {
         when: 'Call updateEmail() action'
         params.email = EMAIL

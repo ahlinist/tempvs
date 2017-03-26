@@ -11,18 +11,29 @@
   </head>
   <body class="container">
     <div class="row">
-      <sec:ifLoggedIn>
-        <tempvs:userPic />
-        <g:link class="btn btn-default disableable pull-left" controller="user" action="show"><g:message code="user.show.profile.button" /></g:link>
-        <g:link class="btn btn-default disableable pull-left" controller="user" action="edit"><g:message code="user.edit.button" /></g:link>
-        <g:link class="btn btn-default disableable pull-left" controller="user" action="profile"><g:message code="user.profile.edit.button" /></g:link>
-        <g:link class="btn btn-primary disableable pull-right" uri="/logoff"><g:message code="auth.logout.button" /></g:link>
-      </sec:ifLoggedIn>
-      <sec:ifNotLoggedIn>
-        <g:link class="btn btn-default disableable pull-right" controller="auth">
-          <g:message code="auth.link" />
-        </g:link>
-      </sec:ifNotLoggedIn>
+      <div id="header">
+        <sec:ifLoggedIn>
+          <div>
+            <div class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <tempvs:loggedInUserPic />
+                <tempvs:loggedInFullName />
+                <span class="caret" />
+              </a>
+              <ul class="dropdown-menu">
+                <li><g:link class="col-sm-12 disableable pull-left" controller="user" action="show"><g:message code="user.show.button" /></g:link></li>
+                <li><g:link class="col-sm-12 disableable pull-left" controller="user" action="edit"><g:message code="user.edit.button" /></g:link></li>
+              </ul>
+            </div>
+          </div>
+          <g:link class="btn btn-primary disableable pull-right" uri="/logoff"><g:message code="auth.logout.button" /></g:link>
+        </sec:ifLoggedIn>
+        <sec:ifNotLoggedIn>
+          <g:link class="btn btn-default disableable pull-right" controller="auth">
+            <g:message code="auth.link" />
+          </g:link>
+        </sec:ifNotLoggedIn>
+      </div>
     </div>
     <hr/>
     <g:layoutBody/>

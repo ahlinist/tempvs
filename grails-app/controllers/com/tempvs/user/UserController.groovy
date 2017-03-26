@@ -53,10 +53,6 @@ class UserController {
         [user: springSecurityService.currentUser]
     }
 
-    def profile() {
-        [user: springSecurityService.currentUser]
-    }
-
     def updateEmail(String email) {
         User currentUser = springSecurityService.currentUser
 

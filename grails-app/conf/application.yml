@@ -86,7 +86,7 @@ grails:
                 - pattern: /user/show/**
                   access:
                       - permitAll
-                - pattern: /userProfile/getAvatar
+                - pattern: /user/getAvatar
                   access:
                       - permitAll
                 - pattern: /assets/**
