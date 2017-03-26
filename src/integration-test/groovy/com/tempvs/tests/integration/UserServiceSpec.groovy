@@ -1,8 +1,8 @@
 package com.tempvs.tests.integration
 
-import com.tempvs.domain.user.User
-import com.tempvs.domain.user.UserProfile
-import com.tempvs.domain.user.verification.EmailVerification
+import com.tempvs.user.User
+import com.tempvs.user.UserProfile
+import com.tempvs.user.verification.EmailVerification
 import com.tempvs.tests.utils.TestingUtils
 import grails.test.mixin.Mock
 import grails.test.mixin.integration.Integration

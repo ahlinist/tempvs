@@ -1,7 +1,7 @@
 package com.tempvs.tests.utils
 
-import com.tempvs.domain.user.User
-import com.tempvs.domain.user.UserProfile
+import com.tempvs.user.User
+import com.tempvs.user.UserProfile
 
 class TestingUtils {
     public static final String EMAIL = 'defaultTest@mail.com'
