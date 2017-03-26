@@ -38,9 +38,13 @@ class MongoImageDAOSpec extends Specification {
 
     }
 
-    void "Test save() without metadata"() {
+    void "Test save()"() {
+        given:
+        Boolean result
+        Map metaData = [currentAvatar: Boolean.TRUE]
+
         when:
-        def result = mongoImageDAO.save(image)
+        result = mongoImageDAO.save(image)
 
         then:
         1 * image.save()
@@ -48,14 +52,9 @@ class MongoImageDAOSpec extends Specification {
 
         and:
         result == Boolean.TRUE
-    }
-
-    void "Test save() with metadata"() {
-        given:
-        Map metaData = [currentAvatar: Boolean.TRUE]
 
         when:
-        def result = mongoImageDAO.save(image, metaData)
+        result = mongoImageDAO.save(image, metaData)
 
         then:
         1 * dBObjectFactory.createInstance(metaData) >> dbObject
