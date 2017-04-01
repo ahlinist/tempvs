@@ -1,14 +1,7 @@
 package com.tempvs.user
 
-import com.tempvs.user.User
-import com.tempvs.user.UserProfile
-import com.tempvs.user.verification.EmailVerification
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.user.UserService
-import com.tempvs.user.RegisterCommand
-import com.tempvs.user.UserController
-import com.tempvs.user.UserPasswordCommand
-import com.tempvs.user.UserProfileCommand
+import com.tempvs.user.verification.EmailVerification
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
@@ -19,7 +12,7 @@ import spock.lang.Specification
  */
 @TestFor(UserController)
 class UserControllerSpec extends Specification {
-    private static final String LOGIN_PAGE_URI = '/auth/login'
+    private static final String LOGIN_PAGE_URI = '/auth/index'
     private static final String SHOW_PAGE_URI = '/user/show'
     private static final String EDIT_PAGE_URI = '/user/edit'
     private static final String PROFILE_PAGE_URI = '/user/profile'
