@@ -1,10 +1,11 @@
 package com.tempvs.mongodb
 
 import com.mongodb.BasicDBObject
-import com.mongodb.DBObject
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class DBObjectFactory {
-    DBObject createInstance(Map query) {
+    BasicDBObject createInstance(Map query) {
         new BasicDBObject(query)
     }
 }

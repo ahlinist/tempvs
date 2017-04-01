@@ -4,11 +4,14 @@ import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSInputFile
 import com.tempvs.image.Image
+import com.tempvs.image.ImageDAO
+import groovy.transform.CompileStatic
 
-class MongoImageDAO {
-    def gridFSFactory
-    def dBObjectFactory
-    def imageFactory
+@CompileStatic
+class MongoImageDAO implements ImageDAO {
+    GridFSFactory gridFSFactory
+    DBObjectFactory dBObjectFactory
+    MongoImageFactory imageFactory
 
     private static final Boolean CLOSE_STREAM_ON_PERSIST = Boolean.TRUE
 

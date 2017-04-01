@@ -3,7 +3,9 @@ package com.tempvs.mongodb
 import com.mongodb.DB
 import com.mongodb.Mongo
 import com.mongodb.gridfs.GridFS
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class GridFSFactory {
     private static final String host = 'localhost'
     private static final int port = 27017
