@@ -9,11 +9,12 @@
     </head>
     <body>
       <g:if test="${user}">
+        <tempvs:fullName user="${user}"/>
+        <tempvs:avatar user="${user}"/>
         <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
         <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
 
         <div>
-          <div>${profile.firstName} ${profile.lastName}</div>
           <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${user.lastActive}"/></div>
           <div>${profile.profileEmail}</div>
           <div>${profile.location}</div>

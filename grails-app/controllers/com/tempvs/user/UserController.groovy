@@ -44,7 +44,7 @@ class UserController {
             if (currentUser) {
                 redirect action: 'show', id: customId ?: currentUser.id
             } else {
-                redirect controller: 'auth', action: 'login'
+                redirect controller: 'auth', action: 'index'
             }
         }
     }

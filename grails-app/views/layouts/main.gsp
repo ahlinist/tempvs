@@ -13,19 +13,6 @@
     <div class="row">
       <div id="header">
         <sec:ifLoggedIn>
-          <div>
-            <div class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                <tempvs:loggedInUserPic />
-                <tempvs:loggedInFullName />
-                <span class="caret" />
-              </a>
-              <ul class="dropdown-menu">
-                <li><g:link class="col-sm-12 disableable pull-left" controller="user" action="show"><g:message code="user.show.button" /></g:link></li>
-                <li><g:link class="col-sm-12 disableable pull-left" controller="user" action="edit"><g:message code="user.edit.button" /></g:link></li>
-              </ul>
-            </div>
-          </div>
           <g:link class="btn btn-primary disableable pull-right" uri="/logoff"><g:message code="auth.logout.button" /></g:link>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
@@ -36,6 +23,26 @@
       </div>
     </div>
     <hr/>
-    <g:layoutBody/>
+    <div class="row">
+      <div class="col-sm-2">
+        <sec:ifLoggedIn>
+          <ul class="list-group col-sm-12">
+            <li>
+              <g:link class="list-group-item disableable" controller="user" action="show">
+                <g:message code="user.show.button" />
+              </g:link>
+            </li>
+            <li>
+              <g:link class="list-group-item disableable" controller="user" action="edit">
+                <g:message code="user.edit.button" />
+              </g:link>
+            </li>
+          </ul>
+        </sec:ifLoggedIn>
+      </div>
+      <div class="col-sm-10">
+        <g:layoutBody/>
+      </div>
+    </div>
   </body>
 </html>

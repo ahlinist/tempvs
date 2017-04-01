@@ -15,7 +15,9 @@
 */
 
 * {
-  border-radius: 0 !important;
+    margin: 0;
+    padding: 0;
+    border-radius: 0 !important;
 }
 
 a {
@@ -29,7 +31,23 @@ a:hover {
 }
 
 form {
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 4px #eee groove;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 4px #eee groove;
+}
+
+#avatar > img {
+    width: 15em;
+}
+
+ul {
+    list-style: none;
+}
+
+div {
+    padding: 0;
+}
+
+input, .list-group-item {
+    padding: 0.2em 1em;
 }

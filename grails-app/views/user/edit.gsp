@@ -8,9 +8,7 @@
     </head>
     <body>
       <div class="row">
-        <div class="col-sm-2">
-        </div>
-        <div class="col-sm-8">
+        <div class="col-sm-10">
           <tempvs:ajaxForm action="updateEmail">
             <tempvs:formField type="email" name="email" value="${user?.email}" label="user.edit.email.label" />
             <tempvs:ajaxSubmitButton value="user.edit.email.button" />
