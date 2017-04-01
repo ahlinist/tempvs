@@ -17,6 +17,7 @@ class ImageControllerSpec extends Specification {
     private static final String AVATAR = 'avatar'
     private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
     private static final String IMAGE_EMPTY = 'upload.image.empty'
+    private static final String ID = '1'
 
     def imageService = Mock(ImageService)
     def ajaxResponseService = Mock(AjaxResponseService)
@@ -59,10 +60,11 @@ class ImageControllerSpec extends Specification {
 
     void "Check getAvatar action"() {
         when: 'Call getAvatar() action'
+        params.id = ID
         controller.getAvatar()
 
         then: 'imageService.getOwnAvatar() invoked'
-        1 * imageService.getOwnAvatar()
+        1 * imageService.getAvatar(ID)
         0 * _
     }
 }

@@ -48,17 +48,15 @@ class ImageServiceSpec extends Specification {
         0 * _
     }
 
-    void "Check getOwnAvatar()"() {
+    void "Check getAvatar()"() {
         given:
         String collection = "${AVATAR_PATH}_1"
         Map query = [metadata: [currentAvatar: Boolean.TRUE]]
 
         when:
-        def result = service.getOwnAvatar()
+        def result = service.getAvatar('1')
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(ID) >> 1
         1 * imageDAO.get(collection, query) >> image1
         1 * image1.bytes >> byteList
         0 * _

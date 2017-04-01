@@ -7,6 +7,8 @@ class ImageController {
     def imageService
     def assetResourceLocator
     def ajaxResponseService
+    def userService
+    def springSecurityService
 
     private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
     private static final String AVATAR_UPDATED_FAILED_MESSAGE = 'user.profile.update.avatar.failed.message'
@@ -40,8 +42,8 @@ class ImageController {
         render ajaxResponseService.renderMessage(success, message)
     }
 
-    def getAvatar() {
-        byte[] imageInBytes = imageService.getOwnAvatar() ?:
+    def getAvatar(String id) {
+        byte[] imageInBytes = imageService.getAvatar(id) ?:
                 assetResourceLocator?.findAssetForURI(DEFAULT_AVATAR)?.getInputStream()?.bytes ?:
                         StreamUtils.emptyInput().bytes
 

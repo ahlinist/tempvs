@@ -1,6 +1,5 @@
 package com.tempvs.image
 
-import com.tempvs.image.Image
 import grails.transaction.Transactional
 
 @Transactional
@@ -20,12 +19,12 @@ class ImageService {
         imageDAO.save(newAvatar, [currentAvatar: Boolean.TRUE])
     }
 
-    List<Byte> getOwnAvatar() {
-        String collection = "${AVATAR_PATH}_${springSecurityService.currentUser.id}"
+    List<Byte> getAvatar(String id) {
+        String collection = "${AVATAR_PATH}_${id}"
         Map query = [metadata: [currentAvatar: Boolean.TRUE]]
 
         try {
-            imageDAO.get(collection, query)?.bytes
+            imageDAO.get(collection, query).bytes
         } catch (Exception e) {
             null
         }

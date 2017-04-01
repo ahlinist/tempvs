@@ -7,7 +7,7 @@ import spock.lang.Specification
  */
 @TestFor(ImageTagLib)
 class ImageTagLibSpec extends Specification {
-    private static final String AVATAR_URL = '/image/getAvatar'
+    private static final String AVATAR_URL = '/image/getAvatar/1'
 
     def setup() {
     }
@@ -16,7 +16,10 @@ class ImageTagLibSpec extends Specification {
     }
 
     void "UserPic is queried"() {
+        given:
+        Map properties = [id: 1]
+
         expect:
-        tagLib.loggedInUserPic().contains AVATAR_URL
+        tagLib.avatar(properties).contains AVATAR_URL
     }
 }
