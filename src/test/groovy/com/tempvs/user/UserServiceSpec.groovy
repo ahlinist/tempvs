@@ -1,6 +1,5 @@
 package com.tempvs.user
 
-import com.tempvs.user.verification.EmailVerification
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugins.mail.MailService
 import grails.test.mixin.TestFor

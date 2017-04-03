@@ -1,11 +1,6 @@
 package com.tempvs.user
 
-import com.tempvs.user.User
-import com.tempvs.user.UserProfile
-import com.tempvs.user.verification.EmailVerification
 import com.tempvs.tests.utils.TestingUtils
-import com.tempvs.user.AuthController
-import com.tempvs.user.RequestRegistrationCommand
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification

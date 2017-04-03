@@ -1,14 +1,14 @@
 package com.tempvs.user
 
-import com.tempvs.user.verification.EmailVerification
 import grails.converters.JSON
 
 class AuthController {
     private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
     private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
-    private static final String REGISTER_ACTION = 'register'
+    private static final String REGISTRATION_ACTION = 'registration'
 
     def userService
+    def verifyService
     def springSecurityService
     def ajaxResponseService
     def passwordEncoder
@@ -25,7 +25,7 @@ class AuthController {
                 if (user) {
                     if (passwordEncoder.isPasswordValid(user.password, lc.password, null)) {
                         springSecurityService.reauthenticate(lc.email, lc.password)
-                        render([redirect: g.createLink(controller: 'user', action: 'show')] as JSON)
+                        render([redirect: g.createLink(controller: 'userProfile')] as JSON)
                     } else {
                         render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
                     }
@@ -41,8 +41,8 @@ class AuthController {
     def register(RequestRegistrationCommand rrc) {
         if (params.isAjaxRequest) {
             if (rrc.validate()) {
-                Map props = [action: REGISTER_ACTION, email: rrc.email]
-                render ajaxResponseService.composeJsonResponse(userService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
+                Map props = [action: REGISTRATION_ACTION, email: rrc.email]
+                render ajaxResponseService.composeJsonResponse(verifyService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
             } else {
                 render ajaxResponseService.composeJsonResponse(rrc)
             }

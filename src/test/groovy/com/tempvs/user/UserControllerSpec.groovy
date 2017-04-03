@@ -1,7 +1,6 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.user.verification.EmailVerification
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor

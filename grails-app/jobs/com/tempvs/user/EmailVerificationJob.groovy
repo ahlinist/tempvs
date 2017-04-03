@@ -1,4 +1,4 @@
-package com.tempvs.user.verification
+package com.tempvs.user
 
 class EmailVerificationJob {
     static triggers = {

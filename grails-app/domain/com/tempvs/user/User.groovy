@@ -19,6 +19,7 @@ class User extends BasePersistent implements Serializable {
 	Date lastActive = new Date()
 
 	static hasOne = [userProfile: UserProfile]
+	static hisMany = [clubProfiles: ClubProfile]
 
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this)*.role

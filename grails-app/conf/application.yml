@@ -74,16 +74,13 @@ grails:
                 - pattern: /auth/**
                   access:
                       - permitAll
-                - pattern: /user/verify/**
+                - pattern: /verify/**
                   access:
                       - permitAll
-                - pattern: /user/register
+                - pattern: /user/register/**
                   access:
                       - permitAll
-                - pattern: /user/createUser/**
-                  access:
-                      - permitAll
-                - pattern: /user/show/**
+                - pattern: /userProfile/show/**
                   access:
                       - permitAll
                 - pattern: /image/getAvatar/**

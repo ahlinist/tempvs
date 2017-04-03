@@ -1,13 +1,8 @@
 package com.tempvs.user
 
-import com.tempvs.domain.BasePersistent
-
-class UserProfile extends BasePersistent {
-    String firstName
-    String lastName
+class UserProfile extends BaseProfile {
     String profileEmail
     String location
-    String customId
 
     static belongsTo = [user: User]
 
@@ -18,6 +13,5 @@ class UserProfile extends BasePersistent {
         }
 
         location nullable: true
-        customId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
     }
 }

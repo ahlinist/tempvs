@@ -1,4 +1,4 @@
-package com.tempvs.user.verification
+package com.tempvs.user
 
 import com.tempvs.domain.BasePersistent
 
@@ -10,14 +10,14 @@ class EmailVerification extends BasePersistent {
 
     static constraints = {
         userId nullable: true, validator: { userId, verification ->
-            if (verification.action == 'register') {
+            if (verification.action == 'registration') {
                 true
             } else {
                 userId == null ? false : true
             }
         }
         email email: true, unique: ['action']
-        action inList: ['register', 'updateEmail', 'updateProfileEmail']
+        action inList: ['registration', 'email', 'profileEmail']
         verificationCode unique: true
     }
 }

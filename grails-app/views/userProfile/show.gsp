@@ -1,21 +1,20 @@
 <!DOCTYPE html>
-<g:set var="profile" value="${user?.userProfile}" />
 <html>
     <head>
       <meta name="layout" content="main"/>
-        <g:if test="${profile}">
-          <title>Tempvs - ${profile.firstName} ${profile.lastName}</title>
-        </g:if>
+      <g:if test="${profile}">
+        <title>Tempvs - <tempvs:fullName profile="${profile}"/></title>
+      </g:if>
     </head>
     <body>
-      <g:if test="${user}">
-        <tempvs:fullName user="${user}"/>
-        <tempvs:avatar user="${user}"/>
+      <g:if test="${profile}">
+        <tempvs:fullName profile="${profile}"/>
+        <tempvs:avatar profile="${profile}"/>
         <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
         <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
 
         <div>
-          <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${user.lastActive}"/></div>
+          <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${profile.user.lastActive}"/></div>
           <div>${profile.profileEmail}</div>
           <div>${profile.location}</div>
         </div>

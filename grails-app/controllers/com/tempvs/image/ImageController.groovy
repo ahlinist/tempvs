@@ -1,41 +1,41 @@
 package com.tempvs.image
 
+import com.tempvs.user.UserProfile
 import org.springframework.util.StreamUtils
 
 class ImageController {
 
-    def imageService
-    def assetResourceLocator
-    def ajaxResponseService
-    def userService
-    def springSecurityService
-
-    private static final String AVATAR_UPDATED_MESSAGE = 'user.profile.update.avatar.success.message'
-    private static final String AVATAR_UPDATED_FAILED_MESSAGE = 'user.profile.update.avatar.failed.message'
+    private static final String AVATAR_UPDATED_MESSAGE = 'userProfile.update.avatar.success.message'
+    private static final String AVATAR_UPDATED_FAILED_MESSAGE = 'userProfile.update.avatar.failed.message'
     private static final String IMAGE_EMPTY = 'upload.image.empty'
     private static final String DEFAULT_AVATAR = 'defaultAvatar.jpg'
     private static final String AVATAR_FIELD = 'avatar'
 
+    def imageService
+    def assetResourceLocator
+    def ajaxResponseService
+    def springSecurityService
+
     def updateAvatar() {
-        Boolean success
+        Boolean success = Boolean.FALSE
         String message
         def multiPartFile = request.getFile(AVATAR_FIELD)
 
         if (!multiPartFile?.empty) {
             InputStream inputStream = multiPartFile.inputStream
+            UserProfile profile = springSecurityService.currentUser.userProfile
 
             try {
-                imageService.updateAvatar(inputStream)
-                success = Boolean.TRUE
+                String imageId = "${profile.user.id}_${profile.class.simpleName}_${profile.id}"
+                String collection = "${AVATAR_FIELD}_${imageId}"
+                success = imageService.updateAvatar(inputStream, collection)
                 message = AVATAR_UPDATED_MESSAGE
             } catch (Exception e) {
-                success = Boolean.FALSE
                 message = AVATAR_UPDATED_FAILED_MESSAGE
             } finally {
                 inputStream?.close()
             }
         } else {
-            success = Boolean.FALSE
             message = IMAGE_EMPTY
         }
 
