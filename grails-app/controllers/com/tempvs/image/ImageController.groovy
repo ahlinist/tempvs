@@ -1,6 +1,6 @@
 package com.tempvs.image
 
-import com.tempvs.user.UserProfile
+import com.tempvs.user.User
 import org.springframework.util.StreamUtils
 
 class ImageController {
@@ -23,10 +23,10 @@ class ImageController {
 
         if (!multiPartFile?.empty) {
             InputStream inputStream = multiPartFile.inputStream
-            UserProfile profile = springSecurityService.currentUser.userProfile
+            User user = springSecurityService.currentUser
 
             try {
-                String imageId = "${profile.user.id}_${profile.class.simpleName}_${profile.id}"
+                String imageId = "${user.id}_${user.userProfile.class.simpleName}_${user.userProfile.id}"
                 String collection = "${AVATAR_FIELD}_${imageId}"
                 success = imageService.updateAvatar(inputStream, collection)
                 message = AVATAR_UPDATED_MESSAGE
