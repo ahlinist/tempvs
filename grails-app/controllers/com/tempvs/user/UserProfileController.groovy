@@ -4,7 +4,7 @@ import grails.converters.JSON
 
 class UserProfileController {
 
-    private static final String NO_SUCH_USER = 'user.profile.noSuchUser.message'
+    private static final String NO_SUCH_USER = 'userProfile.noSuchUser.message'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'user.edit.profileEmail.verification.sent.message'
     private static final String USER_PROFILE_UPDATED_MESSAGE = 'user.userProfile.updated'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
