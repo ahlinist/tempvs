@@ -7,7 +7,7 @@ class ImageTagLib {
     String avatar = { attrs ->
         Long userId = attrs.profile.user.id
         String profileClass = attrs.profile.class.simpleName
-        Long profileId = attrs.profile.user.id
+        Long profileId = attrs.profile.id
         String id = "${userId}_${profileClass}_${profileId}"
         String link = g.createLink(controller: 'image', action: 'getAvatar', id: id)
         Map model = [src: link]
