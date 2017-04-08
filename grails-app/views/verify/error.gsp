@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="main"/>
-    <title>Tempvs - Email verification</title>
+    <title>Tempvs - Email verification error</title>
   </head>
   <body>
       <div class="container">
