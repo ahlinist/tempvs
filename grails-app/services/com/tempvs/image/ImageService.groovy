@@ -7,8 +7,10 @@ import org.springframework.util.StreamUtils
 @Transactional
 @CompileStatic
 class ImageService {
-    ImageDAO imageDAO
+
     private static final String AVATAR_PATH = 'avatar'
+
+    ImageDAO imageDAO
 
     Boolean updateAvatar(InputStream inputStream, String collection) {
         Image currentAvatar = imageDAO.get(collection, [metadata: [currentAvatar: Boolean.TRUE]])
