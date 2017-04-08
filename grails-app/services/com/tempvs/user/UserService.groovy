@@ -48,10 +48,7 @@ class UserService {
 
     void updateLastActive(){
         User user = springSecurityService.currentUser
-
-        if (user) {
-            user.lastActive = new Date()
-            user.save(flush: true)
-        }
+        user.lastActive = new Date()
+        user.save(flush: true)
     }
 }

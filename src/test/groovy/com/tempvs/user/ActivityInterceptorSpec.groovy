@@ -9,7 +9,9 @@ import spock.lang.Specification
 class ActivityInterceptorSpec extends Specification {
     private static final String AUTH = 'auth'
     private static final String USER = 'user'
+    private static final String USER_PROFILE = 'userProfile'
     private static final String IMAGE = 'image'
+    private static final String VERIFY = 'verify'
 
     def setup() {
     }
@@ -26,17 +28,14 @@ class ActivityInterceptorSpec extends Specification {
         interceptor.doesMatch()
 
         where:
-        controller | action
-        USER       | 'show'
-        USER       | 'edit'
-        USER       | 'profile'
-        USER       | 'updateEmail'
-        USER       | 'updatePassword'
-        USER       | 'updateUserProfile'
-        USER       | 'updateProfileEmail'
-        USER       | 'register'
-        USER       | 'verify'
-
+        controller  | action
+        USER        | 'edit'
+        USER        | 'updateEmail'
+        USER        | 'updatePassword'
+        USER_PROFILE| 'edit'
+        USER_PROFILE| 'updateUserProfile'
+        USER_PROFILE| 'updateProfileEmail'
+        IMAGE       | 'updateAvatar'
     }
 
     void "Interceptor doesn't match the excluded actions"() {
@@ -50,7 +49,12 @@ class ActivityInterceptorSpec extends Specification {
         controller  | action
         AUTH        | 'register'
         AUTH        | 'login'
-        IMAGE       | 'updateAvatar'
+        USER        | 'index'
+        USER        | 'register'
         IMAGE       | 'getAvatar'
+        USER_PROFILE| 'show'
+        VERIFY      | 'registration'
+        VERIFY      | 'email'
+        VERIFY      | 'profileEmail'
     }
 }
