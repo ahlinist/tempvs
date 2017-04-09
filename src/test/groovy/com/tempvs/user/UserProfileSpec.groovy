@@ -12,7 +12,7 @@ import spock.lang.Specification
 class UserProfileSpec extends Specification {
     private static final String EMAIL_FOR_FAIL = 'fail@mail.com'
     private static final String NOT_EMAIL = 'not email'
-    private static final String NUMERIC_CUSTOM_ID = '123456'
+    private static final String NUMERIC_PROFILE_ID = '123456'
 
     def setup() {
     }
@@ -52,26 +52,26 @@ class UserProfileSpec extends Specification {
         TestingUtils.createUser().userProfile
     }
 
-    void "User can not be created with numeric customId"() {
+    void "User can not be created with numeric profileId"() {
         given:
         Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
-        props.customId = NUMERIC_CUSTOM_ID
+        props.profileId = NUMERIC_PROFILE_ID
 
         expect:
         !TestingUtils.createUser(props)
     }
 
-    void "Numeric customId can't be set to existent user"() {
+    void "Numeric profileId can't be set to existent user"() {
         given: 'An existent user'
         User user = TestingUtils.createUser()
 
         when: "Set numeric customId to existent user's profile"
         UserProfile userProfile = user.userProfile
-        userProfile.customId = NUMERIC_CUSTOM_ID
+        userProfile.profileId = NUMERIC_PROFILE_ID
         userProfile.save(flush:true)
 
         then: "UserProfile has not been saved"
-        !UserProfile.findByCustomId(NUMERIC_CUSTOM_ID)
+        !UserProfile.findByProfileId(NUMERIC_PROFILE_ID)
     }
     
     void "Check if email update is rejected for non-unique profileEmail"() {
