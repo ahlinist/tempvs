@@ -8,8 +8,8 @@ class UserProfileCommandSpec extends Specification {
     public static final String FIRST_NAME = 'firstName'
     public static final String LAST_NAME = 'lastName'
     public static final String LOCATION = 'location'
-    public static final String CUSTOM_ID = 'customId'
-    public static final String NUMERIC_CUSTOM_ID = '1234'
+    public static final String PROFILE_ID = 'profileId'
+    public static final String NUMERIC_PROFILE_ID = '1234'
 
     def setup() {
 
@@ -31,15 +31,15 @@ class UserProfileCommandSpec extends Specification {
 
     void "Create full UserProfileCommand"() {
         given:
-        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, customId: CUSTOM_ID]
+        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID]
 
         expect:
         new UserProfileCommand(props).validate()
     }
 
-    void "Create UserProfileCommand with numeric customId"() {
+    void "Create UserProfileCommand with numeric profileId"() {
         given:
-        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, customId: NUMERIC_CUSTOM_ID]
+        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, profileId: NUMERIC_PROFILE_ID]
 
         expect:
         !new UserProfileCommand(props).validate()

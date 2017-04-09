@@ -10,7 +10,7 @@ import spock.lang.Specification
 class RequestRegistrationCommandSpec extends Specification {
     private static final INVALID_EMAIL = 'test-email.com'
     private static final VALID_EMAIL = 'test@email.com'
-    private static final String REGISTER_ACTION = 'register'
+    private static final String REGISTER_ACTION = 'registration'
     private static final String VERIFICATION_CODE = 'verificationCode'
 
     def setup() {
