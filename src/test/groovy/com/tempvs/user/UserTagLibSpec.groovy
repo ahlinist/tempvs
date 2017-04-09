@@ -8,11 +8,10 @@ import spock.lang.Specification
 @TestFor(UserTagLib)
 class UserTagLibSpec extends Specification {
 
-    private static final String USER_PROFILE = 'userProfile'
     private static final String FIRST_NAME = 'firstName'
     private static final String LAST_NAME = 'lastName'
+    private static final String PROPERTIES = 'properties'
 
-    def user = Mock(User)
     def userProfile = Mock(UserProfile)
 
     def setup() {
@@ -24,18 +23,16 @@ class UserTagLibSpec extends Specification {
 
     void "Test tempvs:fullName"() {
         given:
-        Map properties = [user: user]
+        Map properties = [profile: userProfile]
 
         when:
         String result = tagLib.fullName(properties)
 
         then:
-        1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * userProfile.getProperty(FIRST_NAME) >> FIRST_NAME
-        1 * userProfile.getProperty(LAST_NAME) >> LAST_NAME
+        1 * userProfile.getProperty(PROPERTIES) >> [firstName: FIRST_NAME, lastName: LAST_NAME]
         0 * _
 
         and:
-        result == "${FIRST_NAME} ${LAST_NAME}"
+        result == "${FIRST_NAME} ${LAST_NAME} "
     }
 }
