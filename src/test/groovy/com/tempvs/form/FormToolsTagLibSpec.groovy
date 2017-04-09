@@ -8,8 +8,6 @@ import spock.lang.Specification
  */
 @TestFor(FormToolsTagLib)
 class FormToolsTagLibSpec extends Specification {
-    private static final String TEST_MESSAGE = 'testMsg'
-    private static final String SPINNER = 'spinner.gif'
 
     def setup() {
     }
@@ -18,24 +16,39 @@ class FormToolsTagLibSpec extends Specification {
     }
 
     void "Test tempvs:ajaxSubmitButton"() {
-        when: 'Applying tempvs:ajaxSubmitButton'
-        def template = applyTemplate("<tempvs:ajaxSubmitButton value='${TEST_MESSAGE}' />")
+        given:
+        String testMessage = 'testMsg'
+        String ajaxRequestMark = '<input type="hidden" name="isAjaxRequest" value="true" />'
+        String submitButton = "<button class=\"btn btn-primary submit-button\">${testMessage}</button>"
+        String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
-        then: 'Rendered template contains test message'
-        template.contains TEST_MESSAGE
+        when:
+        def template = applyTemplate("<tempvs:ajaxSubmitButton value='${testMessage}' />")
 
-        and: 'Rendered template contains spinner'
-        template.contains SPINNER
+        then:
+        template.contains ajaxRequestMark
+        template.contains submitButton
+        template.contains spinner
     }
 
     void "Test tempvs:formField"() {
-        when: 'Applying tempvs:formField'
+        when:
         def template = applyTemplate('<tempvs:formField type="text" name="name" value="" label="label" />')
 
-        then: 'Rendered template contains input fields'
-        template.contains '<input'
+        then:
+        template.contains '<input type="text" '
+    }
 
-        and: 'Rendered template contains attributes of text type'
-        template.contains 'type="text"'
+    void "Test tempvs:ajaxForm"() {
+        given:
+        String controller = 'testController'
+        String action = 'testAction'
+        String ajaxForm = '<form action="/testController/testAction" method="post" onsubmit="sendAjaxRequest(this); return false;" class="ajax-form" >'
+
+        when:
+        def template = applyTemplate("<tempvs:ajaxForm controller=\"${controller}\" action=\"${action}\"/>")
+
+        then:
+        template.contains ajaxForm
     }
 }
