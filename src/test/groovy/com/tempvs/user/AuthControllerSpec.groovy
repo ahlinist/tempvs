@@ -14,14 +14,15 @@ import spock.lang.Specification
 class AuthControllerSpec extends Specification {
     private static final String EMAIL = 'authUnitTest@email.com'
     private static final String PASSWORD = 'password'
-    private static final String REGISTER_ACTION = 'register'
+    private static final String REGISTER_ACTION = 'registration'
     private static final String NO_SUCH_USER_MESSAGE = 'auth.login.noSuchUser.message'
-    private static final String SHOW_PAGE_URI = '/user/show'
+    private static final String SHOW_PAGE_URI = '/userProfile'
 
     def emailVerification = Mock(EmailVerification)
     def requestRegistrationCommand = Mock(RequestRegistrationCommand)
     def ajaxResponseService = Mock(AjaxResponseService)
     def userService = Mock(UserService)
+    def verifyService = Mock(VerifyService)
     def json = Mock(JSON)
     def passwordEncoder = Mock(PasswordEncoder)
     def springSecurityService = Mock(SpringSecurityService)
@@ -33,17 +34,27 @@ class AuthControllerSpec extends Specification {
         controller.userService = userService
         controller.passwordEncoder = passwordEncoder
         controller.springSecurityService = springSecurityService
+        controller.verifyService = verifyService
     }
 
     def cleanup() {
     }
 
+    void "Testing index() page rendering"() {
+        when:
+        controller.index()
+
+        then:
+        controller.modelAndView == null
+        response.redirectedUrl == null
+    }
+
     void "Testing register() action with invalid params"() {
-        when: 'Passing command mock'
+        when:
         params.isAjaxRequest = Boolean.TRUE
         controller.register(requestRegistrationCommand)
 
-        then: 'JSON response returned'
+        then:
         1 * requestRegistrationCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.composeJsonResponse(requestRegistrationCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -51,25 +62,25 @@ class AuthControllerSpec extends Specification {
     }
 
     void "Testing register() action with valid params"() {
-        when: 'Passing command mock'
+        when:
         params.isAjaxRequest = Boolean.TRUE
         controller.register(requestRegistrationCommand)
 
-        then: 'JSON response returned'
+        then:
         1 * requestRegistrationCommand.validate() >> Boolean.TRUE
         1 * requestRegistrationCommand.getEmail() >> EMAIL
-        1 * userService.createEmailVerification(['action': REGISTER_ACTION, 'email': EMAIL]) >> emailVerification
+        1 * verifyService.createEmailVerification(['action': REGISTER_ACTION, 'email': EMAIL]) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, _ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
     void "Testing login() for non-valid params"() {
-        when: 'Passing command mock'
+        when:
         params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
-        then: 'JSON response returned'
+        then:
         1 * loginCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.composeJsonResponse(loginCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -77,11 +88,11 @@ class AuthControllerSpec extends Specification {
     }
 
     void "Testing login() for non-existing user"() {
-        when: 'Passing command mock'
+        when:
         params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
-        then: 'JSON response returned'
+        then:
         1 * loginCommand.validate() >> Boolean.TRUE
         1 * loginCommand.getEmail() >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> null
@@ -90,11 +101,11 @@ class AuthControllerSpec extends Specification {
     }
 
     void "Testing login() for incorrect password"() {
-        when: 'Passing command mock'
+        when:
         params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
-        then: 'JSON response returned'
+        then:
         1 * loginCommand.validate() >> Boolean.TRUE
         1 * loginCommand.getEmail() >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> user
@@ -106,11 +117,11 @@ class AuthControllerSpec extends Specification {
     }
 
     void "Testing login() for correct params"() {
-        when: 'Passing command mock'
+        when:
         params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
-        then: 'JSON response returned'
+        then:
         1 * loginCommand.validate() >> Boolean.TRUE
         2 * loginCommand.getEmail() >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> user
