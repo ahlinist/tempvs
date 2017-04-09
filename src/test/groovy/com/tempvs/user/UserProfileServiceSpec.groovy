@@ -64,7 +64,7 @@ class UserProfileServiceSpec extends Specification {
         then:
         1 * User.get(LONG_ID) >> user
         1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * userProfile.setProfileEmail(PROFILE_EMAIL)
+        1 * userProfile.setProperty(PROFILE_EMAIL, PROFILE_EMAIL)
         1 * userProfile.save([flush: true])
 
         and:
