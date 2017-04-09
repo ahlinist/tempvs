@@ -20,7 +20,7 @@ class VerifyService {
                 to properties.email
                 from 'no-reply@tempvs.com'
                 subject 'Tempvs'
-                body(view: "/user/emailTemplates/${properties.action}", model: emailVerification.properties)
+                body(view: "/verify/emailTemplates/${properties.action}", model: emailVerification.properties)
             }
         }
 

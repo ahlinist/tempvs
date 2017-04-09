@@ -2,11 +2,13 @@ package com.tempvs.user
 
 class VerifyController {
 
-    private static final String NO_VERIFICATION_CODE = 'user.register.verify.noCode.message'
+    private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'user.editUserProfile.failed'
 
     def verifyService
+    def userService
+    def userProfileService
 
     def registration(String id) {
         if (id) {
@@ -15,7 +17,7 @@ class VerifyController {
             if (emailVerification) {
                 String email = emailVerification.email
                 session.email = email
-                emailVerification.delete(flush: true)
+                emailVerification.delete(flush: Boolean.TRUE)
                 render view: 'registration', model: [email: email]
             } else {
                 error([message: NO_VERIFICATION_CODE])
@@ -26,10 +28,8 @@ class VerifyController {
     }
 
     def email(String id) {
-        Map message
-
         if (id) {
-            EmailVerification emailVerification = userService.getVerification(id)
+            EmailVerification emailVerification = verifyService.getVerification(id)
 
             if (emailVerification) {
                 String email = emailVerification.email
@@ -45,42 +45,36 @@ class VerifyController {
 
                 emailVerification.delete(flush: true)
             } else {
-                message = [message: NO_VERIFICATION_CODE]
+                error([message: NO_VERIFICATION_CODE])
             }
         } else {
-            message = [message: NO_VERIFICATION_CODE]
+            error([message: NO_VERIFICATION_CODE])
         }
-
-        message
     }
 
     def profileEmail(String id) {
-        Map message
-
         if (id) {
-            EmailVerification emailVerification = userService.getVerification(id)
+            EmailVerification emailVerification = verifyService.getVerification(id)
 
             if (emailVerification) {
                 String email = emailVerification.email
                 Long userId = emailVerification.userId
 
-                UserProfile userProfile = userService.updateProfileEmail(userId, email)
+                UserProfile userProfile = userProfileService.updateProfileEmail(userId, email)
 
                 if (userProfile?.hasErrors()) {
                     message = [message: PROFILE_EMAIL_UPDATE_FAILED]
                 } else {
-                    redirect controller: 'user', action: 'profile'
+                    redirect controller: 'userProfile', action: 'edit'
                 }
 
                 emailVerification.delete(flush: true)
             } else {
-                message = [message: NO_VERIFICATION_CODE]
+                error([message: NO_VERIFICATION_CODE])
             }
         } else {
-            message = [message: NO_VERIFICATION_CODE]
+            error([message: NO_VERIFICATION_CODE])
         }
-
-        message
     }
 
     private def error(Map model) {
