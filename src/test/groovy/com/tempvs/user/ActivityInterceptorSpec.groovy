@@ -32,10 +32,14 @@ class ActivityInterceptorSpec extends Specification {
         USER        | 'edit'
         USER        | 'updateEmail'
         USER        | 'updatePassword'
+        USER        | 'index'
+        USER        | 'register'
+        USER_PROFILE| 'show'
         USER_PROFILE| 'edit'
         USER_PROFILE| 'updateUserProfile'
         USER_PROFILE| 'updateProfileEmail'
         IMAGE       | 'updateAvatar'
+        IMAGE       | 'getAvatar'
     }
 
     void "Interceptor doesn't match the excluded actions"() {
@@ -49,10 +53,7 @@ class ActivityInterceptorSpec extends Specification {
         controller  | action
         AUTH        | 'register'
         AUTH        | 'login'
-        USER        | 'index'
-        USER        | 'register'
-        IMAGE       | 'getAvatar'
-        USER_PROFILE| 'show'
+        AUTH        | 'index'
         VERIFY      | 'registration'
         VERIFY      | 'email'
         VERIFY      | 'profileEmail'
