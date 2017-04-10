@@ -1,7 +1,6 @@
 package com.tempvs.mongodb
 
 import com.mongodb.BasicDBObject
-import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSFile
 import spock.lang.Specification
 
@@ -47,22 +46,5 @@ class MongoImageSpec extends Specification {
         0 * _
     }
 
-    void "Test getBytes()"() {
-        given:
-        List<Byte> byteList = "test data".bytes
-        def inputStream = GroovyMock(InputStream)
-        def gridFSDBFile = Mock(GridFSDBFile)
-        def mongoImage = new MongoImage(gridFSDBFile)
-
-        when:
-        List<Byte> result = mongoImage.getBytes()
-
-        then:
-        1 * gridFSDBFile.getInputStream() >> inputStream
-        1 * inputStream.getBytes() >> byteList
-        0 * _
-
-        and:
-        result == byteList
-    }
+    //TODO: find out if Spock supports @CompileStatic to test getBytes()
 }
