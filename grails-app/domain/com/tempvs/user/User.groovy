@@ -19,7 +19,7 @@ class User extends BasePersistent implements Serializable {
 	Date lastActive = new Date()
 
 	static hasOne = [userProfile: UserProfile]
-	static hisMany = [clubProfiles: ClubProfile]
+	static hasMany = [clubProfiles: ClubProfile]
 
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this)*.role
@@ -29,7 +29,10 @@ class User extends BasePersistent implements Serializable {
 		password blank: false, password: true
 		email email: true, unique: true, blank: false, validator: {email, user ->
 			UserProfile userProfile = UserProfile.findByProfileEmail(email)
-			!userProfile || (userProfile?.user == user)
+			ClubProfile clubProfile = ClubProfile.findByClubEmail(email)
+
+			!userProfile || (userProfile.user == user) ||
+					!clubProfile || (clubProfile.user == user)
 		}
 	}
 }
