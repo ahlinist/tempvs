@@ -1,10 +1,14 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 
 @Transactional
+@GrailsCompileStatic
 class UserService {
-    def springSecurityService
+
+    SpringSecurityService springSecurityService
 
     User getUser(String id) {
         try {
@@ -40,14 +44,14 @@ class UserService {
     }
 
     User updatePassword(String newPassword) {
-        User user = springSecurityService.currentUser
+        User user = springSecurityService.currentUser as User
         user.password = springSecurityService.encodePassword(newPassword)
         user.save(flush: true)
         user
     }
 
     void updateLastActive(){
-        User user = springSecurityService.currentUser
+        User user = springSecurityService.currentUser as User
 
         if (user) {
             user.lastActive = new Date()

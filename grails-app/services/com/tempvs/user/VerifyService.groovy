@@ -1,18 +1,22 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
+import grails.plugins.mail.MailService
 import grails.transaction.Transactional
 
 @Transactional
+@GrailsCompileStatic
 class VerifyService {
 
-    def mailService
+    MailService mailService
 
     EmailVerification getVerification(String id) {
         EmailVerification.findByVerificationCode(id)
     }
 
     EmailVerification createEmailVerification(Map properties) {
-        String verificationCode = properties.email + new Date().time
+        String email = properties.email
+        String verificationCode = email + new Date().time
         EmailVerification emailVerification = new EmailVerification(properties + [verificationCode: verificationCode.encodeAsMD5()])
 
         if (emailVerification.save(flush: true)) {

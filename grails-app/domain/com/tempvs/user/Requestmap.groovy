@@ -1,10 +1,12 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
 import org.springframework.http.HttpMethod
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
+@GrailsCompileStatic
 @EqualsAndHashCode(includes=['configAttribute', 'httpMethod', 'url'])
 @ToString(includes=['configAttribute', 'httpMethod', 'url'], cache=true, includeNames=true, includePackage=false)
 class Requestmap implements Serializable {

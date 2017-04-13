@@ -1,7 +1,9 @@
 package com.tempvs.user
 
 import com.tempvs.domain.BasePersistent
+import grails.compiler.GrailsCompileStatic
 
+@GrailsCompileStatic
 class EmailVerification extends BasePersistent {
     Long userId
     String email
@@ -9,7 +11,7 @@ class EmailVerification extends BasePersistent {
     String verificationCode
 
     static constraints = {
-        userId nullable: true, validator: { userId, verification ->
+        userId nullable: true, validator: { userId, EmailVerification verification ->
             if (verification.action == 'registration') {
                 true
             } else {
