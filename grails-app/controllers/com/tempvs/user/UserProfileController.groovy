@@ -20,24 +20,19 @@ class UserProfileController {
     static defaultAction = 'show'
 
     def show(String id) {
-        UserProfile currentUserProfile = springSecurityService.currentUser?.userProfile
-        String profileId = currentUserProfile?.profileId
-
         if (id) {
-            if (profileId == id || currentUserProfile?.id as String == id) {
-                [profile: currentUserProfile, id: profileId ?: currentUserProfile.id]
-            } else {
-                UserProfile profile = userProfileService.getUserProfile(id)
+            UserProfile profile = userProfileService.getUserProfile(id)
 
-                if (profile) {
-                    [profile: profile, id: profileId ?: profile.id]
-                } else {
-                    [id: id, message: NO_SUCH_USER, args: [id]]
-                }
+            if (profile) {
+                [profile: profile, id: profile.identifier]
+            } else {
+                [id: id, message: NO_SUCH_USER, args: [id]]
             }
         } else {
+            UserProfile currentUserProfile = springSecurityService.currentUser?.userProfile
+
             if (currentUserProfile) {
-                redirect action: 'show', id: profileId ?: currentUserProfile.id
+                redirect action: 'show', id: currentUserProfile.identifier
             } else {
                 redirect controller: 'auth', action: 'index'
             }
@@ -45,7 +40,10 @@ class UserProfileController {
     }
 
     def edit() {
-        [profile: springSecurityService.currentUser.userProfile]
+        BaseProfile profile = springSecurityService.currentUser.userProfile
+        session.profile = profile
+
+        [profile: profile]
     }
 
     def updateUserProfile(UserProfileCommand upc) {

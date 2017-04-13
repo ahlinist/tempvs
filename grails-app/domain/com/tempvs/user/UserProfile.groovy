@@ -1,5 +1,8 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
+
+@GrailsCompileStatic
 class UserProfile extends BaseProfile {
     String profileEmail
     String location
@@ -7,9 +10,12 @@ class UserProfile extends BaseProfile {
     static belongsTo = [user: User]
 
     static constraints = {
-        profileEmail nullable: true, unique: true, email: true, validator: {profileEmail, userProfile ->
+        profileEmail nullable: true, unique: true, email: true, validator: {profileEmail, UserProfile userProfile ->
             User user = User.findByEmail(profileEmail)
-            !user || (user?.userProfile == userProfile)
+            ClubProfile clubProfile = ClubProfile.findByClubEmail(profileEmail)
+
+            !user || (user.userProfile == userProfile) ||
+                    !clubProfile || (userProfile.user == clubProfile.user)
         }
 
         location nullable: true

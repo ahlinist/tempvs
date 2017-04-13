@@ -1,12 +1,15 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
 
 @Transactional
+@GrailsCompileStatic
 class UserProfileService {
 
-    def springSecurityService
+    SpringSecurityService springSecurityService
 
     UserProfile getProfileByProfileEmail(String profileEmail) {
         UserProfile.findByProfileEmail(profileEmail)
@@ -30,7 +33,8 @@ class UserProfileService {
     }
 
     UserProfile updateUserProfile(Map params) {
-        UserProfile userProfile = springSecurityService.currentUser?.userProfile
+        User user = springSecurityService.currentUser as User
+        UserProfile userProfile = user?.userProfile
         InvokerHelper.setProperties(userProfile, params)
         userProfile.save(flush: true)
         userProfile

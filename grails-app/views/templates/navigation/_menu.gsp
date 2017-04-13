@@ -14,4 +14,9 @@
       <g:message code="userProfile.edit.button" />
     </g:link>
   </li>
+  <li>
+    <g:link class="list-group-item disableable" controller="clubProfile" action="list">
+      <g:message code="clubProfile.list.button" />
+    </g:link>
+  </li>
 </ul>
