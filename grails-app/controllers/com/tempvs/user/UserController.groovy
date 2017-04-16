@@ -33,7 +33,7 @@ class UserController {
                     (userProfileService.getProfileByProfileEmail(email) && currentUser.userProfile.profileEmail != email)) {
                 render([messages: [g.message(code: EMAIL_USED)]] as JSON)
             } else {
-                Map props = [userId: currentUser.id, email: email, action: UPDATE_EMAIL_ACTION]
+                Map props = [instanceId: currentUser.id, email: email, action: UPDATE_EMAIL_ACTION]
                 render ajaxResponseService.composeJsonResponse(verifyService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
             }
         }
@@ -53,7 +53,7 @@ class UserController {
                 } else {
                     springSecurityService.reauthenticate(session.email, rc.password)
                     session.email = null
-                    render([redirect: g.createLink(controller: 'userProfile')] as JSON)
+                    render([redirect: g.createLink(controller: 'profile')] as JSON)
                 }
             } else {
                 render ajaxResponseService.composeJsonResponse(rc)

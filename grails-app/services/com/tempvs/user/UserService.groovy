@@ -32,14 +32,9 @@ class UserService {
         user
     }
 
-    User updateEmail(Long userId, String email) {
-        User user = User.get(userId)
-
-        if (user) {
-            user.email = email
-            user.save(flush: true)
-        }
-
+    User updateEmail(User user, String email) {
+        user.email = email
+        user.save(flush: true)
         user
     }
 
@@ -57,5 +52,17 @@ class UserService {
             user.lastActive = new Date()
             user.save(flush: true)
         }
+    }
+
+    Boolean isEmailUnique(String email) {
+        User currentUser = springSecurityService.currentUser as User
+
+        User user = User.findByEmail(email)
+        UserProfile userProfile = UserProfile.findByProfileEmail(email)
+        ClubProfile clubProfile = ClubProfile.findByProfileEmail(email)
+
+        (!user || currentUser == user) &&
+                (!userProfile || userProfile.user == currentUser) &&
+                (!clubProfile || clubProfile.user == currentUser)
     }
 }

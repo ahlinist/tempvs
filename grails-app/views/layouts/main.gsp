@@ -11,22 +11,26 @@
   </head>
   <body class="container">
     <div class="row">
-      <div id="header">
+      <header>
         <sec:ifLoggedIn>
-          <g:link class="btn btn-primary disableable pull-right" uri="/logoff"><g:message code="auth.logout.button" /></g:link>
+          <g:render template="/templates/navigation/switchProfile"/>
+          <g:render template="/templates/navigation/settings"/>
+          <g:link class="btn btn-primary disableable pull-right" uri="/logoff">
+            <g:message code="auth.logout.button" />
+          </g:link>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
           <g:link class="btn btn-default disableable pull-right" controller="auth">
             <g:message code="auth.link" />
           </g:link>
         </sec:ifNotLoggedIn>
-      </div>
+      </header>
     </div>
     <hr/>
     <div class="row">
       <div class="col-sm-2">
         <sec:ifLoggedIn>
-          <g:render template="navigation/menu"/>
+          <g:render template="/templates/navigation/menu"/>
         </sec:ifLoggedIn>
       </div>
       <div class="col-sm-10">

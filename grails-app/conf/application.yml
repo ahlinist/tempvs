@@ -65,7 +65,7 @@ grails:
             failureHandler:
                 defaultFailureUrl: /auth/index
             successHandler:
-                defaultTargetUrl: /user/show
+                defaultTargetUrl: /profile/userProfile/
             authority:
                 className: com.tempvs.user.Role
             requestMap:
@@ -80,7 +80,10 @@ grails:
                 - pattern: /user/register/**
                   access:
                       - permitAll
-                - pattern: /userProfile/show/**
+                - pattern: /profile/userProfile/**
+                  access:
+                      - permitAll
+                - pattern: /profile/clubProfile/**
                   access:
                       - permitAll
                 - pattern: /image/getAvatar/**

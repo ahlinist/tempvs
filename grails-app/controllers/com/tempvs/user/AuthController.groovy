@@ -25,7 +25,7 @@ class AuthController {
                 if (user) {
                     if (passwordEncoder.isPasswordValid(user.password, lc.password, null)) {
                         springSecurityService.reauthenticate(lc.email, lc.password)
-                        render([redirect: g.createLink(controller: 'userProfile')] as JSON)
+                        render([redirect: g.createLink(controller: 'profile')] as JSON)
                     } else {
                         render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
                     }
@@ -64,7 +64,10 @@ class RequestRegistrationCommand {
 
     static constraints = {
         email email: true, blank: false, validator: { email, command ->
-            !User.findByEmail(email) && !UserProfile.findByProfileEmail(email) && !EmailVerification.findByEmail(email)
+            !User.findByEmail(email) &&
+                    !UserProfile.findByProfileEmail(email) &&
+                    !ClubProfile.findByProfileEmail(email) &&
+                    !EmailVerification.findByEmail(email)
         }
     }
 }

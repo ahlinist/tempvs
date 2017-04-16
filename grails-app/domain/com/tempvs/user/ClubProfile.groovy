@@ -6,7 +6,6 @@ import grails.compiler.GrailsCompileStatic
 class ClubProfile extends BaseProfile {
 
     String nickName
-    String clubEmail
     String clubName
 
     static belongsTo = [user: User]
@@ -15,9 +14,9 @@ class ClubProfile extends BaseProfile {
         lastName nullable: true
         nickName nullable: true
 
-        clubEmail nullable: true, unique: true, email: true, validator: {clubEmail, ClubProfile clubProfile ->
-            User user = User.findByEmail(clubEmail)
-            UserProfile userProfile = UserProfile.findByProfileEmail(clubEmail)
+        profileEmail nullable: true, unique: true, email: true, validator: {profileEmail, ClubProfile clubProfile ->
+            User user = User.findByEmail(profileEmail)
+            UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
 
             !user || (user.userProfile == userProfile) ||
                     !clubProfile || (userProfile.user == clubProfile.user)

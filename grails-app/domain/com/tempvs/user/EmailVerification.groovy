@@ -5,21 +5,21 @@ import grails.compiler.GrailsCompileStatic
 
 @GrailsCompileStatic
 class EmailVerification extends BasePersistent {
-    Long userId
+    Long instanceId
     String email
     String action
     String verificationCode
 
     static constraints = {
-        userId nullable: true, validator: { userId, EmailVerification verification ->
+        instanceId nullable: true, validator: { instanceId, EmailVerification verification ->
             if (verification.action == 'registration') {
                 true
             } else {
-                userId == null ? false : true
+                instanceId == null ? false : true
             }
         }
         email email: true, unique: ['action']
-        action inList: ['registration', 'email', 'profileEmail']
+        action inList: ['registration', 'email', 'userprofile', 'clubprofile']
         verificationCode unique: true
     }
 }

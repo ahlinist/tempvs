@@ -1,7 +1,7 @@
 package com.tempvs.image
 
-import com.tempvs.user.User
-import org.springframework.util.StreamUtils
+import com.tempvs.user.BaseProfile
+import com.tempvs.user.ProfileHolder
 
 class ImageController {
 
@@ -14,7 +14,7 @@ class ImageController {
     def imageService
     def assetResourceLocator
     def ajaxResponseService
-    def springSecurityService
+    ProfileHolder profileHolder
 
     def updateAvatar() {
         Boolean success = Boolean.FALSE
@@ -23,10 +23,11 @@ class ImageController {
 
         if (!multiPartFile?.empty) {
             InputStream inputStream = multiPartFile.inputStream
-            User user = springSecurityService.currentUser
+
+            BaseProfile profile = profileHolder.profile
 
             try {
-                String imageId = "${user.id}_${user.userProfile.class.simpleName}_${user.userProfile.id}"
+                String imageId = "${profile.user.id}_${profile.class.simpleName}_${profile.id}"
                 String collection = "${AVATAR_FIELD}_${imageId}"
                 success = imageService.updateAvatar(inputStream, collection)
                 message = AVATAR_UPDATED_MESSAGE

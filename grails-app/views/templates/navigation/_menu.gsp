@@ -1,21 +1,16 @@
 <ul class="list-group col-sm-12">
   <li>
-    <g:link class="list-group-item disableable" controller="userProfile">
-      <g:message code="userProfile.show.button" />
+    <g:link class="list-group-item disableable" controller="profile">
+      <g:message code="profile.show.button" />
     </g:link>
   </li>
   <li>
-    <g:link class="list-group-item disableable" controller="user" action="edit">
-      <g:message code="user.edit.button" />
+    <g:link class="list-group-item disableable" controller="profile" action="edit">
+      <g:message code="profile.edit.button" />
     </g:link>
   </li>
   <li>
-    <g:link class="list-group-item disableable" controller="userProfile" action="edit">
-      <g:message code="userProfile.edit.button" />
-    </g:link>
-  </li>
-  <li>
-    <g:link class="list-group-item disableable" controller="clubProfile" action="list">
+    <g:link class="list-group-item disableable" controller="profile" action="list">
       <g:message code="clubProfile.list.button" />
     </g:link>
   </li>

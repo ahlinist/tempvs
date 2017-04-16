@@ -2,7 +2,7 @@
 <html>
     <head>
       <meta name="layout" content="main"/>
-      <title>Tempvs - Edit ${profile.firstName} ${profile.lastName}</title>
+      <title>Tempvs - Edit <tempvs:fullName profile="${profile}"/></title>
     </head>
     <body>
       <div class="row">
