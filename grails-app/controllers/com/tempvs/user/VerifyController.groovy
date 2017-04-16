@@ -11,61 +11,28 @@ class VerifyController {
     ProfileService profileService
     ProfileHolder profileHolder
 
-    def registration(String id) {
-        Closure action = { emailVerification ->
-            String email = emailVerification.email
-            session.email = email
-            render view: 'registration', model: [email: email]
-        }
+    static defaultAction = 'byEmail'
 
-        verify(id, action)
-    }
-
-    def email(String id) {
-        Closure action = { emailVerification ->
-            User user = userService.updateEmail(User.get(emailVerification.instanceId), emailVerification.email)
-
-            if (user?.hasErrors()) {
-                message = [message: EMAIL_UPDATE_FAILED]
-            } else {
-                redirect controller: 'user', action: 'edit'
-            }
-        }
-
-        verify(id, action)
-    }
-
-    def userprofile(String id) {
-        profileEmail(UserProfile.class, id)
-    }
-
-    def clubprofile(String id) {
-        profileEmail(ClubProfile.class, id)
-    }
-
-    private profileEmail(Class clazz, String id) {
-        Closure action = { emailVerification ->
-            BaseProfile profile = profileService.updateProfileEmail(
-                    clazz.get(emailVerification.instanceId), emailVerification.email)
-
-            if (profile?.hasErrors()) {
-                error([message: PROFILE_EMAIL_UPDATE_FAILED])
-            } else {
-                profileHolder.profile = profile
-                redirect controller: 'profile', action: 'edit'
-            }
-        }
-
-        verify(id, action)
-    }
-
-    private verify(String id, Closure closure) {
+    def byEmail(String id) {
         if (id) {
             EmailVerification emailVerification = verifyService.getVerification(id)
 
             if (emailVerification) {
 
-                closure.call(emailVerification)
+                switch (emailVerification.action) {
+                    case 'registration':
+                        registration(emailVerification)
+                        break
+                    case 'email':
+                        email(emailVerification)
+                        break
+                    case 'userprofile':
+                        profileEmail(UserProfile.class, emailVerification)
+                        break
+                    case 'clubprofile':
+                        profileEmail(UserProfile.class, emailVerification)
+                        break
+                }
 
                 emailVerification.delete(flush: true)
             } else {
@@ -73,6 +40,34 @@ class VerifyController {
             }
         } else {
             error([message: NO_VERIFICATION_CODE])
+        }
+    }
+
+    private registration(EmailVerification emailVerification) {
+        String email = emailVerification.email
+        session.email = email
+        render view: 'registration', model: [email: email]
+    }
+
+    private email(EmailVerification emailVerification) {
+        User user = userService.updateEmail(User.get(emailVerification.instanceId), emailVerification.email)
+
+        if (user?.hasErrors()) {
+            error([message: EMAIL_UPDATE_FAILED])
+        } else {
+            redirect controller: 'user', action: 'edit'
+        }
+    }
+
+    private profileEmail(Class clazz, EmailVerification emailVerification) {
+        BaseProfile profile = profileService.updateProfileEmail(
+                clazz.get(emailVerification.instanceId), emailVerification.email)
+
+        if (profile?.hasErrors()) {
+            error([message: PROFILE_EMAIL_UPDATE_FAILED])
+        } else {
+            profileHolder.profile = profile
+            redirect controller: 'profile', action: 'edit'
         }
     }
 
