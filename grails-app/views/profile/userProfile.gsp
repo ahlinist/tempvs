@@ -14,14 +14,11 @@
         <div class="col-sm-3">
           <tempvs:fullName profile="${profile}"/>
           <tempvs:avatar profile="${profile}"/>
-
-          <div>
-            <div>
-              <g:message code="date.lastActive" /> <tempvs:dateFromNow date="${profile.user.lastActive}"/>
-            </div>
-            <div>${profile.profileEmail}</div>
-            <div>${profile.location}</div>
-          </div>
+        </div>
+        <div class="col-sm-3">
+          <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${profile.user.lastActive}"/></div>
+          <div><g:message code="userProfile.profileEMail.label" />: ${profile.profileEmail}</div>
+          <div><g:message code="userProfile.location.label" />: ${profile.location}</div>
         </div>
         <div class="col-sm-3">
           <div>

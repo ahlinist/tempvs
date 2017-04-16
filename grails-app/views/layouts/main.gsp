@@ -14,10 +14,10 @@
       <header>
         <sec:ifLoggedIn>
           <g:render template="/templates/navigation/switchProfile"/>
-          <g:render template="/templates/navigation/settings"/>
           <g:link class="btn btn-primary disableable pull-right" uri="/logoff">
             <g:message code="auth.logout.button" />
           </g:link>
+          <g:render template="/templates/navigation/settings"/>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
           <g:link class="btn btn-default disableable pull-right" controller="auth">

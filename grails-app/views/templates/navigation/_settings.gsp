@@ -1,4 +1,4 @@
-<span class="dropdown">
+<span class="dropdown pull-right">
   <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
     <g:message code="user.settings.button"/>
     <span class="caret"></span>

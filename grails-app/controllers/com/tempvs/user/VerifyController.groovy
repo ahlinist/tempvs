@@ -30,7 +30,7 @@ class VerifyController {
                         profileEmail(UserProfile.class, emailVerification)
                         break
                     case 'clubprofile':
-                        profileEmail(UserProfile.class, emailVerification)
+                        profileEmail(ClubProfile.class, emailVerification)
                         break
                 }
 
