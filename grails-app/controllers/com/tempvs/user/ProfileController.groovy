@@ -1,6 +1,8 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.domain.BaseObject
+import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 
@@ -121,18 +123,21 @@ class ProfileController {
     }
 }
 
-class UserProfileCommand {
+@GrailsCompileStatic
+class UserProfileCommand extends BaseObject {
     String firstName
     String lastName
     String location
     String profileId
 
     static constraints = {
-        importFrom UserProfile
+        profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
+        location nullable: true
     }
 }
 
-class ClubProfileCommand {
+@GrailsCompileStatic
+class ClubProfileCommand extends BaseObject {
     String firstName
     String lastName
     String nickName
@@ -141,6 +146,10 @@ class ClubProfileCommand {
     String profileId
 
     static constraints = {
-        importFrom ClubProfile
+        lastName nullable: true
+        nickName nullable: true
+        clubName nullable: true
+        location nullable: true
+        profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
     }
 }

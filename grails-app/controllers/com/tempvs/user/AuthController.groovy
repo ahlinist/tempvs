@@ -1,5 +1,7 @@
 package com.tempvs.user
 
+import com.tempvs.domain.BaseObject
+import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 
 class AuthController {
@@ -17,14 +19,14 @@ class AuthController {
 
     }
 
-    def login(LoginCommand lc) {
+    def login(LoginCommand command) {
         if (params.isAjaxRequest) {
-            if (lc.validate()) {
-                User user = userService.getUserByEmail(lc.email)
+            if (command.validate()) {
+                User user = userService.getUserByEmail(command.email)
 
                 if (user) {
-                    if (passwordEncoder.isPasswordValid(user.password, lc.password, null)) {
-                        springSecurityService.reauthenticate(lc.email, lc.password)
+                    if (passwordEncoder.isPasswordValid(user.password, command.password, null)) {
+                        springSecurityService.reauthenticate(command.email, command.password)
                         render([redirect: g.createLink(controller: 'profile')] as JSON)
                     } else {
                         render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
@@ -33,24 +35,25 @@ class AuthController {
                     render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
                 }
             } else {
-                render ajaxResponseService.composeJsonResponse(lc)
+                render ajaxResponseService.composeJsonResponse(command)
             }
         }
     }
 
-    def register(RequestRegistrationCommand rrc) {
+    def register(RequestRegistrationCommand command) {
         if (params.isAjaxRequest) {
-            if (rrc.validate()) {
-                Map props = [action: REGISTRATION_ACTION, email: rrc.email]
+            if (command.validate()) {
+                Map props = [action: REGISTRATION_ACTION, email: command.email]
                 render ajaxResponseService.composeJsonResponse(verifyService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
             } else {
-                render ajaxResponseService.composeJsonResponse(rrc)
+                render ajaxResponseService.composeJsonResponse(command)
             }
         }
     }
 }
 
-class LoginCommand {
+@GrailsCompileStatic
+class LoginCommand extends BaseObject {
     String email
     String password
 
@@ -59,11 +62,12 @@ class LoginCommand {
     }
 }
 
-class RequestRegistrationCommand {
+@GrailsCompileStatic
+class RequestRegistrationCommand extends BaseObject {
     String email
 
     static constraints = {
-        email email: true, blank: false, validator: { email, command ->
+        email email: true, blank: false, validator: { email, RequestRegistrationCommand command ->
             !User.findByEmail(email) &&
                     !UserProfile.findByProfileEmail(email) &&
                     !ClubProfile.findByProfileEmail(email) &&

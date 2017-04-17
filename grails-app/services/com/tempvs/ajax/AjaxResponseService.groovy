@@ -2,18 +2,23 @@ package com.tempvs.ajax
 
 import grails.converters.JSON
 import grails.transaction.Transactional
+import grails.validation.Validateable
+import groovy.transform.CompileStatic
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 @Transactional
+@CompileStatic
 class AjaxResponseService {
-    def messageSource
 
     private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
     private static final String DEFAULT_FAIL_MESSAGE = 'Fail'
 
-    JSON composeJsonResponse(instance, String successMessage = null) {
+    MessageSource messageSource
+
+    JSON composeJsonResponse(Validateable instance, String successMessage = null) {
         Boolean success = Boolean.TRUE
-        Set messages = []
+        Set<String> messages = []
 
         if (instance.hasErrors()) {
             success = Boolean.FALSE
@@ -30,7 +35,6 @@ class AjaxResponseService {
 
     JSON renderMessage(Boolean success, String message) {
         String defaultMessage = success ? DEFAULT_SUCCESS_MESSAGE : DEFAULT_FAIL_MESSAGE
-        Set messages = [messageSource.getMessage(message, null, defaultMessage, LocaleContextHolder.locale)]
-        [success: success, messages: messages] as JSON
+        [success: success, messages: [messageSource.getMessage(message, null, defaultMessage, LocaleContextHolder.locale)]] as JSON
     }
 }

@@ -15,5 +15,7 @@ class UserProfile extends BaseProfile {
             !user || (user.userProfile == userProfile) ||
                     !clubProfile || (userProfile.user == clubProfile.user)
         }
+        profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
+        location nullable: true
     }
 }

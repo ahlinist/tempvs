@@ -1,13 +1,17 @@
 package com.tempvs.user
 
+import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.domain.BaseObject
+import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
+import org.springframework.security.authentication.encoding.PasswordEncoder
 
 class UserController {
-    def userService
-    def userProfileService
-    def verifyService
-    def springSecurityService
-    def ajaxResponseService
+    UserService userService
+    VerifyService verifyService
+    SpringSecurityService springSecurityService
+    AjaxResponseService ajaxResponseService
 
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
@@ -29,8 +33,7 @@ class UserController {
         if (email == currentUser.email) {
             render([messages: [g.message(code: EMAIL_UPDATE_DUPLICATE)]] as JSON)
         } else {
-            if (userService.getUserByEmail(email) ||
-                    (userProfileService.getProfileByProfileEmail(email) && currentUser.userProfile.profileEmail != email)) {
+            if (!userService.isEmailUnique(email)) {
                 render([messages: [g.message(code: EMAIL_USED)]] as JSON)
             } else {
                 Map props = [instanceId: currentUser.id, email: email, action: UPDATE_EMAIL_ACTION]
@@ -39,24 +42,24 @@ class UserController {
         }
     }
 
-    def updatePassword(UserPasswordCommand upc) {
-        render ajaxResponseService.composeJsonResponse(upc.validate() ? userService.updatePassword(upc.newPassword) : upc, PASSWORD_UPDATED_MESSAGE)
+    def updatePassword(UserPasswordCommand command) {
+        render ajaxResponseService.composeJsonResponse(command.validate() ? userService.updatePassword(command.newPassword) : command, PASSWORD_UPDATED_MESSAGE)
     }
 
-    def register(RegisterCommand rc) {
+    def register(RegisterCommand command) {
         if (params.isAjaxRequest) {
-            if (rc.validate()) {
-                User user = userService.createUser(rc.properties + [email: session.email])
+            if (command.validate()) {
+                User user = userService.createUser(command.properties + [email: session.email])
 
                 if (user?.hasErrors()) {
                     render ajaxResponseService.composeJsonResponse(user)
                 } else {
-                    springSecurityService.reauthenticate(session.email, rc.password)
+                    springSecurityService.reauthenticate(session.email, command.password)
                     session.email = null
                     render([redirect: g.createLink(controller: 'profile')] as JSON)
                 }
             } else {
-                render ajaxResponseService.composeJsonResponse(rc)
+                render ajaxResponseService.composeJsonResponse(command)
             }
         } else {
             redirect controller: 'userProfile'
@@ -64,26 +67,29 @@ class UserController {
     }
 }
 
-class UserPasswordCommand {
+@GrailsCompileStatic
+class UserPasswordCommand extends BaseObject {
 
-    static passwordEncoder
-    static springSecurityService
+    static PasswordEncoder passwordEncoder
+    static SpringSecurityService springSecurityService
 
     String currentPassword
     String newPassword
     String repeatNewPassword
 
     static constraints = {
-        currentPassword validator: { currPass, upc ->
-            passwordEncoder.isPasswordValid(springSecurityService.currentUser.password, currPass, null)
+        currentPassword validator: { String password, UserPasswordCommand command ->
+            User user = springSecurityService.currentUser as User
+            passwordEncoder.isPasswordValid(user.password, password, null)
         }
-        repeatNewPassword validator: { repPass, upc ->
-            upc.newPassword == repPass
+        repeatNewPassword validator: { String password, UserPasswordCommand command ->
+            command.newPassword == password
         }
     }
 }
 
-class RegisterCommand {
+@GrailsCompileStatic
+class RegisterCommand extends BaseObject {
     String firstName
     String lastName
     String password
@@ -91,8 +97,8 @@ class RegisterCommand {
 
     static constraints = {
         password blank: false, password: true
-        repeatPassword validator: { repPass, urc ->
-            repPass == urc.password
+        repeatPassword validator: { String password, RegisterCommand command ->
+            password == command.password
         }
     }
 }

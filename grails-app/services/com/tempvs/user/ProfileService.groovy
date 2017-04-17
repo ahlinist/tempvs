@@ -1,14 +1,15 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
 
 @Transactional
+@GrailsCompileStatic
 class ProfileService {
 
     SpringSecurityService springSecurityService
-    ProfileHolder profileHolder
 
     ClubProfile getClubProfile(String id) {
         try {
@@ -38,7 +39,6 @@ class ProfileService {
     BaseProfile updateProfileEmail(BaseProfile profile, String profileEmail) {
         profile.profileEmail = profileEmail
         profile.save()
-
         profile
     }
 }
