@@ -10,19 +10,26 @@ class ProfileHolder {
     Long id
 
     BaseProfile getProfile() {
-        if (!clazz && id == null) {
-            springSecurityService.currentUser?.userProfile
-        } else {
-            clazz.get(id)
+        User user = springSecurityService.currentUser
+
+        if (user) {
+            if (!clazz || !id) {
+                user.userProfile
+            } else {
+                BaseProfile profile = clazz.get(id)
+
+                if (profile == user.userProfile || profile in user.clubProfiles) {
+                    profile
+                } else {
+                    this.profile = null
+                    user.userProfile
+                }
+            }
         }
     }
 
-    void setProfile(BaseProfile profile) {
-        User user = springSecurityService.currentUser
-
-        if (user.userProfile == profile || user.clubProfiles.find {it == profile}) {
-            this.clazz = profile.class
-            this.id = profile.id
-        }
+    void setProfile(BaseProfile profile = null) {
+        this.clazz = profile?.class
+        this.id = profile?.id
     }
 }
