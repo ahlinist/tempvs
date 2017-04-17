@@ -17,24 +17,11 @@
         </div>
         <div class="col-sm-3">
           <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${profile.user.lastActive}"/></div>
-          <div><g:message code="userProfile.profileEMail.label" />: ${profile.profileEmail}</div>
+          <div><g:message code="userProfile.profileEmail.label" />: ${profile.profileEmail}</div>
           <div><g:message code="userProfile.location.label" />: ${profile.location}</div>
         </div>
         <div class="col-sm-3">
-          <div>
-            <label>
-              <g:message code="clubProfile.list.message"/>
-            </label>
-            <ul class="list-group">
-              <g:each var="clubProfile" in="${profile.user.clubProfiles}">
-                <li>
-                  <g:link class="list-group-item" controller="profile" action="clubProfile" id="${clubProfile.id}">
-                    <tempvs:fullName profile="${clubProfile}"/>
-                  </g:link>
-                </li>
-              </g:each>
-            </ul>
-          </div>
+          <g:render template="templates/clubProfiles" model="${[user: profile.user]}"/>
         </div>
       </g:if>
       <g:elseif test="${message}">

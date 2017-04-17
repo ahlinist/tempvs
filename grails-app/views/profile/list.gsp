@@ -12,18 +12,7 @@
         <g:link class="list-group-item" controller="profile" action="userProfile" id="${user.userProfile.id}">
           <tempvs:fullName profile="${user.userProfile}"/>
         </g:link>
-        <label>
-          <g:message code="clubProfile.list.message"/>
-        </label>
-        <ul class="list-group">
-          <g:each var="clubProfile" in="${user.clubProfiles}">
-            <li>
-              <g:link class="list-group-item" controller="profile" action="clubProfile" id="${clubProfile.id}">
-                <tempvs:fullName profile="${clubProfile}"/>
-              </g:link>
-            </li>
-          </g:each>
-        </ul>
+        <g:render template="templates/clubProfiles" model="${[user: user]}"/>
         <div>
           <g:link class="btn btn-default" controller="profile" action="create"><g:message code="clubProfile.create.link"/></g:link>
         </div>
