@@ -1,8 +1,5 @@
 package com.tempvs.user
 
-import com.tempvs.user.User
-import com.tempvs.user.UserController
-import com.tempvs.user.UserPasswordCommand
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.springframework.security.authentication.encoding.PasswordEncoder
@@ -12,12 +9,13 @@ import spock.lang.Specification
 class UserPasswordCommandSpec extends Specification {
     private static final String CURRENT_PASSWORD = 'currentPassword'
     private static final String NEW_PASSWORD = 'newPassword'
+    private static final String PASSWORD = 'password'
 
     def springSecurityService = Mock(SpringSecurityService)
     def passwordEncoder = Mock(PasswordEncoder)
+    def user = Mock(User)
 
     def setup() {
-        passwordEncoder.isPasswordValid(_, _, _) >> Boolean.TRUE
         springSecurityService.currentUser >> Mock(User)
     }
 
@@ -40,8 +38,18 @@ class UserPasswordCommandSpec extends Specification {
                 springSecurityService: springSecurityService,
         ]
 
-        expect:
-        new UserPasswordCommand(props).validate()
+        when:
+        Boolean result = new UserPasswordCommand(props).validate()
+
+        then:
+        1 * springSecurityService.currentUser >> user
+        1 * user.asType(User.class) >> user
+        1 * user.password >> PASSWORD
+        1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
+        0 * _
+
+        and:
+        result
     }
 
     void "Check repeated pass matching" () {
@@ -54,7 +62,17 @@ class UserPasswordCommandSpec extends Specification {
                 springSecurityService: springSecurityService,
         ]
 
-        expect:
-        !new UserPasswordCommand(props).validate()
+        when:
+        Boolean result = new UserPasswordCommand(props).validate()
+
+        then:
+        1 * springSecurityService.currentUser >> user
+        1 * user.asType(User.class) >> user
+        1 * user.password >> PASSWORD
+        1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
+        0 * _
+
+        and:
+        !result
     }
 }

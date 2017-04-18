@@ -11,8 +11,9 @@ import spock.lang.Specification
  */
 @TestFor(UserController)
 class UserControllerSpec extends Specification {
-    private static final String SHOW_PROFILE_PAGE_URI = '/userProfile'
+    private static final String SHOW_PROFILE_PAGE_URI = '/profile'
     private static final String ID = 'id'
+    private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String NEW_PASSWORD = 'newPassword'
     private static final String UPDATE_EMAIL_ACTION = 'email'
@@ -23,7 +24,6 @@ class UserControllerSpec extends Specification {
 
     def ajaxResponseService = Mock(AjaxResponseService)
     def userService = Mock(UserService)
-    def userProfileService = Mock(UserProfileService)
     def verifyService = Mock(VerifyService)
     def springSecurityService = Mock(SpringSecurityService)
     def user = Mock(User)
@@ -34,7 +34,6 @@ class UserControllerSpec extends Specification {
     def registerCommand = Mock(RegisterCommand)
 
     def setup() {
-        controller.userProfileService = userProfileService
         controller.verifyService = verifyService
         controller.ajaxResponseService = ajaxResponseService
         controller.userService = userService
@@ -71,7 +70,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(EMAIL) >> EMAIL
+        1 * user.email >> EMAIL
         0 * _
         response.json.messages == [EMAIL_UPDATE_DUPLICATE]
     }
@@ -83,9 +82,11 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(EMAIL)
-        1 * userService.getUserByEmail(EMAIL) >> user
+        1 * user.email
+        1 * userService.isEmailUnique(EMAIL)
         0 * _
+
+        and:
         response.json.messages == [EMAIL_USED]
     }
 
@@ -96,11 +97,10 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(EMAIL)
-        1 * userService.getUserByEmail(EMAIL)
-        1 * userProfileService.getProfileByProfileEmail(EMAIL)
-        1 * user.getProperty(ID) >> ID
-        1 * verifyService.createEmailVerification([userId: ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
+        1 * user.email >> Boolean.FALSE
+        1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
+        1 * user.id >> LONG_ID
+        1 * verifyService.createEmailVerification([instanceId: LONG_ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

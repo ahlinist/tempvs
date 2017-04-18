@@ -22,14 +22,15 @@ class UserTagLibSpec extends Specification {
     }
 
     void "Test tempvs:fullName"() {
-        given:
         Map properties = [profile: userProfile]
 
         when:
         String result = tagLib.fullName(properties)
 
         then:
-        1 * userProfile.getProperty(PROPERTIES) >> [firstName: FIRST_NAME, lastName: LAST_NAME]
+        1 * userProfile.firstName >> FIRST_NAME
+        1 * userProfile.lastName >> LAST_NAME
+        _ * userProfile._
         0 * _
 
         and:

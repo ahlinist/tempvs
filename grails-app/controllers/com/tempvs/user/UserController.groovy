@@ -20,7 +20,7 @@ class UserController {
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
 
     def index() {
-        redirect controller: 'userProfile'
+        redirect controller: 'profile'
     }
 
     def edit() {
