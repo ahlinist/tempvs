@@ -1,10 +1,10 @@
 package com.tempvs.image
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.user.ProfileHolder
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.mock.web.MockMultipartFile
@@ -19,21 +19,18 @@ class ImageControllerSpec extends Specification {
     private static final String AVATAR = 'avatar'
     private static final String AVATAR_UPDATED_MESSAGE = 'userProfile.update.avatar.success.message'
     private static final String IMAGE_EMPTY = 'upload.image.empty'
-    private static final String ID = 'id'
-    private static final String USER_PROFILE = 'userProfile'
-    private static final String CLASS = 'class'
 
     def imageService = Mock(ImageService)
     def ajaxResponseService = Mock(AjaxResponseService)
-    def springSecurityService = Mock(SpringSecurityService)
     def user = Mock(User)
     def userProfile = Mock(UserProfile)
     def json = Mock(JSON)
+    def profileHolder = Mock(ProfileHolder)
 
     def setup() {
         controller.imageService = imageService
         controller.ajaxResponseService = ajaxResponseService
-        controller.springSecurityService = springSecurityService
+        controller.profileHolder = profileHolder
     }
 
     def cleanup() {
@@ -47,11 +44,11 @@ class ImageControllerSpec extends Specification {
         controller.updateAvatar()
 
         then: 'JSON response received'
-        1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(ID) >> 1
-        2 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * userProfile.getProperty(ID) >> 1
-        1 * userProfile.getProperty(CLASS) >> UserProfile.class
+        1 * profileHolder.profile >> userProfile
+        1 * userProfile.user >> user
+        1 * user.id >> 1
+        //1 * userProfile.class >> UserProfile.class
+        1 * userProfile.id >> 1
         1 * imageService.updateAvatar(_ as ByteArrayInputStream, _ as String) >> Boolean.TRUE
         1 * ajaxResponseService.renderMessage(Boolean.TRUE, AVATAR_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

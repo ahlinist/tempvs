@@ -11,7 +11,7 @@ import spock.lang.Specification
 class EmailVerificationSpec extends Specification {
     private static final String REGISTER_ACTION = 'registration'
     private static final String UPD_EMAIL_ACTION = 'email'
-    private static final String UPD_PROFILE_EMAIL_ACTION = 'profileEmail'
+    private static final String UPD_PROFILE_EMAIL_ACTION = 'userprofile'
     private static final String INVALID_ACTION = 'invalidAction'
     private static final String VALID_EMAIL = 'verification@email.com'
     private static final String INVALID_EMAIL = 'verification-email.com'
@@ -36,7 +36,7 @@ class EmailVerificationSpec extends Specification {
         new EmailVerification(properties).validate()
     }
 
-    void "Verification for email update without userId fails"() {
+    void "Verification for email update without instanceId fails"() {
         given:
         Map properties = [verificationCode: VERIFICATION_CODE, action: UPD_EMAIL_ACTION, email: VALID_EMAIL]
         expect:
@@ -47,9 +47,9 @@ class EmailVerificationSpec extends Specification {
         given:
         Map regProps = [verificationCode: VERIFICATION_CODE, action: REGISTER_ACTION, email: VALID_EMAIL]
         Map mailUpdProps = [verificationCode: VERIFICATION_CODE + 1, action: UPD_EMAIL_ACTION,
-                            email: VALID_EMAIL, userId: USER_ID]
+                            email: VALID_EMAIL, instanceId: USER_ID]
         Map prfMailUpdProps = [verificationCode: VERIFICATION_CODE + 2, action: UPD_PROFILE_EMAIL_ACTION,
-                               email: VALID_EMAIL, userId: USER_ID]
+                               email: VALID_EMAIL, instanceId: USER_ID]
 
         expect:
         new EmailVerification(regProps).save(flush:true)

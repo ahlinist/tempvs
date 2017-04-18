@@ -5,6 +5,7 @@ import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import spock.lang.Specification
 /**
@@ -16,10 +17,10 @@ class AjaxResponseServiceSpec extends Specification {
     private static final String SUCCESS_MESSAGE = 'Success Message'
     private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
     private static final String FAILED = 'failed'
-    private static final String ERRORS = 'errors'
 
     def user = Mock(User)
     def messageSource = Mock(MessageSource)
+    def errors = Mock(Errors)
     def fieldError = Mock(FieldError)
 
     def setup() {
@@ -48,7 +49,8 @@ class AjaxResponseServiceSpec extends Specification {
 
         then: 'Ajax response returned'
         1 * user.hasErrors() >> Boolean.TRUE
-        1 * user.getProperty(ERRORS) >> [allErrors:[fieldError, fieldError]]
+        1 * user.errors >> errors
+        1 * errors.allErrors >> [fieldError, fieldError]
         2 * messageSource.getMessage(fieldError, LocaleContextHolder.locale) >> FAILED
         0 * _
         result.target.success == Boolean.FALSE
@@ -64,7 +66,7 @@ class AjaxResponseServiceSpec extends Specification {
         1 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale) >> SUCCESS_MESSAGE
         0 * _
         result.target.success == Boolean.TRUE
-        result.target.messages == [SUCCESS_MESSAGE] as Set
+        result.target.messages == [SUCCESS_MESSAGE]
         result instanceof JSON
     }
 }
