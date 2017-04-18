@@ -2,6 +2,7 @@ package com.tempvs.image
 
 import com.tempvs.user.BaseProfile
 import com.tempvs.user.ProfileHolder
+import org.springframework.util.StreamUtils
 
 class ImageController {
 
