@@ -7,11 +7,10 @@ import spock.lang.Specification
 @TestMixin(GroovyPageUnitTestMixin)
 class UserViewSpec extends Specification {
 
-    private static final String EMAIL = 'email'
     private static final String EMAIL_ADDRESS = 'test@email.com'
 
     def user = Mock(User) {
-        getProperty(EMAIL) >> EMAIL_ADDRESS
+        getEmail() >> EMAIL_ADDRESS
     }
 
     def setup() {

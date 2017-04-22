@@ -11,31 +11,41 @@ class VerifyControllerSpec extends Specification {
 
     private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String ID = 'id'
-    private static final String USER_ID = 'userId'
+    private static final String PROFILE = 'profile'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String REGISTRATION_PAGE_URI = '/verify/registration'
     private static final String ERROR_PAGE_URI = '/verify/error'
     private static final String USER_EDIT_PAGE_URI = '/user/edit'
-    private static final String EDIT_USER_PROFILE_PAGE_URI = '/userProfile/edit'
+    private static final String EDIT_PROFILE_PAGE_URI = '/profile/edit'
+    private static final String REGISTRATION = 'registration'
+    private static final String USERPROFILE = 'userprofile'
+    private static final String CLUBPROFILE = 'clubprofile'
 
     def userService = Mock(UserService)
-    def userProfileService = Mock(UserProfileService)
+    def profileService = Mock(ProfileService)
     def verifyService = Mock(VerifyService)
     def emailVerification = Mock(EmailVerification)
+    def user = Mock(User)
+    def userProfile = Mock(UserProfile)
+    def clubProfile = Mock(ClubProfile)
+    def profileHolder = Mock(ProfileHolder)
 
     def setup() {
         controller.userService = userService
-        controller.userProfileService = userProfileService
+        controller.profileService = profileService
         controller.verifyService = verifyService
+        controller.profileHolder = profileHolder
+
+        GroovySpy(User, global: true)
     }
 
     def cleanup() {
     }
 
-    void "Check registration() action"() {
+    void "Check registration verification"() {
         when:
-        controller.registration()
+        controller.byEmail()
 
         then:
         controller.modelAndView.viewName == ERROR_PAGE_URI
@@ -43,7 +53,7 @@ class VerifyControllerSpec extends Specification {
 
         when:
         params.id = ID
-        controller.registration()
+        controller.byEmail()
 
         then:
         1 * verifyService.getVerification(ID) >> null
@@ -54,21 +64,23 @@ class VerifyControllerSpec extends Specification {
 
         when:
         params.id = ID
-        controller.registration()
+        controller.byEmail()
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.action >> REGISTRATION
+        1 * emailVerification.email >> EMAIL
         1 * emailVerification.delete([flush: Boolean.TRUE])
+        0 * _
 
         and:
         controller.modelAndView.viewName == REGISTRATION_PAGE_URI
         controller.modelAndView.model == [email: EMAIL]
     }
 
-    void "Check email() action"() {
+    void "Check email update verification"() {
         when:
-        controller.email()
+        controller.byEmail()
 
         then:
         controller.modelAndView.viewName == ERROR_PAGE_URI
@@ -76,21 +88,26 @@ class VerifyControllerSpec extends Specification {
 
         when:
         params.id = ID
-        controller.email()
+        controller.byEmail()
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getProperty(EMAIL) >> EMAIL
-        1 * emailVerification.getProperty(USER_ID) >> LONG_ID
-        1 * userService.updateEmail(LONG_ID, EMAIL)
+        1 * emailVerification.action >> EMAIL
+        1 * emailVerification.instanceId >> LONG_ID
+        1 * emailVerification.email >> EMAIL
+        1 * User.get(LONG_ID) >> user
+        1 * userService.updateEmail(user, EMAIL) >> user
+        1 * user.hasErrors() >> Boolean.FALSE
+        1 * emailVerification.delete(['flush':true])
+        0 * _
 
         and:
         response.redirectedUrl == USER_EDIT_PAGE_URI
     }
 
-    void "Check profileEmail() action"() {
+    void "Check userprofile email update verification"() {
         when:
-        controller.profileEmail()
+        controller.byEmail()
 
         then:
         controller.modelAndView.viewName == ERROR_PAGE_URI
@@ -98,15 +115,47 @@ class VerifyControllerSpec extends Specification {
 
         when:
         params.id = ID
-        controller.profileEmail()
+        controller.byEmail()
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getProperty(EMAIL) >> EMAIL
-        1 * emailVerification.getProperty(USER_ID) >> LONG_ID
-        1 * userProfileService.updateProfileEmail(LONG_ID, EMAIL)
+        1 * emailVerification.action >> USERPROFILE
+        1 * emailVerification.email >> EMAIL
+        1 * emailVerification.instanceId >> LONG_ID
+        1 * profileService.updateProfileEmail(_, EMAIL) >> userProfile
+        1 * userProfile.hasErrors() >> Boolean.FALSE
+        1 * profileHolder.setProperty(PROFILE, userProfile)
+        1 * emailVerification.delete(['flush':true])
+        0 * _
 
         and:
-        response.redirectedUrl == EDIT_USER_PROFILE_PAGE_URI
+        response.redirectedUrl == EDIT_PROFILE_PAGE_URI
+    }
+
+    void "Check clubprofile email update verification"() {
+        when:
+        controller.byEmail()
+
+        then:
+        controller.modelAndView.viewName == ERROR_PAGE_URI
+        controller.modelAndView.model == [message: NO_VERIFICATION_CODE]
+
+        when:
+        params.id = ID
+        controller.byEmail()
+
+        then:
+        1 * verifyService.getVerification(ID) >> emailVerification
+        1 * emailVerification.action >> CLUBPROFILE
+        1 * emailVerification.email >> EMAIL
+        1 * emailVerification.instanceId >> LONG_ID
+        1 * profileService.updateProfileEmail(_, EMAIL) >> clubProfile
+        1 * clubProfile.hasErrors() >> Boolean.FALSE
+        1 * profileHolder.setProperty(PROFILE, clubProfile)
+        1 * emailVerification.delete(['flush':true])
+        0 * _
+
+        and:
+        response.redirectedUrl == EDIT_PROFILE_PAGE_URI
     }
 }
