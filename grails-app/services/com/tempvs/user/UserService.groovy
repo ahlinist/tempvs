@@ -21,27 +21,24 @@ class UserService {
     }
 
     User createUser(Map properties) {
+        properties.password = springSecurityService.encodePassword(properties.password as String)
+        properties.userProfile = new UserProfile(properties)
         User user = new User(properties)
-
-        user.with{
-            password = springSecurityService.encodePassword(user.password)
-            userProfile = new UserProfile(properties)
-            save(flush: true)
-        }
+        user.save()
 
         user
     }
 
     User updateEmail(User user, String email) {
         user.email = email
-        user.save(flush: true)
+        user.save()
         user
     }
 
     User updatePassword(String newPassword) {
         User user = springSecurityService.currentUser as User
         user.password = springSecurityService.encodePassword(newPassword)
-        user.save(flush: true)
+        user.save()
         user
     }
 
@@ -50,7 +47,7 @@ class UserService {
 
         if (user) {
             user.lastActive = new Date()
-            user.save(flush: true)
+            user.save()
         }
     }
 
