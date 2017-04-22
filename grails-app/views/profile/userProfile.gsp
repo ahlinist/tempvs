@@ -21,7 +21,7 @@
           <div><g:message code="userProfile.location.label" />: ${profile.location}</div>
         </div>
         <div class="col-sm-3">
-          <g:render template="templates/clubProfiles" model="${[user: profile.user]}"/>
+          <g:render template="/profile/templates/clubProfiles" model="${[user: profile.user]}"/>
         </div>
       </g:if>
       <g:elseif test="${message}">
