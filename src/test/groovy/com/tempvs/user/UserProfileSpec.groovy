@@ -69,19 +69,8 @@ class UserProfileSpec extends Specification {
         UserProfile userProfile = user.userProfile
         userProfile.profileId = NUMERIC_PROFILE_ID
         userProfile.save(flush:true)
-
+git
         then: "UserProfile has not been saved"
         !UserProfile.findByProfileId(NUMERIC_PROFILE_ID)
-    }
-    
-    void "Check if email update is rejected for non-unique profileEmail"() {
-        given:
-        Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
-        props.email = EMAIL_FOR_FAIL
-        props.customId = null
-
-        expect:
-        TestingUtils.createUser()
-        !TestingUtils.createUser(props)
     }
 }
