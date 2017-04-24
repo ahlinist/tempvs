@@ -69,7 +69,7 @@ class UserProfileSpec extends Specification {
         UserProfile userProfile = user.userProfile
         userProfile.profileId = NUMERIC_PROFILE_ID
         userProfile.save(flush:true)
-git
+
         then: "UserProfile has not been saved"
         !UserProfile.findByProfileId(NUMERIC_PROFILE_ID)
     }
