@@ -12,15 +12,11 @@ class ProfileService {
     SpringSecurityService springSecurityService
 
     ClubProfile getClubProfile(String id) {
-        try {
-            ClubProfile.findByProfileId(id) ?: ClubProfile.get(id as String)
-        } catch (NumberFormatException e) {}
+        ClubProfile.findByProfileId(id) ?: ClubProfile.get(id)
     }
 
     UserProfile getUserProfile(String id) {
-        try {
-            UserProfile.findByProfileId(id) ?: UserProfile.get(id as Long)
-        } catch (NumberFormatException e) {}
+        UserProfile.findByProfileId(id) ?: UserProfile.get(id)
     }
 
     BaseProfile updateProfile(BaseProfile profile, Map params) {
@@ -32,7 +28,7 @@ class ProfileService {
     ClubProfile createClubProfile(Map properties) {
         User user = springSecurityService.currentUser as User
         ClubProfile clubProfile = new ClubProfile(properties)
-        user.addToClubProfiles(clubProfile).save()
+        user.addToClubProfiles(clubProfile)?.save()
         clubProfile
     }
 
