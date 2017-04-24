@@ -20,7 +20,7 @@ class ClubProfile extends BaseProfile {
             UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
 
             !user || (user.userProfile == userProfile) ||
-                    !clubProfile || (userProfile.user == clubProfile.user)
+                    !userProfile || (userProfile.user == clubProfile.user)
         }
     }
 }
