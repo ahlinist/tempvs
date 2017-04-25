@@ -121,7 +121,7 @@ class ProfileController {
             UserProfile currentUserProfile = springSecurityService.currentUser?.userProfile
 
             if (currentUserProfile) {
-                redirect action: 'user', id: currentUserProfile.identifier
+                redirect action: 'userProfile', id: currentUserProfile.identifier
             } else {
                 redirect controller: 'auth', action: 'index'
             }
