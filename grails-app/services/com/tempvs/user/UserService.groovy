@@ -1,20 +1,17 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAO
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 
+/**
+ * Service that manages operations with users.
+ */
 @Transactional
 @GrailsCompileStatic
 class UserService {
 
     SpringSecurityService springSecurityService
-    ObjectDAO objectDAO
-
-    Object getUser(String id) {
-        objectDAO.find(UserProfile, [profileId: id]) ?: objectDAO.get(User, id)
-    }
 
     User getUserByEmail(String email) {
         User.findByEmail(email)
