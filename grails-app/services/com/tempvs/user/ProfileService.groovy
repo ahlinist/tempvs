@@ -1,22 +1,24 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectDAO
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
 
+/**
+ * Service for managing {@link com.tempvs.user.UserProfile} and
+ * {@link com.tempvs.user.ClubProfile}.
+ */
 @Transactional
 @GrailsCompileStatic
 class ProfileService {
 
     SpringSecurityService springSecurityService
+    ObjectDAO objectDAO
 
-    ClubProfile getClubProfile(String id) {
-        ClubProfile.findByProfileId(id) ?: ClubProfile.get(id)
-    }
-
-    UserProfile getUserProfile(String id) {
-        UserProfile.findByProfileId(id) ?: UserProfile.get(id)
+    Object getProfile(Class clazz, String id) {
+        objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
     }
 
     BaseProfile updateProfile(BaseProfile profile, Map params) {

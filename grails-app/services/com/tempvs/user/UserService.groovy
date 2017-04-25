@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectDAO
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
@@ -9,11 +10,10 @@ import grails.transaction.Transactional
 class UserService {
 
     SpringSecurityService springSecurityService
+    ObjectDAO objectDAO
 
-    User getUser(String id) {
-        try {
-            UserProfile.findByProfileId(id)?.user ?: User.get(id as Long)
-        } catch (NumberFormatException e) {}
+    Object getUser(String id) {
+        objectDAO.find(UserProfile, [profileId: id]) ?: objectDAO.get(User, id)
     }
 
     User getUserByEmail(String email) {

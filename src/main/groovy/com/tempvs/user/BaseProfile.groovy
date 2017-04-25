@@ -3,6 +3,10 @@ package com.tempvs.user
 import com.tempvs.domain.BasePersistent
 import grails.compiler.GrailsCompileStatic
 
+/**
+ * Abstract Profile inherited by {@link com.tempvs.user.UserProfile}
+ * or {@link com.tempvs.user.ClubProfile}.
+ */
 @GrailsCompileStatic
 abstract class BaseProfile extends BasePersistent {
 
@@ -17,7 +21,7 @@ abstract class BaseProfile extends BasePersistent {
     }
 
     static constraints = {
-        profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
+        profileId shared: "profileId"
         location nullable: true
     }
 }

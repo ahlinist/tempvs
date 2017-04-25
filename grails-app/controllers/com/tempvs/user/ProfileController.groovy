@@ -6,6 +6,10 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 
+/**
+ * Controller for managing {@link com.tempvs.user.UserProfile} and
+ * {@link com.tempvs.user.ClubProfile}.
+ */
 class ProfileController {
 
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -27,38 +31,20 @@ class ProfileController {
     }
 
     def userProfile(String id) {
-        if (id) {
-            BaseProfile profile = profileService.getUserProfile(id)
-
-            if (profile) {
-                [profile: profile, id: profile.identifier]
-            } else {
-                [id: id, message: NO_SUCH_PROFILE, args: [id]]
-            }
-        } else {
-            UserProfile currentUserProfile = springSecurityService.currentUser?.userProfile
-
-            if (currentUserProfile) {
-                redirect action: 'user', id: currentUserProfile.identifier
-            } else {
-                redirect controller: 'auth', action: 'index'
-            }
+        profile(id) {
+            profileService.getProfile(UserProfile.class, id)
         }
     }
 
     def clubProfile(String id) {
-        BaseProfile profile = profileService.getClubProfile(id)
-
-        if (profile) {
-            [profile: profile, id: profile.identifier]
-        } else {
-            [id: id, message: NO_SUCH_PROFILE, args: [id]]
+        profile(id) {
+            profileService.getProfile(ClubProfile.class, id)
         }
     }
 
     def switchProfile(String id) {
         if (id) {
-            profileHolder.profile = profileService.getClubProfile(id)
+            profileHolder.profile = profileService.getProfile(ClubProfile.class, id)
         } else {
             profileHolder.profile = springSecurityService.currentUser.userProfile
         }
@@ -121,6 +107,26 @@ class ProfileController {
     private updateProfile(command) {
         render ajaxResponseService.composeJsonResponse(profileService.updateProfile(profileHolder.profile, command.properties), PROFILE_UPDATED_MESSAGE)
     }
+
+    private profile(String id, Closure getProfile) {
+        if (id) {
+            BaseProfile profile = getProfile()
+
+            if (profile) {
+                [profile: profile, id: profile.identifier]
+            } else {
+                [id: id, message: NO_SUCH_PROFILE, args: [id]]
+            }
+        } else {
+            UserProfile currentUserProfile = springSecurityService.currentUser?.userProfile
+
+            if (currentUserProfile) {
+                redirect action: 'user', id: currentUserProfile.identifier
+            } else {
+                redirect controller: 'auth', action: 'index'
+            }
+        }
+    }
 }
 
 @GrailsCompileStatic
@@ -131,8 +137,8 @@ class UserProfileCommand extends BaseObject {
     String profileId
 
     static constraints = {
-        profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
         location nullable: true
+        profileId shared: "profileId"
     }
 }
 
@@ -150,6 +156,6 @@ class ClubProfileCommand extends BaseObject {
         nickName nullable: true
         clubName nullable: true
         location nullable: true
-        profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
+        profileId shared: "profileId"
     }
 }

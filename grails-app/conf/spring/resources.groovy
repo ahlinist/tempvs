@@ -1,3 +1,4 @@
+import com.tempvs.hibernate.HibernateObjectDAO
 import com.tempvs.mongodb.DBObjectFactory
 import com.tempvs.mongodb.GridFSFactory
 import com.tempvs.mongodb.MongoImageDAO
@@ -18,5 +19,10 @@ beans = {
     profileHolder(ProfileHolder) { bean ->
         bean.scope = 'session'
         springSecurityService = ref("springSecurityService")
+        objectDAO = ref("objectDAO")
+    }
+
+    objectDAO(HibernateObjectDAO) {
+        sessionFactory = ref("sessionFactory")
     }
 }
