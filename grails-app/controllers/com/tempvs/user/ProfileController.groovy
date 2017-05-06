@@ -112,19 +112,11 @@ class ProfileController {
         if (id) {
             BaseProfile profile = getProfile()
 
-            if (profile) {
-                [profile: profile, id: profile.identifier]
-            } else {
-                [id: id, message: NO_SUCH_PROFILE, args: [id]]
-            }
+            profile ? [profile: profile, id: profile.identifier] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
         } else {
-            UserProfile currentUserProfile = springSecurityService.currentUser?.userProfile
+            UserProfile profile = springSecurityService.currentUser?.userProfile
 
-            if (currentUserProfile) {
-                redirect action: 'userProfile', id: currentUserProfile.identifier
-            } else {
-                redirect controller: 'auth', action: 'index'
-            }
+            redirect(profile ? [action: 'userProfile', id: profile.identifier] : [controller: 'auth', action: 'index'])
         }
     }
 }
