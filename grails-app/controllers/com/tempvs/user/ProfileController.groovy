@@ -43,13 +43,17 @@ class ProfileController {
     }
 
     def switchProfile(String id) {
+        Map destination = [uri: request.getHeader('referer')]
+
         if (id) {
             profileHolder.profile = profileService.getProfile(ClubProfile.class, id)
         } else {
-            profileHolder.profile = springSecurityService.currentUser.userProfile
+            User user = springSecurityService.currentUser
+
+            user ? (profileHolder.profile = user.userProfile) : (destination = [controller: 'auth', action: 'index'])
         }
 
-        redirect uri: request.getHeader('referer')
+        redirect destination
     }
 
 

@@ -1,14 +1,17 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectFactory
 import grails.compiler.GrailsCompileStatic
 import grails.plugins.mail.MailService
 import grails.transaction.Transactional
+import org.codehaus.groovy.runtime.InvokerHelper
 
 @Transactional
 @GrailsCompileStatic
 class VerifyService {
 
     MailService mailService
+    ObjectFactory objectFactory
 
     EmailVerification getVerification(String id) {
         EmailVerification.findByVerificationCode(id)
@@ -17,7 +20,9 @@ class VerifyService {
     EmailVerification createEmailVerification(Map properties) {
         String email = properties.email
         String verificationCode = email + new Date().time
-        EmailVerification emailVerification = new EmailVerification(properties + [verificationCode: verificationCode.encodeAsMD5()])
+        EmailVerification emailVerification = objectFactory.create(EmailVerification.class) as EmailVerification
+        Map verificationProperties = properties + [verificationCode: verificationCode.encodeAsMD5()]
+        InvokerHelper.setProperties(emailVerification, verificationProperties)
 
         if (emailVerification.save(flush: true)) {
             mailService.sendMail {

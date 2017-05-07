@@ -1,6 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
+import com.tempvs.domain.ObjectFactory
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
@@ -16,6 +17,7 @@ class ProfileService {
 
     SpringSecurityService springSecurityService
     ObjectDAO objectDAO
+    ObjectFactory objectFactory
 
     Object getProfile(Class clazz, String id) {
         objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
@@ -29,7 +31,11 @@ class ProfileService {
 
     ClubProfile createClubProfile(Map properties) {
         User user = springSecurityService.currentUser as User
-        ClubProfile clubProfile = new ClubProfile(properties)
+        ClubProfile clubProfile = objectFactory.create(ClubProfile.class) as ClubProfile
+	clubProfile.firstName = properties.firstName
+	clubProfile.lastName = properties.lastName
+	clubProfile.nickName = properties.nickName
+	clubProfile.clubName = properties.clubName
         user.addToClubProfiles(clubProfile)?.save()
         clubProfile
     }

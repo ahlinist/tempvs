@@ -1,4 +1,4 @@
-package com.tempvs.hibernate
+package com.tempvs.domain.hibernate
 
 import groovy.transform.CompileStatic
 import org.hibernate.Criteria

@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectFactory
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
@@ -12,17 +13,21 @@ import grails.transaction.Transactional
 class UserService {
 
     SpringSecurityService springSecurityService
+    ObjectFactory objectFactory
 
     User getUserByEmail(String email) {
         User.findByEmail(email)
     }
 
     User createUser(Map properties) {
-        properties.password = springSecurityService.encodePassword(properties.password as String)
-        properties.userProfile = new UserProfile(properties)
-        User user = new User(properties)
+        User user = objectFactory.create(User.class) as User
+        UserProfile userProfile = objectFactory.create(UserProfile.class) as UserProfile
+	    userProfile.firstName = properties.firstName
+	    userProfile.lastName =  properties.lastName
+        user.userProfile = userProfile
+	    user.email = properties.email
+	    user.password = springSecurityService.encodePassword(properties.password as String)
         user.save()
-
         user
     }
 
