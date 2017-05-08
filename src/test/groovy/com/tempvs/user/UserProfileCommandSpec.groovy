@@ -1,6 +1,9 @@
 package com.tempvs.user
 
 import grails.test.mixin.TestFor
+import grails.util.ClosureToMapPopulator
+import grails.validation.ConstraintsEvaluator
+import org.grails.validation.ConstraintsEvaluatorFactoryBean
 import spock.lang.Specification
 
 @TestFor(UserController)
@@ -10,6 +13,18 @@ class UserProfileCommandSpec extends Specification {
     public static final String LOCATION = 'location'
     public static final String PROFILE_ID = 'profileId'
     public static final String NUMERIC_PROFILE_ID = '1234'
+
+    def setupSpec(){
+        defineBeans {
+            "${ConstraintsEvaluator.BEAN_NAME}"(ConstraintsEvaluatorFactoryBean) {
+                def constraintsClosure = {
+                    profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
+                }
+
+                defaultConstraints = new ClosureToMapPopulator().populate(constraintsClosure)
+            }
+        }
+    }
 
     def setup() {
 

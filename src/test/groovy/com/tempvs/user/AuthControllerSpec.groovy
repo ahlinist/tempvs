@@ -7,12 +7,13 @@ import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(AuthController)
 class AuthControllerSpec extends Specification {
-    private static final String EMAIL = 'authUnitTest@email.com'
+    private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
     private static final String REGISTER_ACTION = 'registration'
     private static final String NO_SUCH_USER_MESSAGE = 'auth.login.noSuchUser.message'
@@ -68,7 +69,7 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * requestRegistrationCommand.validate() >> Boolean.TRUE
-        1 * requestRegistrationCommand.email >> EMAIL
+        1 * requestRegistrationCommand.getProperty(EMAIL) >> EMAIL
         1 * verifyService.createEmailVerification(['action': REGISTER_ACTION, 'email': EMAIL]) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, _ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -94,7 +95,7 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.TRUE
-        1 * loginCommand.email >> EMAIL
+        1 * loginCommand.getProperty(EMAIL) >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> null
         0 * _
         response.json.messages == [NO_SUCH_USER_MESSAGE]
@@ -107,10 +108,10 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.TRUE
-        1 * loginCommand.email >> EMAIL
+        1 * loginCommand.getProperty(EMAIL) >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> user
-        1 * user.password >> PASSWORD
-        1 * loginCommand.password >> PASSWORD
+        1 * user.getProperty(PASSWORD) >> PASSWORD
+        1 * loginCommand.getProperty(PASSWORD) >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.FALSE
         0 * _
         response.json.messages == [NO_SUCH_USER_MESSAGE]
@@ -123,10 +124,10 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.TRUE
-        2 * loginCommand.email >> EMAIL
+        2 * loginCommand.getProperty(EMAIL) >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> user
-        1 * user.password >> PASSWORD
-        2 * loginCommand.password >> PASSWORD
+        1 * user.getProperty(PASSWORD) >> PASSWORD
+        2 * loginCommand.getProperty(PASSWORD) >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.TRUE
         1 * springSecurityService.reauthenticate(EMAIL, PASSWORD)
         0 * _

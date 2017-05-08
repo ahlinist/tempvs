@@ -23,12 +23,11 @@ class ClubProfileSpec extends Specification {
 
     void "Test firstName nullability"() {
         given:
-        User user = TestingUtils.createUser()
         Map props = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
         props.firstName = null
 
         expect:
-        !TestingUtils.addClubProfile(user, props)
+        !TestingUtils.addClubProfile(TestingUtils.createUser(), props)
     }
 
     void "Test profileEmail email validation"() {

@@ -1,59 +1,36 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectFactory
+import com.tempvs.tests.utils.TestingUtils
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-
 @TestFor(UserService)
+@Mock([User, UserProfile])
 class UserServiceSpec extends Specification {
-    private static final String ONE = '1'
-    private static final Long LONG_ID = 1L
-    private static final String PROFILE_ID = 'profileId'
-    private static final String USER = 'user'
+
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
-    private static final String USER_PROFILE = 'userProfile'
 
     def springSecurityService = Mock(SpringSecurityService)
     def user = Mock(User)
     def userProfile = Mock(UserProfile)
+    def objectFactory = Mock(ObjectFactory)
 
     def setup() {
         GroovySpy(User, global: true)
         GroovySpy(UserProfile, global: true)
 
         service.springSecurityService = springSecurityService
+        service.objectFactory = objectFactory
     }
 
     def cleanup() {
-    }
-
-    void "Check getUser() method for id"() {
-        when:
-        def result = service.getUser(ONE)
-
-        then:
-        1 * UserProfile.findByProfileId(ONE) >> null
-        1 * User.get(_) >> user
-        0 * _
-
-        and:
-        result == user
-    }
-
-    void "Check getUser() method for profileId"() {
-        when:
-        def result = service.getUser(PROFILE_ID)
-
-        then:
-        1 * UserProfile.findByProfileId(PROFILE_ID) >> userProfile
-        1 * userProfile.getProperty(USER) >> user
-
-        and:
-        result == user
     }
 
     void "Check getUserByEmail()"() {
@@ -69,20 +46,18 @@ class UserServiceSpec extends Specification {
 
     void "Check createUser() creation"() {
         given:
-        Map properties = [:]
+        Map properties = TestingUtils.DEFAULT_USER_PROPS
 
         when:
         def result = service.createUser(properties)
 
         then:
-        1 * new User(properties) >> user
-        1 * user.setProperty(PASSWORD, PASSWORD)
-        1 * user.getProperty(PASSWORD) >> PASSWORD
-        1 * user.getProperty('springSecurityService') >> springSecurityService
         1 * springSecurityService.encodePassword(_) >> PASSWORD
-        1 * user.setProperty(USER_PROFILE, userProfile)
-        1 * new UserProfile(properties) >> userProfile
-        1 * user.save([flush: true])
+        1 * objectFactory.create(UserProfile.class) >> userProfile
+        1 * userProfile.asType(UserProfile.class) >> userProfile
+        1 * objectFactory.create(User.class) >> user
+        1 * user.asType(User.class) >> user
+        1 * user.save()
 
         and:
         result == user
@@ -90,12 +65,11 @@ class UserServiceSpec extends Specification {
 
     void "Test updateEmail()"() {
         when:
-        def result = service.updateEmail(LONG_ID, EMAIL)
+        def result = service.updateEmail(user, EMAIL)
 
         then:
-        1 * User.get(LONG_ID) >> user
         1 * user.setEmail(EMAIL)
-        1 * user.save([flush: true])
+        1 * user.save()
 
         and:
         result == user
@@ -107,9 +81,10 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
+        1 * user.asType(User) >> user
         1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
         1 * user.setPassword(PASSWORD)
-        1 * user.save([flush: true])
+        1 * user.save()
 
         and:
         result == user
@@ -121,7 +96,9 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
+        1 * user.asType(User) >> user
         1 * user.setLastActive(_ as Date)
-        1 * user.save([flush: true])
+        1 * user.save()
+        0 * _
     }
 }

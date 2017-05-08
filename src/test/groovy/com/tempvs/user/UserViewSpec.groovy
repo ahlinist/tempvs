@@ -8,10 +8,9 @@ import spock.lang.Specification
 class UserViewSpec extends Specification {
 
     private static final String EMAIL_ADDRESS = 'test@email.com'
+    private static final String EMAIL = 'email'
 
-    def user = Mock(User) {
-        getEmail() >> EMAIL_ADDRESS
-    }
+    def user = Mock(User)
 
     def setup() {
 
@@ -32,6 +31,10 @@ class UserViewSpec extends Specification {
         String result = render view: '/user/edit', model: model
 
         then:
+        2 * user.getProperty(EMAIL) >> EMAIL_ADDRESS
+        0 * _
+
+        and:
         result.contains title
         result.contains updateEmail
         result.contains updatePassword

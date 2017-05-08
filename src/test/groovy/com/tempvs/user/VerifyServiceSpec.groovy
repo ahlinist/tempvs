@@ -1,6 +1,8 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectFactory
 import grails.plugins.mail.MailService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -8,6 +10,7 @@ import spock.lang.Specification
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 @TestFor(VerifyService)
+@Mock([EmailVerification])
 class VerifyServiceSpec extends Specification {
 
     private static final String VERIFICATION_CODE = 'verificationCode'
@@ -15,11 +18,13 @@ class VerifyServiceSpec extends Specification {
 
     def mailService = Mock(MailService)
     def emailVerification = Mock(EmailVerification)
+    def objectFactory = Mock(ObjectFactory)
 
     def setup() {
         GroovySpy(EmailVerification, global: true)
 
         service.mailService = mailService
+        service.objectFactory = objectFactory
     }
 
     def cleanup() {
@@ -41,7 +46,8 @@ class VerifyServiceSpec extends Specification {
         def result = service.createEmailVerification([email: EMAIL])
 
         then: 'Verification created and mail sent'
-        1 * new EmailVerification(_) >> emailVerification
+        1 * objectFactory.create(EmailVerification.class) >> emailVerification
+        1 * emailVerification.asType(EmailVerification.class) >> emailVerification
         1 * emailVerification.save([flush: true]) >> emailVerification
         1 * mailService.sendMail(_)
 
@@ -54,7 +60,8 @@ class VerifyServiceSpec extends Specification {
         def result = service.createEmailVerification([email: EMAIL])
 
         then: 'Verification created, not saved and not sent'
-        1 * new EmailVerification(_) >> emailVerification
+        1 * objectFactory.create(EmailVerification.class) >> emailVerification
+        1 * emailVerification.asType(EmailVerification.class) >> emailVerification
         1 * emailVerification.save([flush: true])
 
         and:

@@ -10,28 +10,35 @@ class ProfileViewSpec extends Specification {
     private static final String FIRST_NAME = 'firstName'
     private static final String LAST_NAME = 'lastName'
     private static final String NICK_NAME = 'nickName'
+    private static final String LAST_ACTIVE = 'lastActive'
+    private static final String USER = 'user'
+    private static final String USER_PROFILE = 'userProfile'
+    private static final String CLUB_PROFILES = 'clubProfiles'
 
     Date lastActiveDate = new Date()
 
+    def userProfile = Mock(UserProfile)
+    def clubProfile = Mock(ClubProfile)
+
     def user = Mock(User) {
-        getLastActive() >> lastActiveDate
-    }
-
-    def userProfile = Mock(UserProfile) {
-        getFirstName() >> FIRST_NAME
-        getLastName() >> LAST_NAME
-        getUser() >> user
-    }
-
-    def clubProfile = Mock(ClubProfile) {
-        getFirstName() >> FIRST_NAME
-        getLastName() >> LAST_NAME
-        getNickName() >> NICK_NAME
-        getUser() >> user
+        getProperty(LAST_ACTIVE) >> lastActiveDate
+        getProperty(USER_PROFILE) >> userProfile
+        getProperty(CLUB_PROFILES) >> [clubProfile]
     }
 
     def setup() {
+        userProfile = Mock(UserProfile) {
+            getProperty(FIRST_NAME) >> FIRST_NAME
+            getProperty(LAST_NAME) >> LAST_NAME
+            getProperty(USER) >> user
+        }
 
+        clubProfile = Mock(ClubProfile) {
+            getProperty(FIRST_NAME) >> FIRST_NAME
+            getProperty(LAST_NAME) >> LAST_NAME
+            getProperty(NICK_NAME) >> NICK_NAME
+            getProperty(USER) >> user
+        }
     }
 
     def cleanup() {
@@ -45,7 +52,6 @@ class ProfileViewSpec extends Specification {
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
         String clubProfileTag = "<tempvs:fullName profile=\"${clubProfile}\"/>"
-        user.clubProfiles >> [clubProfile]
 
         when:
         String result = render view: '/profile/userProfile', model: model
@@ -59,9 +65,9 @@ class ProfileViewSpec extends Specification {
 
     void "Test /profile/clubProfile view"() {
         given:
-        String title = "<title>Tempvs - <tempvs:fullName profile=\"${userProfile}\"/></title>"
+        String title = "<title>Tempvs - <tempvs:fullName profile=\"${clubProfile}\"/></title>"
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
-        Map model = [profile: userProfile, id: 1]
+        Map model = [profile: clubProfile, id: 1]
 
         when:
         String result = render view: '/profile/clubProfile', model: model
@@ -128,8 +134,6 @@ class ProfileViewSpec extends Specification {
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
         String clubProfileTag = "<tempvs:fullName profile=\"${clubProfile}\"/>"
         Map model = [user: user]
-        user.clubProfiles >> [clubProfile]
-        user.userProfile >> userProfile
 
         when:
         String result = render view: '/profile/list', model: model

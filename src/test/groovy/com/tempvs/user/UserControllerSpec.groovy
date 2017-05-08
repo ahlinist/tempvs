@@ -16,7 +16,10 @@ class UserControllerSpec extends Specification {
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String NEW_PASSWORD = 'newPassword'
+    private static final String PROPERTIES = 'properties'
     private static final String UPDATE_EMAIL_ACTION = 'email'
+    private static final String DIFFERENT_EMAIL = 'differentEmail'
+    private static final String PASSWORD = 'password'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
@@ -70,7 +73,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.email >> EMAIL
+        1 * user.getProperty(EMAIL) >> EMAIL
         0 * _
         response.json.messages == [EMAIL_UPDATE_DUPLICATE]
     }
@@ -82,8 +85,8 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.email
-        1 * userService.isEmailUnique(EMAIL)
+        1 * user.getProperty(EMAIL) >> DIFFERENT_EMAIL
+        1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
         0 * _
 
         and:
@@ -97,9 +100,9 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.email >> Boolean.FALSE
+        1 * user.getProperty(EMAIL) >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
-        1 * user.id >> LONG_ID
+        1 * user.getProperty(ID) >> LONG_ID
         1 * verifyService.createEmailVerification([instanceId: LONG_ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -123,7 +126,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userPasswordCommand.validate() >> Boolean.TRUE
-        1 * userPasswordCommand.newPassword >> NEW_PASSWORD
+        1 * userPasswordCommand.getProperty(NEW_PASSWORD) >> NEW_PASSWORD
         1 * userService.updatePassword(NEW_PASSWORD) >> user
         1 * ajaxResponseService.composeJsonResponse(user, PASSWORD_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -149,7 +152,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * registerCommand.validate() >> Boolean.TRUE
-        _ * registerCommand._
+        1 * registerCommand.getProperty(PROPERTIES) >> [:]
         1 * userService.createUser(_ as Map) >> user
         1 * user.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.composeJsonResponse(user) >> json
@@ -164,7 +167,8 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * registerCommand.validate() >> Boolean.TRUE
-        _ * registerCommand._
+        1 * registerCommand.getProperty(PROPERTIES) >> [:]
+        1 * registerCommand.getProperty(PASSWORD)
         1 * userService.createUser(_ as Map) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(*_)

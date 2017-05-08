@@ -2,6 +2,7 @@ package com.tempvs.user
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -9,7 +10,7 @@ import spock.lang.Specification
 class ActivityInterceptorSpec extends Specification {
     private static final String AUTH = 'auth'
     private static final String USER = 'user'
-    private static final String USER_PROFILE = 'userProfile'
+    private static final String PROFILE = 'profile'
     private static final String IMAGE = 'image'
     private static final String VERIFY = 'verify'
 
@@ -34,10 +35,16 @@ class ActivityInterceptorSpec extends Specification {
         USER        | 'updatePassword'
         USER        | 'index'
         USER        | 'register'
-        USER_PROFILE| 'show'
-        USER_PROFILE| 'edit'
-        USER_PROFILE| 'updateUserProfile'
-        USER_PROFILE| 'updateProfileEmail'
+        PROFILE     | 'index'
+        PROFILE     | 'userProfile'
+        PROFILE     | 'clubProfile'
+        PROFILE     | 'switchProfile'
+        PROFILE     | 'edit'
+        PROFILE     | 'list'
+        PROFILE     | 'create'
+        PROFILE     | 'updateUserProfile'
+        PROFILE     | 'updateClubProfile'
+        PROFILE     | 'updateProfileEmail'
         IMAGE       | 'updateAvatar'
         IMAGE       | 'getAvatar'
     }

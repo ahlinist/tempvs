@@ -16,6 +16,8 @@ class VerifyControllerSpec extends Specification {
     private static final String PROFILE = 'profile'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
+    private static final String ACTION = 'action'
+    private static final String INSTANCE_ID = 'instanceId'
     private static final String REGISTRATION_PAGE_URI = '/verify/registration'
     private static final String ERROR_PAGE_URI = '/verify/error'
     private static final String USER_EDIT_PAGE_URI = '/user/edit'
@@ -70,8 +72,8 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.action >> REGISTRATION
-        1 * emailVerification.email >> EMAIL
+        1 * emailVerification.getProperty(ACTION) >> REGISTRATION
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
         1 * emailVerification.delete([flush: Boolean.TRUE])
         0 * _
 
@@ -94,9 +96,9 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.action >> EMAIL
-        1 * emailVerification.instanceId >> LONG_ID
-        1 * emailVerification.email >> EMAIL
+        1 * emailVerification.getProperty(ACTION) >> EMAIL
+        1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
         1 * User.get(LONG_ID) >> user
         1 * userService.updateEmail(user, EMAIL) >> user
         1 * user.hasErrors() >> Boolean.FALSE
@@ -121,9 +123,9 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.action >> USERPROFILE
-        1 * emailVerification.email >> EMAIL
-        1 * emailVerification.instanceId >> LONG_ID
+        1 * emailVerification.getProperty(ACTION) >> USERPROFILE
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
         1 * profileService.updateProfileEmail(_, EMAIL) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProperty(PROFILE, userProfile)
@@ -148,9 +150,9 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.action >> CLUBPROFILE
-        1 * emailVerification.email >> EMAIL
-        1 * emailVerification.instanceId >> LONG_ID
+        1 * emailVerification.getProperty(ACTION) >> CLUBPROFILE
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
         1 * profileService.updateProfileEmail(_, EMAIL) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProperty(PROFILE, clubProfile)

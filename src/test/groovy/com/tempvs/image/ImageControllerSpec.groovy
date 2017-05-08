@@ -10,6 +10,7 @@ import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.util.StreamUtils
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -19,6 +20,9 @@ class ImageControllerSpec extends Specification {
     private static final String AVATAR = 'avatar'
     private static final String AVATAR_UPDATED_MESSAGE = 'userProfile.update.avatar.success.message'
     private static final String IMAGE_EMPTY = 'upload.image.empty'
+    private static final String USER = 'user'
+    private static final String ID = 'id'
+    private static final String CLASS = 'class'
 
     def imageService = Mock(ImageService)
     def ajaxResponseService = Mock(AjaxResponseService)
@@ -45,10 +49,10 @@ class ImageControllerSpec extends Specification {
 
         then: 'JSON response received'
         1 * profileHolder.profile >> userProfile
-        1 * userProfile.user >> user
-        1 * user.id >> 1
-        //1 * userProfile.class >> UserProfile.class
-        1 * userProfile.id >> 1
+        1 * userProfile.getProperty(USER) >> user
+        1 * user.getProperty(ID) >> 1
+        1 * userProfile.getProperty(CLASS) >> UserProfile.class
+        1 * userProfile.getProperty(ID) >> 1
         1 * imageService.updateAvatar(_ as ByteArrayInputStream, _ as String) >> Boolean.TRUE
         1 * ajaxResponseService.renderMessage(Boolean.TRUE, AVATAR_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
