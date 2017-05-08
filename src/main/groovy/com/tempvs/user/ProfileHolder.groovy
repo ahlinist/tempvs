@@ -19,9 +19,11 @@ class ProfileHolder {
     Long id
 
     BaseProfile getProfile() {
-        User user = springSecurityService.currentUser as User
+        Object currentUser = springSecurityService.currentUser
 
-        if (user) {
+        if (currentUser) {
+            User user = currentUser as User
+
             if (!clazz || !id) {
                 this.profile = user.userProfile
                 user.userProfile
