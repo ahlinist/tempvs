@@ -7,12 +7,13 @@ import org.grails.validation.ConstraintsEvaluatorFactoryBean
 import spock.lang.Specification
 
 @TestFor(UserController)
-class UserProfileCommandSpec extends Specification {
-    public static final String FIRST_NAME = 'firstName'
-    public static final String LAST_NAME = 'lastName'
-    public static final String LOCATION = 'location'
-    public static final String PROFILE_ID = 'profileId'
-    public static final String NUMERIC_PROFILE_ID = '1234'
+class ProfileCommandSpec extends Specification {
+    private static final String FIRST_NAME = 'firstName'
+    private static final String LAST_NAME = 'lastName'
+    private static final String NICK_NAME = 'nickName'
+    private static final String LOCATION = 'location'
+    private static final String PROFILE_ID = 'profileId'
+    private static final String NUMERIC_PROFILE_ID = '1234'
 
     def setupSpec(){
         defineBeans {
@@ -37,19 +38,29 @@ class UserProfileCommandSpec extends Specification {
     void "Create empty UserProfileCommand"() {
         expect:
         !new UserProfileCommand().validate()
+
+        and:
+        !new ClubProfileCommand().validate()
     }
 
     void "Create UserProfileCommand with first and last name"() {
         expect:
         new UserProfileCommand(firstName: FIRST_NAME, lastName: LAST_NAME).validate()
+
+        and:
+        new ClubProfileCommand(firstName: FIRST_NAME).validate()
     }
 
     void "Create full UserProfileCommand"() {
         given:
-        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID]
+        Map userProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID]
+        Map clubProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, lastName: NICK_NAME, location: LOCATION, profileId: PROFILE_ID]
 
         expect:
-        new UserProfileCommand(props).validate()
+        new UserProfileCommand(userProfileProps).validate()
+
+        and:
+        new ClubProfileCommand(clubProfileProps).validate()
     }
 
     void "Create UserProfileCommand with numeric profileId"() {
@@ -58,5 +69,8 @@ class UserProfileCommandSpec extends Specification {
 
         expect:
         !new UserProfileCommand(props).validate()
+
+        and:
+        !new ClubProfileCommand(props).validate()
     }
 }

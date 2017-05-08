@@ -29,9 +29,6 @@ class ProfileServiceSpec extends Specification {
     def objectFactory = Mock(ObjectFactory)
 
     def setup() {
-        GroovySpy(UserProfile, global: true)
-        GroovySpy(ClubProfile, global: true)
-
         service.springSecurityService = springSecurityService
         service.objectDAO = objectDAO
         service.objectFactory = objectFactory
