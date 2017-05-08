@@ -17,7 +17,6 @@ class ProfileHolderSpec extends Specification {
     def baseProfile = Mock(BaseProfile)
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
-    def object = Mock(Object)
 
     ProfileHolder profileHolder = new ProfileHolder()
 
