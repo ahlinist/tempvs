@@ -13,7 +13,6 @@ class VerifyControllerSpec extends Specification {
 
     private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String ID = 'id'
-    private static final String PROFILE = 'profile'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String ACTION = 'action'
@@ -128,7 +127,7 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
         1 * profileService.updateProfileEmail(_, EMAIL) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
-        1 * profileHolder.setProperty(PROFILE, userProfile)
+        1 * profileHolder.setProfile(userProfile)
         1 * emailVerification.delete(['flush':true])
         0 * _
 
@@ -155,7 +154,7 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
         1 * profileService.updateProfileEmail(_, EMAIL) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
-        1 * profileHolder.setProperty(PROFILE, clubProfile)
+        1 * profileHolder.setProfile(clubProfile)
         1 * emailVerification.delete(['flush':true])
         0 * _
 

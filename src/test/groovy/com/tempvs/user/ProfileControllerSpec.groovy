@@ -15,7 +15,6 @@ class ProfileControllerSpec extends Specification {
 
     private static final String IDENTIFIER = 'identifier'
     private static final String USER_PROFILE = 'userProfile'
-    private static final String PROFILE = 'profile'
     private static final String ONE = '1'
     private static final String ID = 'id'
     private static final String EMAIL = 'email'
@@ -141,7 +140,7 @@ class ProfileControllerSpec extends Specification {
         then:
         1 * springSecurityService.currentUser >> user
         1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * profileHolder.setProperty(PROFILE, userProfile)
+        1 * profileHolder.setProfile(userProfile)
         0 * _
 
         and:
@@ -155,7 +154,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(_, ONE) >> userProfile
-        1 * profileHolder.setProperty(PROFILE, userProfile)
+        1 * profileHolder.setProfile(userProfile)
         0 * _
 
         and:
@@ -220,7 +219,7 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.validate() >> Boolean.TRUE
         1 * clubProfileCommand.getProperty(PROPERTIES)
         1 * profileService.createClubProfile(_) >> clubProfile
-        1 * profileHolder.setProperty(PROFILE, clubProfile)
+        1 * profileHolder.setProfile(clubProfile)
         0 * _
 
         and:
