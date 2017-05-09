@@ -15,6 +15,8 @@ class ClubProfileSpec extends Specification {
     private static final String NON_VALID_EMAIL = 'non-valid-email'
     private static final String NUMERIC_PROFILE_ID = '123456'
 
+    def user = Mock(User)
+
     def setup() {
     }
 
@@ -23,39 +25,39 @@ class ClubProfileSpec extends Specification {
 
     void "Test firstName nullability"() {
         given:
-        Map props = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
-        props.firstName = null
+        Map params = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
+        params.user = user
+        params.firstName = null
 
         expect:
-        !TestingUtils.addClubProfile(TestingUtils.createUser(), props)
+        !new ClubProfile(params).validate()
     }
 
     void "Test profileEmail email validation"() {
         given:
-        User user = TestingUtils.createUser()
-        Map props = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
-        props.profileEmail = NON_VALID_EMAIL
+        Map params = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
+        params.user = user
+        params.profileEmail = NON_VALID_EMAIL
 
         expect:
-        !TestingUtils.addClubProfile(user, props)
+        !new ClubProfile(params).validate()
     }
 
     void "Test successful clubProfile creation"() {
         given:
-        User user = TestingUtils.createUser()
+        Map params = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
+        params.user = user
 
         expect:
-        TestingUtils.addClubProfile(user)
+        new ClubProfile(params).validate()
     }
 
     void "User can not be created with numeric profileId"() {
         given:
-        User user = TestingUtils.createUser()
-        Map props = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
-        props.profileEmail = NON_VALID_EMAIL
-        props.profileId = NUMERIC_PROFILE_ID
+        Map params = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
+        params.profileId = NUMERIC_PROFILE_ID
 
         expect:
-        !TestingUtils.addClubProfile(user, props)
+        !new ClubProfile(params).validate()
     }
 }
