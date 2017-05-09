@@ -16,10 +16,12 @@ class ItemGroup extends BasePersistent {
     static hasMany = [items: Item]
 
     static constraints = {
+        name unique: ['itemStash']
         description nullable: true
     }
 
     static mapping = {
+        itemStash fetch: 'join'
         items batchSize: 20
     }
 }

@@ -17,4 +17,8 @@ class Item extends BasePersistent {
     static constraints = {
         description nullable: true
     }
+
+    static mapping = {
+        itemGroup fetch: 'join'
+    }
 }
