@@ -9,9 +9,17 @@ import grails.compiler.GrailsCompileStatic
 @GrailsCompileStatic
 class ItemGroup extends BasePersistent {
 
+    String name
+    String description
+
     static belongsTo = [itemStash: ItemStash]
     static hasMany = [items: Item]
 
     static constraints = {
+        description nullable: true
+    }
+
+    static mapping = {
+        items batchSize: 20
     }
 }

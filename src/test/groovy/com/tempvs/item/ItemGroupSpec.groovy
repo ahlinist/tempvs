@@ -9,6 +9,9 @@ import spock.lang.Specification
 @TestFor(ItemGroup)
 class ItemGroupSpec extends Specification {
 
+    private static final String NAME = 'name'
+    private static final String DESCRIPTION = 'description'
+
     def itemStash = Mock(ItemStash)
 
     def setup() {
@@ -18,14 +21,30 @@ class ItemGroupSpec extends Specification {
     }
 
     void "Test itemGroup creation being not assigned to itemStash"() {
+        given:
+        ItemGroup itemGroup = new ItemGroup()
+        itemGroup.name = NAME
+        itemGroup.description = DESCRIPTION
+
         expect:
-        !new ItemGroup().validate()
+        !itemGroup.validate()
     }
 
-    void "Test itemGroup creation being assigned to itemStash"() {
+    void "Test itemGroup creation without name"() {
         given:
         ItemGroup itemGroup = new ItemGroup()
         itemGroup.itemStash = itemStash
+        itemGroup.description = DESCRIPTION
+
+        expect:
+        !itemGroup.validate()
+    }
+
+    void "Test correct itemGroup creation"() {
+        given:
+        ItemGroup itemGroup = new ItemGroup()
+        itemGroup.itemStash = itemStash
+        itemGroup.name = NAME
 
         expect:
         itemGroup.validate()

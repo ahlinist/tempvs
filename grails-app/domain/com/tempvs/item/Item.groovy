@@ -9,8 +9,12 @@ import grails.compiler.GrailsCompileStatic
 @GrailsCompileStatic
 class Item extends BasePersistent {
 
+    String name
+    String description
+
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
+        description nullable: true
     }
 }

@@ -15,4 +15,8 @@ class ItemStash extends BasePersistent {
 
     static constraints = {
     }
+
+    static mapping = {
+        itemGroups batchSize: 20
+    }
 }
