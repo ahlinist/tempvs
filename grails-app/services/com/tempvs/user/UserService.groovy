@@ -1,12 +1,13 @@
 package com.tempvs.user
 
 import com.tempvs.domain.ObjectFactory
+import com.tempvs.item.ItemStash
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 
 /**
- * Service that manages operations with users.
+ * Service that manages operations with {@link com.tempvs.user.User} entitites.
  */
 @Transactional
 @GrailsCompileStatic
@@ -22,11 +23,13 @@ class UserService {
     User createUser(Map properties) {
         User user = objectFactory.create(User.class) as User
         UserProfile userProfile = objectFactory.create(UserProfile.class) as UserProfile
+        ItemStash itemStash = objectFactory.create(ItemStash.class) as ItemStash
+        user.email = properties.email
+        user.password = springSecurityService.encodePassword(properties.password as String)
 	    userProfile.firstName = properties.firstName
 	    userProfile.lastName =  properties.lastName
         user.userProfile = userProfile
-	    user.email = properties.email
-	    user.password = springSecurityService.encodePassword(properties.password as String)
+        user.itemStash = itemStash
         user.save()
         user
     }

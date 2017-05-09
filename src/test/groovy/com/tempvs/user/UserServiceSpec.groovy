@@ -1,6 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.domain.ObjectFactory
+import com.tempvs.item.ItemStash
 import com.tempvs.tests.utils.TestingUtils
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
@@ -20,6 +21,7 @@ class UserServiceSpec extends Specification {
     def springSecurityService = Mock(SpringSecurityService)
     def user = Mock(User)
     def userProfile = Mock(UserProfile)
+    def itemStash = Mock(ItemStash)
     def objectFactory = Mock(ObjectFactory)
 
     def setup() {
@@ -52,12 +54,21 @@ class UserServiceSpec extends Specification {
         def result = service.createUser(properties)
 
         then:
-        1 * springSecurityService.encodePassword(_) >> PASSWORD
-        1 * objectFactory.create(UserProfile.class) >> userProfile
-        1 * userProfile.asType(UserProfile.class) >> userProfile
         1 * objectFactory.create(User.class) >> user
+        1 * objectFactory.create(UserProfile.class) >> userProfile
+        1 * objectFactory.create(ItemStash.class) >> itemStash
+        1 * userProfile.asType(UserProfile.class) >> userProfile
+        1 * itemStash.asType(ItemStash.class) >> itemStash
         1 * user.asType(User.class) >> user
+        1 * springSecurityService.encodePassword(TestingUtils.DEFAULT_USER_PROPS.password) >> PASSWORD
+        1 * user.setEmail(TestingUtils.DEFAULT_USER_PROPS.email)
+        1 * user.setPassword(PASSWORD)
+        1 * userProfile.setFirstName(TestingUtils.DEFAULT_USER_PROPS.firstName)
+        1 * userProfile.setLastName(TestingUtils.DEFAULT_USER_PROPS.lastName)
+        1 * user.setUserProfile(userProfile)
+        1 * user.setItemStash(itemStash)
         1 * user.save()
+        0 * _
 
         and:
         result == user

@@ -1,9 +1,13 @@
 package com.tempvs.user
 
 import com.tempvs.domain.BasePersistent
+import com.tempvs.item.ItemStash
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
+/**
+ * An entity that corresponds a real person logged into the system.
+ */
 @EqualsAndHashCode(includes='email')
 @ToString(includes='email', includeNames=true, includePackage=false)
 class User extends BasePersistent implements Serializable {
@@ -18,7 +22,7 @@ class User extends BasePersistent implements Serializable {
 	boolean passwordExpired
 	Date lastActive = new Date()
 
-	static hasOne = [userProfile: UserProfile]
+	static hasOne = [userProfile: UserProfile, itemStash: ItemStash]
 	static hasMany = [clubProfiles: ClubProfile]
 
 	Set<Role> getAuthorities() {
