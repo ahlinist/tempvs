@@ -14,4 +14,9 @@
       <g:message code="clubProfile.list.button" />
     </g:link>
   </li>
+  <li>
+    <g:link class="list-group-item disableable" controller="item" action="stash">
+      <g:message code="item.stash.button" />
+    </g:link>
+  </li>
 </ul>

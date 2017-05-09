@@ -89,6 +89,12 @@ grails:
                 - pattern: /image/getAvatar/**
                   access:
                       - permitAll
+                - pattern: /item/stash/**
+                  access:
+                      - permitAll
+                - pattern: /item/group/**
+                  access:
+                      - permitAll
                 - pattern: /assets/**
                   access:
                       - permitAll

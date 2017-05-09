@@ -10,6 +10,7 @@ import spock.lang.Specification
 class ActivityInterceptorSpec extends Specification {
     private static final String AUTH = 'auth'
     private static final String USER = 'user'
+    private static final String ITEM = 'item'
     private static final String PROFILE = 'profile'
     private static final String IMAGE = 'image'
     private static final String VERIFY = 'verify'
@@ -47,6 +48,9 @@ class ActivityInterceptorSpec extends Specification {
         PROFILE     | 'updateProfileEmail'
         IMAGE       | 'updateAvatar'
         IMAGE       | 'getAvatar'
+        ITEM        | 'stash'
+        ITEM        | 'group'
+        ITEM        | 'createGroup'
     }
 
     void "Interceptor doesn't match the excluded actions"() {
