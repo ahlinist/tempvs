@@ -18,9 +18,10 @@ class ItemServiceSpec extends Specification {
     private static final String DESCRIPTION = 'description'
 
     def springSecurityService = Mock(SpringSecurityService)
-    def itemGroup = Mock(ItemGroup)
     def user = Mock(User)
     def itemStash = Mock(ItemStash)
+    def itemGroup = Mock(ItemGroup)
+    def item = Mock(Item)
     def objectFactory = Mock(ObjectFactory)
     def objectDAO = Mock(ObjectDAO)
 
@@ -111,5 +112,22 @@ class ItemServiceSpec extends Specification {
 
         and:
         result == itemGroup
+    }
+
+    void "Test createItem()"() {
+        when:
+        def result = service.createItem(NAME, DESCRIPTION, itemGroup)
+
+        then:
+        1 * objectFactory.create(Item.class) >> item
+        1 * item.asType(Item.class) >> item
+        1 * item.setName(NAME)
+        1 * item.setDescription(DESCRIPTION)
+        1 * itemGroup.addToItems(item) >> itemGroup
+        1 * itemGroup.save()
+        0 * _
+
+        and:
+        result == item
     }
 }

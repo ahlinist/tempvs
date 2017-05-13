@@ -45,4 +45,12 @@ class ItemService {
             object as ItemGroup
         }
     }
+
+    Item createItem(String name, String description, ItemGroup itemGroup) {
+        Item item = objectFactory.create(Item.class) as Item
+        item.setName(name)
+        item.setDescription(description)
+        itemGroup.addToItems(item).save()
+        item
+    }
 }
