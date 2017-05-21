@@ -1,15 +1,16 @@
 package com.tempvs.image
 
-import com.tempvs.domain.ObjectFactory
 import grails.transaction.Transactional
 import groovy.transform.CompileStatic
 
+/**
+ * A service that manages {@link com.tempvs.image.Image}-related operations.
+ */
 @Transactional
 @CompileStatic
 class ImageService {
 
     ImageDAO imageDAO
-    ObjectFactory objectFactory
 
     Image createImage(InputStream inputStream, String collection, Map metaData) {
         Image image = imageDAO.create(inputStream, collection)

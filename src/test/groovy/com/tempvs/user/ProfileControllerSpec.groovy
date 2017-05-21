@@ -25,7 +25,6 @@ class ProfileControllerSpec extends Specification {
     private static final String CLASS = 'class'
     private static final String PROPERTIES = 'properties'
     private static final String AVATAR_IMAGE = 'avatarImage'
-    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -63,6 +62,7 @@ class ProfileControllerSpec extends Specification {
         controller.ajaxResponseService = ajaxResponseService
         controller.userService = userService
         controller.verifyService = verifyService
+        controller.imageService = imageService
     }
 
     def cleanup() {
@@ -309,10 +309,6 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test updateAvatar()"() {
-        given:
-        Map metaData = [userId: 1, properties: [profileClass: UserProfile.class, profileId: 1]]
-        def inputStream = new ByteArrayInputStream()
-
         when:
         controller.updateAvatar(profileAvatarCommand)
 
@@ -324,9 +320,7 @@ class ProfileControllerSpec extends Specification {
         1 * user.getProperty(ID) >> 1
         1 * profileHolder.clazz >> UserProfile.class
         1 * userProfile.getProperty(ID) >> 1
-        1 * multipartFile.empty >> Boolean.FALSE
-        1 * multipartFile.inputStream >> inputStream
-        1 * imageService.createImage(inputStream, AVATAR_COLLECTION, metaData) >> image
+        1 * imageService.createImage(_ as ByteArrayInputStream, _ as String, _ as Map) >> image
         1 * image.getId() >> ONE
         1 * userProfile.setAvatar(ONE)
         1 * userProfile.save([flush: true])

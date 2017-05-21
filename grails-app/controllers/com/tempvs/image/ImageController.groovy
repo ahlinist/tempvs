@@ -1,10 +1,8 @@
 package com.tempvs.image
 
-import com.tempvs.ajax.AjaxResponseService
+import asset.pipeline.grails.AssetResourceLocator
 import grails.compiler.GrailsCompileStatic
 import org.springframework.util.StreamUtils
-import asset.pipeline.grails.AssetResourceLocator
-
 /**
  * Controller for {@link com.tempvs.image.Image} handling. 
  */
@@ -15,7 +13,6 @@ class ImageController {
 
     ImageService imageService
     AssetResourceLocator assetResourceLocator
-    AjaxResponseService ajaxResponseService
 
     def get(String id) {
         String collection = params.collection
