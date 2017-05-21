@@ -2,9 +2,12 @@ package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.domain.BaseObject
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * Controller for managing {@link com.tempvs.user.UserProfile} and
@@ -17,6 +20,9 @@ class ProfileController {
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
+    private static final String AVATAR_UPDATED_MESSAGE = 'userProfile.update.avatar.success.message'
+    private static final String AVATAR_UPDATE_FAILED_MESSAGE = 'userProfile.update.avatar.failed.message'
+    private static final String AVATAR_COLLECTION = 'avatar'
 
     SpringSecurityService springSecurityService
     AjaxResponseService ajaxResponseService
@@ -24,6 +30,7 @@ class ProfileController {
     ProfileService profileService
     VerifyService verifyService
     UserService userService
+    ImageService imageService
 
     def index() {
         BaseProfile profile = profileHolder.profile
@@ -107,6 +114,33 @@ class ProfileController {
             }
         }
     }
+    
+    def updateAvatar(ProfileAvatarCommand command) {
+        if (command.validate()) {
+            Boolean success = Boolean.FALSE
+            String message = AVATAR_UPDATE_FAILED_MESSAGE
+            BaseProfile profile = profileHolder.profile
+            MultipartFile multipartAvatar = command.avatarImage
+            Map metaData = [userId: profile.user.id, properties: [profileClass: profileHolder.clazz.simpleName, profileId: profile.id]]
+
+            if (!multipartAvatar?.empty) {
+                InputStream inputStream = multipartAvatar.inputStream
+
+                try {
+                    Image avatar = imageService.createImage(inputStream, AVATAR_COLLECTION, metaData)
+                    profile.avatar = avatar.id
+                    profile.save(flush: true)
+                    success = Boolean.TRUE
+                    message = AVATAR_UPDATED_MESSAGE
+                } finally {
+                    inputStream?.close()
+                    render ajaxResponseService.renderMessage(success, message)
+                }
+            }
+        } else {
+            render ajaxResponseService.composeJsonResponse(command)
+        }
+    }
 
     private updateProfile(command) {
         render ajaxResponseService.composeJsonResponse(profileService.updateProfile(profileHolder.profile, command.properties), PROFILE_UPDATED_MESSAGE)
@@ -153,5 +187,13 @@ class ClubProfileCommand extends BaseObject {
         clubName nullable: true
         location nullable: true
         profileId shared: "profileId"
+    }
+}
+
+@GrailsCompileStatic
+class ProfileAvatarCommand extends BaseObject {
+    MultipartFile avatarImage
+
+    static constraints = {
     }
 }

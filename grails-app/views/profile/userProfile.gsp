@@ -13,7 +13,7 @@
       <g:if test="${profile}">
         <div class="col-sm-3">
           <tempvs:fullName profile="${profile}"/>
-          <tempvs:avatar profile="${profile}"/>
+          <tempvs:image objectId="${profile.avatar}" collection="avatar"/>
         </div>
         <div class="col-sm-3">
           <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${profile.user.lastActive}"/></div>

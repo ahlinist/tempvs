@@ -6,7 +6,11 @@ import com.mongodb.gridfs.GridFSInputFile
 import com.tempvs.image.Image
 import com.tempvs.image.ImageDAO
 import groovy.transform.CompileStatic
+import org.bson.types.ObjectId
 
+/**
+ * A MongoDB implementation of {@link com.tempvs.image.ImageDAO} interface.
+ */
 @CompileStatic
 class MongoImageDAO implements ImageDAO {
     GridFSFactory gridFSFactory
@@ -15,29 +19,29 @@ class MongoImageDAO implements ImageDAO {
 
     private static final Boolean CLOSE_STREAM_ON_PERSIST = Boolean.TRUE
 
-    Boolean save(Image image, Map metaData = null) {
+    Image save(Image image, Map metaData = null) {
         try {
             if (metaData) {
                 image.metaData = dBObjectFactory.createInstance(metaData)
             }
 
             image.save()
-
-            Boolean.TRUE
         } catch (Exception e) {
-            Boolean.FALSE
+            null
         }
     }
 
-    Image get(String collection, Map query) {
-        GridFS gridFS = gridFSFactory.getGridFS(collection)
-        GridFSDBFile gridFSDBFile = gridFS.findOne(dBObjectFactory.createInstance(query))
-        imageFactory.createInstance(gridFSDBFile)
+    Image get(String collection, String id) {
+        if (collection && id) {
+            GridFS gridFS = gridFSFactory.getGridFS(collection)
+            GridFSDBFile gridFSDBFile = gridFS.findOne(new ObjectId(id))
+            imageFactory.createInstance(gridFSDBFile)
+        }
     }
 
-    Image create(InputStream inputStream, String collection, String fileName) {
+    Image create(InputStream inputStream, String collection) {
         GridFS gridFS = gridFSFactory.getGridFS(collection)
-        GridFSInputFile gridFSInputFile = gridFS.createFile(inputStream, fileName, CLOSE_STREAM_ON_PERSIST)
+        GridFSInputFile gridFSInputFile = gridFS.createFile(inputStream, CLOSE_STREAM_ON_PERSIST)
         imageFactory.createInstance(gridFSInputFile)
     }
 }

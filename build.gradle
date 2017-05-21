@@ -58,7 +58,7 @@ dependencies {
     compile 'org.mongodb:mongodb-driver:3.4.2'
     console "org.grails:grails-console"
     profile "org.grails.profiles:web:3.1.7"
-    runtime "com.bertramlabs.plugins:asset-pipeline-grails:2.8.2"
+    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.8.2"
     runtime "com.h2database:h2"
     runtime 'mysql:mysql-connector-java:5.1.39'
     testCompile "org.grails:grails-plugin-testing"

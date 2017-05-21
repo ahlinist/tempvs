@@ -4,14 +4,8 @@ class ImageTagLib {
     static defaultEncodeAs = [taglib:'raw']
     static namespace = 'tempvs'
 
-    String avatar = { attrs ->
-        Long userId = attrs.profile.user.id
-        String profileClass = attrs.profile.class.simpleName
-        Long profileId = attrs.profile.id
-        String id = "${userId}_${profileClass}_${profileId}"
-        String link = g.createLink(controller: 'image', action: 'getAvatar', id: id)
-        Map model = [src: link]
-
-        out << render(template: '/templates/image/avatar', model: model)
+    String image = { attrs ->
+        String link = g.createLink(controller: 'image', action: 'get', id: attrs.objectId, params: [collection: attrs.collection])
+        out << render(template: '/templates/image/image', model: [src: link, id: attrs.collection])
     }
 }

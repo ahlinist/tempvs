@@ -2,9 +2,13 @@ package com.tempvs.image
 
 import groovy.transform.CompileStatic
 
+/**
+ * Represents an image object.
+ */
 @CompileStatic
 interface Image {
-    void save()
+    Image save()
     void setMetaData(Map metaData)
     byte[] getBytes()
+    String getId()
 }

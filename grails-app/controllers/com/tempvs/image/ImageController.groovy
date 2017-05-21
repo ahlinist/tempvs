@@ -1,52 +1,26 @@
 package com.tempvs.image
 
-import com.tempvs.user.BaseProfile
-import com.tempvs.user.ProfileHolder
+import com.tempvs.ajax.AjaxResponseService
+import grails.compiler.GrailsCompileStatic
 import org.springframework.util.StreamUtils
+import asset.pipeline.grails.AssetResourceLocator
 
+/**
+ * Controller for {@link com.tempvs.image.Image} handling. 
+ */
+@GrailsCompileStatic
 class ImageController {
 
-    private static final String AVATAR_UPDATED_MESSAGE = 'userProfile.update.avatar.success.message'
-    private static final String AVATAR_UPDATED_FAILED_MESSAGE = 'userProfile.update.avatar.failed.message'
-    private static final String IMAGE_EMPTY = 'upload.image.empty'
-    private static final String DEFAULT_AVATAR = 'defaultAvatar.jpg'
-    private static final String AVATAR_FIELD = 'avatar'
+    private static final String DEFAULT_IMAGE = 'defaultImage.jpg'
 
-    def imageService
-    def assetResourceLocator
-    def ajaxResponseService
-    ProfileHolder profileHolder
+    ImageService imageService
+    AssetResourceLocator assetResourceLocator
+    AjaxResponseService ajaxResponseService
 
-    def updateAvatar() {
-        Boolean success = Boolean.FALSE
-        String message
-        def multiPartFile = request.getFile(AVATAR_FIELD)
-
-        if (!multiPartFile?.empty) {
-            InputStream inputStream = multiPartFile.inputStream
-
-            BaseProfile profile = profileHolder.profile
-
-            try {
-                String imageId = "${profile.user.id}_${profile.class.simpleName}_${profile.id}"
-                String collection = "${AVATAR_FIELD}_${imageId}"
-                success = imageService.updateAvatar(inputStream, collection)
-                message = AVATAR_UPDATED_MESSAGE
-            } catch (Exception e) {
-                message = AVATAR_UPDATED_FAILED_MESSAGE
-            } finally {
-                inputStream?.close()
-            }
-        } else {
-            message = IMAGE_EMPTY
-        }
-
-        render ajaxResponseService.renderMessage(success, message)
-    }
-
-    def getAvatar(String id) {
-        byte[] imageInBytes = imageService.getAvatar(id) ?:
-                assetResourceLocator?.findAssetForURI(DEFAULT_AVATAR)?.getInputStream()?.bytes ?:
+    def get(String id) {
+        String collection = params.collection
+        byte[] imageInBytes = imageService.getImage(collection, id)?.bytes ?:
+                assetResourceLocator.findAssetForURI(DEFAULT_IMAGE)?.getInputStream()?.bytes ?:
                         StreamUtils.emptyInput().bytes
 
         response.with{

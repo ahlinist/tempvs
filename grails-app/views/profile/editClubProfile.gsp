@@ -7,8 +7,8 @@
     <body>
       <div class="row">
         <div class="col-sm-10">
-          <tempvs:ajaxForm controller="image" action="updateAvatar">
-            <tempvs:formField type="file" name="avatar" label="clubProfile.avatar.label" />
+          <tempvs:ajaxForm controller="profile" action="updateAvatar">
+            <tempvs:formField type="file" name="avatarImage" label="clubProfile.avatar.label" />
             <tempvs:ajaxSubmitButton value="clubProfile.update.avatar.button" />
           </tempvs:ajaxForm>
           <tempvs:ajaxForm action="updateProfileEmail">

@@ -86,7 +86,7 @@ grails:
                 - pattern: /profile/clubProfile/**
                   access:
                       - permitAll
-                - pattern: /image/getAvatar/**
+                - pattern: /image/**
                   access:
                       - permitAll
                 - pattern: /item/stash/**

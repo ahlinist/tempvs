@@ -46,8 +46,6 @@ class ActivityInterceptorSpec extends Specification {
         PROFILE     | 'updateUserProfile'
         PROFILE     | 'updateClubProfile'
         PROFILE     | 'updateProfileEmail'
-        IMAGE       | 'updateAvatar'
-        IMAGE       | 'getAvatar'
         ITEM        | 'stash'
         ITEM        | 'group'
         ITEM        | 'createGroup'
@@ -68,5 +66,6 @@ class ActivityInterceptorSpec extends Specification {
         VERIFY      | 'registration'
         VERIFY      | 'email'
         VERIFY      | 'profileEmail'
+        IMAGE       | 'get'
     }
 }

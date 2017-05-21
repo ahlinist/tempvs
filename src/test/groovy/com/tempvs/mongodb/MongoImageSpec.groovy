@@ -7,6 +7,8 @@ import spock.lang.Specification
 
 class MongoImageSpec extends Specification {
 
+    private static final String OBJECT_ID = 'objectId'
+
     def gridFSFile = Mock(GridFSFile)
     def dbObject = Mock(BasicDBObject)
 
@@ -63,5 +65,20 @@ class MongoImageSpec extends Specification {
 
         and:
         result == byteList
+    }
+
+    void "Test getId()"() {
+        given:
+        def mongoImage = new MongoImage(gridFSFile)
+
+        when:
+        def result = mongoImage.getId()
+
+        then:
+        1 * gridFSFile.getId() >> OBJECT_ID
+        0 * _
+
+        and:
+        result == OBJECT_ID
     }
 }

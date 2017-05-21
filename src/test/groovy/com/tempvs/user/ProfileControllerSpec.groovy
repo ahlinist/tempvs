@@ -1,12 +1,14 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -17,34 +19,42 @@ class ProfileControllerSpec extends Specification {
     private static final String USER_PROFILE = 'userProfile'
     private static final String ONE = '1'
     private static final String ID = 'id'
+    private static final String USER = 'user'
     private static final String EMAIL = 'email'
     private static final String PROFILE_EMAIL = 'profileEmail'
     private static final String CLASS = 'class'
     private static final String PROPERTIES = 'properties'
+    private static final String AVATAR_IMAGE = 'avatarImage'
+    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String PROFILE_UPDATED_MESSAGE = 'profile.updated.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
+    private static final String AVATAR_UPDATED_MESSAGE = 'userProfile.update.avatar.success.message'
     private static final String AUTH_URL = '/auth/index'
     private static final String EDIT_PROFILE_PAGE = '/profile/edit'
     private static final String PROFILE_PAGE = '/profile/index'
     private static final String EDIT_CLUB_PROFILE_PAGE = '/profile/editClubProfile'
 
-    def profileHolder = Mock(ProfileHolder)
-    def profileService = Mock(ProfileService)
     def userService = Mock(UserService)
+    def imageService = Mock(ImageService)
+    def profileHolder = Mock(ProfileHolder)
     def verifyService = Mock(VerifyService)
+    def profileService = Mock(ProfileService)
     def springSecurityService = Mock(SpringSecurityService)
     def ajaxResponseService = Mock(AjaxResponseService)
     def json = Mock(JSON)
     def user = Mock(User)
+    def image = Mock(Image)
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
     def emailVerification = Mock(EmailVerification)
     def clubProfileCommand = Mock(ClubProfileCommand)
     def userProfileCommand = Mock(UserProfileCommand)
+    def profileAvatarCommand = Mock(ProfileAvatarCommand)
+    def multipartFile = new MockMultipartFile(AVATAR_IMAGE, "1234567" as byte[])
 
     def setup() {
         controller.profileService = profileService
@@ -294,6 +304,44 @@ class ProfileControllerSpec extends Specification {
         1 * userProfile.getProperty(CLASS) >> UserProfile.class
         1 * verifyService.createEmailVerification(_) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_PROFILE_EMAIL_MESSAGE_SENT) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateAvatar()"() {
+        given:
+        Map metaData = [userId: 1, properties: [profileClass: UserProfile.class, profileId: 1]]
+        def inputStream = new ByteArrayInputStream()
+
+        when:
+        controller.updateAvatar(profileAvatarCommand)
+
+        then: 'JSON response received'
+        1 * profileAvatarCommand.validate() >> Boolean.TRUE
+        1 * profileAvatarCommand.getProperty(AVATAR_IMAGE) >> multipartFile
+        1 * profileHolder.profile >> userProfile
+        1 * userProfile.getProperty(USER) >> user
+        1 * user.getProperty(ID) >> 1
+        1 * profileHolder.clazz >> UserProfile.class
+        1 * userProfile.getProperty(ID) >> 1
+        1 * multipartFile.empty >> Boolean.FALSE
+        1 * multipartFile.inputStream >> inputStream
+        1 * imageService.createImage(inputStream, AVATAR_COLLECTION, metaData) >> image
+        1 * image.getId() >> ONE
+        1 * userProfile.setAvatar(ONE)
+        1 * userProfile.save([flush: true])
+        1 * ajaxResponseService.renderMessage(Boolean.TRUE, AVATAR_UPDATED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateAvatar() without file"() {
+        when:
+        controller.updateAvatar(profileAvatarCommand)
+
+        then:
+        1 * profileAvatarCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.composeJsonResponse(profileAvatarCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

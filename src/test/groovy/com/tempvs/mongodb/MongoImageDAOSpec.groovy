@@ -5,13 +5,13 @@ import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSInputFile
 import com.tempvs.image.Image
+import org.bson.types.ObjectId
 import spock.lang.Specification
 
 class MongoImageDAOSpec extends Specification {
 
     private static final String COLLECTION = 'collection'
-    private static final String FILE_NAME = 'fileName'
-    private static final Map QUERY = [:]
+    private static final String HEX_ID = new ObjectId().toString()
     private static final Boolean CLOSE_STREAM_ON_PERSIST = Boolean.TRUE
 
     def gridFSFactory = Mock(GridFSFactory)
@@ -40,18 +40,17 @@ class MongoImageDAOSpec extends Specification {
 
     void "Test save()"() {
         given:
-        Boolean result
         Map metaData = [currentAvatar: Boolean.TRUE]
 
         when:
-        result = mongoImageDAO.save(image)
+        def result = mongoImageDAO.save(image)
 
         then:
-        1 * image.save()
+        1 * image.save() >> image
         0 * _
 
         and:
-        result == Boolean.TRUE
+        result == image
 
         when:
         result = mongoImageDAO.save(image, metaData)
@@ -59,21 +58,20 @@ class MongoImageDAOSpec extends Specification {
         then:
         1 * dBObjectFactory.createInstance(metaData) >> dbObject
         1 * image.setMetaData(dbObject)
-        1 * image.save()
+        1 * image.save() >> image
         0 * _
 
         and:
-        result == Boolean.TRUE
+        result == image
     }
 
     void "Test get()"() {
         when:
-        def result = mongoImageDAO.get(COLLECTION, QUERY)
+        def result = mongoImageDAO.get(COLLECTION, HEX_ID)
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        1 * dBObjectFactory.createInstance(QUERY) >> dbObject
-        1 * gridFS.findOne(dbObject) >> gridFSDBFile
+        1 * gridFS.findOne(_ as ObjectId) >> gridFSDBFile
         1 * imageFactory.createInstance(gridFSDBFile) >> image
         0 * _
 
@@ -83,11 +81,11 @@ class MongoImageDAOSpec extends Specification {
 
     void "Test create()"() {
         when:
-        def result = mongoImageDAO.create(inputStream, COLLECTION, FILE_NAME)
+        def result = mongoImageDAO.create(inputStream, COLLECTION)
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        1 * gridFS.createFile(inputStream, FILE_NAME, CLOSE_STREAM_ON_PERSIST) >> gridFSInputFile
+        1 * gridFS.createFile(inputStream, CLOSE_STREAM_ON_PERSIST) >> gridFSInputFile
         1 * imageFactory.createInstance(gridFSInputFile) >> image
         0 * _
 

@@ -3,19 +3,21 @@ package com.tempvs.image
 import com.tempvs.mongodb.MongoImageDAO
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
-
 @TestFor(ImageService)
 class ImageServiceSpec extends Specification {
-    private static final String AVATAR_PATH = 'avatar'
+
+    private static final String ITEM_IMAGE_COLLECTION = 'Item_Image'
+    private static final String COLLECTION = 'collection'
+    private static final String ID = 'id'
+    private static final Long ONE_LONG = 1L
 
     def imageDAO = Mock(MongoImageDAO)
     def inputStream = Mock(InputStream)
-    def oldImage = Mock(Image)
-    def newImage = Mock(Image)
-    List<Byte> byteList = "test data".bytes
+    def image = Mock(Image)
 
     def setup() {
         service.imageDAO = imageDAO
@@ -24,37 +26,34 @@ class ImageServiceSpec extends Specification {
     def cleanup() {
     }
 
-    void "Check updateAvatar()"() {
+    void "Test createImage()"() {
         given:
-        String collection = "${AVATAR_PATH}_1_UserProfile_1"
-        Map query = [metadata: [currentAvatar: Boolean.TRUE]]
+        String collection = ITEM_IMAGE_COLLECTION
+        Map metaData = [
+                userId: ONE_LONG,
+                properties: [itemGroupId: ONE_LONG]
+        ]
 
         when:
-        service.updateAvatar(inputStream, collection)
+        def result = service.createImage(inputStream, collection, metaData)
 
         then:
-        1 * imageDAO.get(collection, query) >> oldImage
-        1 * imageDAO.create(inputStream, collection, AVATAR_PATH) >> newImage
-        1 * imageDAO.save(oldImage, [currentAvatar: null])
-        1 * imageDAO.save(newImage, query.metadata)
-        0 * _
+        1 * imageDAO.create(inputStream, collection) >> image
+        1 * imageDAO.save(image, metaData) >> image
+
+        and:
+        result == image
     }
 
-    void "Check getAvatar()"() {
-        given:
-        String collection = "${AVATAR_PATH}_1"
-        Map query = [metadata: [currentAvatar: Boolean.TRUE]]
-
+    void "Test getImage()"() {
         when:
-        def result = service.getAvatar('1')
+        def result = service.getImage(COLLECTION, ID)
 
         then:
-        1 * imageDAO.get(collection, query) >> oldImage
-        1 * oldImage.bytes >> byteList
+        1 * imageDAO.get(COLLECTION, ID) >> image
         0 * _
 
         and:
-        result == byteList
+        result == image
     }
 }
-

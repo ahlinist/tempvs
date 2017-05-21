@@ -6,6 +6,9 @@ import com.mongodb.gridfs.GridFSFile
 import com.tempvs.image.Image
 import groovy.transform.CompileStatic
 
+/**
+ * A MongoDB implementation of {@link com.tempvs.image.Image} interface.
+ */
 @CompileStatic
 class MongoImage implements Image {
     GridFSFile gridFSFile
@@ -14,8 +17,9 @@ class MongoImage implements Image {
         this.gridFSFile = gridFSFile
     }
 
-    void save() {
+    MongoImage save() {
         gridFSFile.save()
+        this
     }
 
     void setMetaData(Map metaData) {
@@ -23,6 +27,12 @@ class MongoImage implements Image {
     }
 
     byte[] getBytes() {
-        ((GridFSDBFile) gridFSFile).inputStream?.bytes
+        if (gridFSFile) {
+            ((GridFSDBFile) gridFSFile).inputStream?.bytes
+        }
+    }
+
+    String getId() {
+        this.gridFSFile?.id
     }
 }

@@ -2,6 +2,9 @@ package com.tempvs.user
 
 import groovy.transform.CompileStatic
 
+/**
+ * Interceptor that records the date of {@link com.tempvs.user.User} last activity.
+ */
 @CompileStatic
 class ActivityInterceptor {
     UserService userService
@@ -9,7 +12,8 @@ class ActivityInterceptor {
     ActivityInterceptor() {
         matchAll().
                 excludes(controller: 'auth').
-                excludes(controller: 'verify')
+                excludes(controller: 'verify').
+                excludes(controller: 'image')
     }
 
     boolean before() {
@@ -17,3 +21,4 @@ class ActivityInterceptor {
         Boolean.TRUE
     }
 }
+

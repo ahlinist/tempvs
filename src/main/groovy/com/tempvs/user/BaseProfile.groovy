@@ -15,6 +15,7 @@ abstract class BaseProfile extends BasePersistent {
     String profileEmail
     String location
     String profileId
+    String avatar
 
     String getIdentifier() {
         profileId ?: id as String
@@ -23,5 +24,6 @@ abstract class BaseProfile extends BasePersistent {
     static constraints = {
         profileId shared: "profileId"
         location nullable: true
+        avatar nullable: true
     }
 }

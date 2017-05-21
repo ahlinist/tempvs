@@ -80,7 +80,7 @@ class ProfileViewSpec extends Specification {
     void "Test /profile/editUserProfile view"() {
         given:
         String title = "<title>Tempvs - Edit <tempvs:fullName profile=\"${userProfile}\"/></title>"
-        String updateAvatar = '<tempvs:ajaxForm controller="image" action="updateAvatar">'
+        String updateAvatar = '<tempvs:ajaxForm controller="profile" action="updateAvatar">'
         String updateProfileEmail = '<tempvs:ajaxForm action="updateProfileEmail">'
         String updateUserProfile = '<tempvs:ajaxForm action="updateUserProfile">'
 
@@ -99,7 +99,7 @@ class ProfileViewSpec extends Specification {
     void "Test /profile/editClubProfile view"() {
         given:
         String title = "<title>Tempvs - Edit <tempvs:fullName profile=\"${userProfile}\"/></title>"
-        String updateAvatar = '<tempvs:ajaxForm controller="image" action="updateAvatar">'
+        String updateAvatar = '<tempvs:ajaxForm controller="profile" action="updateAvatar">'
         String updateProfileEmail = '<tempvs:ajaxForm action="updateProfileEmail">'
         String updateUserProfile = '<tempvs:ajaxForm action="updateClubProfile">'
         Map model = [profile: userProfile]
