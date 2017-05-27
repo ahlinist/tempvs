@@ -1,11 +1,14 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
 
 /**
@@ -14,26 +17,37 @@ import spock.lang.Specification
 @TestFor(ItemController)
 class ItemControllerSpec extends Specification {
 
-    private static final String ONE = '1'
     private static final String ID = 'id'
+    private static final String ONE = '1'
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_STASH = 'itemStash'
+    private static final String ITEM_IMAGE = 'itemImage'
+    private static final String SOURCE_IMAGE = 'sourceImage'
+    private static final String ITEM_GROUP = 'itemGroup'
     private static final String ITEM_GROUP_URI = '/item/group'
+    private static final String ITEM_URI = '/item/show'
 
     def user = Mock(User)
-    def springSecurityService = Mock(SpringSecurityService)
-    def itemService = Mock(ItemService)
-    def createItemGroupCommand = Mock(CreateItemGroupCommand)
-    def ajaxResponseService = Mock(AjaxResponseService)
+    def json = Mock(JSON)
+    def item = Mock(Item)
+    def image = Mock(Image)
     def itemGroup = Mock(ItemGroup)
     def itemStash = Mock(ItemStash)
-    def json = Mock(JSON)
+    def itemImage = Mock(Image)
+    def sourceImage = Mock(Image)
+    def springSecurityService = Mock(SpringSecurityService)
+    def itemService = Mock(ItemService)
+    def imageService = Mock(ImageService)
+    def ajaxResponseService = Mock(AjaxResponseService)
+    def createItemCommand = Mock(CreateItemCommand)
+    def createItemGroupCommand = Mock(CreateItemGroupCommand)
 
     def setup() {
         controller.springSecurityService = springSecurityService
         controller.itemService = itemService
         controller.ajaxResponseService = ajaxResponseService
+        controller.imageService = imageService
     }
 
     def cleanup() {
@@ -149,7 +163,7 @@ class ItemControllerSpec extends Specification {
     void "Test group() for non-existing id"() {
         when:
         params.id = ONE
-        def result = controller.group()
+        controller.group()
 
         then:
         1 * itemService.getGroup(ONE) >> null
@@ -171,5 +185,75 @@ class ItemControllerSpec extends Specification {
 
         and:
         result == [itemGroup: itemGroup]
+    }
+
+    void "Test createItem() rendering"() {
+        when:
+        controller.createItem()
+
+        then:
+        controller.modelAndView == null
+        !response.redirectedUrl
+    }
+
+    void "Test createItem()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        flash.itemGroup = itemGroup
+        def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
+        def multipartSourceImage = new MockMultipartFile(SOURCE_IMAGE, "1234567" as byte[])
+        controller.request.addFile(multipartItemImage)
+        controller.request.addFile(multipartSourceImage)
+        controller.session.itemGroup = itemGroup
+
+        when:
+        controller.createItem(createItemCommand)
+
+        then:
+        1 * springSecurityService.currentUser >> user
+        1 * user.getProperty(ID) >> ID
+        1 * createItemCommand.validate() >> Boolean.TRUE
+        1 * createItemCommand.getProperty(NAME) >> NAME
+        1 * createItemCommand.getProperty(DESCRIPTION) >> DESCRIPTION
+        1 * createItemCommand.getProperty(ITEM_IMAGE) >> multipartItemImage
+        1 * createItemCommand.getProperty(SOURCE_IMAGE) >> multipartSourceImage
+        1 * imageService.createImage(_ as InputStream, _ as String, _ as Map) >> itemImage
+        1 * imageService.createImage(_ as InputStream, _ as String, _ as Map) >> sourceImage
+        1 * itemService.createItem(NAME, DESCRIPTION, itemImage, sourceImage, itemGroup) >> item
+        1 * itemGroup.getProperty(ID) >> ID
+        1 * item.validate() >> Boolean.TRUE
+        1 * item.getProperty(ID) >> ONE
+        0 * _
+
+        and:
+        response.json.redirect == "${ITEM_URI}/${ONE}"
+    }
+
+    void "Test show() without id"() {
+        when:
+        controller.show()
+
+        then:
+        0 * _
+
+        and:
+        controller.modelAndView == null
+        !response.redirectedUrl
+
+    }
+
+    void "Test show() with id"() {
+        given:
+        params.id = ONE
+
+        when:
+        def result = controller.show()
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        0 * _
+
+        and:
+        result == [item: item]
     }
 }

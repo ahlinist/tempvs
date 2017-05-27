@@ -1,2 +1,2 @@
-<div><img id="${id}" src="${src}" /></div>
+<div><img class="${classList}" src="${src}" /></div>
 

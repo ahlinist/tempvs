@@ -11,6 +11,8 @@ class ItemSpec extends Specification {
 
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
+    private static final String ITEM_IMAGE_ID = 'itemImageId'
+    private static final String SOURCE_IMAGE_ID = 'sourceImageId'
 
     def itemGroup = Mock(ItemGroup)
 
@@ -41,10 +43,23 @@ class ItemSpec extends Specification {
         !item.validate()
     }
 
-    void "Test correct item creation"() {
+    void "Test correct item creation with minimal data"() {
         given:
         Item item = new Item()
         item.name = NAME
+        item.itemGroup = itemGroup
+
+        expect:
+        item.validate()
+    }
+
+    void "Test correct item creation with maximal data"() {
+        given:
+        Item item = new Item()
+        item.name = NAME
+        item.description = DESCRIPTION
+        item.itemImageId = ITEM_IMAGE_ID
+        item.sourceImageId = SOURCE_IMAGE_ID
         item.itemGroup = itemGroup
 
         expect:

@@ -36,7 +36,15 @@ form {
     border: 4px #eee groove;
 }
 
-img#avatar {
+img.avatar {
+    width:100%;
+}
+
+img.item {
+    width:100%;
+}
+
+img.source {
     width:100%;
 }
 

@@ -6,6 +6,7 @@
     </head>
     <body>
       <g:if test="${itemStash}">
+        <g:render template="/item/templates/navBar" model="${itemStash}"/>
         <div class="col-sm-3">
           <g:render template="/item/templates/itemGroups" model="${[itemStash: itemStash]}"/>
           <div>
@@ -20,3 +21,4 @@
       </g:else>
     </body>
 </html>
+

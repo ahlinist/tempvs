@@ -2,6 +2,7 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
+import com.tempvs.image.Image
 import com.tempvs.user.User
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
@@ -22,6 +23,8 @@ class ItemServiceSpec extends Specification {
     def itemStash = Mock(ItemStash)
     def itemGroup = Mock(ItemGroup)
     def item = Mock(Item)
+    def itemImage = Mock(Image)
+    def sourceImage = Mock(Image)
     def objectFactory = Mock(ObjectFactory)
     def objectDAO = Mock(ObjectDAO)
 
@@ -115,16 +118,39 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test createItem()"() {
+        given:
+        String ITEM_IMAGE_ID = 'itemImageId'
+        String SOURCE_IMAGE_ID = 'sourceImageId'
+
         when:
-        def result = service.createItem(NAME, DESCRIPTION, itemGroup)
+        def result = service.createItem(NAME, DESCRIPTION, itemImage, sourceImage, itemGroup)
 
         then:
         1 * objectFactory.create(Item.class) >> item
         1 * item.asType(Item.class) >> item
         1 * item.setName(NAME)
         1 * item.setDescription(DESCRIPTION)
+        1 * itemImage.getId() >> ITEM_IMAGE_ID
+        1 * sourceImage.getId() >> SOURCE_IMAGE_ID
+        1 * item.setItemImageId(ITEM_IMAGE_ID)
+        1 * item.setSourceImageId(SOURCE_IMAGE_ID)
+        1 * itemGroup.isAttached() >> Boolean.FALSE
+        1 * itemGroup.attach()
         1 * itemGroup.addToItems(item) >> itemGroup
         1 * itemGroup.save()
+        0 * _
+
+        and:
+        result == item
+    }
+
+    void "Test getItem()"() {
+        when:
+        def result = service.getItem(ID)
+
+        then:
+        1 * objectDAO.get(Item.class, ID) >> item
+        1 * item.asType(Item.class) >> item
         0 * _
 
         and:

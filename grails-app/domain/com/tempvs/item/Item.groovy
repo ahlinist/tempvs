@@ -11,11 +11,15 @@ class Item extends BasePersistent {
 
     String name
     String description
+    String itemImageId
+    String sourceImageId
 
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
         description nullable: true
+        itemImageId nullable: true
+        sourceImageId nullable: true
     }
 
     static mapping = {
