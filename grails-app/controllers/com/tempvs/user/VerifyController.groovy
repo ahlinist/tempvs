@@ -1,10 +1,17 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
+
+/**
+ * Controller for managing {@link com.tempvs.user.EmailVerification} instances.
+ */
+@GrailsCompileStatic
 class VerifyController {
 
     private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'profileEmail.update.failed.message'
+    private static final String EMAIL = 'email'
 
     VerifyService verifyService
     UserService userService
@@ -45,12 +52,12 @@ class VerifyController {
 
     private registration(EmailVerification emailVerification) {
         String email = emailVerification.email
-        session.email = email
+        session.setAttribute(EMAIL, email)
         render view: 'registration', model: [email: email]
     }
 
     private email(EmailVerification emailVerification) {
-        User user = userService.updateEmail(User.get(emailVerification.instanceId), emailVerification.email)
+        User user = userService.updateEmail(emailVerification.instanceId, emailVerification.email)
 
         if (user?.hasErrors()) {
             error([message: EMAIL_UPDATE_FAILED])
@@ -60,8 +67,7 @@ class VerifyController {
     }
 
     private profileEmail(Class clazz, EmailVerification emailVerification) {
-        BaseProfile profile = profileService.updateProfileEmail(
-                clazz.get(emailVerification.instanceId), emailVerification.email)
+        BaseProfile profile = profileService.updateProfileEmail(clazz, emailVerification.instanceId, emailVerification.email)
 
         if (profile?.hasErrors()) {
             error([message: PROFILE_EMAIL_UPDATE_FAILED])

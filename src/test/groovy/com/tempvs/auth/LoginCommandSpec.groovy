@@ -1,7 +1,5 @@
-package com.tempvs.user
+package com.tempvs.auth
 
-import com.tempvs.user.AuthController
-import com.tempvs.user.LoginCommand
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

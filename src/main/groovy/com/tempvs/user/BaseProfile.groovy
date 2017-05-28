@@ -21,6 +21,9 @@ abstract class BaseProfile extends BasePersistent {
         profileId ?: id as String
     }
 
+    Object save() {
+    }
+
     static constraints = {
         profileId shared: "profileId"
         location nullable: true

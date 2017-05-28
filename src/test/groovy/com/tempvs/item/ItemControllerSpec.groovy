@@ -17,14 +17,12 @@ import spock.lang.Specification
 @TestFor(ItemController)
 class ItemControllerSpec extends Specification {
 
-    private static final String ID = 'id'
+    private static final Long LONG_ID = 1L
     private static final String ONE = '1'
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
-    private static final String ITEM_STASH = 'itemStash'
     private static final String ITEM_IMAGE = 'itemImage'
     private static final String SOURCE_IMAGE = 'sourceImage'
-    private static final String ITEM_GROUP = 'itemGroup'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_URI = '/item/show'
 
@@ -59,7 +57,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(ITEM_STASH) >> itemStash
+        1 * user.asType(User) >> user
+        1 * user.getItemStash() >> itemStash
         0 * _
 
         and:
@@ -101,11 +100,11 @@ class ItemControllerSpec extends Specification {
         !response.redirectedUrl
     }
 
-    void "Test group creation failing"() {
+    void "Test group creation against invalid command"() {
         given:
         params.isAjaxRequest = Boolean.TRUE
 
-        when: 'ItemGroup has not been created'
+        when:
         controller.createGroup(createItemGroupCommand)
 
         then:
@@ -113,14 +112,19 @@ class ItemControllerSpec extends Specification {
         1 * ajaxResponseService.composeJsonResponse(createItemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+    }
+
+    void "Test group creation against invalid group"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
 
         when:
         controller.createGroup(createItemGroupCommand)
 
         then:
         1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getProperty(NAME) >> NAME
-        1 * createItemGroupCommand.getProperty(DESCRIPTION) >> DESCRIPTION
+        1 * createItemGroupCommand.getName() >> NAME
+        1 * createItemGroupCommand.getDescription() >> DESCRIPTION
         1 * itemService.createGroup(NAME, DESCRIPTION) >> itemGroup
         1 * itemGroup.validate() >> Boolean.FALSE
         1 * ajaxResponseService.composeJsonResponse(itemGroup) >> json
@@ -137,15 +141,15 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getProperty(NAME) >> NAME
-        1 * createItemGroupCommand.getProperty(DESCRIPTION) >> DESCRIPTION
+        1 * createItemGroupCommand.getName() >> NAME
+        1 * createItemGroupCommand.getDescription() >> DESCRIPTION
         1 * itemService.createGroup(NAME, DESCRIPTION) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
-        1 * itemGroup.getProperty(ID) >> ONE
+        1 * itemGroup.getId()
         0 * _
 
         and:
-        response.json.redirect == "${ITEM_GROUP_URI}/${ONE}"
+        response.json.redirect.contains ITEM_GROUP_URI
     }
 
     void "Test group() without id"() {
@@ -211,18 +215,20 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(ID) >> ID
+        1 * user.asType(User) >> user
+        1 * user.getId() >> LONG_ID
         1 * createItemCommand.validate() >> Boolean.TRUE
-        1 * createItemCommand.getProperty(NAME) >> NAME
-        1 * createItemCommand.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * createItemCommand.getProperty(ITEM_IMAGE) >> multipartItemImage
-        1 * createItemCommand.getProperty(SOURCE_IMAGE) >> multipartSourceImage
+        1 * createItemCommand.getName() >> NAME
+        1 * createItemCommand.getDescription() >> DESCRIPTION
+        1 * createItemCommand.getItemImage() >> multipartItemImage
+        1 * createItemCommand.getSourceImage() >> multipartSourceImage
         1 * imageService.createImage(_ as InputStream, _ as String, _ as Map) >> itemImage
         1 * imageService.createImage(_ as InputStream, _ as String, _ as Map) >> sourceImage
         1 * itemService.createItem(NAME, DESCRIPTION, itemImage, sourceImage, itemGroup) >> item
-        1 * itemGroup.getProperty(ID) >> ID
+        1 * itemGroup.asType(ItemGroup) >> itemGroup
+        1 * itemGroup.getId() >> LONG_ID
         1 * item.validate() >> Boolean.TRUE
-        1 * item.getProperty(ID) >> ONE
+        1 * item.getId() >> LONG_ID
         0 * _
 
         and:

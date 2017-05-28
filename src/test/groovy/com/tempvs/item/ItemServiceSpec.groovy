@@ -39,18 +39,6 @@ class ItemServiceSpec extends Specification {
     def cleanup() {
     }
 
-    void "Test createGroup() for not being logged in"() {
-        when:
-        def result = service.createGroup(NAME, DESCRIPTION)
-
-        then:
-        1 * springSecurityService.currentUser >> null
-        0 * _
-
-        and:
-        !result
-    }
-
     void "Test createGroup() with fail"() {
         when:
         def result = service.createGroup(NAME, DESCRIPTION)
@@ -63,8 +51,8 @@ class ItemServiceSpec extends Specification {
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
         1 * user.getItemStash() >> itemStash
-        1 * itemStash.addToItemGroups(itemGroup) >> itemStash
-        1 * itemStash.save() >> null
+        1 * itemGroup.setItemStash(itemStash)
+        1 * itemGroup.save() >> null
         0 * _
 
         and:
@@ -83,8 +71,8 @@ class ItemServiceSpec extends Specification {
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
         1 * user.getItemStash() >> itemStash
-        1 * itemStash.addToItemGroups(itemGroup) >> itemStash
-        1 * itemStash.save() >> itemStash
+        1 * itemGroup.setItemStash(itemStash)
+        1 * itemGroup.save() >> itemGroup
         0 * _
 
         and:
@@ -126,18 +114,18 @@ class ItemServiceSpec extends Specification {
         def result = service.createItem(NAME, DESCRIPTION, itemImage, sourceImage, itemGroup)
 
         then:
+        1 * itemImage.getId() >> ITEM_IMAGE_ID
+        1 * sourceImage.getId() >> SOURCE_IMAGE_ID
         1 * objectFactory.create(Item.class) >> item
         1 * item.asType(Item.class) >> item
         1 * item.setName(NAME)
         1 * item.setDescription(DESCRIPTION)
-        1 * itemImage.getId() >> ITEM_IMAGE_ID
-        1 * sourceImage.getId() >> SOURCE_IMAGE_ID
         1 * item.setItemImageId(ITEM_IMAGE_ID)
         1 * item.setSourceImageId(SOURCE_IMAGE_ID)
+        1 * item.setItemGroup(itemGroup)
         1 * itemGroup.isAttached() >> Boolean.FALSE
         1 * itemGroup.attach()
-        1 * itemGroup.addToItems(item) >> itemGroup
-        1 * itemGroup.save()
+        1 * item.save()
         0 * _
 
         and:

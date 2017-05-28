@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.item.ItemStash
 import com.tempvs.tests.utils.TestingUtils
@@ -15,6 +16,7 @@ import spock.lang.Specification
 @Mock([User, UserProfile])
 class UserServiceSpec extends Specification {
 
+    private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
 
@@ -23,6 +25,7 @@ class UserServiceSpec extends Specification {
     def userProfile = Mock(UserProfile)
     def itemStash = Mock(ItemStash)
     def objectFactory = Mock(ObjectFactory)
+    def objectDAO = Mock(ObjectDAO)
 
     def setup() {
         GroovySpy(User, global: true)
@@ -30,6 +33,7 @@ class UserServiceSpec extends Specification {
 
         service.springSecurityService = springSecurityService
         service.objectFactory = objectFactory
+        service.objectDAO = objectDAO
     }
 
     def cleanup() {
@@ -76,9 +80,11 @@ class UserServiceSpec extends Specification {
 
     void "Test updateEmail()"() {
         when:
-        def result = service.updateEmail(user, EMAIL)
+        def result = service.updateEmail(LONG_ID, EMAIL)
 
         then:
+        1 * objectDAO.get(User.class, LONG_ID) >> user
+        1 * user.asType(User.class) >> user
         1 * user.setEmail(EMAIL)
         1 * user.save()
 

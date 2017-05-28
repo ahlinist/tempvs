@@ -1,19 +1,34 @@
-package com.tempvs.user
+package com.tempvs.auth
 
-import com.tempvs.domain.BaseObject
+import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.user.User
+import com.tempvs.user.UserService
+import com.tempvs.user.VerifyService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
+import grails.plugin.springsecurity.SpringSecurityService
+import grails.web.mapping.LinkGenerator
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.security.authentication.encoding.PasswordEncoder
 
+/**
+ * Controller that manages {@link com.tempvs.user.User} registration and authorization.
+ */
+@GrailsCompileStatic
 class AuthController {
     private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
     private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
+    private static final String NO_SUCH_USER_DEFAULT_MESSAGE = 'No user with such id found.'
     private static final String REGISTRATION_ACTION = 'registration'
 
-    def userService
-    def verifyService
-    def springSecurityService
-    def ajaxResponseService
-    def passwordEncoder
+    UserService userService
+    VerifyService verifyService
+    SpringSecurityService springSecurityService
+    AjaxResponseService ajaxResponseService
+    PasswordEncoder passwordEncoder
+    LinkGenerator grailsLinkGenerator
+    MessageSource messageSource
 
     def index() {
 
@@ -27,12 +42,14 @@ class AuthController {
                 if (user) {
                     if (passwordEncoder.isPasswordValid(user.password, command.password, null)) {
                         springSecurityService.reauthenticate(command.email, command.password)
-                        render([redirect: g.createLink(controller: 'profile')] as JSON)
+                        render([redirect: grailsLinkGenerator.link(controller: 'profile')] as JSON)
                     } else {
-                        render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
+                        String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER_DEFAULT_MESSAGE, LocaleContextHolder.locale)
+                        render([messages: [message]] as JSON)
                     }
                 } else {
-                    render([messages: [g.message(code: NO_SUCH_USER)]] as JSON)
+                    String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER_DEFAULT_MESSAGE, LocaleContextHolder.locale)
+                    render([messages: [message]] as JSON)
                 }
             } else {
                 render ajaxResponseService.composeJsonResponse(command)

@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.item.ItemStash
 import grails.compiler.GrailsCompileStatic
@@ -14,6 +15,7 @@ import grails.transaction.Transactional
 class UserService {
 
     SpringSecurityService springSecurityService
+    ObjectDAO objectDAO
     ObjectFactory objectFactory
 
     User getUserByEmail(String email) {
@@ -34,7 +36,8 @@ class UserService {
         user
     }
 
-    User updateEmail(User user, String email) {
+    User updateEmail(Long id, String email) {
+        User user = objectDAO.get(User, id) as User
         user.email = email
         user.save()
         user

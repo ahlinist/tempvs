@@ -16,6 +16,7 @@ class ProfileServiceSpec extends Specification {
 
     private static final String ONE = '1'
     private static final String EMAIL = 'test@email.com'
+    private static final Long LONG_ID = 1L
     private static final String FIRST_NAME = 'firstName'
     private static final String LAST_NAME = 'lastName'
     private static final String NICK_NAME = 'nickName'
@@ -119,9 +120,11 @@ class ProfileServiceSpec extends Specification {
 
     void "Test updateProfileEmail()"() {
         when:
-        def result = service.updateProfileEmail(clubProfile, EMAIL)
+        def result = service.updateProfileEmail(ClubProfile.class, LONG_ID, EMAIL)
 
         then:
+        1 * objectDAO.get(ClubProfile.class, LONG_ID) >> clubProfile
+        1 * clubProfile.asType(BaseProfile.class) >> clubProfile
         1 * clubProfile.setProfileEmail(EMAIL)
         1 * clubProfile.save()
 

@@ -1,12 +1,16 @@
-package com.tempvs.user
+package com.tempvs.auth
 
 import com.tempvs.tests.utils.TestingUtils
+import com.tempvs.user.ClubProfile
+import com.tempvs.user.EmailVerification
+import com.tempvs.user.User
+import com.tempvs.user.UserProfile
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 @TestFor(AuthController)
-@Mock([User, UserProfile, EmailVerification])
+@Mock([User, UserProfile, ClubProfile, EmailVerification])
 class RequestRegistrationCommandSpec extends Specification {
     private static final INVALID_EMAIL = 'test-email.com'
     private static final VALID_EMAIL = 'test@email.com'

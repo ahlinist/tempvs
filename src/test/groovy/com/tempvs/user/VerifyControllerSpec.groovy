@@ -15,8 +15,6 @@ class VerifyControllerSpec extends Specification {
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
-    private static final String ACTION = 'action'
-    private static final String INSTANCE_ID = 'instanceId'
     private static final String REGISTRATION_PAGE_URI = '/verify/registration'
     private static final String ERROR_PAGE_URI = '/verify/error'
     private static final String USER_EDIT_PAGE_URI = '/user/edit'
@@ -39,8 +37,6 @@ class VerifyControllerSpec extends Specification {
         controller.profileService = profileService
         controller.verifyService = verifyService
         controller.profileHolder = profileHolder
-
-        GroovySpy(User, global: true)
     }
 
     def cleanup() {
@@ -60,19 +56,22 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> null
+        0 * _
 
         and:
         controller.modelAndView.viewName == ERROR_PAGE_URI
         controller.modelAndView.model == [message: NO_VERIFICATION_CODE]
+    }
 
-        when:
+    void "Check successful registration verification"() {
+       when:
         params.id = ID
         controller.byEmail()
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getProperty(ACTION) >> REGISTRATION
-        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getAction() >> REGISTRATION
+        1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.delete([flush: Boolean.TRUE])
         0 * _
 
@@ -95,11 +94,10 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getProperty(ACTION) >> EMAIL
-        1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
-        1 * emailVerification.getProperty(EMAIL) >> EMAIL
-        1 * User.get(LONG_ID) >> user
-        1 * userService.updateEmail(user, EMAIL) >> user
+        1 * emailVerification.getAction() >> EMAIL
+        1 * emailVerification.getInstanceId() >> LONG_ID
+        1 * emailVerification.getEmail() >> EMAIL
+        1 * userService.updateEmail(LONG_ID, EMAIL) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * emailVerification.delete(['flush':true])
         0 * _
@@ -122,10 +120,10 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getProperty(ACTION) >> USERPROFILE
-        1 * emailVerification.getProperty(EMAIL) >> EMAIL
-        1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
-        1 * profileService.updateProfileEmail(_, EMAIL) >> userProfile
+        1 * emailVerification.getAction() >> USERPROFILE
+        1 * emailVerification.getEmail() >> EMAIL
+        1 * emailVerification.getInstanceId() >> LONG_ID
+        1 * profileService.updateProfileEmail(UserProfile.class, LONG_ID, EMAIL) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProfile(userProfile)
         1 * emailVerification.delete(['flush':true])
@@ -149,10 +147,10 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getProperty(ACTION) >> CLUBPROFILE
-        1 * emailVerification.getProperty(EMAIL) >> EMAIL
-        1 * emailVerification.getProperty(INSTANCE_ID) >> LONG_ID
-        1 * profileService.updateProfileEmail(_, EMAIL) >> clubProfile
+        1 * emailVerification.getAction() >> CLUBPROFILE
+        1 * emailVerification.getEmail() >> EMAIL
+        1 * emailVerification.getInstanceId() >> LONG_ID
+        1 * profileService.updateProfileEmail(ClubProfile.class, LONG_ID, EMAIL) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProfile(clubProfile)
         1 * emailVerification.delete(['flush':true])

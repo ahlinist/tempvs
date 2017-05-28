@@ -40,7 +40,8 @@ class ProfileService {
         clubProfile
     }
 
-    BaseProfile updateProfileEmail(BaseProfile profile, String profileEmail) {
+    BaseProfile updateProfileEmail(Class clazz, Long instanceId, String profileEmail) {
+        BaseProfile profile = objectDAO.get(clazz, instanceId) as BaseProfile
         profile.profileEmail = profileEmail
         profile.save()
         profile

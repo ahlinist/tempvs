@@ -1,27 +1,30 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.domain.BaseObject
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.web.mapping.LinkGenerator
 import org.springframework.web.multipart.MultipartFile
 
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
+@GrailsCompileStatic
 class ItemController {
 
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
+    private static final String ITEM_GROUP = 'itemGroup'
 
     static defaultAction = 'stash'
 
     ItemService itemService
     ImageService imageService
+    LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
     SpringSecurityService springSecurityService
 
@@ -29,7 +32,8 @@ class ItemController {
         if (id) {
             [itemStash: itemService.getStash(id)]
         } else {
-            [itemStash: springSecurityService.currentUser.itemStash]
+            User user = springSecurityService.currentUser as User
+            [itemStash: user.itemStash]
         }
     }
 
@@ -41,7 +45,7 @@ class ItemController {
                 ItemGroup itemGroup = itemService.createGroup(name, description)
 
                 if (itemGroup.validate()) {
-                    render([redirect: g.createLink(action: 'group', id: itemGroup.id)] as JSON)
+                    render([redirect: grailsLinkGenerator.link(action: 'group', id: itemGroup.id)] as JSON)
                 } else {
                     render ajaxResponseService.composeJsonResponse(itemGroup)
                 }
@@ -54,7 +58,7 @@ class ItemController {
     def group(String id) {
         if (id) {
             ItemGroup itemGroup = itemService.getGroup(id)
-            session.itemGroup = itemGroup
+            session.setAttribute(ITEM_GROUP, itemGroup)
             [itemGroup: itemGroup]
         }
     }
@@ -62,24 +66,24 @@ class ItemController {
     def createItem(CreateItemCommand command) {
         if (params.isAjaxRequest) {
             if (command.validate()) {
-                User user = springSecurityService.currentUser
+                User user = springSecurityService.currentUser as User
                 String name = command.name
                 String description = command.description
                 MultipartFile multipartItemImage = command.itemImage
                 MultipartFile multipartSourceImage = command.sourceImage
-                ItemGroup itemGroup = session.itemGroup
+                ItemGroup itemGroup = session.getAttribute(ITEM_GROUP) as ItemGroup
                 Map metaData = [userId: user.id, properties: [itemGroupId: itemGroup.id]]
                 Image itemImage = createImage(multipartItemImage, ITEM_IMAGE_COLLECTION, metaData)
                 Image sourceImage = createImage(multipartSourceImage, SOURCE_IMAGE_COLLECTION, metaData)
                 Item item = itemService.createItem(name, description, itemImage, sourceImage, itemGroup)
 
                 if (item.validate()) {
-                    render([redirect: g.createLink(action: 'show', id: item.id)] as JSON)
+                    render([redirect: grailsLinkGenerator.link(action: 'show', id: item.id)] as JSON)
                 } else {
                     render ajaxResponseService.composeJsonResponse(item)
                 }
             } else {
-                ajaxResponseService.composeJsonResponse(command)
+                render ajaxResponseService.composeJsonResponse(command)
             }
         }
     }
@@ -104,29 +108,5 @@ class ItemController {
         }
 
         result
-    }
-}
-
-@GrailsCompileStatic
-class CreateItemGroupCommand extends BaseObject {
-    String name
-    String description
-
-    static constraints = {
-        description nullable: true
-    }
-}
-
-@GrailsCompileStatic
-class CreateItemCommand extends BaseObject {
-    String name
-    String description
-    MultipartFile itemImage
-    MultipartFile sourceImage
-
-    static constraints = {
-        description nullable: true
-        itemImage nullable: true
-        sourceImage nullable: true
     }
 }

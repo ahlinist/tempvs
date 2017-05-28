@@ -3,6 +3,7 @@ package com.tempvs.image
 import asset.pipeline.grails.AssetResourceLocator
 import grails.compiler.GrailsCompileStatic
 import org.springframework.util.StreamUtils
+
 /**
  * Controller for {@link com.tempvs.image.Image} handling. 
  */
