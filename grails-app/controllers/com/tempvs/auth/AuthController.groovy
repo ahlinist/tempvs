@@ -51,27 +51,3 @@ class AuthController {
         }
     }
 }
-
-@GrailsCompileStatic
-class LoginCommand extends BaseObject {
-    String email
-    String password
-
-    static constraints = {
-        email email: true
-    }
-}
-
-@GrailsCompileStatic
-class RequestRegistrationCommand extends BaseObject {
-    String email
-
-    static constraints = {
-        email email: true, blank: false, validator: { email, RequestRegistrationCommand command ->
-            !User.findByEmail(email) &&
-                    !UserProfile.findByProfileEmail(email) &&
-                    !ClubProfile.findByProfileEmail(email) &&
-                    !EmailVerification.findByEmail(email)
-        }
-    }
-}
