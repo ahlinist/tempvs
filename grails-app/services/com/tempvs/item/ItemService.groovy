@@ -7,8 +7,10 @@ import com.tempvs.user.User
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
+
 /**
- * Service that manages {@link com.tempvs.item.Item} instances.
+ * Service that manages {@link com.tempvs.item.Item}, {@link com.tempvs.item.ItemGroup}
+ * and {@link com.tempvs.item.ItemStash} instances.
  */
 @Transactional
 @GrailsCompileStatic
@@ -19,16 +21,13 @@ class ItemService {
     ObjectDAO objectDAO
 
     ItemGroup createGroup(String name, String description) {
-        Object currentUser = springSecurityService.currentUser
-
-        if (currentUser) {
-            User user = currentUser as User
-            ItemGroup itemGroup = objectFactory.create(ItemGroup.class) as ItemGroup
-            itemGroup.name = name
-            itemGroup.description = description
-            user.itemStash.addToItemGroups(itemGroup).save()
-            itemGroup
-        }
+        User user = springSecurityService.currentUser as User
+        ItemGroup itemGroup = objectFactory.create(ItemGroup.class) as ItemGroup
+        itemGroup.name = name
+        itemGroup.description = description
+        itemGroup.itemStash = user.itemStash
+        itemGroup.save()
+        itemGroup
     }
 
     ItemStash getStash(String id) {
@@ -57,16 +56,17 @@ class ItemService {
 
     Item createItem(String name, String description, Image itemImage, Image sourceImage, ItemGroup itemGroup) {
         Item item = objectFactory.create(Item.class) as Item
-        item.setName(name)
-        item.setDescription(description)
-        item.setItemImageId(itemImage?.id)
-        item.setSourceImageId(sourceImage?.id)
+        item.name = name
+        item.description = description
+        item.itemImageId = itemImage?.id
+        item.sourceImageId = sourceImage?.id
 
         if (!itemGroup.attached) {
             itemGroup.attach()
         }
 
-        itemGroup.addToItems(item).save()
+        item.itemGroup = itemGroup
+        item.save()
         item
     }
 }
