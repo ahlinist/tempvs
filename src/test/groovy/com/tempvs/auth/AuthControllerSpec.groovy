@@ -8,6 +8,7 @@ import com.tempvs.user.VerifyService
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
+import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
@@ -21,7 +22,7 @@ class AuthControllerSpec extends Specification {
     private static final String PASSWORD = 'password'
     private static final String REGISTER_ACTION = 'registration'
     private static final String NO_SUCH_USER_MESSAGE = 'No user with such id found.'
-    private static final String SHOW_PAGE_URI = '/profile'
+    private static final String PROFILE_PAGE_URI = '/profile'
 
     def emailVerification = Mock(EmailVerification)
     def requestRegistrationCommand = Mock(RequestRegistrationCommand)
@@ -33,6 +34,7 @@ class AuthControllerSpec extends Specification {
     def springSecurityService = Mock(SpringSecurityService)
     def loginCommand = Mock(LoginCommand)
     def user = Mock(User)
+    def grailsLinkGenerator = Mock(LinkGenerator)
 
     def setup() {
         controller.ajaxResponseService = ajaxResponseService
@@ -40,6 +42,7 @@ class AuthControllerSpec extends Specification {
         controller.passwordEncoder = passwordEncoder
         controller.springSecurityService = springSecurityService
         controller.verifyService = verifyService
+        controller.grailsLinkGenerator = grailsLinkGenerator
     }
 
     def cleanup() {
@@ -122,6 +125,9 @@ class AuthControllerSpec extends Specification {
     }
 
     void "Testing login() for correct params"() {
+        given:
+        Map linkGeneratorMap = ['controller':'profile']
+
         when:
         params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
@@ -134,7 +140,8 @@ class AuthControllerSpec extends Specification {
         2 * loginCommand.getPassword() >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.TRUE
         1 * springSecurityService.reauthenticate(EMAIL, PASSWORD)
+        1 * grailsLinkGenerator.link(linkGeneratorMap) >> PROFILE_PAGE_URI
         0 * _
-        response.json.redirect == SHOW_PAGE_URI
+        response.json.redirect == PROFILE_PAGE_URI
     }
 }

@@ -7,6 +7,7 @@ import com.tempvs.user.User
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
+import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
@@ -25,6 +26,8 @@ class ItemControllerSpec extends Specification {
     private static final String SOURCE_IMAGE = 'sourceImage'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_URI = '/item/show'
+    private static final String GROUP_ACTION = 'group'
+    private static final String SHOW_ACTION = 'show'
 
     def user = Mock(User)
     def json = Mock(JSON)
@@ -40,12 +43,14 @@ class ItemControllerSpec extends Specification {
     def ajaxResponseService = Mock(AjaxResponseService)
     def createItemCommand = Mock(CreateItemCommand)
     def createItemGroupCommand = Mock(CreateItemGroupCommand)
+    def grailsLinkGenerator = Mock(LinkGenerator)
 
     def setup() {
         controller.springSecurityService = springSecurityService
         controller.itemService = itemService
         controller.ajaxResponseService = ajaxResponseService
         controller.imageService = imageService
+        controller.grailsLinkGenerator = grailsLinkGenerator
     }
 
     def cleanup() {
@@ -134,9 +139,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test group creation"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
+        Map linkGeneratorMap = ['action':GROUP_ACTION, 'id':LONG_ID]
 
         when:
+        params.isAjaxRequest = Boolean.TRUE
         controller.createGroup(createItemGroupCommand)
 
         then:
@@ -145,11 +151,12 @@ class ItemControllerSpec extends Specification {
         1 * createItemGroupCommand.getDescription() >> DESCRIPTION
         1 * itemService.createGroup(NAME, DESCRIPTION) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
-        1 * itemGroup.getId()
+        1 * itemGroup.getId() >> LONG_ID
+        1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_GROUP_URI}/${LONG_ID}"
         0 * _
 
         and:
-        response.json.redirect.contains ITEM_GROUP_URI
+        response.json.redirect == "${ITEM_GROUP_URI}/${LONG_ID}"
     }
 
     void "Test group() without id"() {
@@ -202,8 +209,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem()"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
-        flash.itemGroup = itemGroup
+        Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
         def multipartSourceImage = new MockMultipartFile(SOURCE_IMAGE, "1234567" as byte[])
         controller.request.addFile(multipartItemImage)
@@ -211,6 +217,7 @@ class ItemControllerSpec extends Specification {
         controller.session.itemGroup = itemGroup
 
         when:
+        params.isAjaxRequest = Boolean.TRUE
         controller.createItem(createItemCommand)
 
         then:
@@ -229,10 +236,11 @@ class ItemControllerSpec extends Specification {
         1 * itemGroup.getId() >> LONG_ID
         1 * item.validate() >> Boolean.TRUE
         1 * item.getId() >> LONG_ID
+        1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ID}"
         0 * _
 
         and:
-        response.json.redirect == "${ITEM_URI}/${ONE}"
+        response.json.redirect == "${ITEM_URI}/${LONG_ID}"
     }
 
     void "Test show() without id"() {
