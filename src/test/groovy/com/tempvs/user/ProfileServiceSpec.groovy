@@ -107,7 +107,6 @@ class ProfileServiceSpec extends Specification {
         1 * springSecurityService.currentUser >> user
         1 * user.asType(User) >> user
         1 * objectFactory.create(ClubProfile.class) >> clubProfile
-        1 * clubProfile.asType(ClubProfile.class) >> clubProfile
         1 * clubProfile.setFirstName(FIRST_NAME)
         1 * clubProfile.setLastName(LAST_NAME)
         1 * clubProfile.setNickName(NICK_NAME)

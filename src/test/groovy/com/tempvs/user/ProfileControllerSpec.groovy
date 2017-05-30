@@ -53,7 +53,6 @@ class ProfileControllerSpec extends Specification {
     def emailVerification = Mock(EmailVerification)
     def clubProfileCommand = Mock(ClubProfileCommand)
     def userProfileCommand = Mock(UserProfileCommand)
-    def multipartFile = new MockMultipartFile(AVATAR_IMAGE, "1234567" as byte[])
     def messageSource = Mock(MessageSource)
 
     def setup() {

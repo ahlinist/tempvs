@@ -35,7 +35,7 @@ class ProfileService {
 
     ClubProfile createClubProfile(Map properties) {
         User user = springSecurityService.currentUser as User
-        ClubProfile clubProfile = objectFactory.create(ClubProfile.class) as ClubProfile
+        ClubProfile clubProfile = objectFactory.create(ClubProfile.class)
 	    clubProfile.firstName = properties.firstName
 	    clubProfile.lastName = properties.lastName
         clubProfile.nickName = properties.nickName

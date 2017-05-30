@@ -22,7 +22,7 @@ class ItemService {
 
     ItemGroup createGroup(String name, String description) {
         User user = springSecurityService.currentUser as User
-        ItemGroup itemGroup = objectFactory.create(ItemGroup.class) as ItemGroup
+        ItemGroup itemGroup = objectFactory.create(ItemGroup.class)
         itemGroup.name = name
         itemGroup.description = description
         itemGroup.itemStash = user.itemStash
@@ -55,7 +55,7 @@ class ItemService {
     }
 
     Item createItem(String name, String description, Image itemImage, Image sourceImage, ItemGroup itemGroup) {
-        Item item = objectFactory.create(Item.class) as Item
+        Item item = objectFactory.create(Item.class)
         item.name = name
         item.description = description
         item.itemImageId = itemImage?.id

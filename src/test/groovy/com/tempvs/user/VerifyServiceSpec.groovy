@@ -47,7 +47,6 @@ class VerifyServiceSpec extends Specification {
 
         then: 'Verification created and mail sent'
         1 * objectFactory.create(EmailVerification.class) >> emailVerification
-        1 * emailVerification.asType(EmailVerification.class) >> emailVerification
         1 * emailVerification.save([flush: true]) >> emailVerification
         1 * mailService.sendMail(_)
 
@@ -61,7 +60,6 @@ class VerifyServiceSpec extends Specification {
 
         then: 'Verification created, not saved and not sent'
         1 * objectFactory.create(EmailVerification.class) >> emailVerification
-        1 * emailVerification.asType(EmailVerification.class) >> emailVerification
         1 * emailVerification.save([flush: true])
 
         and:

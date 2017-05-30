@@ -47,7 +47,6 @@ class ItemServiceSpec extends Specification {
         1 * springSecurityService.currentUser >> user
         1 * user.asType(User.class) >> user
         1 * objectFactory.create(ItemGroup.class) >> itemGroup
-        1 * itemGroup.asType(ItemGroup.class) >> itemGroup
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
         1 * user.getItemStash() >> itemStash
@@ -67,7 +66,6 @@ class ItemServiceSpec extends Specification {
         1 * springSecurityService.currentUser >> user
         1 * user.asType(User.class) >> user
         1 * objectFactory.create(ItemGroup.class) >> itemGroup
-        1 * itemGroup.asType(ItemGroup.class) >> itemGroup
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
         1 * user.getItemStash() >> itemStash
@@ -117,7 +115,6 @@ class ItemServiceSpec extends Specification {
         1 * itemImage.getId() >> ITEM_IMAGE_ID
         1 * sourceImage.getId() >> SOURCE_IMAGE_ID
         1 * objectFactory.create(Item.class) >> item
-        1 * item.asType(Item.class) >> item
         1 * item.setName(NAME)
         1 * item.setDescription(DESCRIPTION)
         1 * item.setItemImageId(ITEM_IMAGE_ID)

@@ -61,9 +61,6 @@ class UserServiceSpec extends Specification {
         1 * objectFactory.create(User.class) >> user
         1 * objectFactory.create(UserProfile.class) >> userProfile
         1 * objectFactory.create(ItemStash.class) >> itemStash
-        1 * userProfile.asType(UserProfile.class) >> userProfile
-        1 * itemStash.asType(ItemStash.class) >> itemStash
-        1 * user.asType(User.class) >> user
         1 * springSecurityService.encodePassword(TestingUtils.DEFAULT_USER_PROPS.password) >> PASSWORD
         1 * user.setEmail(TestingUtils.DEFAULT_USER_PROPS.email)
         1 * user.setPassword(PASSWORD)

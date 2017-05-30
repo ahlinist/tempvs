@@ -20,7 +20,7 @@ class VerifyService {
     EmailVerification createEmailVerification(Map properties) {
         String email = properties.email
         String verificationCode = email + new Date().time
-        EmailVerification emailVerification = objectFactory.create(EmailVerification.class) as EmailVerification
+        EmailVerification emailVerification = objectFactory.create(EmailVerification.class)
         Map verificationProperties = properties + [verificationCode: verificationCode.encodeAsMD5()]
         InvokerHelper.setProperties(emailVerification, verificationProperties)
 

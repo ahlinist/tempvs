@@ -23,9 +23,9 @@ class UserService {
     }
 
     User createUser(Map properties) {
-        User user = objectFactory.create(User.class) as User
-        UserProfile userProfile = objectFactory.create(UserProfile.class) as UserProfile
-        ItemStash itemStash = objectFactory.create(ItemStash.class) as ItemStash
+        User user = objectFactory.create(User.class)
+        UserProfile userProfile = objectFactory.create(UserProfile.class)
+        ItemStash itemStash = objectFactory.create(ItemStash.class)
         user.email = properties.email
         user.password = springSecurityService.encodePassword(properties.password as String)
 	    userProfile.firstName = properties.firstName

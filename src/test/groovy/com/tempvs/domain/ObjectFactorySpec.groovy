@@ -1,5 +1,6 @@
 package com.tempvs.domain
 
+import com.tempvs.user.User
 import spock.lang.Specification
 
 /**
@@ -17,9 +18,9 @@ class ObjectFactorySpec extends Specification {
 
     void "Test create()"() {
         when:
-        def result = new ObjectFactory().create(Object.class)
+        def result = new ObjectFactory().create(User.class)
 
         then:
-        result instanceof Object
+        result instanceof User
     }
 }
