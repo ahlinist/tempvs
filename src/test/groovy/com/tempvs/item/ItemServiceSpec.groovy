@@ -82,8 +82,7 @@ class ItemServiceSpec extends Specification {
         def result = service.getStash(ID)
 
         then:
-        1 * objectDAO.get(ItemStash.class, ID) >> itemStash
-        1 * itemStash.asType(ItemStash.class) >> itemStash
+        1 * objectDAO.get(ItemStash, ID) >> itemStash
         0 * _
 
         and:
@@ -95,8 +94,7 @@ class ItemServiceSpec extends Specification {
         def result = service.getGroup(ID)
 
         then:
-        1 * objectDAO.get(ItemGroup.class, ID) >> itemGroup
-        1 * itemGroup.asType(ItemGroup.class) >> itemGroup
+        1 * objectDAO.get(ItemGroup, ID) >> itemGroup
         0 * _
 
         and:
@@ -134,8 +132,7 @@ class ItemServiceSpec extends Specification {
         def result = service.getItem(ID)
 
         then:
-        1 * objectDAO.get(Item.class, ID) >> item
-        1 * item.asType(Item.class) >> item
+        1 * objectDAO.get(Item, ID) >> item
         0 * _
 
         and:

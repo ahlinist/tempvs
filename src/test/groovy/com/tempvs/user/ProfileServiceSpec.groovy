@@ -43,23 +43,21 @@ class ProfileServiceSpec extends Specification {
         Map clubProfileProps = [profileId: ONE]
 
         when:
-        def result = service.getProfile(ClubProfile.class, ONE)
+        def result = service.getProfile(ClubProfile, ONE)
 
         then:
-        1 * objectDAO.find(ClubProfile.class, clubProfileProps) >> clubProfile
-        1 * clubProfile.asType(BaseProfile.class) >> clubProfile
+        1 * objectDAO.find(ClubProfile, clubProfileProps) >> clubProfile
         0 * _
 
         and:
         result == clubProfile
 
         when:
-        result = service.getProfile(UserProfile.class, ONE)
+        result = service.getProfile(UserProfile, ONE)
 
         then:
-        1 * objectDAO.find(UserProfile.class, clubProfileProps) >> null
-        1 * objectDAO.get(UserProfile.class, ONE) >> userProfile
-        1 * userProfile.asType(BaseProfile.class) >> userProfile
+        1 * objectDAO.find(UserProfile, clubProfileProps) >> null
+        1 * objectDAO.get(UserProfile, ONE) >> userProfile
         0 * _
 
         and:
@@ -106,7 +104,7 @@ class ProfileServiceSpec extends Specification {
         then:
         1 * springSecurityService.currentUser >> user
         1 * user.asType(User) >> user
-        1 * objectFactory.create(ClubProfile.class) >> clubProfile
+        1 * objectFactory.create(ClubProfile) >> clubProfile
         1 * clubProfile.setFirstName(FIRST_NAME)
         1 * clubProfile.setLastName(LAST_NAME)
         1 * clubProfile.setNickName(NICK_NAME)
@@ -121,11 +119,10 @@ class ProfileServiceSpec extends Specification {
 
     void "Test updateProfileEmail()"() {
         when:
-        def result = service.updateProfileEmail(ClubProfile.class, LONG_ID, EMAIL)
+        def result = service.updateProfileEmail(ClubProfile, LONG_ID, EMAIL)
 
         then:
-        1 * objectDAO.get(ClubProfile.class, LONG_ID) >> clubProfile
-        1 * clubProfile.asType(BaseProfile.class) >> clubProfile
+        1 * objectDAO.get(ClubProfile, LONG_ID) >> clubProfile
         1 * clubProfile.setProfileEmail(EMAIL)
         1 * clubProfile.save()
 

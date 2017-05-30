@@ -16,15 +16,11 @@ import org.codehaus.groovy.runtime.InvokerHelper
 class ProfileService {
 
     SpringSecurityService springSecurityService
-    ObjectDAO objectDAO
+    ObjectDAO<BaseProfile> objectDAO
     ObjectFactory objectFactory
 
     BaseProfile getProfile(Class clazz, String id) {
-        Object result = objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
-
-        if (result) {
-            result as BaseProfile
-        }
+        objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
     }
 
     BaseProfile updateProfile(BaseProfile profile, Map params) {
@@ -35,7 +31,7 @@ class ProfileService {
 
     ClubProfile createClubProfile(Map properties) {
         User user = springSecurityService.currentUser as User
-        ClubProfile clubProfile = objectFactory.create(ClubProfile.class)
+        ClubProfile clubProfile = objectFactory.create(ClubProfile)
 	    clubProfile.firstName = properties.firstName
 	    clubProfile.lastName = properties.lastName
         clubProfile.nickName = properties.nickName
@@ -45,7 +41,7 @@ class ProfileService {
     }
 
     BaseProfile updateProfileEmail(Class clazz, Long instanceId, String profileEmail) {
-        BaseProfile profile = objectDAO.get(clazz, instanceId) as BaseProfile
+        BaseProfile profile = objectDAO.get(clazz, instanceId)
         profile.profileEmail = profileEmail
         profile.save()
         profile

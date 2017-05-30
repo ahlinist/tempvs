@@ -80,8 +80,7 @@ class UserServiceSpec extends Specification {
         def result = service.updateEmail(LONG_ID, EMAIL)
 
         then:
-        1 * objectDAO.get(User.class, LONG_ID) >> user
-        1 * user.asType(User.class) >> user
+        1 * objectDAO.get(User, LONG_ID) >> user
         1 * user.setEmail(EMAIL)
         1 * user.save()
 

@@ -6,7 +6,7 @@ import groovy.transform.CompileStatic
  * Object DAO interface.
  */
 @CompileStatic
-interface ObjectDAO {
-    Object get(Class clazz, Object id)
-    Object find(Class clazz, Map restrictions)
+interface ObjectDAO<T> {
+    T get(Class clazz, Object id)
+    T find(Class clazz, Map restrictions)
 }

@@ -31,27 +31,15 @@ class ItemService {
     }
 
     ItemStash getStash(String id) {
-        Object object = objectDAO.get(ItemStash.class, id)
-
-        if (object) {
-            object as ItemStash
-        }
+        objectDAO.get(ItemStash, id)
     }
 
     ItemGroup getGroup(String id) {
-        Object object = objectDAO.get(ItemGroup.class, id)
-
-        if (object) {
-            object as ItemGroup
-        }
+        objectDAO.get(ItemGroup, id)
     }
 
     Item getItem(String id) {
-        Object object = objectDAO.get(Item.class, id)
-
-        if (object) {
-            object as Item
-        }
+        objectDAO.get(Item, id)
     }
 
     Item createItem(String name, String description, Image itemImage, Image sourceImage, ItemGroup itemGroup) {

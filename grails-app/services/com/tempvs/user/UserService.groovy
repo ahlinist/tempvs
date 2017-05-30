@@ -37,7 +37,7 @@ class UserService {
     }
 
     User updateEmail(Long id, String email) {
-        User user = objectDAO.get(User, id) as User
+        User user = objectDAO.get(User, id)
         user.email = email
         user.save()
         user

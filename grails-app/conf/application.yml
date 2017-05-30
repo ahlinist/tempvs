@@ -95,6 +95,9 @@ grails:
                 - pattern: /item/group/**
                   access:
                       - permitAll
+                - pattern: /item/show/**
+                  access:
+                      - permitAll
                 - pattern: /assets/**
                   access:
                       - permitAll

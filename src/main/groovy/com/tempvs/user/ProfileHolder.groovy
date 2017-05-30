@@ -28,13 +28,11 @@ class ProfileHolder {
                 this.profile = user.userProfile
                 user.userProfile
             } else {
-                Object profile = objectDAO.get(clazz, id)
+                BaseProfile profile = objectDAO.get(clazz, id)
 
                 if (profile) {
-                    BaseProfile baseProfile = profile as BaseProfile
-
-                    if (baseProfile == user.userProfile || baseProfile in user.clubProfiles) {
-                        baseProfile
+                    if (profile == user.userProfile || profile in user.clubProfiles) {
+                        profile
                     } else {
                         this.profile = user.userProfile
                         user.userProfile
