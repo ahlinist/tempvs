@@ -19,8 +19,12 @@ class ProfileService {
     ObjectDAO objectDAO
     ObjectFactory objectFactory
 
-    Object getProfile(Class clazz, String id) {
-        objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
+    BaseProfile getProfile(Class clazz, String id) {
+        Object result = objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
+
+        if (result) {
+            result as BaseProfile
+        }
     }
 
     BaseProfile updateProfile(BaseProfile profile, Map params) {

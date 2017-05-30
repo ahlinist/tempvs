@@ -5,14 +5,17 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(UserController)
 class UserControllerSpec extends Specification {
-    private static final String SHOW_PROFILE_PAGE_URI = '/profile'
-    private static final String ID = 'id'
+    private static final String PROFILE_PAGE_URI = '/profile'
+    private static final String PROFILE_CONTROLLER = 'profile'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String NEW_PASSWORD = 'newPassword'
@@ -35,12 +38,14 @@ class UserControllerSpec extends Specification {
     def json = Mock(JSON)
     def userPasswordCommand = Mock(UserPasswordCommand)
     def registerCommand = Mock(RegisterCommand)
+    def messageSource = Mock(MessageSource)
 
     def setup() {
         controller.verifyService = verifyService
         controller.ajaxResponseService = ajaxResponseService
         controller.userService = userService
         controller.springSecurityService = springSecurityService
+        controller.messageSource = messageSource
     }
 
     def cleanup() {
@@ -63,18 +68,22 @@ class UserControllerSpec extends Specification {
         controller.index()
 
         then:
-        response.redirectedUrl == SHOW_PROFILE_PAGE_URI
+        response.redirectedUrl == PROFILE_PAGE_URI
     }
 
-    void "Check updateEmail action for duplicate"() {
+    void "Check updateEmail() for duplicate"() {
         when:
         params.email = EMAIL
         controller.updateEmail()
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(EMAIL) >> EMAIL
+        1 * user.asType(User.class) >> user
+        1 * user.getEmail() >> EMAIL
+        1 * messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale) >> EMAIL_UPDATE_DUPLICATE
         0 * _
+
+        and:
         response.json.messages == [EMAIL_UPDATE_DUPLICATE]
     }
 
@@ -85,8 +94,10 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(EMAIL) >> DIFFERENT_EMAIL
+        1 * user.asType(User.class) >> user
+        1 * user.getEmail() >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
+        1 * messageSource.getMessage(EMAIL_USED, null, EMAIL_USED, LocaleContextHolder.locale) >> EMAIL_USED
         0 * _
 
         and:
@@ -100,9 +111,10 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.getProperty(EMAIL) >> DIFFERENT_EMAIL
+        1 * user.asType(User.class) >> user
+        1 * user.getEmail() >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
-        1 * user.getProperty(ID) >> LONG_ID
+        1 * user.getId() >> LONG_ID
         1 * verifyService.createEmailVerification([instanceId: LONG_ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -126,7 +138,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userPasswordCommand.validate() >> Boolean.TRUE
-        1 * userPasswordCommand.getProperty(NEW_PASSWORD) >> NEW_PASSWORD
+        1 * userPasswordCommand.getNewPassword() >> NEW_PASSWORD
         1 * userService.updatePassword(NEW_PASSWORD) >> user
         1 * ajaxResponseService.composeJsonResponse(user, PASSWORD_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -168,11 +180,13 @@ class UserControllerSpec extends Specification {
         then:
         1 * registerCommand.validate() >> Boolean.TRUE
         1 * registerCommand.getProperty(PROPERTIES) >> [:]
-        1 * registerCommand.getProperty(PASSWORD)
+        1 * registerCommand.getPassword()
         1 * userService.createUser(_ as Map) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(*_)
         0 * _
-        response.json.redirect == SHOW_PROFILE_PAGE_URI
+
+        and:
+        response.json.redirect == PROFILE_PAGE_URI
     }
 }

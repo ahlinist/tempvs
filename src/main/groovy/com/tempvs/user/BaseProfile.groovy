@@ -9,19 +9,20 @@ import grails.compiler.GrailsCompileStatic
  */
 @GrailsCompileStatic
 abstract class BaseProfile extends BasePersistent {
-
+    Long id
     String firstName
     String lastName
     String profileEmail
     String location
     String profileId
     String avatar
+    User user
 
     String getIdentifier() {
         profileId ?: id as String
     }
 
-    Object save() {
+    Object save(Map params = null) {
     }
 
     static constraints = {

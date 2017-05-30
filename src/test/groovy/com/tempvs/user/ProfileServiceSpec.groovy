@@ -47,6 +47,7 @@ class ProfileServiceSpec extends Specification {
 
         then:
         1 * objectDAO.find(ClubProfile.class, clubProfileProps) >> clubProfile
+        1 * clubProfile.asType(BaseProfile.class) >> clubProfile
         0 * _
 
         and:
@@ -58,6 +59,7 @@ class ProfileServiceSpec extends Specification {
         then:
         1 * objectDAO.find(UserProfile.class, clubProfileProps) >> null
         1 * objectDAO.get(UserProfile.class, ONE) >> userProfile
+        1 * userProfile.asType(BaseProfile.class) >> userProfile
         0 * _
 
         and:

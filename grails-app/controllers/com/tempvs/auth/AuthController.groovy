@@ -19,7 +19,6 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
 class AuthController {
     private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
     private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
-    private static final String NO_SUCH_USER_DEFAULT_MESSAGE = 'No user with such id found.'
     private static final String REGISTRATION_ACTION = 'registration'
 
     UserService userService
@@ -31,7 +30,6 @@ class AuthController {
     MessageSource messageSource
 
     def index() {
-
     }
 
     def login(LoginCommand command) {
@@ -44,11 +42,11 @@ class AuthController {
                         springSecurityService.reauthenticate(command.email, command.password)
                         render([redirect: grailsLinkGenerator.link(controller: 'profile')] as JSON)
                     } else {
-                        String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER_DEFAULT_MESSAGE, LocaleContextHolder.locale)
+                        String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER, LocaleContextHolder.locale)
                         render([messages: [message]] as JSON)
                     }
                 } else {
-                    String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER_DEFAULT_MESSAGE, LocaleContextHolder.locale)
+                    String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER, LocaleContextHolder.locale)
                     render([messages: [message]] as JSON)
                 }
             } else {

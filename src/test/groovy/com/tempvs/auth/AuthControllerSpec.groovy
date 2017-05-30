@@ -10,6 +10,8 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
 
@@ -21,6 +23,7 @@ class AuthControllerSpec extends Specification {
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
     private static final String REGISTER_ACTION = 'registration'
+    private static final String NO_SUCH_USER_CODE = 'auth.login.noSuchUser.message'
     private static final String NO_SUCH_USER_MESSAGE = 'No user with such id found.'
     private static final String PROFILE_PAGE_URI = '/profile'
 
@@ -35,6 +38,7 @@ class AuthControllerSpec extends Specification {
     def loginCommand = Mock(LoginCommand)
     def user = Mock(User)
     def grailsLinkGenerator = Mock(LinkGenerator)
+    def messageSource = Mock(MessageSource)
 
     def setup() {
         controller.ajaxResponseService = ajaxResponseService
@@ -43,6 +47,7 @@ class AuthControllerSpec extends Specification {
         controller.springSecurityService = springSecurityService
         controller.verifyService = verifyService
         controller.grailsLinkGenerator = grailsLinkGenerator
+        controller.messageSource = messageSource
     }
 
     def cleanup() {
@@ -104,6 +109,7 @@ class AuthControllerSpec extends Specification {
         1 * loginCommand.validate() >> Boolean.TRUE
         1 * loginCommand.getEmail() >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> null
+        1 * messageSource.getMessage(NO_SUCH_USER_CODE, null, NO_SUCH_USER_CODE, LocaleContextHolder.locale) >> NO_SUCH_USER_MESSAGE
         0 * _
         response.json.messages == [NO_SUCH_USER_MESSAGE]
     }
@@ -120,6 +126,7 @@ class AuthControllerSpec extends Specification {
         1 * user.getPassword() >> PASSWORD
         1 * loginCommand.getPassword() >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.FALSE
+        1 * messageSource.getMessage(NO_SUCH_USER_CODE, null, NO_SUCH_USER_CODE, LocaleContextHolder.locale) >> NO_SUCH_USER_MESSAGE
         0 * _
         response.json.messages == [NO_SUCH_USER_MESSAGE]
     }
