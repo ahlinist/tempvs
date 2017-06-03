@@ -94,6 +94,10 @@ class ItemController {
         }
     }
 
+    def deleteItem(String id) {
+        redirect action: 'group', id: itemService.deleteItem(id)
+    }
+
     private Image createImage(MultipartFile file, String collection, Map metaData) {
         Image result
 

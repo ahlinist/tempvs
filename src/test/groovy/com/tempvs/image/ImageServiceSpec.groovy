@@ -1,9 +1,7 @@
 package com.tempvs.image
 
-import com.tempvs.mongodb.MongoImageDAO
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -15,7 +13,7 @@ class ImageServiceSpec extends Specification {
     private static final String ID = 'id'
     private static final Long ONE_LONG = 1L
 
-    def imageDAO = Mock(MongoImageDAO)
+    def imageDAO = Mock(ImageDAO)
     def inputStream = Mock(InputStream)
     def image = Mock(Image)
 
@@ -55,5 +53,26 @@ class ImageServiceSpec extends Specification {
 
         and:
         result == image
+    }
+
+    void "Test deleteImage()"() {
+        when:
+        def result = service.deleteImage(COLLECTION, ID)
+
+        then:
+        1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
+        0 * _
+
+        and:
+        result == Boolean.TRUE
+
+        when:
+        result = service.deleteImage(COLLECTION, null)
+
+        then:
+        0 * _
+
+        and:
+        result == Boolean.TRUE
     }
 }

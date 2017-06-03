@@ -25,6 +25,7 @@ class ItemControllerSpec extends Specification {
     private static final String ITEM_IMAGE = 'itemImage'
     private static final String SOURCE_IMAGE = 'sourceImage'
     private static final String ITEM_GROUP_URI = '/item/group'
+    private static final String ITEM_GROUP_ID = 'itemGroupId'
     private static final String ITEM_URI = '/item/show'
     private static final String GROUP_ACTION = 'group'
     private static final String SHOW_ACTION = 'show'
@@ -50,7 +51,6 @@ class ItemControllerSpec extends Specification {
         controller.itemService = itemService
         controller.ajaxResponseService = ajaxResponseService
         controller.imageService = imageService
-        controller.grailsLinkGenerator = grailsLinkGenerator
     }
 
     def cleanup() {
@@ -140,6 +140,7 @@ class ItemControllerSpec extends Specification {
     void "Test group creation"() {
         given:
         Map linkGeneratorMap = ['action':GROUP_ACTION, 'id':LONG_ID]
+        controller.grailsLinkGenerator = grailsLinkGenerator
 
         when:
         params.isAjaxRequest = Boolean.TRUE
@@ -212,6 +213,7 @@ class ItemControllerSpec extends Specification {
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
         def multipartSourceImage = new MockMultipartFile(SOURCE_IMAGE, "1234567" as byte[])
+        controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addFile(multipartItemImage)
         controller.request.addFile(multipartSourceImage)
         controller.session.itemGroup = itemGroup
@@ -269,5 +271,21 @@ class ItemControllerSpec extends Specification {
 
         and:
         result == [item: item]
+    }
+
+    void "Test deleteItem()"() {
+        given:
+        params.id = ONE
+
+        when:
+        controller.deleteItem()
+
+        then:
+        1 * itemService.deleteItem(ONE) >> ITEM_GROUP_ID
+        0 * _
+
+        and:
+        controller.modelAndView == null
+        response.redirectedUrl == "${ITEM_GROUP_URI}/${ITEM_GROUP_ID}"
     }
 }

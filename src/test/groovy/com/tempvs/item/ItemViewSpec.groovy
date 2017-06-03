@@ -187,7 +187,7 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/show', model: model
 
         then:
-        1 * item.getProperty(ID) >> ID
+        2 * item.getProperty(ID) >> ID
         2 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID

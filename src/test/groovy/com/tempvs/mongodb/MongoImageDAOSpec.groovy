@@ -92,4 +92,17 @@ class MongoImageDAOSpec extends Specification {
         and:
         result == image
     }
+
+    void "Test delete()"() {
+        when:
+        def result = mongoImageDAO.delete(COLLECTION, HEX_ID)
+
+        then:
+        1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
+        1 * gridFS.remove(_ as ObjectId)
+        0 * _
+
+        and:
+        result == Boolean.TRUE
+    }
 }

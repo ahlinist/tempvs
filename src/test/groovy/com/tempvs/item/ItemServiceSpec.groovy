@@ -3,6 +3,7 @@ package com.tempvs.item
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
@@ -16,7 +17,11 @@ class ItemServiceSpec extends Specification {
 
     private static final String ID = 'id'
     private static final String NAME = 'name'
+    private static final String IMAGE_ID = 'imageId'
     private static final String DESCRIPTION = 'description'
+    private static final Long LONG_ID = 1L
+    private static final String ITEM_IMAGE_COLLECTION = 'item'
+    private static final String SOURCE_IMAGE_COLLECTION = 'source'
 
     def springSecurityService = Mock(SpringSecurityService)
     def user = Mock(User)
@@ -27,6 +32,7 @@ class ItemServiceSpec extends Specification {
     def sourceImage = Mock(Image)
     def objectFactory = Mock(ObjectFactory)
     def objectDAO = Mock(ObjectDAO)
+    def imageService = Mock(ImageService)
 
     def setup() {
         GroovySpy(ItemStash, global: true)
@@ -34,6 +40,7 @@ class ItemServiceSpec extends Specification {
         service.springSecurityService = springSecurityService
         service.objectFactory = objectFactory
         service.objectDAO = objectDAO
+        service.imageService = imageService
     }
 
     def cleanup() {
@@ -137,5 +144,27 @@ class ItemServiceSpec extends Specification {
 
         and:
         result == item
+    }
+
+    void "Test deleteItem()"() {
+        when:
+        def result = service.deleteItem(ID)
+
+        then:
+        1 * objectDAO.get(Item, ID) >> item
+        1 * springSecurityService.currentUser >> user
+        1 * user.asType(User) >> user
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.itemStash >> itemStash
+        1 * itemStash.user >> user
+        1 * itemGroup.id >> LONG_ID
+        1 * item.sourceImageId >> null
+        1 * item.itemImageId >> IMAGE_ID
+        1 * imageService.deleteImage(ITEM_IMAGE_COLLECTION, IMAGE_ID) >> Boolean.TRUE
+        1 * imageService.deleteImage(SOURCE_IMAGE_COLLECTION, null) >> Boolean.TRUE
+        1 * item.delete()
+        0 * _
+
+        result == LONG_ID as String
     }
 }

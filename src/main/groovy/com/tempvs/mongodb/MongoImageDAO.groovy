@@ -44,4 +44,14 @@ class MongoImageDAO implements ImageDAO {
         GridFSInputFile gridFSInputFile = gridFS.createFile(inputStream, CLOSE_STREAM_ON_PERSIST)
         imageFactory.createInstance(gridFSInputFile)
     }
+
+    Boolean delete(String collection, String id) {
+        try {
+            GridFS gridFS = gridFSFactory.getGridFS(collection)
+            gridFS.remove(new ObjectId(id))
+            Boolean.TRUE
+        } catch (Throwable e) {
+            Boolean.FALSE
+        }
+    }
 }
