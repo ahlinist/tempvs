@@ -33,11 +33,11 @@ class UserController {
     }
 
     def edit() {
-        [user: springSecurityService.currentUser]
+        [user: userService.currentUser]
     }
 
     def updateEmail(String email) {
-        User user = springSecurityService.currentUser as User
+        User user = userService.currentUser
 
         if (email == user.email) {
             String message = messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale)

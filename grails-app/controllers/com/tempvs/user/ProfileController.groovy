@@ -5,7 +5,6 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -30,7 +29,6 @@ class ProfileController {
     private static final String AVATAR_COLLECTION = 'avatar'
     private static final String AVATAR_IMAGE = 'avatarImage'
 
-    SpringSecurityService springSecurityService
     AjaxResponseService ajaxResponseService
     ProfileHolder profileHolder
     ProfileService profileService
@@ -63,7 +61,7 @@ class ProfileController {
         if (id) {
             profileHolder.profile = profileService.getProfile(ClubProfile.class, id)
         } else {
-            User user = springSecurityService.currentUser as User
+            User user = userService.currentUser
 
             user ? (profileHolder.profile = user.userProfile) : (destination = [controller: 'auth', action: 'index'])
         }
@@ -78,7 +76,7 @@ class ProfileController {
     }
 
     def list() {
-        [user: springSecurityService.currentUser]
+        [user: userService.currentUser]
     }
 
     def create(ClubProfileCommand command) {
@@ -161,7 +159,7 @@ class ProfileController {
 
             profile ? [profile: profile, id: profile.identifier] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
         } else {
-            User user = springSecurityService.currentUser as User
+            User user = userService.currentUser
             UserProfile profile = user?.userProfile
 
             redirect(profile ? [action: 'userProfile', id: profile.identifier] : [controller: 'auth', action: 'index'])

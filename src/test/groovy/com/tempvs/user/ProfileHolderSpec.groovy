@@ -1,7 +1,6 @@
 package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
-import grails.plugin.springsecurity.SpringSecurityService
 import spock.lang.Specification
 
 /**
@@ -11,7 +10,7 @@ class ProfileHolderSpec extends Specification {
 
     Class clazz = Object.class
     Long id = 1L
-    def springSecurityService = Mock(SpringSecurityService)
+    def userService = Mock(UserService)
     def objectDAO = Mock(ObjectDAO)
     def user = Mock(User)
     def baseProfile = Mock(BaseProfile)
@@ -21,7 +20,7 @@ class ProfileHolderSpec extends Specification {
     ProfileHolder profileHolder = new ProfileHolder()
 
     def setup() {
-        profileHolder.springSecurityService = springSecurityService
+        profileHolder.userService = userService
         profileHolder.objectDAO = objectDAO
     }
 
@@ -34,7 +33,7 @@ class ProfileHolderSpec extends Specification {
         def result = profileHolder.getProfile()
 
         then:
-        1 * springSecurityService.currentUser >> null
+        1 * userService.currentUser >> null
         0 * _
 
         and:
@@ -50,8 +49,7 @@ class ProfileHolderSpec extends Specification {
         def result = profileHolder.getProfile()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         2 * user.getUserProfile() >> userProfile
         1 * userProfile.getId() >> id
         0 * _
@@ -69,8 +67,7 @@ class ProfileHolderSpec extends Specification {
         def result = profileHolder.getProfile()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * objectDAO.get(clazz, id) >> null
         0 * _
 
@@ -87,8 +84,7 @@ class ProfileHolderSpec extends Specification {
         def result = profileHolder.getProfile()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * objectDAO.get(clazz, id) >> baseProfile
         1 * user.getUserProfile() >> userProfile
         1 * baseProfile.equals(userProfile)  >> Boolean.TRUE
@@ -107,8 +103,7 @@ class ProfileHolderSpec extends Specification {
         def result = profileHolder.getProfile()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * objectDAO.get(clazz, id) >> baseProfile
         _ * user.getClubProfiles() >> [clubProfile]
         3 * user.getUserProfile() >> userProfile

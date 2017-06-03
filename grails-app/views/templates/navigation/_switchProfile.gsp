@@ -1,4 +1,4 @@
-<g:set var="user" value="${applicationContext.springSecurityService.currentUser}"/>
+<g:set var="user" value="${applicationContext.userService.currentUser}"/>
 
 <span class="dropdown">
   <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">

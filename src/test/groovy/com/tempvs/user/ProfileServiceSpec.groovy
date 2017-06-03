@@ -2,7 +2,6 @@ package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -22,7 +21,7 @@ class ProfileServiceSpec extends Specification {
     private static final String NICK_NAME = 'nickName'
     private static final String CLUB_NAME = 'clubName'
 
-    def springSecurityService = Mock(SpringSecurityService)
+    def userService = Mock(UserService)
     def clubProfile = Mock(ClubProfile)
     def userProfile = Mock(UserProfile)
     def user = Mock(User)
@@ -30,7 +29,7 @@ class ProfileServiceSpec extends Specification {
     def objectFactory = Mock(ObjectFactory)
 
     def setup() {
-        service.springSecurityService = springSecurityService
+        service.userService = userService
         service.objectDAO = objectDAO
         service.objectFactory = objectFactory
     }
@@ -102,8 +101,7 @@ class ProfileServiceSpec extends Specification {
         def result = service.createClubProfile(props)
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User) >> user
+        1 * userService.currentUser >> user
         1 * objectFactory.create(ClubProfile) >> clubProfile
         1 * clubProfile.setFirstName(FIRST_NAME)
         1 * clubProfile.setLastName(LAST_NAME)

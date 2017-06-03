@@ -15,14 +15,12 @@ import spock.lang.Specification
 @TestFor(UserController)
 class UserControllerSpec extends Specification {
     private static final String PROFILE_PAGE_URI = '/profile'
-    private static final String PROFILE_CONTROLLER = 'profile'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String NEW_PASSWORD = 'newPassword'
     private static final String PROPERTIES = 'properties'
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
-    private static final String PASSWORD = 'password'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
@@ -56,7 +54,7 @@ class UserControllerSpec extends Specification {
         Map model = controller.edit()
 
         then:
-        1 * springSecurityService.currentUser >> user
+        1 * userService.currentUser >> user
         0 * _
 
         and:
@@ -77,8 +75,7 @@ class UserControllerSpec extends Specification {
         controller.updateEmail()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * user.getEmail() >> EMAIL
         1 * messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale) >> EMAIL_UPDATE_DUPLICATE
         0 * _
@@ -93,8 +90,7 @@ class UserControllerSpec extends Specification {
         controller.updateEmail()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * user.getEmail() >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
         1 * messageSource.getMessage(EMAIL_USED, null, EMAIL_USED, LocaleContextHolder.locale) >> EMAIL_USED
@@ -110,8 +106,7 @@ class UserControllerSpec extends Specification {
         controller.updateEmail()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * user.getEmail() >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * user.getId() >> LONG_ID

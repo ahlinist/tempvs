@@ -19,7 +19,7 @@ beans = {
 
     profileHolder(ProfileHolder) { bean ->
         bean.scope = 'session'
-        springSecurityService = ref("springSecurityService")
+        userService = ref("userService")
         objectDAO = ref("objectDAO")
     }
 

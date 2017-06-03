@@ -114,4 +114,16 @@ class UserServiceSpec extends Specification {
         1 * user.save()
         0 * _
     }
+
+    void "Test getCurrentUser()"() {
+        when:
+        def result = service.getCurrentUser()
+
+        then:
+        1 * springSecurityService.currentUser >> user
+        1 * user.asType(User) >> user
+        0 * _
+
+        result == user
+    }
 }

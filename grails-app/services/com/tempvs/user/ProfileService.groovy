@@ -3,7 +3,6 @@ package com.tempvs.user
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import grails.compiler.GrailsCompileStatic
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
 
@@ -15,7 +14,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 @GrailsCompileStatic
 class ProfileService {
 
-    SpringSecurityService springSecurityService
+    UserService userService
     ObjectDAO<BaseProfile> objectDAO
     ObjectFactory objectFactory
 
@@ -30,7 +29,7 @@ class ProfileService {
     }
 
     ClubProfile createClubProfile(Map properties) {
-        User user = springSecurityService.currentUser as User
+        User user = userService.currentUser
         ClubProfile clubProfile = objectFactory.create(ClubProfile)
 	    clubProfile.firstName = properties.firstName
 	    clubProfile.lastName = properties.lastName

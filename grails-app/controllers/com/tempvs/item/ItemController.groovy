@@ -4,9 +4,9 @@ import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
+import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
 import org.springframework.web.multipart.MultipartFile
 
@@ -26,13 +26,13 @@ class ItemController {
     ImageService imageService
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
-    SpringSecurityService springSecurityService
+    UserService userService
 
     def stash(String id) {
         if (id) {
             [itemStash: itemService.getStash(id)]
         } else {
-            User user = springSecurityService.currentUser as User
+            User user = userService.currentUser
             [itemStash: user.itemStash]
         }
     }
@@ -66,7 +66,7 @@ class ItemController {
     def createItem(CreateItemCommand command) {
         if (params.isAjaxRequest) {
             if (command.validate()) {
-                User user = springSecurityService.currentUser as User
+                User user = userService.currentUser
                 String name = command.name
                 String description = command.description
                 MultipartFile multipartItemImage = command.itemImage

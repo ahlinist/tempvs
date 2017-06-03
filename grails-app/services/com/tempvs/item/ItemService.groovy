@@ -5,8 +5,8 @@ import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
+import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
 
 /**
@@ -21,12 +21,12 @@ class ItemService {
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
 
     ImageService imageService
-    SpringSecurityService springSecurityService
+    UserService userService
     ObjectFactory objectFactory
     ObjectDAO objectDAO
 
     ItemGroup createGroup(String name, String description) {
-        User user = springSecurityService.currentUser as User
+        User user = userService.currentUser
         ItemGroup itemGroup = objectFactory.create(ItemGroup.class)
         itemGroup.name = name
         itemGroup.description = description
@@ -68,14 +68,15 @@ class ItemService {
 
         if (item) {
             ItemGroup itemGroup = item.itemGroup
-            User user = springSecurityService.currentUser as User
 
-            if (itemGroup.itemStash.user == user) {
+            if (itemGroup.itemStash.user == userService.currentUser) {
                 String itemGroupId = itemGroup.id as String
                 imageService.deleteImage(ITEM_IMAGE_COLLECTION, item.itemImageId)
                 imageService.deleteImage(SOURCE_IMAGE_COLLECTION, item.sourceImageId)
                 item.delete()
                 itemGroupId
+            } else {
+                itemGroup.id as String
             }
         }
     }

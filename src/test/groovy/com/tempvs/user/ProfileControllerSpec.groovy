@@ -4,14 +4,12 @@ import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import grails.converters.JSON
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -43,7 +41,6 @@ class ProfileControllerSpec extends Specification {
     def profileHolder = Mock(ProfileHolder)
     def verifyService = Mock(VerifyService)
     def profileService = Mock(ProfileService)
-    def springSecurityService = Mock(SpringSecurityService)
     def ajaxResponseService = Mock(AjaxResponseService)
     def json = Mock(JSON)
     def user = Mock(User)
@@ -58,7 +55,6 @@ class ProfileControllerSpec extends Specification {
     def setup() {
         controller.profileService = profileService
         controller.profileHolder = profileHolder
-        controller.springSecurityService = springSecurityService
         controller.ajaxResponseService = ajaxResponseService
         controller.userService = userService
         controller.verifyService = verifyService
@@ -87,8 +83,7 @@ class ProfileControllerSpec extends Specification {
         controller.userProfile()
 
         then: 'For existent profile'
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * user.getUserProfile()  >> userProfile
         1 * userProfile.getIdentifier() >> IDENTIFIER
         0 * _
@@ -111,12 +106,12 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test userProfile() for non-existent profile"() {
-        when: 'No id given'
+        when:
         controller.userProfile()
 
-        then: 'For non logged in user'
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> null
+        then:
+        1 * userService.currentUser
+        0 * _
 
         and:
         response.redirectedUrl == AUTH_URL
@@ -138,8 +133,8 @@ class ProfileControllerSpec extends Specification {
         controller.switchProfile()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> null
+        1 * userService.currentUser
+        0 * _
 
         and:
         response.redirectedUrl == AUTH_URL
@@ -150,8 +145,7 @@ class ProfileControllerSpec extends Specification {
         controller.switchProfile()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * user.getUserProfile() >> userProfile
         1 * profileHolder.setProfile(userProfile)
         0 * _
@@ -192,7 +186,7 @@ class ProfileControllerSpec extends Specification {
         def result = controller.list()
 
         then:
-        1 * springSecurityService.currentUser >> user
+        1 * userService.currentUser >> user
         0 * _
 
         and:

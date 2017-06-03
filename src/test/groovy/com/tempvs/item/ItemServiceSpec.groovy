@@ -5,10 +5,9 @@ import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
-import grails.plugin.springsecurity.SpringSecurityService
+import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -23,7 +22,7 @@ class ItemServiceSpec extends Specification {
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
 
-    def springSecurityService = Mock(SpringSecurityService)
+    def userService = Mock(UserService)
     def user = Mock(User)
     def itemStash = Mock(ItemStash)
     def itemGroup = Mock(ItemGroup)
@@ -35,9 +34,7 @@ class ItemServiceSpec extends Specification {
     def imageService = Mock(ImageService)
 
     def setup() {
-        GroovySpy(ItemStash, global: true)
-
-        service.springSecurityService = springSecurityService
+        service.userService = userService
         service.objectFactory = objectFactory
         service.objectDAO = objectDAO
         service.imageService = imageService
@@ -51,8 +48,7 @@ class ItemServiceSpec extends Specification {
         def result = service.createGroup(NAME, DESCRIPTION)
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * objectFactory.create(ItemGroup.class) >> itemGroup
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
@@ -70,8 +66,7 @@ class ItemServiceSpec extends Specification {
         def result = service.createGroup(NAME, DESCRIPTION)
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * objectFactory.create(ItemGroup.class) >> itemGroup
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
@@ -152,8 +147,7 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * objectDAO.get(Item, ID) >> item
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User) >> user
+        1 * userService.currentUser >> user
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.itemStash >> itemStash
         1 * itemStash.user >> user

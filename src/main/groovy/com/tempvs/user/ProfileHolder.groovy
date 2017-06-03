@@ -2,7 +2,6 @@ package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
 import grails.compiler.GrailsCompileStatic
-import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * Instance of this class is HTTP session scoped. Holds info
@@ -12,18 +11,16 @@ import grails.plugin.springsecurity.SpringSecurityService
 @GrailsCompileStatic
 class ProfileHolder {
 
-    SpringSecurityService springSecurityService
+    UserService userService
     ObjectDAO objectDAO
 
     Class clazz
     Long id
 
     BaseProfile getProfile() {
-        Object currentUser = springSecurityService.currentUser
+        User user = userService.currentUser
 
-        if (currentUser) {
-            User user = currentUser as User
-
+        if (user) {
             if (!clazz || !id) {
                 this.profile = user.userProfile
                 user.userProfile

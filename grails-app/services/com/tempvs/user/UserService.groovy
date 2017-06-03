@@ -18,6 +18,10 @@ class UserService {
     ObjectDAO objectDAO
     ObjectFactory objectFactory
 
+    User getCurrentUser() {
+        springSecurityService.currentUser as User
+    }
+
     User getUserByEmail(String email) {
         User.findByEmail(email)
     }
@@ -44,14 +48,14 @@ class UserService {
     }
 
     User updatePassword(String newPassword) {
-        User user = springSecurityService.currentUser as User
+        User user = currentUser
         user.password = springSecurityService.encodePassword(newPassword)
         user.save()
         user
     }
 
     void updateLastActive(){
-        User user = springSecurityService.currentUser as User
+        User user = currentUser
 
         if (user) {
             user.lastActive = new Date()
@@ -60,7 +64,7 @@ class UserService {
     }
 
     Boolean isEmailUnique(String email) {
-        User currentUser = springSecurityService.currentUser as User
+        User currentUser = currentUser
 
         User user = User.findByEmail(email)
         UserProfile userProfile = UserProfile.findByProfileEmail(email)

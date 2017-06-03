@@ -1,6 +1,5 @@
 package com.tempvs.user
 
-import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
@@ -11,12 +10,12 @@ class UserPasswordCommandSpec extends Specification {
     private static final String NEW_PASSWORD = 'newPassword'
     private static final String PASSWORD = 'password'
 
-    def springSecurityService = Mock(SpringSecurityService)
+    def userService = Mock(UserService)
     def passwordEncoder = Mock(PasswordEncoder)
     def user = Mock(User)
 
     def setup() {
-        springSecurityService.currentUser >> Mock(User)
+        userService.currentUser >> Mock(User)
     }
 
     def cleanup() {
@@ -35,15 +34,14 @@ class UserPasswordCommandSpec extends Specification {
                 newPassword: NEW_PASSWORD,
                 repeatNewPassword: NEW_PASSWORD,
                 passwordEncoder: passwordEncoder,
-                springSecurityService: springSecurityService,
+                userService: userService,
         ]
 
         when:
         Boolean result = new UserPasswordCommand(props).validate()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * user.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
         0 * _
@@ -59,15 +57,14 @@ class UserPasswordCommandSpec extends Specification {
                 newPassword: NEW_PASSWORD,
                 repeatNewPassword: CURRENT_PASSWORD,
                 passwordEncoder: passwordEncoder,
-                springSecurityService: springSecurityService,
+                userService: userService,
         ]
 
         when:
         Boolean result = new UserPasswordCommand(props).validate()
 
         then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User.class) >> user
+        1 * userService.currentUser >> user
         1 * user.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
         0 * _
