@@ -1,18 +1,30 @@
-function sendAjaxRequest(form) {
-    var spinner = $(form).find('.ajaxSpinner');
-    var submitButton = $(form).find('.submit-button')
+function submitAjaxForm(form) {
+    var url = form.action;
+    var data = new FormData(form);
+    processAjaxRequest(form, url, data);
+}
+
+function sendAjaxRequest(element, url) {
+    var data = new FormData();
+    processAjaxRequest(element, url, data);
+}
+
+function processAjaxRequest(element, url, data) {
+    var spinner = $(element).find('.ajaxSpinner');
+    var submitButton = $(element).find('.submit-button');
+    data.append("isAjaxRequest", true);
 
     $.ajax({
-        url: form.action,
+        url: url,
         type: 'post',
-        data: new FormData(form),
+        data: data,
         dataType: 'json',
         processData: false,
         contentType: false,
         beforeSend: function() {
             submitButton.attr("disabled", true);
             spinner.fadeIn();
-            $(form).find('.alert').remove();
+            $(element).find('.alert').remove();
         },
         complete: function() {
             submitButton.removeAttr("disabled");
@@ -23,19 +35,19 @@ function sendAjaxRequest(form) {
                 window.location.href = response.redirect;
             } else {
                 $.each(response.messages, function(index, message) {
-                    renderResponseMessage(form, response.success ? 'success' :'danger', message);
+                    renderResponseMessage(element, response.success ? 'success' :'danger', message);
                 });
             }
         },
         error: function() {
-            renderResponseMessage(form, 'danger', 'Something went wrong :(');
+            renderResponseMessage(element, 'danger', 'Something went wrong :(');
         }
     });
 };
 
-function renderResponseMessage(form, alertType, message) {
+function renderResponseMessage(element, alertType, message) {
     var alertBox = createAlertBox(alertType, message);
-    form.append(alertBox);
+    element.append(alertBox);
     $(alertBox).hide().fadeIn();
 
     $("a.close").click(function (e) {

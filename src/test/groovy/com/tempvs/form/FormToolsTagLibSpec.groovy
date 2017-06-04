@@ -9,6 +9,9 @@ import spock.lang.Specification
 @TestFor(FormToolsTagLib)
 class FormToolsTagLibSpec extends Specification {
 
+    private static final String URL = 'testURL'
+    private static final String MESSAGE = 'message'
+
     def setup() {
     }
 
@@ -17,17 +20,15 @@ class FormToolsTagLibSpec extends Specification {
 
     void "Test tempvs:ajaxSubmitButton"() {
         given:
-        String testMessage = 'testMsg'
-        String ajaxRequestMark = '<input type="hidden" name="isAjaxRequest" value="true" />'
-        String submitButton = "<button class=\"btn btn-primary submit-button\">${testMessage}</button>"
+        String submitButton = "<button class=\"btn btn-primary submit-button\">"
         String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
-        def template = applyTemplate("<tempvs:ajaxSubmitButton value='${testMessage}' />")
+        def template = applyTemplate("<tempvs:ajaxSubmitButton value='${MESSAGE}' />")
 
         then:
-        template.contains ajaxRequestMark
         template.contains submitButton
+        template.contains MESSAGE
         template.contains spinner
     }
 
@@ -43,12 +44,25 @@ class FormToolsTagLibSpec extends Specification {
         given:
         String controller = 'testController'
         String action = 'testAction'
-        String ajaxForm = '<form action="/testController/testAction" method="post" onsubmit="sendAjaxRequest(this); return false;" class="ajax-form" >'
+        String ajaxForm = '<form action="/testController/testAction" method="post" onsubmit="submitAjaxForm(this); return false;" >'
 
         when:
         def template = applyTemplate("<tempvs:ajaxForm controller=\"${controller}\" action=\"${action}\"/>")
 
         then:
         template.contains ajaxForm
+    }
+
+    void "Test tempvs:ajaxLink"() {
+        given:
+        String event = "<span onclick=\"sendAjaxRequest(this, ${URL});\">"
+        String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
+
+        when:
+        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" url=\"${URL}\"/>")
+
+        then:
+        template.contains spinner
+        template.contains event
     }
 }

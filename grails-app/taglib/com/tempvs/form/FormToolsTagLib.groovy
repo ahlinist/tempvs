@@ -4,6 +4,10 @@ class FormToolsTagLib {
     static defaultEncodeAs = [taglib:'raw']
     static namespace = 'tempvs'
 
+    def ajaxLink = { attrs, body ->
+        out << render(template: '/templates/form/ajax/ajaxLink', model: attrs)
+    }
+
     def ajaxForm = { attrs, body ->
         out << render(template: '/templates/form/ajax/ajaxForm', model: attrs + [body: body()])
     }
