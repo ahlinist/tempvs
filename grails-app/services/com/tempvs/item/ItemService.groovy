@@ -63,21 +63,15 @@ class ItemService {
         item
     }
 
-    String deleteItem(String id) {
-        Item item = getItem id
+    Boolean deleteItem(Item item) {
+        imageService.deleteImage(ITEM_IMAGE_COLLECTION, item.itemImageId)
+        imageService.deleteImage(SOURCE_IMAGE_COLLECTION, item.sourceImageId)
 
-        if (item) {
-            ItemGroup itemGroup = item.itemGroup
-
-            if (itemGroup.itemStash.user == userService.currentUser) {
-                String itemGroupId = itemGroup.id as String
-                imageService.deleteImage(ITEM_IMAGE_COLLECTION, item.itemImageId)
-                imageService.deleteImage(SOURCE_IMAGE_COLLECTION, item.sourceImageId)
-                item.delete()
-                itemGroupId
-            } else {
-                itemGroup.id as String
-            }
+        try {
+            item.delete(failOnError: true)
+            Boolean.TRUE
+        } catch (Throwable e) {
+            Boolean.FALSE
         }
     }
 }

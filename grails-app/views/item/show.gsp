@@ -20,9 +20,7 @@
           </div>
         </div>
         <div class="row">
-          <g:link class="btn btn-default" action="deleteItem" id="${item.id}">
-            <g:message code="item.delete.button"/>
-          </g:link>
+          <tempvs:ajaxLink message="item.delete.button" url="'/item/deleteItem/${item.id}'"/>
         </div>
       </g:if>
       <g:else>

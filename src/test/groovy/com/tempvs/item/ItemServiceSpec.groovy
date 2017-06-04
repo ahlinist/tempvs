@@ -8,6 +8,7 @@ import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -143,22 +144,16 @@ class ItemServiceSpec extends Specification {
 
     void "Test deleteItem()"() {
         when:
-        def result = service.deleteItem(ID)
+        def result = service.deleteItem(item)
 
         then:
-        1 * objectDAO.get(Item, ID) >> item
-        1 * userService.currentUser >> user
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.itemStash >> itemStash
-        1 * itemStash.user >> user
-        1 * itemGroup.id >> LONG_ID
         1 * item.sourceImageId >> null
         1 * item.itemImageId >> IMAGE_ID
         1 * imageService.deleteImage(ITEM_IMAGE_COLLECTION, IMAGE_ID) >> Boolean.TRUE
         1 * imageService.deleteImage(SOURCE_IMAGE_COLLECTION, null) >> Boolean.TRUE
-        1 * item.delete()
+        1 * item.delete([failOnError: true])
         0 * _
 
-        result == LONG_ID as String
+        result == Boolean.TRUE
     }
 }

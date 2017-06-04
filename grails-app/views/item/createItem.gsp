@@ -7,7 +7,6 @@
     <body>
       <div class="row">
         <div class="col-sm-10">
-itemGrp: ${flash.itemGroup}
           <tempvs:ajaxForm action="createItem">
             <tempvs:formField type="text" name="name" label="item.item.name.label" />
             <tempvs:formField type="text" name="description" label="item.item.description.label" />

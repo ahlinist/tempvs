@@ -24,7 +24,6 @@ class ItemControllerSpec extends Specification {
     private static final String ITEM_IMAGE = 'itemImage'
     private static final String SOURCE_IMAGE = 'sourceImage'
     private static final String ITEM_GROUP_URI = '/item/group'
-    private static final String ITEM_GROUP_ID = 'itemGroupId'
     private static final String ITEM_URI = '/item/show'
     private static final String GROUP_ACTION = 'group'
     private static final String SHOW_ACTION = 'show'
@@ -272,17 +271,25 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem()"() {
         given:
+        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:
         controller.deleteItem()
 
         then:
-        1 * itemService.deleteItem(ONE) >> ITEM_GROUP_ID
+        1 * itemService.getItem(ONE) >> item
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.itemStash >> itemStash
+        1 * itemGroup.id >> LONG_ID
+        1 * itemStash.user >> user
+        1 * userService.currentUser >> user
+        1 * itemService.deleteItem(item) >> Boolean.TRUE
         0 * _
 
         and:
         controller.modelAndView == null
-        response.redirectedUrl == "${ITEM_GROUP_URI}/${ITEM_GROUP_ID}"
+        response.redirectedUrl == null
+        response.json.redirect == "${ITEM_GROUP_URI}/${LONG_ID}"
     }
 }

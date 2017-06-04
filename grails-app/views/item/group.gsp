@@ -14,12 +14,14 @@
           <hr/>
           <g:each var="item" in="${itemGroup.items}">
              <div>
-                 <g:link class="btn btn-default" action="show" id="${item.id}">${item.name}</g:link>
+               <g:link class="btn btn-default" action="show" id="${item.id}">${item.name}</g:link>
              </div>
           </g:each>
-          <g:link class="btn btn-default" controller="item" action="createItem">
-            <g:message code="item.createItem.link"/>
-          </g:link>
+          <div class="row">
+            <g:link class="btn btn-default" controller="item" action="createItem">
+              <g:message code="item.createItem.link"/>
+            </g:link>
+          </div>
         </div>
       </g:if>
       <g:else>

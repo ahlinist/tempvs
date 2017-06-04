@@ -19,6 +19,7 @@ class ItemController {
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
     private static final String ITEM_GROUP = 'itemGroup'
+    private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
 
     static defaultAction = 'stash'
 
@@ -95,7 +96,27 @@ class ItemController {
     }
 
     def deleteItem(String id) {
-        redirect action: 'group', id: itemService.deleteItem(id)
+        if (params.isAjaxRequest) {
+            Item item = itemService.getItem id
+
+            if (item) {
+                ItemGroup itemGroup = item.itemGroup
+
+                if (itemGroup.itemStash.user == userService.currentUser) {
+                    if (itemService.deleteItem(item)) {
+                        render([redirect: grailsLinkGenerator.link(action: 'group', id: itemGroup.id)] as JSON)
+                    } else {
+                        render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+                    }
+                } else {
+                    render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+                }
+            } else {
+                render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+            }
+        } else {
+            redirect action: 'stash'
+        }
     }
 
     private Image createImage(MultipartFile file, String collection, Map metaData) {
