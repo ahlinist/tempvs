@@ -95,11 +95,11 @@ class MongoImageDAOSpec extends Specification {
 
     void "Test delete()"() {
         when:
-        def result = mongoImageDAO.delete(COLLECTION, HEX_ID)
+        def result = mongoImageDAO.delete(COLLECTION, [HEX_ID, HEX_ID, HEX_ID])
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        1 * gridFS.remove(_ as ObjectId)
+        3 * gridFS.remove(_ as ObjectId)
         0 * _
 
         and:

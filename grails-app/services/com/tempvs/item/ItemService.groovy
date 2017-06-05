@@ -64,8 +64,8 @@ class ItemService {
     }
 
     Boolean deleteItem(Item item) {
-        imageService.deleteImage(ITEM_IMAGE_COLLECTION, item.itemImageId)
-        imageService.deleteImage(SOURCE_IMAGE_COLLECTION, item.sourceImageId)
+        imageService.deleteImages(ITEM_IMAGE_COLLECTION, [item.itemImageId])
+        imageService.deleteImages(SOURCE_IMAGE_COLLECTION, [item.sourceImageId])
 
         try {
             item.delete(failOnError: true)

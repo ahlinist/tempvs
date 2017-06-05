@@ -21,9 +21,9 @@ class ImageService {
         imageDAO.get(collection, id)
     }
 
-    Boolean deleteImage(String collection, String id) {
-        if (id) {
-            imageDAO.delete(collection, id)
+    Boolean deleteImages(String collection, Collection<String> objectIds) {
+        if (objectIds?.findAll()) {
+            imageDAO.delete(collection, objectIds)
         } else {
             Boolean.TRUE
         }

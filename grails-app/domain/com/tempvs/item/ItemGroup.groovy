@@ -22,7 +22,6 @@ class ItemGroup extends BasePersistent {
 
     static mapping = {
         itemStash fetch: 'join'
-        items lazy: false
         items batchSize: 20
     }
 }

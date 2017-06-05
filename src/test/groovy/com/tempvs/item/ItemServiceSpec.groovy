@@ -149,8 +149,8 @@ class ItemServiceSpec extends Specification {
         then:
         1 * item.sourceImageId >> null
         1 * item.itemImageId >> IMAGE_ID
-        1 * imageService.deleteImage(ITEM_IMAGE_COLLECTION, IMAGE_ID) >> Boolean.TRUE
-        1 * imageService.deleteImage(SOURCE_IMAGE_COLLECTION, null) >> Boolean.TRUE
+        1 * imageService.deleteImages(ITEM_IMAGE_COLLECTION, [IMAGE_ID]) >> Boolean.TRUE
+        1 * imageService.deleteImages(SOURCE_IMAGE_COLLECTION, [null]) >> Boolean.TRUE
         1 * item.delete([failOnError: true])
         0 * _
 
