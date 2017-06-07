@@ -9,8 +9,11 @@ import spock.lang.Specification
 @TestFor(FormToolsTagLib)
 class FormToolsTagLibSpec extends Specification {
 
-    private static final String URL = 'testURL'
+    private static final String URL = "'/item/deleteItem/id'"
     private static final String MESSAGE = 'message'
+    private static final String ITEM = 'item'
+    private static final String DELETE_ITEM = 'deleteItem'
+    private static final String ID = 'id'
 
     def setup() {
     }
@@ -59,7 +62,7 @@ class FormToolsTagLibSpec extends Specification {
         String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
-        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" url=\"${URL}\"/>")
+        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\"/>")
 
         then:
         template.contains spinner

@@ -21,6 +21,7 @@
             <g:link class="btn btn-default" controller="item" action="createItem">
               <g:message code="item.createItem.link"/>
             </g:link>
+            <tempvs:ajaxLink message="item.group.delete.button" controller="item" action="deleteGroup" id="${itemGroup.id}"/>
           </div>
         </div>
       </g:if>

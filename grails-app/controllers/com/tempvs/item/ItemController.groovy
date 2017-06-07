@@ -20,6 +20,7 @@ class ItemController {
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
     private static final String ITEM_GROUP = 'itemGroup'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
+    private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
     static defaultAction = 'stash'
 
@@ -113,6 +114,30 @@ class ItemController {
                 }
             } else {
                 render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+            }
+        } else {
+            redirect action: 'stash'
+        }
+    }
+
+    def deleteGroup(String id) {
+        if (params.isAjaxRequest) {
+            ItemGroup itemGroup = itemService.getGroup id
+
+            if (itemGroup) {
+                ItemStash itemStash = itemGroup.itemStash
+
+                if (itemStash.user == userService.currentUser) {
+                    if (itemService.deleteGroup(itemGroup)) {
+                        render([redirect: grailsLinkGenerator.link(action: 'stash', id: itemStash.id)] as JSON)
+                    } else {
+                        render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
+                    }
+                } else {
+                    render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
+                }
+            } else {
+                render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
             }
         } else {
             redirect action: 'stash'

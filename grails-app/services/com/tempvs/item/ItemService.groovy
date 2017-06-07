@@ -74,4 +74,17 @@ class ItemService {
             Boolean.FALSE
         }
     }
+
+    Boolean deleteGroup(ItemGroup itemGroup) {
+        Set<Item> items = itemGroup.items
+        imageService.deleteImages(ITEM_IMAGE_COLLECTION, items*.itemImageId)
+        imageService.deleteImages(SOURCE_IMAGE_COLLECTION, items*.sourceImageId)
+
+        try {
+            itemGroup.delete(failOnError: true)
+            Boolean.TRUE
+        } catch (Throwable e) {
+            Boolean.FALSE
+        }
+    }
 }

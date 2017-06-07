@@ -19,15 +19,17 @@ class ItemServiceSpec extends Specification {
     private static final String NAME = 'name'
     private static final String IMAGE_ID = 'imageId'
     private static final String DESCRIPTION = 'description'
-    private static final Long LONG_ID = 1L
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
+    private static final String ITEM_IMAGE_ID = 'itemImageId'
+    private static final String SOURCE_IMAGE_ID = 'sourceImageId'
 
     def userService = Mock(UserService)
     def user = Mock(User)
     def itemStash = Mock(ItemStash)
     def itemGroup = Mock(ItemGroup)
     def item = Mock(Item)
+    def item2 = Mock(Item)
     def itemImage = Mock(Image)
     def sourceImage = Mock(Image)
     def objectFactory = Mock(ObjectFactory)
@@ -148,10 +150,28 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * item.sourceImageId >> null
-        1 * item.itemImageId >> IMAGE_ID
-        1 * imageService.deleteImages(ITEM_IMAGE_COLLECTION, [IMAGE_ID]) >> Boolean.TRUE
+        1 * item.itemImageId >> ITEM_IMAGE_ID
+        1 * imageService.deleteImages(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID]) >> Boolean.TRUE
         1 * imageService.deleteImages(SOURCE_IMAGE_COLLECTION, [null]) >> Boolean.TRUE
         1 * item.delete([failOnError: true])
+        0 * _
+
+        result == Boolean.TRUE
+    }
+
+    void "Test deleteGroup()"() {
+        when:
+        def result = service.deleteGroup(itemGroup)
+
+        then:
+        1 * itemGroup.items >> [item, item2]
+        1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
+        1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID
+        1 * item2.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
+        1 * item2.getProperty(SOURCE_IMAGE_ID) >> null
+        1 * imageService.deleteImages(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID, ITEM_IMAGE_ID]) >> Boolean.TRUE
+        1 * imageService.deleteImages(SOURCE_IMAGE_COLLECTION, [SOURCE_IMAGE_ID, null]) >> Boolean.TRUE
+        1 * itemGroup.delete([failOnError: true])
         0 * _
 
         result == Boolean.TRUE

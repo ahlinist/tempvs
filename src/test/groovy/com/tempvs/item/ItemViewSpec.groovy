@@ -135,7 +135,7 @@ class ItemViewSpec extends Specification {
         1 * itemStash.getProperty(ID) >> ID
         2 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * itemGroup.getProperty(ID) >> ID
+        2 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(ITEMS) >> items
         1 * itemGroup.getProperty(ITEM_STASH) >> itemStash
         1 * item.getProperty(ID) >> ID
@@ -179,7 +179,7 @@ class ItemViewSpec extends Specification {
     void "Test /item/show with id"() {
         given:
         Map model = [item: item]
-        String title = "<title>Tempvs - ${ITEM_TITLE}</title>"
+        String title = "<title>Tempvs - ${NAME}</title>"
         String itemImage = "<tempvs:image objectId=\"${ITEM_IMAGE_ID}\" collection=\"item\"/>"
         String sourceImage = "<tempvs:image objectId=\"${SOURCE_IMAGE_ID}\" collection=\"source\"/>"
 
@@ -188,7 +188,7 @@ class ItemViewSpec extends Specification {
 
         then:
         2 * item.getProperty(ID) >> ID
-        2 * item.getProperty(NAME) >> NAME
+        3 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
         1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID

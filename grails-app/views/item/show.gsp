@@ -2,7 +2,7 @@
 <html>
     <head>
       <meta name="layout" content="main"/>
-      <title>Tempvs - <g:message code="item.show.title"/></title>
+      <title>Tempvs - ${item?.name ?: g.message(code: 'item.show.title')}</title>
     </head>
     <body>
       <g:if test="${item}">
@@ -20,7 +20,7 @@
           </div>
         </div>
         <div class="row">
-          <tempvs:ajaxLink message="item.delete.button" url="'/item/deleteItem/${item.id}'"/>
+          <tempvs:ajaxLink message="item.delete.button" controller="item" action="deleteItem" id="${item.id}"/>
         </div>
       </g:if>
       <g:else>
