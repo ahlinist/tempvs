@@ -70,19 +70,17 @@ class ItemViewSpec extends Specification {
         String title = "<title>Tempvs - ${ITEM_STASH_TITLE}</title>"
         String createButton = '<a href="/item/createGroup" class="btn btn-default">'
         String itemGroupLink = '<a href="/item/group/1" class="list-group-item">'
-        Map model = [itemStash: itemStash]
+        Map model = [itemStash: itemStash, userProfile: userProfile]
 
         when:
         String result = render view: '/item/stash', model: model
 
         then:
         1 * itemStash.getProperty(ITEM_GROUPS) >> [itemGroup]
-        1 * itemStash.getProperty(USER) >> user
         1 * itemStash.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * itemGroup.getProperty(ID) >> ONE
-        1 * user.getProperty(USER_PROFILE) >> userProfile
         1 * userProfile.toString()
         0 * _
 
@@ -125,7 +123,7 @@ class ItemViewSpec extends Specification {
         String title = "<title>Tempvs - ${ITEM_GROUP_TITLE}</title>"
         String createItemButton = '<a href="/item/createItem" class="btn btn-default">'
         List items = [item]
-        Map model = [itemGroup: itemGroup]
+        Map model = [itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
 
         when:
         String result = render view: '/item/group', model: model
@@ -178,7 +176,7 @@ class ItemViewSpec extends Specification {
 
     void "Test /item/show with id"() {
         given:
-        Map model = [item: item]
+        Map model = [item: item, itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
         String title = "<title>Tempvs - ${NAME}</title>"
         String itemImage = "<tempvs:image objectId=\"${ITEM_IMAGE_ID}\" collection=\"item\"/>"
         String sourceImage = "<tempvs:image objectId=\"${SOURCE_IMAGE_ID}\" collection=\"source\"/>"

@@ -4,6 +4,7 @@ import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
+import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
@@ -32,10 +33,11 @@ class ItemController {
 
     def stash(String id) {
         if (id) {
-            [itemStash: itemService.getStash(id)]
+            ItemStash itemStash = itemService.getStash(id)
+            [itemStash: itemStash, userProfile: itemStash?.user?.userProfile]
         } else {
             User user = userService.currentUser
-            [itemStash: user.itemStash]
+            [itemStash: user.itemStash, userProfile: user.userProfile]
         }
     }
 
@@ -60,8 +62,10 @@ class ItemController {
     def group(String id) {
         if (id) {
             ItemGroup itemGroup = itemService.getGroup(id)
+            ItemStash itemStash = itemGroup?.itemStash
+            UserProfile userProfile = itemStash?.user?.userProfile
             session.setAttribute(ITEM_GROUP, itemGroup)
-            [itemGroup: itemGroup]
+            [itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
         }
     }
 
@@ -92,7 +96,11 @@ class ItemController {
 
     def show(String id) {
         if (id) {
-            [item: itemService.getItem(id)]
+            Item item = itemService.getItem(id)
+            ItemGroup itemGroup = item.itemGroup
+            ItemStash itemStash = itemGroup.itemStash
+            UserProfile userProfile = itemStash.user.userProfile
+            [item: item, itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
         }
     }
 
@@ -160,3 +168,4 @@ class ItemController {
         result
     }
 }
+

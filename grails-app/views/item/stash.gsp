@@ -6,9 +6,9 @@
     </head>
     <body>
       <g:if test="${itemStash}">
-        <g:render template="/item/templates/navBar" model="${itemStash}"/>
+        <g:render template="/item/templates/navBar" model="${[itemStash, userProfile]}"/>
         <div class="col-sm-3">
-          <g:render template="/item/templates/itemGroups" model="${[itemStash: itemStash]}"/>
+          <g:render template="/item/templates/itemGroups" model="${[itemStash]}"/>
           <div>
             <g:link class="btn btn-default" controller="item" action="createGroup">
               <g:message code="item.createGroup.link"/>

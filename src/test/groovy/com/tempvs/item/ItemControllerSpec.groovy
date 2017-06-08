@@ -4,6 +4,7 @@ import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
+import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
 import grails.converters.JSON
 import grails.test.mixin.TestFor
@@ -38,6 +39,7 @@ class ItemControllerSpec extends Specification {
     def itemImage = Mock(Image)
     def sourceImage = Mock(Image)
     def userService = Mock(UserService)
+    def userProfile = Mock(UserProfile)
     def itemService = Mock(ItemService)
     def imageService = Mock(ImageService)
     def ajaxResponseService = Mock(AjaxResponseService)
@@ -61,11 +63,12 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getItemStash() >> itemStash
+        1 * user.itemStash >> itemStash
+        1 * user.userProfile >> userProfile
         0 * _
 
         and:
-        result == [itemStash: itemStash]
+        result == [itemStash: itemStash, userProfile: userProfile]
     }
 
     void "Test stash() with id for existing stash"() {
@@ -75,10 +78,12 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getStash(ONE) >> itemStash
+        1 * itemStash.user >> user
+        1 * user.userProfile >> userProfile
         0 * _
 
         and:
-        result == [itemStash: itemStash]
+        result == [itemStash: itemStash, userProfile: userProfile]
     }
 
     void "Test stash() with id for non-existing stash"() {
@@ -91,7 +96,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [itemStash: null]
+        result == [itemStash: null, userProfile: null]
     }
 
     void "Test createGroup() rendering"() {
@@ -191,10 +196,13 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemGroup.itemStash >> itemStash
+        1 * itemStash.user >> user
+        1 * user.userProfile >> userProfile
         0 * _
 
         and:
-        result == [itemGroup: itemGroup]
+        result == [itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
     }
 
     void "Test createItem() rendering"() {
@@ -264,10 +272,14 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getItem(ONE) >> item
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.itemStash >> itemStash
+        1 * itemStash.user >> user
+        1 * user.userProfile >> userProfile
         0 * _
 
         and:
-        result == [item: item]
+        result == [item: item, itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
     }
 
     void "Test deleteItem()"() {

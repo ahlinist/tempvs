@@ -1,3 +1,6 @@
+<g:set var="itemStash" value="${itemGroup?.itemStash}"/>
+<g:set var="userProfile" value="${itemStash?.user?.userProfile}"/>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -6,7 +9,7 @@
     </head>
     <body>
       <g:if test="${itemGroup}">
-        <g:render template="/item/templates/navBar" model="${itemGroup}"/>
+        <g:render template="/item/templates/navBar" model="${[itemGroup, itemStash, userProfile]}"/>
         <div class="col-sm-3">
           <b>${itemGroup.name}</b>
           <br/>
