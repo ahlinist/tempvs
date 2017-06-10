@@ -20,12 +20,14 @@
                <g:link class="btn btn-default" action="show" id="${item.id}">${item.name}</g:link>
              </div>
           </g:each>
-          <div class="row">
-            <g:link class="btn btn-default" controller="item" action="createItem">
-              <g:message code="item.createItem.link"/>
-            </g:link>
-            <tempvs:ajaxLink message="item.group.delete.button" controller="item" action="deleteGroup" id="${itemGroup.id}"/>
-          </div>
+          <g:if test="${ownGroup}">
+            <div class="row">
+              <g:link class="btn btn-default" controller="item" action="createItem">
+                <g:message code="item.createItem.link"/>
+              </g:link>
+              <tempvs:ajaxLink message="item.group.delete.button" controller="item" action="deleteGroup" id="${itemGroup.id}"/>
+            </div>
+          </g:if>
         </div>
       </g:if>
       <g:else>

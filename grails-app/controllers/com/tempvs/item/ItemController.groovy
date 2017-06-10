@@ -4,13 +4,11 @@ import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
-import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import org.springframework.web.multipart.MultipartFile
-
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
@@ -62,10 +60,19 @@ class ItemController {
     def group(String id) {
         if (id) {
             ItemGroup itemGroup = itemService.getGroup(id)
-            ItemStash itemStash = itemGroup?.itemStash
-            UserProfile userProfile = itemStash?.user?.userProfile
-            session.setAttribute(ITEM_GROUP, itemGroup)
-            [itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
+
+            if (itemGroup) {
+                ItemStash itemStash = itemGroup?.itemStash
+                User user = itemStash?.user
+                session.setAttribute(ITEM_GROUP, itemGroup)
+
+                [
+                        itemGroup: itemGroup,
+                        itemStash: itemStash,
+                        userProfile: user?.userProfile,
+                        ownGroup: user.id == userService.currentUserId,
+                ]
+            }
         }
     }
 
@@ -97,10 +104,20 @@ class ItemController {
     def show(String id) {
         if (id) {
             Item item = itemService.getItem(id)
-            ItemGroup itemGroup = item.itemGroup
-            ItemStash itemStash = itemGroup.itemStash
-            UserProfile userProfile = itemStash.user.userProfile
-            [item: item, itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
+
+            if (item) {
+                ItemGroup itemGroup = item?.itemGroup
+                ItemStash itemStash = itemGroup?.itemStash
+                User user = itemStash?.user
+
+                [
+                        item: item,
+                        itemGroup: itemGroup,
+                        itemStash: itemStash,
+                        userProfile: user?.userProfile,
+                        ownItem: user.id == userService.currentUserId,
+                ]
+            }
         }
     }
 

@@ -199,10 +199,17 @@ class ItemControllerSpec extends Specification {
         1 * itemGroup.itemStash >> itemStash
         1 * itemStash.user >> user
         1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         0 * _
 
         and:
-        result == [itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
+        result == [
+                itemGroup: itemGroup,
+                itemStash: itemStash,
+                userProfile: userProfile,
+                ownGroup: Boolean.TRUE,
+        ]
     }
 
     void "Test createItem() rendering"() {
@@ -276,10 +283,18 @@ class ItemControllerSpec extends Specification {
         1 * itemGroup.itemStash >> itemStash
         1 * itemStash.user >> user
         1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         0 * _
 
         and:
-        result == [item: item, itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
+        result == [
+                item: item,
+                itemGroup: itemGroup,
+                itemStash: itemStash,
+                userProfile: userProfile,
+                ownItem: Boolean.TRUE,
+        ]
     }
 
     void "Test deleteItem()"() {

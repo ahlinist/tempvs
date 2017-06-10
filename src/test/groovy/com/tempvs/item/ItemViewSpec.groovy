@@ -123,7 +123,12 @@ class ItemViewSpec extends Specification {
         String title = "<title>Tempvs - ${ITEM_GROUP_TITLE}</title>"
         String createItemButton = '<a href="/item/createItem" class="btn btn-default">'
         List items = [item]
-        Map model = [itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
+        Map model = [
+                itemGroup: itemGroup,
+                itemStash: itemStash,
+                userProfile: userProfile,
+                ownGroup: Boolean.TRUE,
+        ]
 
         when:
         String result = render view: '/item/group', model: model
@@ -176,10 +181,16 @@ class ItemViewSpec extends Specification {
 
     void "Test /item/show with id"() {
         given:
-        Map model = [item: item, itemGroup: itemGroup, itemStash: itemStash, userProfile: userProfile]
         String title = "<title>Tempvs - ${NAME}</title>"
         String itemImage = "<tempvs:image objectId=\"${ITEM_IMAGE_ID}\" collection=\"item\"/>"
         String sourceImage = "<tempvs:image objectId=\"${SOURCE_IMAGE_ID}\" collection=\"source\"/>"
+        Map model = [
+                item: item,
+                itemGroup: itemGroup,
+                itemStash: itemStash,
+                userProfile: userProfile,
+                ownItem: Boolean.TRUE,
+        ]
 
         when:
         String result = render view: '/item/show', model: model

@@ -23,9 +23,11 @@
             <g:message code="item.sourceImage.label"/>: <tempvs:image objectId="${item.sourceImageId}" collection="source"/>
           </div>
         </div>
-        <div class="row">
-          <tempvs:ajaxLink message="item.delete.button" controller="item" action="deleteItem" id="${item.id}"/>
-        </div>
+        <g:if test="${ownItem}">
+          <div class="row">
+            <tempvs:ajaxLink message="item.delete.button" controller="item" action="deleteItem" id="${item.id}"/>
+          </div>
+        </g:if>
       </g:if>
       <g:else>
         <g:message code="item.item.notFound.message"/>
