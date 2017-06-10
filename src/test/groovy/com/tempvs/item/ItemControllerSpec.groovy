@@ -236,8 +236,7 @@ class ItemControllerSpec extends Specification {
         controller.createItem(createItemCommand)
 
         then:
-        1 * userService.currentUser >> user
-        1 * user.getId() >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         1 * createItemCommand.validate() >> Boolean.TRUE
         1 * createItemCommand.getName() >> NAME
         1 * createItemCommand.getDescription() >> DESCRIPTION
@@ -311,7 +310,8 @@ class ItemControllerSpec extends Specification {
         1 * itemGroup.itemStash >> itemStash
         1 * itemGroup.id >> LONG_ID
         1 * itemStash.user >> user
-        1 * userService.currentUser >> user
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteItem(item) >> Boolean.TRUE
         0 * _
 
@@ -334,7 +334,8 @@ class ItemControllerSpec extends Specification {
         1 * itemGroup.itemStash >> itemStash
         1 * itemStash.id >> LONG_ID
         1 * itemStash.user >> user
-        1 * userService.currentUser >> user
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteGroup(itemGroup) >> Boolean.TRUE
         0 * _
 

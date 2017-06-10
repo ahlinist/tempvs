@@ -37,9 +37,7 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        User user = userService.currentUser
-
-        if (email == user.email) {
+        if (email == userService.currentUserEmail) {
             String message = messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale)
             render([messages: [message]] as JSON)
         } else {
@@ -47,7 +45,7 @@ class UserController {
                 String message = messageSource.getMessage(EMAIL_USED, null, EMAIL_USED, LocaleContextHolder.locale)
                 render([messages: [message]] as JSON)
             } else {
-                Map props = [instanceId: user.id, email: email, action: UPDATE_EMAIL_ACTION]
+                Map props = [instanceId: userService.currentUserId, email: email, action: UPDATE_EMAIL_ACTION]
                 render ajaxResponseService.composeJsonResponse(verifyService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
             }
         }

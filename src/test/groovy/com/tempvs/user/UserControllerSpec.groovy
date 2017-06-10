@@ -75,8 +75,7 @@ class UserControllerSpec extends Specification {
         controller.updateEmail()
 
         then:
-        1 * userService.currentUser >> user
-        1 * user.getEmail() >> EMAIL
+        1 * userService.currentUserEmail >> EMAIL
         1 * messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale) >> EMAIL_UPDATE_DUPLICATE
         0 * _
 
@@ -90,8 +89,7 @@ class UserControllerSpec extends Specification {
         controller.updateEmail()
 
         then:
-        1 * userService.currentUser >> user
-        1 * user.getEmail() >> DIFFERENT_EMAIL
+        1 * userService.currentUserEmail >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
         1 * messageSource.getMessage(EMAIL_USED, null, EMAIL_USED, LocaleContextHolder.locale) >> EMAIL_USED
         0 * _
@@ -106,10 +104,9 @@ class UserControllerSpec extends Specification {
         controller.updateEmail()
 
         then:
-        1 * userService.currentUser >> user
-        1 * user.getEmail() >> DIFFERENT_EMAIL
+        1 * userService.currentUserEmail >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
-        1 * user.getId() >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         1 * verifyService.createEmailVerification([instanceId: LONG_ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

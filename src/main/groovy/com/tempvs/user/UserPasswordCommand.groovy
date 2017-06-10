@@ -19,11 +19,11 @@ class UserPasswordCommand implements Validateable {
 
     static constraints = {
         currentPassword validator: { String password, UserPasswordCommand command ->
-            User user = command.userService.currentUser
-            command.passwordEncoder.isPasswordValid(user.password, password, null)
+            command.passwordEncoder.isPasswordValid(command.userService.currentUserPassword, password, null)
         }
-        repeatNewPassword validator: { String password, UserPasswordCommand command ->
-            command.newPassword == password
+
+        repeatNewPassword validator: { String repeatNewPassword, UserPasswordCommand command ->
+            command.newPassword == repeatNewPassword
         }
     }
 }

@@ -79,13 +79,12 @@ class ItemController {
     def createItem(CreateItemCommand command) {
         if (params.isAjaxRequest) {
             if (command.validate()) {
-                User user = userService.currentUser
                 String name = command.name
                 String description = command.description
                 MultipartFile multipartItemImage = command.itemImage
                 MultipartFile multipartSourceImage = command.sourceImage
                 ItemGroup itemGroup = session.getAttribute(ITEM_GROUP) as ItemGroup
-                Map metaData = [userId: user.id, properties: [itemGroupId: itemGroup.id]]
+                Map metaData = [userId: userService.currentUserId, properties: [itemGroupId: itemGroup.id]]
                 Image itemImage = createImage(multipartItemImage, ITEM_IMAGE_COLLECTION, metaData)
                 Image sourceImage = createImage(multipartSourceImage, SOURCE_IMAGE_COLLECTION, metaData)
                 Item item = itemService.createItem(name, description, itemImage, sourceImage, itemGroup)
@@ -128,7 +127,7 @@ class ItemController {
             if (item) {
                 ItemGroup itemGroup = item.itemGroup
 
-                if (itemGroup.itemStash.user == userService.currentUser) {
+                if (itemGroup.itemStash.user.id == userService.currentUserId) {
                     if (itemService.deleteItem(item)) {
                         render([redirect: grailsLinkGenerator.link(action: 'group', id: itemGroup.id)] as JSON)
                     } else {
@@ -152,7 +151,7 @@ class ItemController {
             if (itemGroup) {
                 ItemStash itemStash = itemGroup.itemStash
 
-                if (itemStash.user == userService.currentUser) {
+                if (itemStash.user.id == userService.currentUserId) {
                     if (itemService.deleteGroup(itemGroup)) {
                         render([redirect: grailsLinkGenerator.link(action: 'stash', id: itemStash.id)] as JSON)
                     } else {

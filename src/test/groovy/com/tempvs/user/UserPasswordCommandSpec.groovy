@@ -41,8 +41,7 @@ class UserPasswordCommandSpec extends Specification {
         Boolean result = new UserPasswordCommand(props).validate()
 
         then:
-        1 * userService.currentUser >> user
-        1 * user.password >> PASSWORD
+        1 * userService.currentUserPassword >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
         0 * _
 
@@ -64,8 +63,7 @@ class UserPasswordCommandSpec extends Specification {
         Boolean result = new UserPasswordCommand(props).validate()
 
         then:
-        1 * userService.currentUser >> user
-        1 * user.password >> PASSWORD
+        1 * userService.currentUserPassword >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
         0 * _
 
