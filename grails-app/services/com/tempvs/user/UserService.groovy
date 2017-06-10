@@ -31,6 +31,10 @@ class UserService {
         ((GrailsUser) springSecurityService.principal).username
     }
 
+    String getCurrentUserPassword() {
+        ((GrailsUser) springSecurityService.principal).password
+    }
+
     User getUserByEmail(String email) {
         User.findByEmail(email)
     }

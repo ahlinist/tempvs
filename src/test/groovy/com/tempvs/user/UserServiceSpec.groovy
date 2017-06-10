@@ -75,6 +75,18 @@ class UserServiceSpec extends Specification {
         result == EMAIL
     }
 
+    void "Test getCurrentUserPassword()"() {
+        when:
+        def result = service.getCurrentUserPassword()
+
+        then:
+        1 * springSecurityService.principal >> grailsUser
+        1 * grailsUser.password >> PASSWORD
+        0 * _
+
+        result == PASSWORD
+    }
+
     void "Check getUserByEmail()"() {
         when:
         def result = service.getUserByEmail(EMAIL)
