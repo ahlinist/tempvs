@@ -5,10 +5,10 @@ import com.tempvs.domain.ObjectFactory
 import com.tempvs.item.ItemStash
 import com.tempvs.tests.utils.TestingUtils
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -26,6 +26,7 @@ class UserServiceSpec extends Specification {
     def itemStash = Mock(ItemStash)
     def objectFactory = Mock(ObjectFactory)
     def objectDAO = Mock(ObjectDAO)
+    def grailsUser = Mock(GrailsUser)
 
     def setup() {
         GroovySpy(User, global: true)
@@ -60,6 +61,18 @@ class UserServiceSpec extends Specification {
         0 * _
 
         result == LONG_ID
+    }
+
+    void "Test getCurrentUserEmail()"() {
+        when:
+        def result = service.getCurrentUserEmail()
+
+        then:
+        1 * springSecurityService.principal >> grailsUser
+        1 * grailsUser.username >> EMAIL
+        0 * _
+
+        result == EMAIL
     }
 
     void "Check getUserByEmail()"() {

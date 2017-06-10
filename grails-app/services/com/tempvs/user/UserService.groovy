@@ -6,6 +6,7 @@ import com.tempvs.item.ItemStash
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.transaction.Transactional
+import grails.plugin.springsecurity.userdetails.GrailsUser
 
 /**
  * Service that manages operations with {@link com.tempvs.user.User} entitites.
@@ -24,6 +25,10 @@ class UserService {
 
     Long getCurrentUserId() {
         springSecurityService.currentUserId as Long
+    }
+
+    String getCurrentUserEmail() {
+        ((GrailsUser) springSecurityService.principal).username
     }
 
     User getUserByEmail(String email) {
