@@ -39,6 +39,29 @@ class UserServiceSpec extends Specification {
     def cleanup() {
     }
 
+    void "Test getCurrentUser()"() {
+        when:
+        def result = service.getCurrentUser()
+
+        then:
+        1 * springSecurityService.currentUser >> user
+        1 * user.asType(User) >> user
+        0 * _
+
+        result == user
+    }
+
+    void "Test getCurrentUserId()"() {
+        when:
+        def result = service.getCurrentUserId()
+
+        then:
+        1 * springSecurityService.currentUserId >> LONG_ID
+        0 * _
+
+        result == LONG_ID
+    }
+
     void "Check getUserByEmail()"() {
         when:
         def result = service.getUserByEmail(EMAIL)
@@ -113,17 +136,5 @@ class UserServiceSpec extends Specification {
         1 * user.setLastActive(_ as Date)
         1 * user.save()
         0 * _
-    }
-
-    void "Test getCurrentUser()"() {
-        when:
-        def result = service.getCurrentUser()
-
-        then:
-        1 * springSecurityService.currentUser >> user
-        1 * user.asType(User) >> user
-        0 * _
-
-        result == user
     }
 }

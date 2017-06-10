@@ -22,6 +22,10 @@ class UserService {
         springSecurityService.currentUser as User
     }
 
+    Long getCurrentUserId() {
+        springSecurityService.currentUserId as Long
+    }
+
     User getUserByEmail(String email) {
         User.findByEmail(email)
     }
