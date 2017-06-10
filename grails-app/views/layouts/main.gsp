@@ -1,3 +1,6 @@
+<g:set var="user" value="${applicationContext.userService.currentUser}"/>
+<g:set var="currentProfile" value="${applicationContext.profileHolder.profile}"/>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -13,7 +16,7 @@
     <div class="row">
       <header>
         <sec:ifLoggedIn>
-          <g:render template="/templates/navigation/switchProfile"/>
+          <g:render template="/templates/navigation/switchProfile" model="${user, currentProfile}"/>
           <g:link class="btn btn-primary disableable pull-right" uri="/logoff">
             <g:message code="auth.logout.button" />
           </g:link>

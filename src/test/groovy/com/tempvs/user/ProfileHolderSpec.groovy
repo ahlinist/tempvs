@@ -50,7 +50,7 @@ class ProfileHolderSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        2 * user.getUserProfile() >> userProfile
+        1 * user.userProfile >> userProfile
         1 * userProfile.getId() >> id
         0 * _
 
@@ -68,6 +68,7 @@ class ProfileHolderSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
+        1 * user.userProfile >> userProfile
         1 * objectDAO.get(clazz, id) >> null
         0 * _
 
@@ -86,7 +87,7 @@ class ProfileHolderSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * objectDAO.get(clazz, id) >> baseProfile
-        1 * user.getUserProfile() >> userProfile
+        1 * user.userProfile >> userProfile
         1 * baseProfile.equals(userProfile)  >> Boolean.TRUE
         0 * _
 
@@ -105,10 +106,11 @@ class ProfileHolderSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * objectDAO.get(clazz, id) >> baseProfile
-        _ * user.getClubProfiles() >> [clubProfile]
-        3 * user.getUserProfile() >> userProfile
+        _ * user.clubProfiles >> [clubProfile]
+        1 * user.userProfile >> userProfile
         1 * baseProfile.equals(userProfile)  >> Boolean.FALSE
         1 * userProfile.getId()
+        0 * _
 
         and:
         result == userProfile

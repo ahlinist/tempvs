@@ -21,18 +21,20 @@ class ProfileHolder {
         User user = userService.currentUser
 
         if (user) {
+            UserProfile userProfile = user.userProfile
+
             if (!clazz || !id) {
-                this.profile = user.userProfile
-                user.userProfile
+                this.profile = userProfile
+                userProfile
             } else {
                 BaseProfile profile = objectDAO.get(clazz, id)
 
                 if (profile) {
-                    if (profile == user.userProfile || profile in user.clubProfiles) {
+                    if (profile == userProfile || profile in user.clubProfiles) {
                         profile
                     } else {
-                        this.profile = user.userProfile
-                        user.userProfile
+                        this.profile = userProfile
+                        userProfile
                	    }
 		        }
             }
