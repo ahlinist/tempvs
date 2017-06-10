@@ -8,7 +8,7 @@ import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
-import org.springframework.web.multipart.MultipartFile
+
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
@@ -35,7 +35,12 @@ class ItemController {
             [itemStash: itemStash, userProfile: itemStash?.user?.userProfile]
         } else {
             User user = userService.currentUser
-            [itemStash: user.itemStash, userProfile: user.userProfile]
+
+            if (user) {
+                [itemStash: user.itemStash, userProfile: user.userProfile]
+            } else {
+                redirect controller: 'auth'
+            }
         }
     }
 
@@ -79,15 +84,11 @@ class ItemController {
     def createItem(CreateItemCommand command) {
         if (params.isAjaxRequest) {
             if (command.validate()) {
-                String name = command.name
-                String description = command.description
-                MultipartFile multipartItemImage = command.itemImage
-                MultipartFile multipartSourceImage = command.sourceImage
                 ItemGroup itemGroup = session.getAttribute(ITEM_GROUP) as ItemGroup
                 Map metaData = [userId: userService.currentUserId, properties: [itemGroupId: itemGroup.id]]
-                Image itemImage = createImage(multipartItemImage, ITEM_IMAGE_COLLECTION, metaData)
-                Image sourceImage = createImage(multipartSourceImage, SOURCE_IMAGE_COLLECTION, metaData)
-                Item item = itemService.createItem(name, description, itemImage, sourceImage, itemGroup)
+                Image itemImage = imageService.createImage(command.itemImage, ITEM_IMAGE_COLLECTION, metaData)
+                Image sourceImage = imageService.createImage(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData)
+                Item item = itemService.createItem(command.name, command.description, itemImage, sourceImage, itemGroup)
 
                 if (item.validate()) {
                     render([redirect: grailsLinkGenerator.link(action: 'show', id: item.id)] as JSON)
@@ -166,22 +167,6 @@ class ItemController {
         } else {
             redirect action: 'stash'
         }
-    }
-
-    private Image createImage(MultipartFile file, String collection, Map metaData) {
-        Image result
-
-        if (!file?.empty) {
-            InputStream inputStream = file.inputStream
-
-            try {
-                result = imageService.createImage(inputStream, collection, metaData)
-            } finally {
-                inputStream?.close()
-            }
-        }
-
-        result
     }
 }
 

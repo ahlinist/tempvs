@@ -2,9 +2,12 @@ package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * Service for managing {@link com.tempvs.user.UserProfile} and
@@ -14,9 +17,12 @@ import org.codehaus.groovy.runtime.InvokerHelper
 @GrailsCompileStatic
 class ProfileService {
 
+    private static final String AVATAR_COLLECTION = 'avatar'
+
     UserService userService
     ObjectDAO<BaseProfile> objectDAO
     ObjectFactory objectFactory
+    ImageService imageService
 
     BaseProfile getProfile(Class clazz, String id) {
         objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
@@ -42,6 +48,21 @@ class ProfileService {
     BaseProfile updateProfileEmail(Class clazz, Long instanceId, String profileEmail) {
         BaseProfile profile = objectDAO.get(clazz, instanceId)
         profile.profileEmail = profileEmail
+        profile.save()
+        profile
+    }
+
+    BaseProfile updateAvatar(BaseProfile profile, MultipartFile multipartAvatar) {
+        Map metaData = [
+                userId: userService.currentUserId,
+                properties: [
+                        profileClass: profile.class.simpleName,
+                        profileId: profile.id,
+                ],
+        ]
+
+        Image avatar = imageService.createImage(multipartAvatar, AVATAR_COLLECTION, metaData)
+        profile.avatar = avatar.id
         profile.save()
         profile
     }

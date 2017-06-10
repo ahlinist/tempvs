@@ -1,6 +1,7 @@
 package com.tempvs.image
 
 import grails.test.mixin.TestFor
+import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
@@ -12,10 +13,12 @@ class ImageServiceSpec extends Specification {
     private static final String COLLECTION = 'collection'
     private static final String ID = 'id'
     private static final Long ONE_LONG = 1L
+    private static final String AVATAR = 'avatar'
 
     def imageDAO = Mock(ImageDAO)
-    def inputStream = Mock(InputStream)
+    def inputStream = new ByteArrayInputStream()
     def image = Mock(Image)
+    def multipartFile = new MockMultipartFile(AVATAR, "1234567" as byte[])
 
     def setup() {
         service.imageDAO = imageDAO
@@ -33,11 +36,12 @@ class ImageServiceSpec extends Specification {
         ]
 
         when:
-        def result = service.createImage(inputStream, collection, metaData)
+        def result = service.createImage(multipartFile, collection, metaData)
 
         then:
-        1 * imageDAO.create(inputStream, collection) >> image
+        1 * imageDAO.create(_ as ByteArrayInputStream, collection) >> image
         1 * imageDAO.save(image, metaData) >> image
+        0 * _
 
         and:
         result == image

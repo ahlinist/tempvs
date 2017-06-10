@@ -16,7 +16,7 @@
     <div class="row">
       <header>
         <sec:ifLoggedIn>
-          <g:render template="/templates/navigation/switchProfile" model="${user, currentProfile}"/>
+          <g:render template="/templates/navigation/switchProfile" model="${[user, currentProfile]}"/>
           <g:link class="btn btn-primary disableable pull-right" uri="/logoff">
             <g:message code="auth.logout.button" />
           </g:link>

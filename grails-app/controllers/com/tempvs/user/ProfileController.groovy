@@ -1,8 +1,6 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.Image
-import com.tempvs.image.ImageService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
@@ -24,9 +22,7 @@ class ProfileController {
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String AVATAR_UPDATED_MESSAGE = 'profile.update.avatar.success.message'
-    private static final String AVATAR_UPDATE_FAILED_MESSAGE = 'profile.update.avatar.failed.message'
     private static final String IMAGE_EMPTY = 'image.empty'
-    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String AVATAR_IMAGE = 'avatarImage'
 
     AjaxResponseService ajaxResponseService
@@ -34,7 +30,6 @@ class ProfileController {
     ProfileService profileService
     VerifyService verifyService
     UserService userService
-    ImageService imageService
     LinkGenerator grailsLinkGenerator
     MessageSource messageSource
 
@@ -124,28 +119,12 @@ class ProfileController {
     }
     
     def updateAvatar() {
-        Boolean success = Boolean.FALSE
-        String message = AVATAR_UPDATE_FAILED_MESSAGE
 	    MultipartFile multipartAvatar = ((MultipartHttpServletRequest) request).getFile(AVATAR_IMAGE)
 
-        if (!multipartAvatar || multipartAvatar.empty) {
-            message = IMAGE_EMPTY
-            render ajaxResponseService.renderMessage(success, message)
+        if (multipartAvatar.empty) {
+            render ajaxResponseService.renderMessage(Boolean.FALSE, IMAGE_EMPTY)
         } else {
-            BaseProfile profile = profileHolder.profile
-            Map metaData = [userId: profile.user.id, properties: [profileClass: profileHolder.clazz.simpleName, profileId: profile.id]]
-            InputStream inputStream = multipartAvatar.inputStream
-
-            try {
-                Image avatar = imageService.createImage(inputStream, AVATAR_COLLECTION, metaData)
-                profile.avatar = avatar.id
-                profile.save(flush: true)
-                success = Boolean.TRUE
-                message = AVATAR_UPDATED_MESSAGE
-            } finally {
-                inputStream?.close()
-                render ajaxResponseService.renderMessage(success, message)
-            }
+            render ajaxResponseService.composeJsonResponse(profileService.updateAvatar(profileHolder.profile, multipartAvatar), AVATAR_UPDATED_MESSAGE)
         }
     }
 

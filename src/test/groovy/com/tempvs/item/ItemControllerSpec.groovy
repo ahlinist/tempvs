@@ -242,8 +242,8 @@ class ItemControllerSpec extends Specification {
         1 * createItemCommand.getDescription() >> DESCRIPTION
         1 * createItemCommand.getItemImage() >> multipartItemImage
         1 * createItemCommand.getSourceImage() >> multipartSourceImage
-        1 * imageService.createImage(_ as InputStream, _ as String, _ as Map) >> itemImage
-        1 * imageService.createImage(_ as InputStream, _ as String, _ as Map) >> sourceImage
+        1 * imageService.createImage(multipartItemImage, _ as String, _ as Map) >> itemImage
+        1 * imageService.createImage(multipartSourceImage, _ as String, _ as Map) >> sourceImage
         1 * itemService.createItem(NAME, DESCRIPTION, itemImage, sourceImage, itemGroup) >> item
         1 * itemGroup.asType(ItemGroup) >> itemGroup
         1 * itemGroup.getId() >> LONG_ID

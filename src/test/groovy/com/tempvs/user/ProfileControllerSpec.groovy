@@ -2,7 +2,6 @@ package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
-import com.tempvs.image.ImageService
 import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
@@ -10,6 +9,7 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -37,7 +37,7 @@ class ProfileControllerSpec extends Specification {
     private static final String IMAGE_EMPTY = 'image.empty'
 
     def userService = Mock(UserService)
-    def imageService = Mock(ImageService)
+
     def profileHolder = Mock(ProfileHolder)
     def verifyService = Mock(VerifyService)
     def profileService = Mock(ProfileService)
@@ -58,7 +58,6 @@ class ProfileControllerSpec extends Specification {
         controller.ajaxResponseService = ajaxResponseService
         controller.userService = userService
         controller.verifyService = verifyService
-        controller.imageService = imageService
         controller.messageSource = messageSource
     }
 
@@ -162,6 +161,7 @@ class ProfileControllerSpec extends Specification {
         then:
         1 * profileService.getProfile(_, ONE) >> userProfile
         1 * profileHolder.setProfile(userProfile)
+        0 * _
 
         and:
         response.redirectedUrl == PROFILE_PAGE
@@ -312,20 +312,17 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileHolder.profile >> userProfile
-        1 * userProfile.getUser() >> user
-        1 * user.getId() >> 1
-        1 * profileHolder.clazz >> UserProfile.class
-        1 * userProfile.getId() >> 1
-        1 * imageService.createImage(_ as ByteArrayInputStream, _ as String, _ as Map) >> image
-        1 * image.getId() >> ONE
-        1 * userProfile.setAvatar(ONE)
-        1 * userProfile.save([flush: true])
-        1 * ajaxResponseService.renderMessage(Boolean.TRUE, AVATAR_UPDATED_MESSAGE) >> json
+        1 * profileService.updateAvatar(userProfile, avatar) >> userProfile
+        1 * ajaxResponseService.composeJsonResponse(userProfile, AVATAR_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
     void "Test updateAvatar() without file"() {
+        given:
+        def avatar = new MockMultipartFile(AVATAR_IMAGE, "" as byte[])
+        controller.request.addFile(avatar)
+
         when:
         controller.updateAvatar()
 

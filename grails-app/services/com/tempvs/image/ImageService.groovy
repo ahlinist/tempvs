@@ -2,6 +2,7 @@ package com.tempvs.image
 
 import grails.transaction.Transactional
 import groovy.transform.CompileStatic
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * A service that manages {@link com.tempvs.image.Image}-related operations.
@@ -12,9 +13,17 @@ class ImageService {
 
     ImageDAO imageDAO
 
-    Image createImage(InputStream inputStream, String collection, Map metaData) {
-        Image image = imageDAO.create(inputStream, collection)
-        imageDAO.save(image, metaData)
+    Image createImage(MultipartFile multipartFile, String collection, Map metaData) {
+        if (!multipartFile.empty) {
+            InputStream inputStream = multipartFile.inputStream
+
+            try {
+                Image image = imageDAO.create(inputStream, collection)
+                imageDAO.save(image, metaData)
+            } finally {
+                inputStream?.close()
+            }
+        }
     }
 
     Image getImage(String collection, String id) {
