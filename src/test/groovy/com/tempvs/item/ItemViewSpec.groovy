@@ -127,7 +127,7 @@ class ItemViewSpec extends Specification {
         then:
         1 * itemStash.getProperty(USER) >> user
         1 * itemStash.getProperty(ID) >> ID
-        2 * itemGroup.getProperty(NAME) >> NAME
+        3 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(ITEMS) >> items
@@ -175,7 +175,7 @@ class ItemViewSpec extends Specification {
 
         then:
         2 * item.getProperty(ID) >> ID
-        4 * item.getProperty(NAME) >> NAME
+        5 * item.getProperty(NAME) >> NAME
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
         1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID
