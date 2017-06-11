@@ -25,7 +25,14 @@
         </div>
         <g:if test="${ownItem}">
           <div class="row">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#itemForm">
+              <g:message code="item.updateItem.link"/>
+            </button>
             <tempvs:ajaxLink message="item.delete.button" controller="item" action="deleteItem" id="${item.id}"/>
+
+            <g:render template="/templates/modal" model="${[modalId: 'itemForm']}">
+              <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
+            </g:render>
           </div>
         </g:if>
       </g:if>

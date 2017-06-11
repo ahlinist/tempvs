@@ -68,9 +68,13 @@ class ItemViewSpec extends Specification {
     void "Test /item/stash view with id"() {
         given:
         String title = "<title>Tempvs - ${ITEM_STASH_TITLE}</title>"
-        String createButton = '<a href="/item/createGroup" class="btn btn-default">'
+        String createButton = '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#createGroup">'
         String itemGroupLink = '<a href="/item/group/1" class="list-group-item">'
-        Map model = [itemStash: itemStash, userProfile: userProfile]
+        Map model = [
+                itemStash: itemStash,
+                userProfile: userProfile,
+                ownStash: Boolean.TRUE,
+        ]
 
         when:
         String result = render view: '/item/stash', model: model
@@ -88,19 +92,6 @@ class ItemViewSpec extends Specification {
         result.contains title
         result.contains createButton
         result.contains itemGroupLink
-    }
-
-    void "Test /item/createGroup view"() {
-        given:
-        String title = "<title>Tempvs - ${CREATE_GROUP}</title>"
-        String createGroupForm = '<tempvs:ajaxForm action="createGroup">'
-
-        when:
-        String result = render view: '/item/createGroup'
-
-        then:
-        result.contains title
-        result.contains createGroupForm
     }
 
     void "Test /item/group view without id"() {
@@ -121,7 +112,7 @@ class ItemViewSpec extends Specification {
     void "Test /item/group view with id"() {
         given:
         String title = "<title>Tempvs - ${ITEM_GROUP_TITLE}</title>"
-        String createItemButton = '<a href="/item/createItem" class="btn btn-default">'
+        String createItemButton = '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#itemForm">'
         List items = [item]
         Map model = [
                 itemGroup: itemGroup,
@@ -150,19 +141,6 @@ class ItemViewSpec extends Specification {
         and:
         result.contains title
         result.contains createItemButton
-    }
-
-    void "Test /item/createItem view"() {
-        given:
-        String title = "<title>Tempvs - ${CREATE_ITEM}</title>"
-        String createGroupForm = '<tempvs:ajaxForm action="createItem">'
-
-        when:
-        String result = render view: '/item/createItem'
-
-        then:
-        result.contains title
-        result.contains createGroupForm
     }
 
     void "Test /item/show without id"() {
@@ -197,8 +175,8 @@ class ItemViewSpec extends Specification {
 
         then:
         2 * item.getProperty(ID) >> ID
-        3 * item.getProperty(NAME) >> NAME
-        1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
+        4 * item.getProperty(NAME) >> NAME
+        2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
         1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID
         1 * item.getProperty(ITEM_GROUP) >> itemGroup

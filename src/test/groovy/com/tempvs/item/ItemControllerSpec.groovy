@@ -19,20 +19,26 @@ import spock.lang.Specification
 class ItemControllerSpec extends Specification {
 
     private static final Long LONG_ID = 1L
+    private static final String ID = 'id'
     private static final String ONE = '1'
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_IMAGE = 'itemImage'
     private static final String SOURCE_IMAGE = 'sourceImage'
+    private static final String ITEM_IMAGE_ID = 'itemImageId'
+    private static final String SOURCE_IMAGE_ID = 'sourceImageId'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
     private static final String ITEM_URI = '/item/show'
     private static final String GROUP_ACTION = 'group'
     private static final String SHOW_ACTION = 'show'
+    private static final String ITEM_IMAGE_COLLECTION = 'item'
+    private static final String SOURCE_IMAGE_COLLECTION = 'source'
 
     def user = Mock(User)
     def json = Mock(JSON)
     def item = Mock(Item)
+    def updatedItem = Mock(Item)
     def image = Mock(Image)
     def itemGroup = Mock(ItemGroup)
     def itemStash = Mock(ItemStash)
@@ -43,9 +49,11 @@ class ItemControllerSpec extends Specification {
     def itemService = Mock(ItemService)
     def imageService = Mock(ImageService)
     def ajaxResponseService = Mock(AjaxResponseService)
-    def createItemCommand = Mock(CreateItemCommand)
+    def itemCommand = Mock(ItemCommand)
     def createItemGroupCommand = Mock(CreateItemGroupCommand)
     def grailsLinkGenerator = Mock(LinkGenerator)
+    def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
+    def multipartSourceImage = new MockMultipartFile(SOURCE_IMAGE, "1234567" as byte[])
 
     def setup() {
         controller.userService = userService
@@ -65,10 +73,12 @@ class ItemControllerSpec extends Specification {
         1 * userService.currentUser >> user
         1 * user.itemStash >> itemStash
         1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         0 * _
 
         and:
-        result == [itemStash: itemStash, userProfile: userProfile]
+        result == [itemStash: itemStash, userProfile: userProfile, ownStash: Boolean.TRUE]
     }
 
     void "Test stash() with id for existing stash"() {
@@ -80,10 +90,12 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getStash(ONE) >> itemStash
         1 * itemStash.user >> user
         1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
         0 * _
 
         and:
-        result == [itemStash: itemStash, userProfile: userProfile]
+        result == [itemStash: itemStash, userProfile: userProfile, ownStash: Boolean.TRUE]
     }
 
     void "Test stash() with id for non-existing stash"() {
@@ -96,16 +108,9 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [itemStash: null, userProfile: null]
-    }
-
-    void "Test createGroup() rendering"() {
-        when:
-        controller.createGroup()
-
-        then:
-        controller.modelAndView == null
+        !controller.modelAndView
         !response.redirectedUrl
+        !result
     }
 
     void "Test group creation against invalid command"() {
@@ -212,43 +217,32 @@ class ItemControllerSpec extends Specification {
         ]
     }
 
-    void "Test createItem() rendering"() {
-        when:
-        controller.createItem()
-
-        then:
-        controller.modelAndView == null
-        !response.redirectedUrl
-    }
-
     void "Test createItem()"() {
         given:
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
-        def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
-        def multipartSourceImage = new MockMultipartFile(SOURCE_IMAGE, "1234567" as byte[])
         controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addFile(multipartItemImage)
         controller.request.addFile(multipartSourceImage)
-        controller.session.itemGroup = itemGroup
+        controller.request.addHeader('referer', "${ITEM_GROUP_URI}/${LONG_ID}")
 
         when:
         params.isAjaxRequest = Boolean.TRUE
-        controller.createItem(createItemCommand)
+        controller.createItem(itemCommand)
 
         then:
         1 * userService.currentUserId >> LONG_ID
-        1 * createItemCommand.validate() >> Boolean.TRUE
-        1 * createItemCommand.getName() >> NAME
-        1 * createItemCommand.getDescription() >> DESCRIPTION
-        1 * createItemCommand.getItemImage() >> multipartItemImage
-        1 * createItemCommand.getSourceImage() >> multipartSourceImage
+        1 * itemCommand.validate() >> Boolean.TRUE
+        1 * itemCommand.name >> NAME
+        1 * itemCommand.description >> DESCRIPTION
+        1 * itemCommand.itemImage >> multipartItemImage
+        1 * itemCommand.sourceImage >> multipartSourceImage
         1 * imageService.createImage(multipartItemImage, _ as String, _ as Map) >> itemImage
         1 * imageService.createImage(multipartSourceImage, _ as String, _ as Map) >> sourceImage
-        1 * itemService.createItem(NAME, DESCRIPTION, itemImage, sourceImage, itemGroup) >> item
-        1 * itemGroup.asType(ItemGroup) >> itemGroup
-        1 * itemGroup.getId() >> LONG_ID
+        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemService.createItem(_ as Map) >> item
+        1 * itemGroup.id >> LONG_ID
         1 * item.validate() >> Boolean.TRUE
-        1 * item.getId() >> LONG_ID
+        1 * item.id >> LONG_ID
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ID}"
         0 * _
 
@@ -343,5 +337,42 @@ class ItemControllerSpec extends Specification {
         controller.modelAndView == null
         response.redirectedUrl == null
         response.json.redirect == "${ITEM_STASH_URI}/${LONG_ID}"
+    }
+
+    void "Test editItem()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.request.addFile(multipartItemImage)
+        controller.request.addFile(multipartSourceImage)
+        controller.request.addHeader('referer', "${ITEM_URI}/${LONG_ID}")
+
+        when:
+        controller.editItem(itemCommand)
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * itemCommand.validate() >> Boolean.TRUE
+        1 * itemCommand.name >> NAME
+        1 * itemCommand.description >> DESCRIPTION
+        1 * itemCommand.itemImage >> multipartItemImage
+        1 * itemCommand.sourceImage >> multipartSourceImage
+        1 * item.itemImageId >> ITEM_IMAGE_ID
+        1 * item.sourceImageId >> SOURCE_IMAGE_ID
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
+        1 * imageService.replaceImage(ITEM_IMAGE_COLLECTION, ITEM_IMAGE_ID, multipartItemImage, _ as Map) >> itemImage
+        1 * imageService.replaceImage(SOURCE_IMAGE_COLLECTION, SOURCE_IMAGE_ID, multipartSourceImage, _ as Map) >> sourceImage
+        1 * itemImage.id >> ID
+        1 * sourceImage.id >> ID
+        1 * itemService.updateItem(item, _ as Map) >> updatedItem
+        1 * updatedItem.validate() >> Boolean.TRUE
+        1 * updatedItem.id >> LONG_ID
+        0 * _
+
+        and:
+        controller.modelAndView == null
+        !response.redirectedUrl
+        response.json.redirect == "${ITEM_URI}/${LONG_ID}"
     }
 }

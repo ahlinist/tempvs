@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile
  * Command object used for creation of new {@link com.tempvs.item.Item} instance.
  */
 @GrailsCompileStatic
-class CreateItemCommand implements Validateable {
+class ItemCommand implements Validateable {
     String name
     String description
     MultipartFile itemImage

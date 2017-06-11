@@ -8,6 +8,7 @@ import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
@@ -17,7 +18,6 @@ class ItemController {
 
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
-    private static final String ITEM_GROUP = 'itemGroup'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
@@ -32,12 +32,16 @@ class ItemController {
     def stash(String id) {
         if (id) {
             ItemStash itemStash = itemService.getStash(id)
-            [itemStash: itemStash, userProfile: itemStash?.user?.userProfile]
+
+            if (itemStash) {
+                User user = itemStash.user
+                [itemStash: itemStash, userProfile: user.userProfile, ownStash: user.id == userService.currentUserId]
+            }
         } else {
             User user = userService.currentUser
 
             if (user) {
-                [itemStash: user.itemStash, userProfile: user.userProfile]
+                [itemStash: user.itemStash, userProfile: user.userProfile, ownStash: user.id == userService.currentUserId]
             } else {
                 redirect controller: 'auth'
             }
@@ -69,7 +73,6 @@ class ItemController {
             if (itemGroup) {
                 ItemStash itemStash = itemGroup?.itemStash
                 User user = itemStash?.user
-                session.setAttribute(ITEM_GROUP, itemGroup)
 
                 [
                         itemGroup: itemGroup,
@@ -81,14 +84,21 @@ class ItemController {
         }
     }
 
-    def createItem(CreateItemCommand command) {
+    def createItem(ItemCommand command) {
         if (params.isAjaxRequest) {
             if (command.validate()) {
-                ItemGroup itemGroup = session.getAttribute(ITEM_GROUP) as ItemGroup
+                ItemGroup itemGroup = itemService.getGroup request.getHeader('referer').tokenize('/').last()
                 Map metaData = [userId: userService.currentUserId, properties: [itemGroupId: itemGroup.id]]
-                Image itemImage = imageService.createImage(command.itemImage, ITEM_IMAGE_COLLECTION, metaData)
-                Image sourceImage = imageService.createImage(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData)
-                Item item = itemService.createItem(command.name, command.description, itemImage, sourceImage, itemGroup)
+
+                Map properties = [
+                        name: command.name,
+                        description: command.description,
+                        itemImage: imageService.createImage(command.itemImage, ITEM_IMAGE_COLLECTION, metaData),
+                        sourceImage: imageService.createImage(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData),
+                        itemGroup: itemGroup,
+                ]
+
+                Item item = itemService.createItem(properties)
 
                 if (item.validate()) {
                     render([redirect: grailsLinkGenerator.link(action: 'show', id: item.id)] as JSON)
@@ -168,5 +178,38 @@ class ItemController {
             redirect action: 'stash'
         }
     }
-}
 
+    def editItem(ItemCommand command) {
+        if (params.isAjaxRequest) {
+            Item item = itemService.getItem request.getHeader('referer').tokenize('/').last()
+            if (command.validate()) {
+                if (item) {
+                    Map metaData = [userId: userService.currentUserId, properties: [itemGroupId: item.itemGroup.id]]
+                    Map properties = [name: command.name, description: command.description]
+                    MultipartFile multipartItemImage = command.itemImage
+                    MultipartFile multipartSourceImage = command.sourceImage
+
+                    if (!multipartItemImage.empty) {
+                        Image itemImage = imageService.replaceImage(ITEM_IMAGE_COLLECTION, item.itemImageId, multipartItemImage, metaData)
+                        properties.itemImageId = itemImage.id
+                    }
+
+                    if (!multipartSourceImage.empty) {
+                        Image sourceImage = imageService.replaceImage(SOURCE_IMAGE_COLLECTION, item.sourceImageId, multipartSourceImage, metaData)
+                        properties.sourceImageId = sourceImage.id
+                    }
+
+                    Item updatedItem = itemService.updateItem(item, properties)
+
+                    if (updatedItem.validate()) {
+                        render([redirect: grailsLinkGenerator.link(action: 'show', id: updatedItem.id)] as JSON)
+                    } else {
+                        render ajaxResponseService.composeJsonResponse(itemService.updateItem(item, properties))
+                    }
+                }
+            } else {
+                render ajaxResponseService.composeJsonResponse(command)
+            }
+        }
+    }
+}

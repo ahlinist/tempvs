@@ -2,12 +2,12 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
-import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
+import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
  * Service that manages {@link com.tempvs.item.Item}, {@link com.tempvs.item.ItemGroup}
@@ -47,18 +47,9 @@ class ItemService {
         objectDAO.get(Item, id)
     }
 
-    Item createItem(String name, String description, Image itemImage, Image sourceImage, ItemGroup itemGroup) {
+    Item createItem(Map properties) {
         Item item = objectFactory.create(Item.class)
-        item.name = name
-        item.description = description
-        item.itemImageId = itemImage?.id
-        item.sourceImageId = sourceImage?.id
-
-        if (!itemGroup.attached) {
-            itemGroup.attach()
-        }
-
-        item.itemGroup = itemGroup
+        InvokerHelper.setProperties(item, properties)
         item.save()
         item
     }
@@ -86,5 +77,11 @@ class ItemService {
         } catch (Throwable e) {
             Boolean.FALSE
         }
+    }
+
+    Item updateItem(Item item, Map properties) {
+        InvokerHelper.setProperties(item, properties)
+        item.save()
+        item
     }
 }

@@ -26,8 +26,8 @@ class ImageService {
         }
     }
 
-    Image getImage(String collection, String id) {
-        imageDAO.get(collection, id)
+    Image getImage(String collection, String objectId) {
+        imageDAO.get(collection, objectId)
     }
 
     Boolean deleteImages(String collection, Collection<String> objectIds) {
@@ -36,5 +36,10 @@ class ImageService {
         } else {
             Boolean.TRUE
         }
+    }
+
+    Image replaceImage(String collection, String objectId, MultipartFile multipartFile, Map metaData) {
+        deleteImages(collection, [objectId])
+        createImage(multipartFile, collection, metaData)
     }
 }
