@@ -68,7 +68,7 @@ class ItemViewSpec extends Specification {
     void "Test /item/stash view with id"() {
         given:
         String title = "<title>Tempvs - ${ITEM_STASH_TITLE}</title>"
-        String createButton = '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#createGroup">'
+        String createButton = '<tempvs:modalButton id="createGroup" message="item.createGroup.link">'
         String itemGroupLink = '<a href="/item/group/1" class="list-group-item">'
         Map model = [
                 itemStash: itemStash,
@@ -112,7 +112,7 @@ class ItemViewSpec extends Specification {
     void "Test /item/group view with id"() {
         given:
         String title = "<title>Tempvs - ${ITEM_GROUP_TITLE}</title>"
-        String createItemButton = '<button type="button" class="btn btn-default" data-toggle="modal" data-target="#itemForm">'
+        String createItemButton = '<tempvs:modalButton id="itemForm" message="item.createItem.link">'
         List items = [item]
         Map model = [
                 itemGroup: itemGroup,

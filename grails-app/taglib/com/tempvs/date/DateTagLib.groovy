@@ -2,6 +2,9 @@ package com.tempvs.date
 
 import groovy.time.TimeCategory
 
+/**
+ * Date taglib.
+ */
 class DateTagLib {
     static defaultEncodeAs = [taglib:'raw']
     static namespace = 'tempvs'
@@ -12,7 +15,7 @@ class DateTagLib {
     private static final String HOURS_AGO = 'date.hoursAgo'
     private static final String YESTERDAY = 'date.yesterday'
 
-    String dateFromNow = { attrs ->
+    String dateFromNow = { Map attrs ->
         Map model = [:]
         Date currentDate = new Date()
         Date targetDate = attrs.date

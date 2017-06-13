@@ -2,6 +2,9 @@ package com.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
 
+/**
+ * {@link com.tempvs.user.User} taglib.
+ */
 @GrailsCompileStatic
 class UserTagLib {
     static defaultEncodeAs = [taglib:'raw']

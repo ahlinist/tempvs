@@ -25,22 +25,15 @@
         </div>
         <g:if test="${ownItem}">
           <div class="row">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#itemForm">
-              <g:message code="item.updateItem.link"/>
-            </button>
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#deleteItem">
-              <g:message code="item.delete.button"/>
-            </button>
-
-            <g:render template="/templates/modal" model="${[modalId: 'itemForm']}">
+            <tempvs:modalButton id="itemForm" message="item.updateItem.link">
               <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
-            </g:render>
-            <g:render template="/templates/modal" model="${[modalId: 'deleteItem', size: 'modal-sm']}">
+            </tempvs:modalButton>
+            <tempvs:modalButton id="deleteItem" size="modal-sm" message="item.delete.button">
               <g:message code='item.deleteConfirmation.text' args="${[item.name]}"/>
               <br/>
               <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${item.id}"/>
               <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-            </g:render>
+            </tempvs:modalButton>
           </div>
         </g:if>
       </g:if>

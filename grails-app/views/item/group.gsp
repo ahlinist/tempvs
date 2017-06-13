@@ -22,22 +22,15 @@
           </g:each>
           <g:if test="${ownGroup}">
             <div class="row">
-              <button type="button" class="btn btn-default" data-toggle="modal" data-target="#itemForm">
-                <g:message code="item.createItem.link"/>
-              </button>
-              <button type="button" class="btn btn-default" data-toggle="modal" data-target="#deleteGroup">
-                <g:message code="item.group.delete.button"/>
-              </button>
-
-              <g:render template="/templates/modal" model="${[modalId: 'itemForm']}">
+              <tempvs:modalButton id="itemForm" message="item.createItem.link">
                 <g:render template="/item/templates/itemForm" model="${[action: 'createItem', button: 'item.createItem.button']}"/>
-              </g:render>
-              <g:render template="/templates/modal" model="${[modalId: 'deleteGroup', size: 'modal-sm']}">
+              </tempvs:modalButton>
+              <tempvs:modalButton id="deleteGroup" size="modal-sm" message="item.group.delete.button">
                 <g:message code='item.group.deleteConfirmation.text' args="${[itemGroup.name]}"/>
                 <br/>
                 <tempvs:ajaxLink message="yes" controller="item" action="deleteGroup" id="${itemGroup.id}"/>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-              </g:render>
+              </tempvs:modalButton>
             </div>
           </g:if>
         </div>
