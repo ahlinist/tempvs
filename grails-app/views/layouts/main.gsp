@@ -23,9 +23,11 @@
           <g:render template="/templates/navigation/settings"/>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
-          <g:link class="btn btn-default disableable pull-right" controller="auth">
-            <g:message code="auth.link" />
-          </g:link>
+          <span class="pull-right">
+            <tempvs:modalButton id="itemForm" message="auth.link">
+              <g:render template="/auth/templates/loginForm"/>
+            </tempvs:modalButton>
+          </span>
         </sec:ifNotLoggedIn>
       </header>
     </div>

@@ -133,7 +133,8 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for correct params"() {
         given:
-        Map linkGeneratorMap = ['controller':'profile']
+        controller.request.addHeader('referer', PROFILE_PAGE_URI)
+        Map linkGeneratorMap = ['uri': PROFILE_PAGE_URI]
 
         when:
         params.isAjaxRequest = Boolean.TRUE

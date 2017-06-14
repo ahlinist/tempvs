@@ -17,9 +17,11 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
  */
 @GrailsCompileStatic
 class AuthController {
+
     private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
     private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
     private static final String REGISTRATION_ACTION = 'registration'
+    private static final String LOGIN_PAGE_URI = 'auth/index'
 
     UserService userService
     VerifyService verifyService
@@ -40,7 +42,13 @@ class AuthController {
                 if (user) {
                     if (passwordEncoder.isPasswordValid(user.password, command.password, null)) {
                         springSecurityService.reauthenticate(command.email, command.password)
-                        render([redirect: grailsLinkGenerator.link(controller: 'profile')] as JSON)
+                        String referer = request.getHeader('referer')
+
+                        if (referer.contains(LOGIN_PAGE_URI)) {
+                            render([redirect: grailsLinkGenerator.link(controller: 'profile')] as JSON)
+                        } else {
+                            render([redirect: grailsLinkGenerator.link(uri: referer)] as JSON)
+                        }
                     } else {
                         String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER, LocaleContextHolder.locale)
                         render([messages: [message]] as JSON)
@@ -66,3 +74,4 @@ class AuthController {
         }
     }
 }
+

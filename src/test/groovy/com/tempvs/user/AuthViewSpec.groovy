@@ -18,8 +18,8 @@ class AuthViewSpec extends Specification {
     void "Test /auth/index view"() {
         given:
         String title = '<title>Tempvs - Auth</title>'
-        String loginForm = '<tempvs:ajaxForm action="login">'
-        String registerForm = '<tempvs:ajaxForm action="register">'
+        String loginForm = '<tempvs:ajaxForm controller="auth" action="login">'
+        String registerForm = '<tempvs:ajaxForm controller="auth" action="register">'
 
         when:
         String result = render view: '/auth/index'
@@ -29,5 +29,4 @@ class AuthViewSpec extends Specification {
         result.contains loginForm
         result.contains registerForm
     }
-
 }
