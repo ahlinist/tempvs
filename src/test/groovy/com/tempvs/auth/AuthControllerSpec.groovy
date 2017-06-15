@@ -25,7 +25,7 @@ class AuthControllerSpec extends Specification {
     private static final String REGISTER_ACTION = 'registration'
     private static final String NO_SUCH_USER_CODE = 'auth.login.noSuchUser.message'
     private static final String NO_SUCH_USER_MESSAGE = 'No user with such id found.'
-    private static final String PROFILE_PAGE_URI = '/profile'
+    private static final String TEST_URI = '/test'
 
     def emailVerification = Mock(EmailVerification)
     def requestRegistrationCommand = Mock(RequestRegistrationCommand)
@@ -46,7 +46,6 @@ class AuthControllerSpec extends Specification {
         controller.passwordEncoder = passwordEncoder
         controller.springSecurityService = springSecurityService
         controller.verifyService = verifyService
-        controller.grailsLinkGenerator = grailsLinkGenerator
         controller.messageSource = messageSource
     }
 
@@ -81,7 +80,7 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * requestRegistrationCommand.validate() >> Boolean.TRUE
-        1 * requestRegistrationCommand.getEmail() >> EMAIL
+        1 * requestRegistrationCommand.email >> EMAIL
         1 * verifyService.createEmailVerification(['action': REGISTER_ACTION, 'email': EMAIL]) >> emailVerification
         1 * ajaxResponseService.composeJsonResponse(emailVerification, _ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -107,10 +106,12 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.TRUE
-        1 * loginCommand.getEmail() >> EMAIL
+        1 * loginCommand.email >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> null
         1 * messageSource.getMessage(NO_SUCH_USER_CODE, null, NO_SUCH_USER_CODE, LocaleContextHolder.locale) >> NO_SUCH_USER_MESSAGE
         0 * _
+
+        and:
         response.json.messages == [NO_SUCH_USER_MESSAGE]
     }
 
@@ -121,20 +122,23 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.TRUE
-        1 * loginCommand.getEmail() >> EMAIL
+        1 * loginCommand.email >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> user
-        1 * user.getPassword() >> PASSWORD
-        1 * loginCommand.getPassword() >> PASSWORD
+        1 * user.password >> PASSWORD
+        1 * loginCommand.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.FALSE
         1 * messageSource.getMessage(NO_SUCH_USER_CODE, null, NO_SUCH_USER_CODE, LocaleContextHolder.locale) >> NO_SUCH_USER_MESSAGE
         0 * _
+
+        and:
         response.json.messages == [NO_SUCH_USER_MESSAGE]
     }
 
     void "Testing login() for correct params"() {
         given:
-        controller.request.addHeader('referer', PROFILE_PAGE_URI)
-        Map linkGeneratorMap = ['uri': PROFILE_PAGE_URI]
+        controller.grailsLinkGenerator = grailsLinkGenerator
+        controller.request.addHeader('referer', TEST_URI)
+        Map linkGeneratorMap = ['uri': TEST_URI]
 
         when:
         params.isAjaxRequest = Boolean.TRUE
@@ -142,14 +146,27 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.TRUE
-        2 * loginCommand.getEmail() >> EMAIL
+        2 * loginCommand.email >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> user
-        1 * user.getPassword() >> PASSWORD
-        2 * loginCommand.getPassword() >> PASSWORD
+        1 * user.password >> PASSWORD
+        2 * loginCommand.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.TRUE
         1 * springSecurityService.reauthenticate(EMAIL, PASSWORD)
-        1 * grailsLinkGenerator.link(linkGeneratorMap) >> PROFILE_PAGE_URI
+        1 * grailsLinkGenerator.link(linkGeneratorMap) >> TEST_URI
         0 * _
-        response.json.redirect == PROFILE_PAGE_URI
+
+        and:
+        response.json.redirect == TEST_URI
+    }
+
+    void "Test logout()"() {
+        given:
+        controller.request.addHeader('referer', TEST_URI)
+
+        when:
+        controller.logout()
+
+        then:
+        response.redirectedUrl == TEST_URI
     }
 }

@@ -73,5 +73,10 @@ class AuthController {
             }
         }
     }
+
+    def logout() {
+        request.logout()
+        redirect uri: request.getHeader('referer')
+    }
 }
 
