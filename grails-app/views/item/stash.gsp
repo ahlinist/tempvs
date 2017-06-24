@@ -9,7 +9,7 @@
         <g:render template="/item/templates/navBar" model="${[itemStash, userProfile]}"/>
         <div class="col-sm-3">
           <g:render template="/item/templates/itemGroups" model="${[itemStash]}"/>
-          <g:if test="${ownStash}">
+          <g:if test="${editAllowed}">
             <div class="row">
               <tempvs:modalButton id="createGroup" message="item.createGroup.link">
                 <tempvs:ajaxForm action="createGroup">

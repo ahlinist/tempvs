@@ -78,7 +78,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [itemStash: itemStash, userProfile: userProfile, ownStash: Boolean.TRUE]
+        result == [itemStash: itemStash, userProfile: userProfile, editAllowed: Boolean.TRUE]
     }
 
     void "Test stash() with id for existing stash"() {
@@ -95,7 +95,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [itemStash: itemStash, userProfile: userProfile, ownStash: Boolean.TRUE]
+        result == [itemStash: itemStash, userProfile: userProfile, editAllowed: Boolean.TRUE]
     }
 
     void "Test stash() with id for non-existing stash"() {
@@ -213,7 +213,7 @@ class ItemControllerSpec extends Specification {
                 itemGroup: itemGroup,
                 itemStash: itemStash,
                 userProfile: userProfile,
-                ownGroup: Boolean.TRUE,
+                editAllowed: Boolean.TRUE,
         ]
     }
 
@@ -286,7 +286,7 @@ class ItemControllerSpec extends Specification {
                 itemGroup: itemGroup,
                 itemStash: itemStash,
                 userProfile: userProfile,
-                ownItem: Boolean.TRUE,
+                editAllowed: Boolean.TRUE,
         ]
     }
 

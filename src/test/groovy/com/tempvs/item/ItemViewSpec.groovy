@@ -73,7 +73,7 @@ class ItemViewSpec extends Specification {
         Map model = [
                 itemStash: itemStash,
                 userProfile: userProfile,
-                ownStash: Boolean.TRUE,
+                editAllowed: Boolean.TRUE,
         ]
 
         when:
@@ -167,7 +167,7 @@ class ItemViewSpec extends Specification {
                 itemGroup: itemGroup,
                 itemStash: itemStash,
                 userProfile: userProfile,
-                ownItem: Boolean.TRUE,
+                editAllowed: Boolean.TRUE,
         ]
 
         when:

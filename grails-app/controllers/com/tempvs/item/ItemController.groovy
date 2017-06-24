@@ -35,13 +35,13 @@ class ItemController {
 
             if (itemStash) {
                 User user = itemStash.user
-                [itemStash: itemStash, userProfile: user.userProfile, ownStash: user.id == userService.currentUserId]
+                [itemStash: itemStash, userProfile: user.userProfile, editAllowed: user.id == userService.currentUserId]
             }
         } else {
             User user = userService.currentUser
 
             if (user) {
-                [itemStash: user.itemStash, userProfile: user.userProfile, ownStash: user.id == userService.currentUserId]
+                [itemStash: user.itemStash, userProfile: user.userProfile, editAllowed: user.id == userService.currentUserId]
             } else {
                 redirect controller: 'auth'
             }
@@ -78,7 +78,7 @@ class ItemController {
                         itemGroup: itemGroup,
                         itemStash: itemStash,
                         userProfile: user?.userProfile,
-                        ownGroup: user.id == userService.currentUserId,
+                        editAllowed: user.id == userService.currentUserId,
                 ]
             }
         }
@@ -125,7 +125,7 @@ class ItemController {
                         itemGroup: itemGroup,
                         itemStash: itemStash,
                         userProfile: user?.userProfile,
-                        ownItem: user.id == userService.currentUserId,
+                        editAllowed: user.id == userService.currentUserId,
                 ]
             }
         }

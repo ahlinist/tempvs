@@ -23,7 +23,7 @@
             <g:message code="item.sourceImage.label"/>: <tempvs:image objectId="${item.sourceImageId}" collection="source"/>
           </div>
         </div>
-        <g:if test="${ownItem}">
+        <g:if test="${editAllowed}">
           <div class="row">
             <tempvs:modalButton id="itemForm" message="item.updateItem.link">
               <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
