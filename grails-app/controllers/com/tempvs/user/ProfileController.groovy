@@ -22,6 +22,7 @@ class ProfileController {
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String AVATAR_UPDATED_MESSAGE = 'profile.update.avatar.success.message'
+    private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
     private static final String IMAGE_EMPTY = 'image.empty'
     private static final String AVATAR_IMAGE = 'avatarImage'
 
@@ -125,6 +126,30 @@ class ProfileController {
             render ajaxResponseService.renderMessage(Boolean.FALSE, IMAGE_EMPTY)
         } else {
             render ajaxResponseService.composeJsonResponse(profileService.updateAvatar(profileHolder.profile, multipartAvatar), AVATAR_UPDATED_MESSAGE)
+        }
+    }
+
+    def deleteProfile(String id) {
+        if (params.isAjaxRequest) {
+            BaseProfile profile = profileService.getProfile(ClubProfile.class, id)
+            Boolean success = Boolean.FALSE
+            String message = PROFILE_DELETION_FAILED
+
+            if (profile) {
+                Long currentUserId = userService.currentUserId
+
+                if (profile.user.id == currentUserId) {
+                    if (profileService.deleteProfile(profile)) {
+                        profileHolder.profile = null
+                        success = Boolean.TRUE
+                        render([redirect: grailsLinkGenerator.link(controller: 'profile')] as JSON)
+                    }
+                }
+            }
+
+            if (!success) {
+                render ajaxResponseService.renderMessage(success, message)
+            }
         }
     }
 

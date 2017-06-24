@@ -66,4 +66,15 @@ class ProfileService {
         profile.save()
         profile
     }
+
+    Boolean deleteProfile(BaseProfile profile) {
+        imageService.deleteImages(AVATAR_COLLECTION, [profile.avatar])
+
+        try {
+            profile.delete(failOnError: true)
+            Boolean.TRUE
+        } catch (Throwable e) {
+            Boolean.FALSE
+        }
+    }
 }

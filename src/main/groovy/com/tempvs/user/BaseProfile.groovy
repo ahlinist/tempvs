@@ -25,6 +25,9 @@ abstract class BaseProfile extends BasePersistent {
     Object save(Map params = null) {
     }
 
+    void delete(Map params = null) {
+    }
+
     static constraints = {
         profileId shared: "profileId"
         location nullable: true

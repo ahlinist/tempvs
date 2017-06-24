@@ -9,7 +9,6 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -31,7 +30,7 @@ class ProfileControllerSpec extends Specification {
     private static final String AVATAR_UPDATED_MESSAGE = 'profile.update.avatar.success.message'
     private static final String AUTH_URL = '/auth/index'
     private static final String EDIT_PROFILE_PAGE = '/profile/edit'
-    private static final String PROFILE_PAGE = '/profile/index'
+    private static final String PROFILE_URL = '/profile/index'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String EDIT_CLUB_PROFILE_PAGE = '/profile/editClubProfile'
     private static final String IMAGE_EMPTY = 'image.empty'
@@ -150,7 +149,7 @@ class ProfileControllerSpec extends Specification {
         0 * _
 
         and:
-        response.redirectedUrl == PROFILE_PAGE
+        response.redirectedUrl == PROFILE_URL
     }
 
     void "Test switchProfile() being logged in with id"() {
@@ -164,7 +163,7 @@ class ProfileControllerSpec extends Specification {
         0 * _
 
         and:
-        response.redirectedUrl == PROFILE_PAGE
+        response.redirectedUrl == PROFILE_URL
     }
 
     void "Test edit()"() {
@@ -330,5 +329,27 @@ class ProfileControllerSpec extends Specification {
         1 * ajaxResponseService.renderMessage(Boolean.FALSE, IMAGE_EMPTY) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+    }
+
+    void "Test deleteProfile()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        params.id = ONE
+
+        when:
+        controller.deleteProfile()
+
+        then:
+        1 * userService.currentUserId >> LONG_ID
+        1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
+        1 * clubProfile.user >> user
+        1 * user.id >> LONG_ID
+        1 * profileService.deleteProfile(clubProfile) >> Boolean.TRUE
+        1 * profileHolder.setProfile(null)
+        0 * _
+
+        and:
+        !controller.modelAndView
+        response.json.redirect == PROFILE_URL
     }
 }

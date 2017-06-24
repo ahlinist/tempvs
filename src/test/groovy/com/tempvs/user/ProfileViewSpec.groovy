@@ -67,7 +67,7 @@ class ProfileViewSpec extends Specification {
         given:
         String title = "<title>Tempvs - <tempvs:fullName profile=\"${clubProfile}\"/></title>"
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
-        Map model = [profile: clubProfile, id: 1]
+        Map model = [profile: clubProfile, id: 1, sec: [username:{}]]
 
         when:
         String result = render view: '/profile/clubProfile', model: model

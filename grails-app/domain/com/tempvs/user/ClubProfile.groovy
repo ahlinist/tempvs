@@ -2,6 +2,9 @@ package com.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
 
+/**
+ * Belongs as many-to-one to {@link com.tempvs.user.User} entity.
+ */
 @GrailsCompileStatic
 class ClubProfile extends BaseProfile {
 
@@ -22,5 +25,9 @@ class ClubProfile extends BaseProfile {
             !user || (user.userProfile == userProfile) ||
                     !userProfile || (userProfile.user == clubProfile.user)
         }
+    }
+
+    String toString() {
+        "${firstName} ${lastName} ${nickName}"
     }
 }

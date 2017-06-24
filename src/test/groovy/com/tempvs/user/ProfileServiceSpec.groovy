@@ -23,7 +23,8 @@ class ProfileServiceSpec extends Specification {
     private static final String LAST_NAME = 'lastName'
     private static final String NICK_NAME = 'nickName'
     private static final String CLUB_NAME = 'clubName'
-    private static final String AVATAR = 'avatar'
+    private static final String AVATAR_COLLECTION = 'avatar'
+    private static final String AVATAR_ID = 'avatarId'
 
     def user = Mock(User)
     def image = Mock(Image)
@@ -138,7 +139,7 @@ class ProfileServiceSpec extends Specification {
 
     void "Test updateAvatar()"() {
         given:
-        def avatar = new MockMultipartFile(AVATAR, "1234567" as byte[])
+        def avatar = new MockMultipartFile(AVATAR_COLLECTION, "1234567" as byte[])
 
         when:
         def result = service.updateAvatar(userProfile, avatar)
@@ -146,7 +147,7 @@ class ProfileServiceSpec extends Specification {
         then:
         1 * userService.currentUserId >> LONG_ID
         1 * userProfile.id >> LONG_ID
-        1 * imageService.createImage(avatar, AVATAR, _ as Map) >> image
+        1 * imageService.createImage(avatar, AVATAR_COLLECTION, _ as Map) >> image
         1 * image.id >> ONE
         1 * userProfile.setAvatar(ONE)
         1 * userProfile.save() >> userProfile
@@ -154,5 +155,18 @@ class ProfileServiceSpec extends Specification {
 
         and:
         result == userProfile
+    }
+
+    void "Test deleteProfile()"() {
+        when:
+        def result = service.deleteProfile(clubProfile)
+
+        then:
+        1 * clubProfile.avatar >> AVATAR_ID
+        1 * imageService.deleteImages(AVATAR_COLLECTION, [AVATAR_ID]) >> Boolean.TRUE
+        1 * clubProfile.delete([failOnError: Boolean.TRUE])
+
+        and:
+        result == Boolean.TRUE
     }
 }
