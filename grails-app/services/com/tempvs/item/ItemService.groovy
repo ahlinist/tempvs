@@ -3,15 +3,12 @@ package com.tempvs.item
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.ImageService
-import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
-
 /**
- * Service that manages {@link com.tempvs.item.Item}, {@link com.tempvs.item.ItemGroup}
- * and {@link com.tempvs.item.ItemStash} instances.
+ * Service that manages {@link com.tempvs.item.Item} and {@link com.tempvs.item.ItemGroup} instances.
  */
 @Transactional
 @GrailsCompileStatic
@@ -26,17 +23,12 @@ class ItemService {
     ObjectDAO objectDAO
 
     ItemGroup createGroup(String name, String description) {
-        User user = userService.currentUser
         ItemGroup itemGroup = objectFactory.create(ItemGroup.class)
         itemGroup.name = name
         itemGroup.description = description
-        itemGroup.itemStash = user.itemStash
+        itemGroup.user = userService.currentUser
         itemGroup.save()
         itemGroup
-    }
-
-    ItemStash getStash(String id) {
-        objectDAO.get(ItemStash, id)
     }
 
     ItemGroup getGroup(String id) {

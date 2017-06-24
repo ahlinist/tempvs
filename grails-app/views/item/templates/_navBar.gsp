@@ -1,6 +1,6 @@
 <div class="row">
   <span class="pull-left">
-    <g:link action="stash" id="${itemStash.id}">
+    <g:link action="stash" id="${user.id}">
       <u>
         <g:message code="item.stash.link" args="${[userProfile]}"/>
       </u>

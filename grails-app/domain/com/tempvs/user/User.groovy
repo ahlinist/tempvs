@@ -1,7 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.domain.BasePersistent
-import com.tempvs.item.ItemStash
+import com.tempvs.item.ItemGroup
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 
@@ -22,8 +22,8 @@ class User extends BasePersistent implements Serializable {
 	boolean passwordExpired
 	Date lastActive = new Date()
 
-	static hasOne = [userProfile: UserProfile, itemStash: ItemStash]
-	static hasMany = [clubProfiles: ClubProfile]
+	static hasOne = [userProfile: UserProfile]
+	static hasMany = [clubProfiles: ClubProfile, itemGroups: ItemGroup]
 
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this)*.role
@@ -38,5 +38,9 @@ class User extends BasePersistent implements Serializable {
 			!userProfile || (userProfile.user == user) ||
 					!clubProfile || (clubProfile.user == user)
 		}
+	}
+
+	static mapping = {
+		itemGroups batchSize: 20
 	}
 }

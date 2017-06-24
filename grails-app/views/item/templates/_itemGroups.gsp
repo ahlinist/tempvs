@@ -1,4 +1,3 @@
-<g:set var="itemGroups" value="${itemStash.itemGroups}"/>
 <g:if test="${itemGroups}">
   <h1>
     <g:message code="item.group.list.message"/>

@@ -5,10 +5,10 @@
       <title>Tempvs - <g:message code="item.stash.title"/></title>
     </head>
     <body>
-      <g:if test="${itemStash}">
-        <g:render template="/item/templates/navBar" model="${[itemStash, userProfile]}"/>
+      <g:if test="${user}">
+        <g:render template="/item/templates/navBar" model="${[user, userProfile]}"/>
         <div class="col-sm-3">
-          <g:render template="/item/templates/itemGroups" model="${[itemStash]}"/>
+          <g:render template="/item/templates/itemGroups" model="${[itemGroups]}"/>
           <g:if test="${editAllowed}">
             <div class="row">
               <tempvs:modalButton id="createGroup" message="item.createGroup.link">

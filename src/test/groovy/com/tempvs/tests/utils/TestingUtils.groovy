@@ -1,8 +1,8 @@
 package com.tempvs.tests.utils
 
-import com.tempvs.item.ItemStash
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
+
 /**
  * Utility class that encapsulates user-related operations to simplify
  * application unit-testing.
@@ -41,7 +41,6 @@ class TestingUtils {
     static User createUser(Map props = DEFAULT_USER_PROPS){
         User user = new User(props)
         user.userProfile = new UserProfile(props)
-        user.itemStash = new ItemStash()
         user.save(flush:true)
     }
 }

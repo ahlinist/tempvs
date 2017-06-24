@@ -41,7 +41,6 @@ class ItemControllerSpec extends Specification {
     def updatedItem = Mock(Item)
     def image = Mock(Image)
     def itemGroup = Mock(ItemGroup)
-    def itemStash = Mock(ItemStash)
     def itemImage = Mock(Image)
     def sourceImage = Mock(Image)
     def userService = Mock(UserService)
@@ -66,45 +65,49 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test stash() without id"() {
+        given:
+        Set itemGroups = [itemGroup]
+
         when:
         def result = controller.stash()
 
         then:
         1 * userService.currentUser >> user
-        1 * user.itemStash >> itemStash
+        1 * user.itemGroups >> itemGroups
         1 * user.userProfile >> userProfile
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
         0 * _
 
         and:
-        result == [itemStash: itemStash, userProfile: userProfile, editAllowed: Boolean.TRUE]
+        result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: Boolean.TRUE]
     }
 
-    void "Test stash() with id for existing stash"() {
+    void "Test stash() with id for existing user"() {
+        given:
+        Set itemGroups = [itemGroup]
+
         when:
         params.id = ONE
         def result = controller.stash()
 
         then:
-        1 * itemService.getStash(ONE) >> itemStash
-        1 * itemStash.user >> user
+        1 * userService.getUser(ONE) >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
+        1 * user.itemGroups >> itemGroups
         0 * _
 
         and:
-        result == [itemStash: itemStash, userProfile: userProfile, editAllowed: Boolean.TRUE]
+        result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: true]
     }
 
-    void "Test stash() with id for non-existing stash"() {
+    void "Test stash() with id for non-existing user"() {
         when:
         params.id = ONE
         def result = controller.stash()
 
         then:
-        1 * itemService.getStash(ONE) >> null
+        1 * userService.getUser(ONE) >> null
         0 * _
 
         and:
@@ -201,8 +204,7 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemGroup.itemStash >> itemStash
-        1 * itemStash.user >> user
+        1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
@@ -211,7 +213,7 @@ class ItemControllerSpec extends Specification {
         and:
         result == [
                 itemGroup: itemGroup,
-                itemStash: itemStash,
+                user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
         ]
@@ -240,6 +242,8 @@ class ItemControllerSpec extends Specification {
         1 * imageService.createImage(multipartSourceImage, _ as String, _ as Map) >> sourceImage
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemService.createItem(_ as Map) >> item
+        1 * itemImage.id >> ID
+        1 * sourceImage.id >> ID
         1 * itemGroup.id >> LONG_ID
         1 * item.validate() >> Boolean.TRUE
         1 * item.id >> LONG_ID
@@ -273,8 +277,7 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
-        1 * itemGroup.itemStash >> itemStash
-        1 * itemStash.user >> user
+        1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
@@ -284,7 +287,7 @@ class ItemControllerSpec extends Specification {
         result == [
                 item: item,
                 itemGroup: itemGroup,
-                itemStash: itemStash,
+                user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
         ]
@@ -301,9 +304,8 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
-        1 * itemGroup.itemStash >> itemStash
+        1 * itemGroup.user >> user
         1 * itemGroup.id >> LONG_ID
-        1 * itemStash.user >> user
         1 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteItem(item) >> Boolean.TRUE
@@ -325,10 +327,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemGroup.itemStash >> itemStash
-        1 * itemStash.id >> LONG_ID
-        1 * itemStash.user >> user
-        1 * user.id >> LONG_ID
+        1 * itemGroup.user >> user
+        2 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteGroup(itemGroup) >> Boolean.TRUE
         0 * _
@@ -361,8 +361,8 @@ class ItemControllerSpec extends Specification {
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
-        1 * imageService.replaceImage(ITEM_IMAGE_COLLECTION, ITEM_IMAGE_ID, multipartItemImage, _ as Map) >> itemImage
-        1 * imageService.replaceImage(SOURCE_IMAGE_COLLECTION, SOURCE_IMAGE_ID, multipartSourceImage, _ as Map) >> sourceImage
+        1 * imageService.replaceImage(multipartItemImage, ITEM_IMAGE_COLLECTION, _ as Map, ITEM_IMAGE_ID) >> itemImage
+        1 * imageService.replaceImage(multipartSourceImage, SOURCE_IMAGE_COLLECTION, _ as Map, SOURCE_IMAGE_ID) >> sourceImage
         1 * itemImage.id >> ID
         1 * sourceImage.id >> ID
         1 * itemService.updateItem(item, _ as Map) >> updatedItem

@@ -31,17 +31,16 @@ class ItemController {
 
     def stash(String id) {
         if (id) {
-            ItemStash itemStash = itemService.getStash(id)
+            User user = userService.getUser(id)
 
-            if (itemStash) {
-                User user = itemStash.user
-                [itemStash: itemStash, userProfile: user.userProfile, editAllowed: user.id == userService.currentUserId]
+            if (user) {
+                [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: user.id == userService.currentUserId]
             }
         } else {
             User user = userService.currentUser
 
             if (user) {
-                [itemStash: user.itemStash, userProfile: user.userProfile, editAllowed: user.id == userService.currentUserId]
+                [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: Boolean.TRUE]
             } else {
                 redirect controller: 'auth'
             }
@@ -71,13 +70,12 @@ class ItemController {
             ItemGroup itemGroup = itemService.getGroup(id)
 
             if (itemGroup) {
-                ItemStash itemStash = itemGroup?.itemStash
-                User user = itemStash?.user
+                User user = itemGroup.user
 
                 [
+                        user: user,
                         itemGroup: itemGroup,
-                        itemStash: itemStash,
-                        userProfile: user?.userProfile,
+                        userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                 ]
             }
@@ -93,8 +91,8 @@ class ItemController {
                 Map properties = [
                         name: command.name,
                         description: command.description,
-                        itemImage: imageService.createImage(command.itemImage, ITEM_IMAGE_COLLECTION, metaData),
-                        sourceImage: imageService.createImage(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData),
+                        itemImageId: imageService.createImage(command.itemImage, ITEM_IMAGE_COLLECTION, metaData)?.id,
+                        sourceImageId: imageService.createImage(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData)?.id,
                         itemGroup: itemGroup,
                 ]
 
@@ -116,15 +114,14 @@ class ItemController {
             Item item = itemService.getItem(id)
 
             if (item) {
-                ItemGroup itemGroup = item?.itemGroup
-                ItemStash itemStash = itemGroup?.itemStash
-                User user = itemStash?.user
+                ItemGroup itemGroup = item.itemGroup
+                User user = itemGroup.user
 
                 [
+                        user: user,
                         item: item,
                         itemGroup: itemGroup,
-                        itemStash: itemStash,
-                        userProfile: user?.userProfile,
+                        userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                 ]
             }
@@ -138,7 +135,7 @@ class ItemController {
             if (item) {
                 ItemGroup itemGroup = item.itemGroup
 
-                if (itemGroup.itemStash.user.id == userService.currentUserId) {
+                if (itemGroup.user.id == userService.currentUserId) {
                     if (itemService.deleteItem(item)) {
                         render([redirect: grailsLinkGenerator.link(action: 'group', id: itemGroup.id)] as JSON)
                     } else {
@@ -160,11 +157,10 @@ class ItemController {
             ItemGroup itemGroup = itemService.getGroup id
 
             if (itemGroup) {
-                ItemStash itemStash = itemGroup.itemStash
-
-                if (itemStash.user.id == userService.currentUserId) {
+                User user = itemGroup.user
+                if (user.id == userService.currentUserId) {
                     if (itemService.deleteGroup(itemGroup)) {
-                        render([redirect: grailsLinkGenerator.link(action: 'stash', id: itemStash.id)] as JSON)
+                        render([redirect: grailsLinkGenerator.link(action: 'stash', id: user.id)] as JSON)
                     } else {
                         render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
                     }
@@ -190,12 +186,12 @@ class ItemController {
                     MultipartFile multipartSourceImage = command.sourceImage
 
                     if (!multipartItemImage.empty) {
-                        Image itemImage = imageService.replaceImage(ITEM_IMAGE_COLLECTION, item.itemImageId, multipartItemImage, metaData)
+                        Image itemImage = imageService.replaceImage(multipartItemImage, ITEM_IMAGE_COLLECTION, metaData, item.itemImageId)
                         properties.itemImageId = itemImage.id
                     }
 
                     if (!multipartSourceImage.empty) {
-                        Image sourceImage = imageService.replaceImage(SOURCE_IMAGE_COLLECTION, item.sourceImageId, multipartSourceImage, metaData)
+                        Image sourceImage = imageService.replaceImage(multipartSourceImage, SOURCE_IMAGE_COLLECTION, metaData, item.sourceImageId)
                         properties.sourceImageId = sourceImage.id
                     }
 

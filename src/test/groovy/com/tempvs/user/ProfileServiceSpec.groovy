@@ -145,12 +145,13 @@ class ProfileServiceSpec extends Specification {
         def result = service.updateAvatar(userProfile, avatar)
 
         then:
-        1 * userService.currentUserId >> LONG_ID
-        1 * userProfile.id >> LONG_ID
-        1 * imageService.createImage(avatar, AVATAR_COLLECTION, _ as Map) >> image
-        1 * image.id >> ONE
+        1 * userProfile.avatar >> ONE
         1 * userProfile.setAvatar(ONE)
+        1 * userProfile.id >> LONG_ID
         1 * userProfile.save() >> userProfile
+        1 * userService.currentUserId >> LONG_ID
+        1 * imageService.replaceImage(avatar, AVATAR_COLLECTION, _ as Map, ONE) >> image
+        1 * image.id >> ONE
         0 * _
 
         and:

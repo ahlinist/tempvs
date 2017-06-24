@@ -13,13 +13,10 @@ import spock.lang.Specification
 class ItemViewSpec extends Specification {
 
     private static final String ITEM_STASH_TITLE = 'item.stash.title'
-    private static final String CREATE_GROUP = 'item.createGroup.title'
-    private static final String CREATE_ITEM = 'item.createItem.title'
     private static final String ITEM_GROUP_TITLE = 'item.group.title'
     private static final String ITEM_TITLE = 'item.show.title'
     private static final String ITEM_GROUPS = 'itemGroups'
     private static final String ITEM_GROUP = 'itemGroup'
-    private static final String ITEM_STASH = 'itemStash'
     private static final String USER = 'user'
     private static final String USER_PROFILE = 'userProfile'
     private static final String STASH_NOT_FOUND = 'item.stash.notFound.message'
@@ -35,13 +32,11 @@ class ItemViewSpec extends Specification {
 
     def user
     def item
-    def itemStash
     def itemGroup
     def userProfile = Mock(UserProfile)
 
     def setup() {
         user = Mock(User)
-        itemStash = Mock(ItemStash)
         itemGroup = Mock(ItemGroup)
         item = Mock(Item)
     }
@@ -71,7 +66,8 @@ class ItemViewSpec extends Specification {
         String createButton = '<tempvs:modalButton id="createGroup" message="item.createGroup.link">'
         String itemGroupLink = '<a href="/item/group/1" class="list-group-item">'
         Map model = [
-                itemStash: itemStash,
+                user: user,
+                itemGroups: [itemGroup],
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
         ]
@@ -80,11 +76,10 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/stash', model: model
 
         then:
-        1 * itemStash.getProperty(ITEM_GROUPS) >> [itemGroup]
-        1 * itemStash.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * itemGroup.getProperty(ID) >> ONE
+        1 * user.getProperty(ID) >> ONE
         1 * userProfile.toString()
         0 * _
 
@@ -116,26 +111,22 @@ class ItemViewSpec extends Specification {
         List items = [item]
         Map model = [
                 itemGroup: itemGroup,
-                itemStash: itemStash,
+                user: user,
                 userProfile: userProfile,
-                ownGroup: Boolean.TRUE,
+                editAllowed: Boolean.TRUE,
         ]
 
         when:
         String result = render view: '/item/group', model: model
 
         then:
-        1 * itemStash.getProperty(USER) >> user
-        1 * itemStash.getProperty(ID) >> ID
         3 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(ITEMS) >> items
-        1 * itemGroup.getProperty(ITEM_STASH) >> itemStash
         1 * item.getProperty(ID) >> ID
         1 * item.getProperty(NAME) >> NAME
-        1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * userProfile.toString()
+        1 * user.getProperty(ID) >> ONE
         0 * _
 
         and:
@@ -165,7 +156,7 @@ class ItemViewSpec extends Specification {
         Map model = [
                 item: item,
                 itemGroup: itemGroup,
-                itemStash: itemStash,
+                user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
         ]
@@ -179,13 +170,9 @@ class ItemViewSpec extends Specification {
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
         1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID
-        1 * item.getProperty(ITEM_GROUP) >> itemGroup
         1 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
-        1 * itemGroup.getProperty(ITEM_STASH) >> itemStash
-        1 * itemStash.getProperty(USER) >> user
-        1 * itemStash.getProperty(ID) >> ID
-        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * user.getProperty(ID) >> ID
         0 * _
 
         and:

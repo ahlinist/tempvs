@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.user.User
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -12,7 +13,7 @@ class ItemGroupSpec extends Specification {
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
 
-    def itemStash = Mock(ItemStash)
+    def user = Mock(User)
 
     def setup() {
     }
@@ -20,7 +21,7 @@ class ItemGroupSpec extends Specification {
     def cleanup() {
     }
 
-    void "Test itemGroup creation being not assigned to itemStash"() {
+    void "Test itemGroup creation being not assigned to user"() {
         given:
         ItemGroup itemGroup = new ItemGroup()
         itemGroup.name = NAME
@@ -33,7 +34,7 @@ class ItemGroupSpec extends Specification {
     void "Test itemGroup creation without name"() {
         given:
         ItemGroup itemGroup = new ItemGroup()
-        itemGroup.itemStash = itemStash
+        itemGroup.user = user
         itemGroup.description = DESCRIPTION
 
         expect:
@@ -43,7 +44,7 @@ class ItemGroupSpec extends Specification {
     void "Test correct itemGroup creation"() {
         given:
         ItemGroup itemGroup = new ItemGroup()
-        itemGroup.itemStash = itemStash
+        itemGroup.user = user
         itemGroup.name = NAME
 
         expect:

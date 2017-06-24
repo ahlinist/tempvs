@@ -1,6 +1,3 @@
-<g:set var="itemStash" value="${itemGroup?.itemStash}"/>
-<g:set var="userProfile" value="${itemStash?.user?.userProfile}"/>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,7 +6,7 @@
     </head>
     <body>
       <g:if test="${itemGroup}">
-        <g:render template="/item/templates/navBar" model="${[itemGroup, itemStash, userProfile]}"/>
+        <g:render template="/item/templates/navBar" model="${[itemGroup, user, userProfile]}"/>
         <div class="col-sm-3">
           <b>${itemGroup.name}</b>
           <br/>
@@ -20,7 +17,7 @@
                <g:link class="btn btn-default" action="show" id="${item.id}">${item.name}</g:link>
              </div>
           </g:each>
-          <g:if test="${ownGroup}">
+          <g:if test="${editAllowed}">
             <div class="row">
               <tempvs:modalButton id="itemForm" message="item.createItem.link">
                 <g:render template="/item/templates/itemForm" model="${[action: 'createItem', button: 'item.createItem.button']}"/>

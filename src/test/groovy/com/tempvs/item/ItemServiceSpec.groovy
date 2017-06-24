@@ -2,13 +2,11 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
-import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -25,15 +23,12 @@ class ItemServiceSpec extends Specification {
 
     def userService = Mock(UserService)
     def user = Mock(User)
-    def itemStash = Mock(ItemStash)
     def itemGroup = Mock(ItemGroup)
     def item = Mock(Item)
     def item2 = Mock(Item)
     def objectFactory = Mock(ObjectFactory)
     def objectDAO = Mock(ObjectDAO)
     def imageService = Mock(ImageService)
-    def itemImage = Mock(Image)
-    def sourceImage = Mock(Image)
 
     def setup() {
         service.userService = userService
@@ -54,8 +49,7 @@ class ItemServiceSpec extends Specification {
         1 * objectFactory.create(ItemGroup.class) >> itemGroup
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
-        1 * user.itemStash >> itemStash
-        1 * itemGroup.setItemStash(itemStash)
+        1 * itemGroup.setUser(user)
         1 * itemGroup.save() >> null
         0 * _
 
@@ -72,25 +66,12 @@ class ItemServiceSpec extends Specification {
         1 * objectFactory.create(ItemGroup.class) >> itemGroup
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
-        1 * user.itemStash >> itemStash
-        1 * itemGroup.setItemStash(itemStash)
+        1 * itemGroup.setUser(user)
         1 * itemGroup.save() >> itemGroup
         0 * _
 
         and:
         result == itemGroup
-    }
-
-    void "Test getStash()"() {
-        when:
-        def result = service.getStash(ID)
-
-        then:
-        1 * objectDAO.get(ItemStash, ID) >> itemStash
-        0 * _
-
-        and:
-        result == itemStash
     }
 
     void "Test getGroup()"() {

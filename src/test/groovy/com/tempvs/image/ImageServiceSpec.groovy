@@ -86,7 +86,7 @@ class ImageServiceSpec extends Specification {
         ]
 
         when:
-        def result = service.replaceImage(COLLECTION, ID, multipartFile, metaData)
+        def result = service.replaceImage(multipartFile, COLLECTION, metaData, ID)
 
         then:
         1 * imageDAO.delete(COLLECTION, [ID]) >> Boolean.TRUE

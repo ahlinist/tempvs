@@ -61,7 +61,7 @@ class ProfileService {
                 ],
         ]
 
-        Image avatar = imageService.createImage(multipartAvatar, AVATAR_COLLECTION, metaData)
+        Image avatar = imageService.replaceImage(multipartAvatar, AVATAR_COLLECTION, metaData, profile.avatar)
         profile.avatar = avatar.id
         profile.save()
         profile

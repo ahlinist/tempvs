@@ -38,7 +38,7 @@ class ImageService {
         }
     }
 
-    Image replaceImage(String collection, String objectId, MultipartFile multipartFile, Map metaData) {
+    Image replaceImage(MultipartFile multipartFile, String collection, Map metaData, String objectId = null) {
         deleteImages(collection, [objectId])
         createImage(multipartFile, collection, metaData)
     }

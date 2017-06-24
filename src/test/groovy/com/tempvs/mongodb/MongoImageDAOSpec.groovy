@@ -99,7 +99,8 @@ class MongoImageDAOSpec extends Specification {
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        3 * gridFS.remove(_ as ObjectId)
+        3 * gridFS.findOne(_ as ObjectId) >> gridFSDBFile
+        3 * gridFS.remove(gridFSDBFile)
         0 * _
 
         and:

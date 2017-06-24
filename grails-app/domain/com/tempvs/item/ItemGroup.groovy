@@ -1,10 +1,11 @@
 package com.tempvs.item
 
 import com.tempvs.domain.BasePersistent
+import com.tempvs.user.User
 import grails.compiler.GrailsCompileStatic
 
 /**
- * Group of {@link com.tempvs.item.Item} that belong to {@link com.tempvs.item.ItemStash}.
+ * Group of {@link com.tempvs.item.Item} that belong to {@link com.tempvs.user.User}.
  */
 @GrailsCompileStatic
 class ItemGroup extends BasePersistent {
@@ -12,16 +13,15 @@ class ItemGroup extends BasePersistent {
     String name
     String description
 
-    static belongsTo = [itemStash: ItemStash]
+    static belongsTo = [user: User]
     static hasMany = [items: Item]
 
     static constraints = {
-        name unique: ['itemStash']
+        name unique: ['user']
         description nullable: true
     }
 
     static mapping = {
-        itemStash fetch: 'join'
         items batchSize: 20
     }
 }
