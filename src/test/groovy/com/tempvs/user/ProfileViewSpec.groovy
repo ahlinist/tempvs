@@ -47,11 +47,12 @@ class ProfileViewSpec extends Specification {
 
     void "Test /profile/userProfile view"() {
         given:
-        Map model = [profile: userProfile, id: 1]
         String title = "<title>Tempvs - <tempvs:fullName profile=\"${userProfile}\"/></title>"
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
+        String updateProfileButton = 'tempvs:modalButton id="updateProfile" message="profile.updateProfile.link"'
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
         String clubProfileTag = "<tempvs:fullName profile=\"${clubProfile}\"/>"
+        Map model = [profile: userProfile, id: 1, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/profile/userProfile', model: model
@@ -61,13 +62,16 @@ class ProfileViewSpec extends Specification {
         result.contains lastActive
         result.contains clubProfileLink
         result.contains clubProfileTag
+        result.contains updateProfileButton
     }
 
     void "Test /profile/clubProfile view"() {
         given:
+        String updateProfileButton = 'tempvs:modalButton id="updateProfile" message="profile.updateProfile.link"'
+        String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" message="profile.delete.button">'
         String title = "<title>Tempvs - <tempvs:fullName profile=\"${clubProfile}\"/></title>"
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
-        Map model = [profile: clubProfile, id: 1, sec: [username:{}]]
+        Map model = [profile: clubProfile, id: 1, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/profile/clubProfile', model: model
@@ -75,43 +79,8 @@ class ProfileViewSpec extends Specification {
         then:
         result.contains title
         result.contains lastActive
-    }
-
-    void "Test /profile/editUserProfile view"() {
-        given:
-        String title = "<title>Tempvs - Edit <tempvs:fullName profile=\"${userProfile}\"/></title>"
-        String updateAvatar = '<tempvs:ajaxForm controller="profile" action="updateAvatar">'
-        String updateProfileEmail = '<tempvs:ajaxForm action="updateProfileEmail">'
-        String updateUserProfile = '<tempvs:ajaxForm action="updateUserProfile">'
-
-        Map model = [profile: userProfile]
-
-        when:
-        String result = render view: '/profile/editUserProfile', model: model
-
-        then:
-        result.contains title
-        result.contains updateAvatar
-        result.contains updateProfileEmail
-        result.contains updateUserProfile
-    }
-
-    void "Test /profile/editClubProfile view"() {
-        given:
-        String title = "<title>Tempvs - Edit <tempvs:fullName profile=\"${userProfile}\"/></title>"
-        String updateAvatar = '<tempvs:ajaxForm controller="profile" action="updateAvatar">'
-        String updateProfileEmail = '<tempvs:ajaxForm action="updateProfileEmail">'
-        String updateUserProfile = '<tempvs:ajaxForm action="updateClubProfile">'
-        Map model = [profile: userProfile]
-
-        when:
-        String result = render view: '/profile/editClubProfile', model: model
-
-        then:
-        result.contains title
-        result.contains updateAvatar
-        result.contains updateProfileEmail
-        result.contains updateUserProfile
+        result.contains updateProfileButton
+        result.contains deleteProfileButton
     }
 
     void "Test /profile/create view"() {

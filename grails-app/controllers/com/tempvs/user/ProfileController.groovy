@@ -17,11 +17,9 @@ import org.springframework.web.multipart.MultipartHttpServletRequest
 class ProfileController {
 
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String PROFILE_UPDATED_MESSAGE = 'profile.updated.message'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
-    private static final String AVATAR_UPDATED_MESSAGE = 'profile.update.avatar.success.message'
     private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
     private static final String IMAGE_EMPTY = 'image.empty'
     private static final String AVATAR_IMAGE = 'avatarImage'
@@ -63,12 +61,6 @@ class ProfileController {
         }
 
         redirect destination
-    }
-
-
-    def edit() {
-        BaseProfile profile = profileHolder.profile
-        render view: "edit${profile.class.simpleName}", model: [profile: profile]
     }
 
     def list() {
@@ -125,7 +117,13 @@ class ProfileController {
         if (multipartAvatar.empty) {
             render ajaxResponseService.renderMessage(Boolean.FALSE, IMAGE_EMPTY)
         } else {
-            render ajaxResponseService.composeJsonResponse(profileService.updateAvatar(profileHolder.profile, multipartAvatar), AVATAR_UPDATED_MESSAGE)
+            BaseProfile profile = profileService.updateAvatar(profileHolder.profile, multipartAvatar)
+
+            if (profile.validate()) {
+                render([redirect: request.getHeader('referer')] as JSON)
+            } else {
+                render ajaxResponseService.composeJsonResponse(profile)
+            }
         }
     }
 
@@ -154,14 +152,20 @@ class ProfileController {
     }
 
     private updateProfile(command) {
-        render ajaxResponseService.composeJsonResponse(profileService.updateProfile(profileHolder.profile, command.properties), PROFILE_UPDATED_MESSAGE)
+        BaseProfile profile = profileService.updateProfile(profileHolder.profile, command.properties)
+
+        if (profile.validate()) {
+            render([redirect: request.getHeader('referer')] as JSON)
+        } else {
+            render ajaxResponseService.composeJsonResponse(profile)
+        }
     }
 
     private profile(String id, Closure getProfile) {
         if (id) {
-            BaseProfile profile = getProfile() as BaseProfile
+            BaseProfile profile = getProfile.call() as BaseProfile
 
-            profile ? [profile: profile, id: profile.identifier] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
+            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
         } else {
             User user = userService.currentUser
             UserProfile profile = user?.userProfile

@@ -24,8 +24,11 @@
             <div><g:message code="clubProfile.clubName.label" />: ${profile.clubName}</div>
           </div>
         </div>
-        <g:if test="${sec.username() == user.email.encodeAsHTML()}">
+        <g:if test="${editAllowed}">
           <div class="row">
+            <tempvs:modalButton id="updateProfile" message="profile.updateProfile.link">
+              <g:render template="/profile/templates/editClubProfile" model="${[profile: profile]}"/>
+            </tempvs:modalButton>
             <tempvs:modalButton id="deleteProfile" size="modal-sm" message="profile.delete.button">
               <g:message code='profile.deleteConfirmation.text' args="${[profile]}"/>
               <br/>

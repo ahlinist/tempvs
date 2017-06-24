@@ -11,18 +11,28 @@
       <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
 
       <g:if test="${profile}">
-        <div class="col-sm-3">
-          <tempvs:fullName profile="${profile}"/>
-          <tempvs:image objectId="${profile.avatar}" collection="avatar"/>
+        <g:set var="user" value="${profile.user}"/>
+        <div class="row">
+          <div class="col-sm-3">
+            <tempvs:fullName profile="${profile}"/>
+            <tempvs:image objectId="${profile.avatar}" collection="avatar"/>
+          </div>
+          <div class="col-sm-3">
+            <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${user.lastActive}"/></div>
+            <div><g:message code="userProfile.profileEmail.label" />: ${profile.profileEmail}</div>
+            <div><g:message code="userProfile.location.label" />: ${profile.location}</div>
+          </div>
+          <div class="col-sm-3">
+            <g:render template="/profile/templates/clubProfiles" model="${[user: profile.user]}"/>
+          </div>
         </div>
-        <div class="col-sm-3">
-          <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${profile.user.lastActive}"/></div>
-          <div><g:message code="userProfile.profileEmail.label" />: ${profile.profileEmail}</div>
-          <div><g:message code="userProfile.location.label" />: ${profile.location}</div>
-        </div>
-        <div class="col-sm-3">
-          <g:render template="/profile/templates/clubProfiles" model="${[user: profile.user]}"/>
-        </div>
+        <g:if test="${editAllowed}">
+          <div class="row">
+            <tempvs:modalButton id="updateProfile" message="profile.updateProfile.link">
+              <g:render template="/profile/templates/editUserProfile" model="${[profile: profile]}"/>
+            </tempvs:modalButton>
+          </div>
+        </g:if>
       </g:if>
       <g:elseif test="${message}">
         <g:message code="${message}" args="${args}" />

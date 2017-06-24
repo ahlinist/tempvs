@@ -24,15 +24,12 @@ class ProfileControllerSpec extends Specification {
     private static final String DIFFERENT_EMAIL = 'differentEmail'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String PROFILE_UPDATED_MESSAGE = 'profile.updated.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
-    private static final String AVATAR_UPDATED_MESSAGE = 'profile.update.avatar.success.message'
     private static final String AUTH_URL = '/auth/index'
     private static final String EDIT_PROFILE_PAGE = '/profile/edit'
     private static final String PROFILE_URL = '/profile/index'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
-    private static final String EDIT_CLUB_PROFILE_PAGE = '/profile/editClubProfile'
     private static final String IMAGE_EMPTY = 'image.empty'
 
     def userService = Mock(UserService)
@@ -97,10 +94,11 @@ class ProfileControllerSpec extends Specification {
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
         1 * userProfile.asType(BaseProfile.class) >> userProfile
         1 * userProfile.getIdentifier() >> IDENTIFIER
+        1 * profileHolder.profile >> userProfile
         0 * _
 
         and:
-        result == [profile: userProfile, id: IDENTIFIER]
+        result == [profile: userProfile, id: IDENTIFIER, editAllowed: Boolean.TRUE]
     }
 
     void "Test userProfile() for non-existent profile"() {
@@ -166,20 +164,6 @@ class ProfileControllerSpec extends Specification {
         response.redirectedUrl == PROFILE_URL
     }
 
-    void "Test edit()"() {
-        when:
-        controller.edit()
-
-        then:
-        1 * profileHolder.profile >> clubProfile
-        0 * _
-
-        and:
-        controller.modelAndView.model == [profile: clubProfile]
-        controller.modelAndView.viewName.contains EDIT_CLUB_PROFILE_PAGE
-        response.redirectedUrl == null
-    }
-
     void "Test list()"() {
         when:
         def result = controller.list()
@@ -229,6 +213,9 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test updateClubProfile()"() {
+        given:
+        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
+
         when:
         controller.updateClubProfile(clubProfileCommand)
 
@@ -236,9 +223,11 @@ class ProfileControllerSpec extends Specification {
         7 * clubProfileCommand._
         1 * profileHolder.getProfile() >> clubProfile
         1 * profileService.updateProfile(clubProfile, _) >> clubProfile
-        1 * ajaxResponseService.composeJsonResponse(clubProfile, PROFILE_UPDATED_MESSAGE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
+        1 * clubProfile.validate() >> Boolean.TRUE
         0 * _
+
+        and:
+        response.json.redirect  == "${USER_PROFILE_PAGE_URI}/${LONG_ID}"
     }
 
     void "Test updateUserProfile()"() {
@@ -249,7 +238,8 @@ class ProfileControllerSpec extends Specification {
         5 * userProfileCommand._
         1 * profileHolder.getProfile() >> userProfile
         1 * profileService.updateProfile(userProfile, _) >> userProfile
-        1 * ajaxResponseService.composeJsonResponse(userProfile, PROFILE_UPDATED_MESSAGE) >> json
+        1 * userProfile.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.composeJsonResponse(userProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -305,6 +295,7 @@ class ProfileControllerSpec extends Specification {
         given:
         def avatar = new MockMultipartFile(AVATAR_IMAGE, "1234567" as byte[])
         controller.request.addFile(avatar)
+        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 
         when:
         controller.updateAvatar()
@@ -312,9 +303,11 @@ class ProfileControllerSpec extends Specification {
         then:
         1 * profileHolder.profile >> userProfile
         1 * profileService.updateAvatar(userProfile, avatar) >> userProfile
-        1 * ajaxResponseService.composeJsonResponse(userProfile, AVATAR_UPDATED_MESSAGE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
+        1 * userProfile.validate() >> Boolean.TRUE
         0 * _
+
+        and:
+        response.json.redirect  == "${USER_PROFILE_PAGE_URI}/${LONG_ID}"
     }
 
     void "Test updateAvatar() without file"() {
