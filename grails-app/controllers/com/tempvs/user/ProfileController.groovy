@@ -2,10 +2,8 @@ package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
 import grails.compiler.GrailsCompileStatic
-import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.multipart.MultipartHttpServletRequest
 
@@ -74,12 +72,12 @@ class ProfileController {
 
                 if (clubProfile) {
                     profileHolder.profile = clubProfile
-                    render([redirect: grailsLinkGenerator.link(controller: 'profile', action: 'edit')] as JSON)
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'edit'))
                 } else {
-                    render ajaxResponseService.composeJsonResponse(command)
+                    render ajaxResponseService.renderValidationResponse(command)
                 }
             } else {
-                render ajaxResponseService.composeJsonResponse(command)
+                render ajaxResponseService.renderValidationResponse(command)
             }
         }
     }
@@ -92,21 +90,19 @@ class ProfileController {
         updateProfile(command)
     }
 
-    def updateProfileEmail(String profileEmail) {
+    def updateProfileEmail(String email) {
         BaseProfile profile = profileHolder.profile
 
-        if (profileEmail == profile.profileEmail) {
-            String message = messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale)
-            render([messages: [message]] as JSON)
+        if (email == profile.profileEmail) {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
         } else {
-            if (!userService.isEmailUnique(profileEmail)) {
-                String message = messageSource.getMessage(EMAIL_USED, null, EMAIL_USED, LocaleContextHolder.locale)
-                render([messages: [message]] as JSON)
+            if (!userService.isEmailUnique(email)) {
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
             } else {
                 Map props = [instanceId: profile.id,
-                             email: profileEmail,
+                             email: email,
                              action: profile.class.simpleName.toLowerCase()]
-                render ajaxResponseService.composeJsonResponse(verifyService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
+                render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
             }
         }
     }
@@ -115,14 +111,14 @@ class ProfileController {
 	    MultipartFile multipartAvatar = ((MultipartHttpServletRequest) request).getFile(AVATAR_IMAGE)
 
         if (multipartAvatar.empty) {
-            render ajaxResponseService.renderMessage(Boolean.FALSE, IMAGE_EMPTY)
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY)
         } else {
             BaseProfile profile = profileService.updateAvatar(profileHolder.profile, multipartAvatar)
 
             if (profile.validate()) {
-                render([redirect: request.getHeader('referer')] as JSON)
+                render ajaxResponseService.renderRedirect(request.getHeader('referer'))
             } else {
-                render ajaxResponseService.composeJsonResponse(profile)
+                render ajaxResponseService.renderValidationResponse(profile)
             }
         }
     }
@@ -140,13 +136,13 @@ class ProfileController {
                     if (profileService.deleteProfile(profile)) {
                         profileHolder.profile = null
                         success = Boolean.TRUE
-                        render([redirect: grailsLinkGenerator.link(controller: 'profile')] as JSON)
+                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
                     }
                 }
             }
 
             if (!success) {
-                render ajaxResponseService.renderMessage(success, message)
+                render ajaxResponseService.renderFormMessage(success, message)
             }
         }
     }
@@ -155,9 +151,9 @@ class ProfileController {
         BaseProfile profile = profileService.updateProfile(profileHolder.profile, command.properties)
 
         if (profile.validate()) {
-            render([redirect: request.getHeader('referer')] as JSON)
+            render ajaxResponseService.renderRedirect(request.getHeader('referer'))
         } else {
-            render ajaxResponseService.composeJsonResponse(profile)
+            render ajaxResponseService.renderValidationResponse(profile)
         }
     }
 

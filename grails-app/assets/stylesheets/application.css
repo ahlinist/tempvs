@@ -59,3 +59,11 @@ div {
 input, .list-group-item {
     padding: 0.2em 1em;
 }
+
+.popover {
+    width:100%;
+}
+
+.tempvs-form-field {
+    margin:0.3em 0 0.3em 0;
+}

@@ -6,7 +6,6 @@ import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
-import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import org.springframework.web.multipart.MultipartFile
 
@@ -55,12 +54,12 @@ class ItemController {
                 ItemGroup itemGroup = itemService.createGroup(name, description)
 
                 if (itemGroup.validate()) {
-                    render([redirect: grailsLinkGenerator.link(action: 'group', id: itemGroup.id)] as JSON)
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: itemGroup.id))
                 } else {
-                    render ajaxResponseService.composeJsonResponse(itemGroup)
+                    render ajaxResponseService.renderValidationResponse(itemGroup)
                 }
             } else {
-                render ajaxResponseService.composeJsonResponse(command)
+                render ajaxResponseService.renderValidationResponse(command)
             }
         }
     }
@@ -99,12 +98,12 @@ class ItemController {
                 Item item = itemService.createItem(properties)
 
                 if (item.validate()) {
-                    render([redirect: grailsLinkGenerator.link(action: 'show', id: item.id)] as JSON)
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: item.id))
                 } else {
-                    render ajaxResponseService.composeJsonResponse(item)
+                    render ajaxResponseService.renderValidationResponse(item)
                 }
             } else {
-                render ajaxResponseService.composeJsonResponse(command)
+                render ajaxResponseService.renderValidationResponse(command)
             }
         }
     }
@@ -137,18 +136,16 @@ class ItemController {
 
                 if (itemGroup.user.id == userService.currentUserId) {
                     if (itemService.deleteItem(item)) {
-                        render([redirect: grailsLinkGenerator.link(action: 'group', id: itemGroup.id)] as JSON)
+                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: itemGroup.id))
                     } else {
-                        render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+                        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
                     }
                 } else {
-                    render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
                 }
             } else {
-                render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
             }
-        } else {
-            redirect action: 'stash'
         }
     }
 
@@ -160,18 +157,16 @@ class ItemController {
                 User user = itemGroup.user
                 if (user.id == userService.currentUserId) {
                     if (itemService.deleteGroup(itemGroup)) {
-                        render([redirect: grailsLinkGenerator.link(action: 'stash', id: user.id)] as JSON)
+                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash', id: user.id))
                     } else {
-                        render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
+                        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
                     }
                 } else {
-                    render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
+                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
                 }
             } else {
-                render ajaxResponseService.renderMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
             }
-        } else {
-            redirect action: 'stash'
         }
     }
 
@@ -198,13 +193,13 @@ class ItemController {
                     Item updatedItem = itemService.updateItem(item, properties)
 
                     if (updatedItem.validate()) {
-                        render([redirect: grailsLinkGenerator.link(action: 'show', id: updatedItem.id)] as JSON)
+                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: updatedItem.id))
                     } else {
-                        render ajaxResponseService.composeJsonResponse(itemService.updateItem(item, properties))
+                        render ajaxResponseService.renderValidationResponse(itemService.updateItem(item, properties))
                     }
                 }
             } else {
-                render ajaxResponseService.composeJsonResponse(command)
+                render ajaxResponseService.renderValidationResponse(command)
             }
         }
     }

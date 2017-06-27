@@ -6,9 +6,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -76,11 +74,9 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userService.currentUserEmail >> EMAIL
-        1 * messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale) >> EMAIL_UPDATE_DUPLICATE
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.messages == [EMAIL_UPDATE_DUPLICATE]
     }
 
     void "Check updateEmail action for used email"() {
@@ -91,11 +87,9 @@ class UserControllerSpec extends Specification {
         then:
         1 * userService.currentUserEmail >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
-        1 * messageSource.getMessage(EMAIL_USED, null, EMAIL_USED, LocaleContextHolder.locale) >> EMAIL_USED
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.messages == [EMAIL_USED]
     }
 
     void "Check updateEmail action"() {
@@ -108,7 +102,7 @@ class UserControllerSpec extends Specification {
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userService.currentUserId >> LONG_ID
         1 * verifyService.createEmailVerification([instanceId: LONG_ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
-        1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
+        1 * ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -119,7 +113,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userPasswordCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(userPasswordCommand, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * ajaxResponseService.renderValidationResponse(userPasswordCommand, PASSWORD_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -132,7 +126,7 @@ class UserControllerSpec extends Specification {
         1 * userPasswordCommand.validate() >> Boolean.TRUE
         1 * userPasswordCommand.getNewPassword() >> NEW_PASSWORD
         1 * userService.updatePassword(NEW_PASSWORD) >> user
-        1 * ajaxResponseService.composeJsonResponse(user, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * ajaxResponseService.renderValidationResponse(user, PASSWORD_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -144,7 +138,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * registerCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(registerCommand) >> json
+        1 * ajaxResponseService.renderValidationResponse(registerCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -159,7 +153,7 @@ class UserControllerSpec extends Specification {
         1 * registerCommand.getProperty(PROPERTIES) >> [:]
         1 * userService.createUser(_ as Map) >> user
         1 * user.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.composeJsonResponse(user) >> json
+        1 * ajaxResponseService.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -176,9 +170,8 @@ class UserControllerSpec extends Specification {
         1 * userService.createUser(_ as Map) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(*_)
+        1 * ajaxResponseService.renderRedirect(PROFILE_PAGE_URI) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.redirect == PROFILE_PAGE_URI
     }
 }

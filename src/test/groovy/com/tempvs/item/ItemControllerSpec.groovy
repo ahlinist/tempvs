@@ -12,6 +12,7 @@ import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -125,7 +126,7 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * createItemGroupCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(createItemGroupCommand) >> json
+        1 * ajaxResponseService.renderValidationResponse(createItemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -143,7 +144,7 @@ class ItemControllerSpec extends Specification {
         1 * createItemGroupCommand.getDescription() >> DESCRIPTION
         1 * itemService.createGroup(NAME, DESCRIPTION) >> itemGroup
         1 * itemGroup.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(itemGroup) >> json
+        1 * ajaxResponseService.renderValidationResponse(itemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -165,10 +166,9 @@ class ItemControllerSpec extends Specification {
         1 * itemGroup.validate() >> Boolean.TRUE
         1 * itemGroup.getId() >> LONG_ID
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_GROUP_URI}/${LONG_ID}"
+        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.redirect == "${ITEM_GROUP_URI}/${LONG_ID}"
     }
 
     void "Test group() without id"() {
@@ -248,10 +248,9 @@ class ItemControllerSpec extends Specification {
         1 * item.validate() >> Boolean.TRUE
         1 * item.id >> LONG_ID
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ID}"
+        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.redirect == "${ITEM_URI}/${LONG_ID}"
     }
 
     void "Test show() without id"() {
@@ -309,12 +308,9 @@ class ItemControllerSpec extends Specification {
         1 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteItem(item) >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        response.json.redirect == "${ITEM_GROUP_URI}/${LONG_ID}"
     }
 
     void "Test deleteGroup()"() {
@@ -331,12 +327,9 @@ class ItemControllerSpec extends Specification {
         2 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteGroup(itemGroup) >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${ITEM_STASH_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        controller.modelAndView == null
-        response.redirectedUrl == null
-        response.json.redirect == "${ITEM_STASH_URI}/${LONG_ID}"
     }
 
     void "Test editItem()"() {
@@ -368,11 +361,8 @@ class ItemControllerSpec extends Specification {
         1 * itemService.updateItem(item, _ as Map) >> updatedItem
         1 * updatedItem.validate() >> Boolean.TRUE
         1 * updatedItem.id >> LONG_ID
+        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        controller.modelAndView == null
-        !response.redirectedUrl
-        response.json.redirect == "${ITEM_URI}/${LONG_ID}"
     }
 }

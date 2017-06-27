@@ -22,9 +22,9 @@ function processAjaxRequest(element, url, data) {
         processData: false,
         contentType: false,
         beforeSend: function() {
+            clearForm(element);
             submitButton.attr("disabled", true);
             spinner.fadeIn();
-            $(element).find('.alert').remove();
         },
         complete: function() {
             submitButton.removeAttr("disabled");
@@ -33,41 +33,37 @@ function processAjaxRequest(element, url, data) {
         success: function(response) {
             if (response.redirect) {
                 window.location.href = response.redirect;
+            } else if (response.formMessage) {
+                createFormMessage(element, response.success, response.message);
             } else {
-                $.each(response.messages, function(index, message) {
-                    renderResponseMessage(element, response.success ? 'success' :'danger', message);
+                $.each(response, function(index, fieldEntry) {
+                    createPopover(element, fieldEntry);
                 });
+
+                $('.popped-over').popover('show');
             }
         },
         error: function() {
-            renderResponseMessage(element, 'danger', 'Something went wrong :(');
+            createFormMessage(element, false, "Something went wrong :(");
         }
     });
 };
 
-function renderResponseMessage(element, alertType, message) {
-    var alertBox = createAlertBox(alertType, message);
-    element.append(alertBox);
-    $(alertBox).hide().fadeIn();
-
-    $("a.close").click(function (e) {
-        $(this).parent().fadeOut();
-    });
+function createPopover(element, fieldEntry) {
+    var field = $(element).find('[name="' + fieldEntry.name + '"]')
+    field.addClass('popped-over').attr('data-placement','right').attr('data-content', fieldEntry.message).attr('data-html', true);
+    field.addClass('bg-danger');
 }
 
-function createAlertBox(alertType, message) {
-    var alertBox = document.createElement('div');
-    alertBox.display = 'none';
-    alertBox.className = 'alert alert-' + alertType + ' text-center';
-    alertBox.append(createCloseLink());
-    alertBox.innerHTML += message;
-    return alertBox;
+function clearForm(element) {
+    $(element).find('.popped-over').removeClass('popped-over').removeAttr('data-placement').removeAttr('data-content').popover('hide');
+    $(element).find('.form-message').remove();
+    $(element).find('.bg-danger').removeClass('bg-danger');
 }
 
-function createCloseLink() {
-    var closeLink = document.createElement('a');
-    closeLink.href = '#';
-    closeLink.className = 'close';
-    closeLink.innerHTML = '&times;';
-    return closeLink;
+function createFormMessage(element, success, message) {
+    var messageContainer = document.createElement('span');
+    $(messageContainer).addClass('text-center').addClass(success ? 'text-success' : 'text-danger').addClass('form-message');
+    messageContainer.innerHTML += message;
+    $(element).find('[name="submit-button"]').parent().append(messageContainer);
 }

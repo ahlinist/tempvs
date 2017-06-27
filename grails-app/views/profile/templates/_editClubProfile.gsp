@@ -3,7 +3,7 @@
   <tempvs:ajaxSubmitButton value="clubProfile.update.avatar.button" />
 </tempvs:ajaxForm>
 <tempvs:ajaxForm action="updateProfileEmail">
-  <tempvs:formField type="email" name="profileEmail" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
+  <tempvs:formField type="email" name="email" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
   <tempvs:ajaxSubmitButton value="clubEmail.update.button" />
 </tempvs:ajaxForm>
 <tempvs:ajaxForm action="updateClubProfile">

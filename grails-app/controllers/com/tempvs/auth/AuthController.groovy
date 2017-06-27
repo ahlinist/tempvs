@@ -5,11 +5,9 @@ import com.tempvs.user.User
 import com.tempvs.user.UserService
 import com.tempvs.user.VerifyService
 import grails.compiler.GrailsCompileStatic
-import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
 /**
@@ -45,20 +43,18 @@ class AuthController {
                         String referer = request.getHeader('referer')
 
                         if (referer.contains(LOGIN_PAGE_URI)) {
-                            render([redirect: grailsLinkGenerator.link(controller: 'profile')] as JSON)
+                            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
                         } else {
-                            render([redirect: grailsLinkGenerator.link(uri: referer)] as JSON)
+                            render ajaxResponseService.renderRedirect(referer)
                         }
                     } else {
-                        String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER, LocaleContextHolder.locale)
-                        render([messages: [message]] as JSON)
+                        render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
                     }
                 } else {
-                    String message = messageSource.getMessage(NO_SUCH_USER, null, NO_SUCH_USER, LocaleContextHolder.locale)
-                    render([messages: [message]] as JSON)
+                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
                 }
             } else {
-                render ajaxResponseService.composeJsonResponse(command)
+                render ajaxResponseService.renderValidationResponse(command)
             }
         }
     }
@@ -67,9 +63,9 @@ class AuthController {
         if (params.isAjaxRequest) {
             if (command.validate()) {
                 Map props = [action: REGISTRATION_ACTION, email: command.email]
-                render ajaxResponseService.composeJsonResponse(verifyService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
+                render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
             } else {
-                render ajaxResponseService.composeJsonResponse(command)
+                render ajaxResponseService.renderValidationResponse(command)
             }
         }
     }
@@ -79,4 +75,3 @@ class AuthController {
         redirect uri: request.getHeader('referer')
     }
 }
-

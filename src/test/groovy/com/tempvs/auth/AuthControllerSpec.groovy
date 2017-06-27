@@ -11,10 +11,8 @@ import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -68,7 +66,7 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * requestRegistrationCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(requestRegistrationCommand) >> json
+        1 * ajaxResponseService.renderValidationResponse(requestRegistrationCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -82,7 +80,7 @@ class AuthControllerSpec extends Specification {
         1 * requestRegistrationCommand.validate() >> Boolean.TRUE
         1 * requestRegistrationCommand.email >> EMAIL
         1 * verifyService.createEmailVerification(['action': REGISTER_ACTION, 'email': EMAIL]) >> emailVerification
-        1 * ajaxResponseService.composeJsonResponse(emailVerification, _ as String) >> json
+        1 * ajaxResponseService.renderValidationResponse(emailVerification, _ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -94,7 +92,7 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(loginCommand) >> json
+        1 * ajaxResponseService.renderValidationResponse(loginCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -108,11 +106,9 @@ class AuthControllerSpec extends Specification {
         1 * loginCommand.validate() >> Boolean.TRUE
         1 * loginCommand.email >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> null
-        1 * messageSource.getMessage(NO_SUCH_USER_CODE, null, NO_SUCH_USER_CODE, LocaleContextHolder.locale) >> NO_SUCH_USER_MESSAGE
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER_CODE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.messages == [NO_SUCH_USER_MESSAGE]
     }
 
     void "Testing login() for incorrect password"() {
@@ -127,11 +123,9 @@ class AuthControllerSpec extends Specification {
         1 * user.password >> PASSWORD
         1 * loginCommand.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.FALSE
-        1 * messageSource.getMessage(NO_SUCH_USER_CODE, null, NO_SUCH_USER_CODE, LocaleContextHolder.locale) >> NO_SUCH_USER_MESSAGE
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER_CODE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.messages == [NO_SUCH_USER_MESSAGE]
     }
 
     void "Testing login() for correct params"() {
@@ -152,11 +146,9 @@ class AuthControllerSpec extends Specification {
         2 * loginCommand.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.TRUE
         1 * springSecurityService.reauthenticate(EMAIL, PASSWORD)
-        1 * grailsLinkGenerator.link(linkGeneratorMap) >> TEST_URI
+        1 * ajaxResponseService.renderRedirect(TEST_URI) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.redirect == TEST_URI
     }
 
     void "Test logout()"() {

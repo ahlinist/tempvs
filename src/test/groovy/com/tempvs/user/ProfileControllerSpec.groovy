@@ -6,7 +6,6 @@ import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
 /**
@@ -183,7 +182,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(clubProfileCommand) >> json
+        1 * ajaxResponseService.renderValidationResponse(clubProfileCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
 
@@ -194,7 +193,7 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.validate() >> Boolean.TRUE
         1 * clubProfileCommand.getProperty(PROPERTIES)
         1 * profileService.createClubProfile(_) >> null
-        1 * ajaxResponseService.composeJsonResponse(clubProfileCommand) >> json
+        1 * ajaxResponseService.renderValidationResponse(clubProfileCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
 
@@ -206,10 +205,9 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.getProperty(PROPERTIES)
         1 * profileService.createClubProfile(_) >> clubProfile
         1 * profileHolder.setProfile(clubProfile)
+        1 * ajaxResponseService.renderRedirect(EDIT_PROFILE_PAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.redirect == EDIT_PROFILE_PAGE
     }
 
     void "Test updateClubProfile()"() {
@@ -224,10 +222,9 @@ class ProfileControllerSpec extends Specification {
         1 * profileHolder.getProfile() >> clubProfile
         1 * profileService.updateProfile(clubProfile, _) >> clubProfile
         1 * clubProfile.validate() >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.redirect  == "${USER_PROFILE_PAGE_URI}/${LONG_ID}"
     }
 
     void "Test updateUserProfile()"() {
@@ -239,45 +236,41 @@ class ProfileControllerSpec extends Specification {
         1 * profileHolder.getProfile() >> userProfile
         1 * profileService.updateProfile(userProfile, _) >> userProfile
         1 * userProfile.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.composeJsonResponse(userProfile) >> json
+        1 * ajaxResponseService.renderValidationResponse(userProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
     void "Test updateProfileEmail() for duplicate"() {
         when: 'Email duplicate'
-        params.profileEmail = EMAIL
+        params.email = EMAIL
         controller.updateProfileEmail()
 
         then:
         1 * profileHolder.getProfile() >> userProfile
         1 * userProfile.getProfileEmail() >> EMAIL
-        1 * messageSource.getMessage(EMAIL_UPDATE_DUPLICATE, null, EMAIL_UPDATE_DUPLICATE, LocaleContextHolder.locale) >> EMAIL_UPDATE_DUPLICATE
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.messages == [EMAIL_UPDATE_DUPLICATE]
     }
 
     void "Test updateProfileEmail() for non-unique entry"() {
         when:
-        params.profileEmail = EMAIL
+        params.email = EMAIL
         controller.updateProfileEmail()
 
         then:
         1 * profileHolder.getProfile() >> clubProfile
         1 * clubProfile.getProfileEmail() >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
-        1 * messageSource.getMessage(EMAIL_USED, null, EMAIL_USED, LocaleContextHolder.locale) >> EMAIL_USED
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.messages == [EMAIL_USED]
     }
 
     void "Test updateProfileEmail()"() {
         when:
-        params.profileEmail = EMAIL
+        params.email = EMAIL
         controller.updateProfileEmail()
 
         then:
@@ -286,7 +279,7 @@ class ProfileControllerSpec extends Specification {
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userProfile.getId() >> LONG_ID
         1 * verifyService.createEmailVerification(_) >> emailVerification
-        1 * ajaxResponseService.composeJsonResponse(emailVerification, UPDATE_PROFILE_EMAIL_MESSAGE_SENT) >> json
+        1 * ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_PROFILE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -304,10 +297,9 @@ class ProfileControllerSpec extends Specification {
         1 * profileHolder.profile >> userProfile
         1 * profileService.updateAvatar(userProfile, avatar) >> userProfile
         1 * userProfile.validate() >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.redirect  == "${USER_PROFILE_PAGE_URI}/${LONG_ID}"
     }
 
     void "Test updateAvatar() without file"() {
@@ -319,7 +311,7 @@ class ProfileControllerSpec extends Specification {
         controller.updateAvatar()
 
         then:
-        1 * ajaxResponseService.renderMessage(Boolean.FALSE, IMAGE_EMPTY) >> json
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -339,10 +331,8 @@ class ProfileControllerSpec extends Specification {
         1 * user.id >> LONG_ID
         1 * profileService.deleteProfile(clubProfile) >> Boolean.TRUE
         1 * profileHolder.setProfile(null)
+        1 * ajaxResponseService.renderRedirect(PROFILE_URL) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        !controller.modelAndView
-        response.json.redirect == PROFILE_URL
     }
 }
