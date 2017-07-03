@@ -10,7 +10,7 @@ import spock.lang.Specification
 @TestFor(UserProfile)
 @Mock([User, UserProfile])
 class UserProfileSpec extends Specification {
-    private static final String EMAIL_FOR_FAIL = 'fail@mail.com'
+
     private static final String NOT_EMAIL = 'not email'
     private static final String NUMERIC_PROFILE_ID = '123456'
 
@@ -47,11 +47,6 @@ class UserProfileSpec extends Specification {
         !TestingUtils.createUser(props)
     }
 
-    void "UserProfile created"() {
-        expect:
-        TestingUtils.createUser().userProfile
-    }
-
     void "User can not be created with numeric profileId"() {
         given:
         Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
@@ -68,9 +63,8 @@ class UserProfileSpec extends Specification {
         when: "Set numeric customId to existent user's profile"
         UserProfile userProfile = user.userProfile
         userProfile.profileId = NUMERIC_PROFILE_ID
-        userProfile.save(flush:true)
 
         then: "UserProfile has not been saved"
-        !UserProfile.findByProfileId(NUMERIC_PROFILE_ID)
+        !userProfile.validate()
     }
 }

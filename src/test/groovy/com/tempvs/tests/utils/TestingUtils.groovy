@@ -40,7 +40,9 @@ class TestingUtils {
 
     static User createUser(Map props = DEFAULT_USER_PROPS){
         User user = new User(props)
-        user.userProfile = new UserProfile(props)
+        UserProfile userProfile = new UserProfile(props)
+        user.userProfile = userProfile
+        userProfile.user = user
         user.save(flush:true)
     }
 }
