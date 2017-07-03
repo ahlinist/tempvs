@@ -73,7 +73,7 @@ class ProfileController {
 
                 if (clubProfile) {
                     profileHolder.profile = clubProfile
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'edit'))
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: clubProfile.id))
                 } else {
                     render ajaxResponseService.renderValidationResponse(command)
                 }

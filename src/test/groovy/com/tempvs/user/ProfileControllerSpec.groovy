@@ -30,6 +30,7 @@ class ProfileControllerSpec extends Specification {
     private static final String PROFILE_URL = '/profile/index'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String IMAGE_EMPTY = 'image.empty'
+    private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
 
     def userService = Mock(UserService)
 
@@ -205,7 +206,8 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.getProperty(PROPERTIES)
         1 * profileService.createClubProfile(_) >> clubProfile
         1 * profileHolder.setProfile(clubProfile)
-        1 * ajaxResponseService.renderRedirect(EDIT_PROFILE_PAGE) >> json
+        1 * clubProfile.id >> LONG_ID
+        1 * ajaxResponseService.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
