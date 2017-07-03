@@ -10,11 +10,8 @@ import spock.lang.Specification
 class CommonTagLibSpec extends Specification {
 
     private static final String ID = 'id'
-    private static final String URL = "'/item/deleteItem/id'"
-    private static final String ITEM = 'item'
     private static final String SIZE = 'size'
     private static final String MESSAGE = 'message'
-    private static final String DELETE_ITEM = 'deleteItem'
 
     def setup() {
     }
@@ -22,17 +19,12 @@ class CommonTagLibSpec extends Specification {
     def cleanup() {
     }
 
-    void "Test tempvs:ajaxLink"() {
-        given:
-        String event = "<span onclick=\"sendAjaxRequest(this, ${URL});\">"
-        String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
-
+    void "Test tempvs:formField"() {
         when:
-        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\"/>")
+        def template = applyTemplate('<tempvs:formField type="text" name="name" value="" label="label" />')
 
         then:
-        template.contains spinner
-        template.contains event
+        template.contains '<input type="text" '
     }
 
     void "Test tempvs:modalButton"() {

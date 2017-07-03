@@ -1,4 +1,4 @@
-package com.tempvs.form
+package com.tempvs.ajax
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -6,10 +6,14 @@ import spock.lang.Specification
 /**
  * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
  */
-@TestFor(FormToolsTagLib)
-class FormToolsTagLibSpec extends Specification {
+@TestFor(AjaxTagLib)
+class AjaxTagLibSpec extends Specification {
 
     private static final String MESSAGE = 'message'
+    private static final String ID = 'id'
+    private static final String DELETE_ITEM_URL = "'/item/deleteItem/id'"
+    private static final String ITEM = 'item'
+    private static final String DELETE_ITEM = 'deleteItem'
 
     def setup() {
     }
@@ -31,12 +35,17 @@ class FormToolsTagLibSpec extends Specification {
         template.contains spinner
     }
 
-    void "Test tempvs:formField"() {
+    void "Test tempvs:ajaxLink"() {
+        given:
+        String event = "<span onclick=\"sendAjaxRequest(this, ${DELETE_ITEM_URL});\">"
+        String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
+
         when:
-        def template = applyTemplate('<tempvs:formField type="text" name="name" value="" label="label" />')
+        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\"/>")
 
         then:
-        template.contains '<input type="text" '
+        template.contains spinner
+        template.contains event
     }
 
     void "Test tempvs:ajaxForm"() {

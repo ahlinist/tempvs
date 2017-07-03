@@ -14,11 +14,11 @@ import spock.lang.Specification
  */
 @TestFor(AjaxResponseService)
 class AjaxResponseServiceSpec extends Specification {
+
     private static final String SUCCESS_MESSAGE = 'Success Message'
     private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
     private static final String FAILED = 'failed'
     private static final String TEST_URI = '/test/uri'
-    private static final String SUBMIT_BUTTON_NAME = 'submit-button'
 
     def user = Mock(User)
     def messageSource = Mock(MessageSource)
