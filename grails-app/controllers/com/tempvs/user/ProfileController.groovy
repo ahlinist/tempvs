@@ -20,6 +20,7 @@ class ProfileController {
     private static final String EMAIL_USED = 'user.email.used'
     private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
     private static final String IMAGE_EMPTY = 'image.empty'
+    private static final String EMAIL_EMPTY = 'profile.email.empty'
     private static final String AVATAR_IMAGE = 'avatarImage'
 
     AjaxResponseService ajaxResponseService
@@ -91,19 +92,23 @@ class ProfileController {
     }
 
     def updateProfileEmail(String email) {
-        BaseProfile profile = profileHolder.profile
+        if (email) {
+            BaseProfile profile = profileHolder.profile
 
-        if (email == profile.profileEmail) {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
-        } else {
-            if (!userService.isEmailUnique(email)) {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
+            if (email == profile.profileEmail) {
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
             } else {
-                Map props = [instanceId: profile.id,
-                             email: email,
-                             action: profile.class.simpleName.toLowerCase()]
-                render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
+                if (!userService.isEmailUnique(email)) {
+                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
+                } else {
+                    Map props = [instanceId: profile.id,
+                                 email: email,
+                                 action: profile.class.simpleName.toLowerCase()]
+                    render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
+                }
             }
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_EMPTY)
         }
     }
     

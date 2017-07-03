@@ -16,6 +16,7 @@ class UserController {
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String EMAIL = 'email'
+    private static final String EMAIL_EMPTY = 'user.email.empty'
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
 
@@ -35,15 +36,19 @@ class UserController {
     }
 
     def updateEmail(String email) {
-        if (email == userService.currentUserEmail) {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
-        } else {
-            if (!userService.isEmailUnique(email)) {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
+        if (email) {
+            if (email == userService.currentUserEmail) {
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
             } else {
-                Map props = [instanceId: userService.currentUserId, email: email, action: UPDATE_EMAIL_ACTION]
-                render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+                if (!userService.isEmailUnique(email)) {
+                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
+                } else {
+                    Map props = [instanceId: userService.currentUserId, email: email, action: UPDATE_EMAIL_ACTION]
+                    render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+                }
             }
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_EMPTY)
         }
     }
 
