@@ -28,6 +28,6 @@ class ClubProfile extends BaseProfile {
     }
 
     String toString() {
-        "${firstName} ${lastName} ${nickName}"
+        "${firstName} ${lastName ?: ''} ${nickName ?: ''}"
     }
 }
