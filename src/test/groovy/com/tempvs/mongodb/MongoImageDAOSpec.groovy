@@ -4,7 +4,7 @@ import com.mongodb.BasicDBObject
 import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSInputFile
-import com.tempvs.image.Image
+import com.tempvs.image.ImageBean
 import org.bson.types.ObjectId
 import spock.lang.Specification
 
@@ -19,18 +19,18 @@ class MongoImageDAOSpec extends Specification {
     def gridFSDBFile = Mock(GridFSDBFile)
     def gridFSInputFile = Mock(GridFSInputFile)
     def dBObjectFactory = Mock(DBObjectFactory)
-    def imageFactory = Mock(MongoImageFactory)
-    def image = Mock(Image)
+    def imageBeanFactory = Mock(MongoImageBeanFactory)
+    def image = Mock(ImageBean)
     def dbObject = Mock(BasicDBObject)
     def inputStream = Mock(InputStream)
 
-    MongoImageDAO mongoImageDAO
+    MongoImageBeanDAO mongoImageDAO
 
     def setup() {
-        mongoImageDAO = new MongoImageDAO(
+        mongoImageDAO = new MongoImageBeanDAO(
                 gridFSFactory: gridFSFactory,
                 dBObjectFactory: dBObjectFactory,
-                imageFactory: imageFactory,
+                imageBeanFactory: imageBeanFactory,
         )
     }
 
@@ -72,7 +72,7 @@ class MongoImageDAOSpec extends Specification {
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
         1 * gridFS.findOne(_ as ObjectId) >> gridFSDBFile
-        1 * imageFactory.createInstance(gridFSDBFile) >> image
+        1 * imageBeanFactory.createInstance(gridFSDBFile) >> image
         0 * _
 
         and:
@@ -86,7 +86,7 @@ class MongoImageDAOSpec extends Specification {
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
         1 * gridFS.createFile(inputStream, CLOSE_STREAM_ON_PERSIST) >> gridFSInputFile
-        1 * imageFactory.createInstance(gridFSInputFile) >> image
+        1 * imageBeanFactory.createInstance(gridFSInputFile) >> image
         0 * _
 
         and:

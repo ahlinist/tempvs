@@ -2,7 +2,7 @@ package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
-import com.tempvs.image.Image
+import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
@@ -61,14 +61,14 @@ class ProfileService {
                 ],
         ]
 
-        Image avatar = imageService.replaceImage(multipartAvatar, AVATAR_COLLECTION, metaData, profile.avatar)
+        ImageBean avatar = imageService.replaceImageBeans(multipartAvatar, AVATAR_COLLECTION, metaData, profile.avatar)
         profile.avatar = avatar.id
         profile.save()
         profile
     }
 
     Boolean deleteProfile(BaseProfile profile) {
-        imageService.deleteImages(AVATAR_COLLECTION, [profile.avatar])
+        imageService.deleteImageBeans(AVATAR_COLLECTION, [profile.avatar])
 
         try {
             profile.delete(failOnError: true)

@@ -3,21 +3,21 @@ package com.tempvs.mongodb
 import com.mongodb.DBObject
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSFile
-import com.tempvs.image.Image
+import com.tempvs.image.ImageBean
 import groovy.transform.CompileStatic
 
 /**
- * A MongoDB implementation of {@link com.tempvs.image.Image} interface.
+ * A MongoDB implementation of {@link com.tempvs.image.ImageBean} interface.
  */
 @CompileStatic
-class MongoImage implements Image {
+class MongoImageBean implements ImageBean {
     GridFSFile gridFSFile
 
-    MongoImage(GridFSFile gridFSFile) {
+    MongoImageBean(GridFSFile gridFSFile) {
         this.gridFSFile = gridFSFile
     }
 
-    MongoImage save() {
+    MongoImageBean save() {
         gridFSFile.save()
         this
     }

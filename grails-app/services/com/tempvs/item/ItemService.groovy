@@ -7,6 +7,7 @@ import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
+
 /**
  * Service that manages {@link com.tempvs.item.Item} and {@link com.tempvs.item.ItemGroup} instances.
  */
@@ -47,8 +48,8 @@ class ItemService {
     }
 
     Boolean deleteItem(Item item) {
-        imageService.deleteImages(ITEM_IMAGE_COLLECTION, [item.itemImageId])
-        imageService.deleteImages(SOURCE_IMAGE_COLLECTION, [item.sourceImageId])
+        imageService.deleteImageBeans(ITEM_IMAGE_COLLECTION, [item.itemImageId])
+        imageService.deleteImageBeans(SOURCE_IMAGE_COLLECTION, [item.sourceImageId])
 
         try {
             item.delete(failOnError: true)
@@ -60,8 +61,8 @@ class ItemService {
 
     Boolean deleteGroup(ItemGroup itemGroup) {
         Set<Item> items = itemGroup.items
-        imageService.deleteImages(ITEM_IMAGE_COLLECTION, items*.itemImageId)
-        imageService.deleteImages(SOURCE_IMAGE_COLLECTION, items*.sourceImageId)
+        imageService.deleteImageBeans(ITEM_IMAGE_COLLECTION, items*.itemImageId)
+        imageService.deleteImageBeans(SOURCE_IMAGE_COLLECTION, items*.sourceImageId)
 
         try {
             itemGroup.delete(failOnError: true)

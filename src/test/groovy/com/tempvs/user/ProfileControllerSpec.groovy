@@ -1,7 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.Image
+import com.tempvs.image.ImageBean
 import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
@@ -40,7 +40,7 @@ class ProfileControllerSpec extends Specification {
     def ajaxResponseService = Mock(AjaxResponseService)
     def json = Mock(JSON)
     def user = Mock(User)
-    def image = Mock(Image)
+    def image = Mock(ImageBean)
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
     def emailVerification = Mock(EmailVerification)

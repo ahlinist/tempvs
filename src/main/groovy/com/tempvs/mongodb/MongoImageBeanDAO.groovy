@@ -3,46 +3,46 @@ package com.tempvs.mongodb
 import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSInputFile
-import com.tempvs.image.Image
-import com.tempvs.image.ImageDAO
+import com.tempvs.image.ImageBean
+import com.tempvs.image.ImageBeanDAO
 import groovy.transform.CompileStatic
 import org.bson.types.ObjectId
 
 /**
- * A MongoDB implementation of {@link com.tempvs.image.ImageDAO} interface.
+ * A MongoDB implementation of {@link com.tempvs.image.ImageBeanDAO} interface.
  */
 @CompileStatic
-class MongoImageDAO implements ImageDAO {
+class MongoImageBeanDAO implements ImageBeanDAO {
     GridFSFactory gridFSFactory
     DBObjectFactory dBObjectFactory
-    MongoImageFactory imageFactory
+    MongoImageBeanFactory imageBeanFactory
 
     private static final Boolean CLOSE_STREAM_ON_PERSIST = Boolean.TRUE
 
-    Image save(Image image, Map metaData = null) {
+    ImageBean save(ImageBean imageBean, Map metaData = null) {
         try {
             if (metaData) {
-                image.metaData = dBObjectFactory.createInstance(metaData)
+                imageBean.metaData = dBObjectFactory.createInstance(metaData)
             }
 
-            image.save()
+            imageBean.save()
         } catch (Exception e) {
             null
         }
     }
 
-    Image get(String collection, String id) {
+    ImageBean get(String collection, String id) {
         if (collection && id) {
             GridFS gridFS = gridFSFactory.getGridFS(collection)
             GridFSDBFile gridFSDBFile = gridFS.findOne(new ObjectId(id))
-            imageFactory.createInstance(gridFSDBFile)
+            imageBeanFactory.createInstance(gridFSDBFile)
         }
     }
 
-    Image create(InputStream inputStream, String collection) {
+    ImageBean create(InputStream inputStream, String collection) {
         GridFS gridFS = gridFSFactory.getGridFS(collection)
         GridFSInputFile gridFSInputFile = gridFS.createFile(inputStream, CLOSE_STREAM_ON_PERSIST)
-        imageFactory.createInstance(gridFSInputFile)
+        imageBeanFactory.createInstance(gridFSInputFile)
     }
 
     Boolean delete(String collection, Collection<String> objectIds) {

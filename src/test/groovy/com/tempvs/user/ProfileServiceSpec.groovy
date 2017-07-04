@@ -2,7 +2,7 @@ package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
-import com.tempvs.image.Image
+import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -27,7 +27,7 @@ class ProfileServiceSpec extends Specification {
     private static final String AVATAR_ID = 'avatarId'
 
     def user = Mock(User)
-    def image = Mock(Image)
+    def image = Mock(ImageBean)
     def objectDAO = Mock(ObjectDAO)
     def userService = Mock(UserService)
     def clubProfile = Mock(ClubProfile)
@@ -150,7 +150,7 @@ class ProfileServiceSpec extends Specification {
         1 * userProfile.id >> LONG_ID
         1 * userProfile.save() >> userProfile
         1 * userService.currentUserId >> LONG_ID
-        1 * imageService.replaceImage(avatar, AVATAR_COLLECTION, _ as Map, ONE) >> image
+        1 * imageService.replaceImageBeans(avatar, AVATAR_COLLECTION, _ as Map, ONE) >> image
         1 * image.id >> ONE
         0 * _
 
@@ -164,7 +164,7 @@ class ProfileServiceSpec extends Specification {
 
         then:
         1 * clubProfile.avatar >> AVATAR_ID
-        1 * imageService.deleteImages(AVATAR_COLLECTION, [AVATAR_ID]) >> Boolean.TRUE
+        1 * imageService.deleteImageBeans(AVATAR_COLLECTION, [AVATAR_ID]) >> Boolean.TRUE
         1 * clubProfile.delete([failOnError: Boolean.TRUE])
 
         and:

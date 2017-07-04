@@ -1,7 +1,7 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.Image
+import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
@@ -40,10 +40,10 @@ class ItemControllerSpec extends Specification {
     def json = Mock(JSON)
     def item = Mock(Item)
     def updatedItem = Mock(Item)
-    def image = Mock(Image)
+    def image = Mock(ImageBean)
     def itemGroup = Mock(ItemGroup)
-    def itemImage = Mock(Image)
-    def sourceImage = Mock(Image)
+    def itemImage = Mock(ImageBean)
+    def sourceImage = Mock(ImageBean)
     def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def itemService = Mock(ItemService)
@@ -238,8 +238,8 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.description >> DESCRIPTION
         1 * itemCommand.itemImage >> multipartItemImage
         1 * itemCommand.sourceImage >> multipartSourceImage
-        1 * imageService.createImage(multipartItemImage, _ as String, _ as Map) >> itemImage
-        1 * imageService.createImage(multipartSourceImage, _ as String, _ as Map) >> sourceImage
+        1 * imageService.createImageBean(multipartItemImage, _ as String, _ as Map) >> itemImage
+        1 * imageService.createImageBean(multipartSourceImage, _ as String, _ as Map) >> sourceImage
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemService.createItem(_ as Map) >> item
         1 * itemImage.id >> ID
@@ -354,8 +354,8 @@ class ItemControllerSpec extends Specification {
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
-        1 * imageService.replaceImage(multipartItemImage, ITEM_IMAGE_COLLECTION, _ as Map, ITEM_IMAGE_ID) >> itemImage
-        1 * imageService.replaceImage(multipartSourceImage, SOURCE_IMAGE_COLLECTION, _ as Map, SOURCE_IMAGE_ID) >> sourceImage
+        1 * imageService.replaceImageBeans(multipartItemImage, ITEM_IMAGE_COLLECTION, _ as Map, ITEM_IMAGE_ID) >> itemImage
+        1 * imageService.replaceImageBeans(multipartSourceImage, SOURCE_IMAGE_COLLECTION, _ as Map, SOURCE_IMAGE_ID) >> sourceImage
         1 * itemImage.id >> ID
         1 * sourceImage.id >> ID
         1 * itemService.updateItem(item, _ as Map) >> updatedItem

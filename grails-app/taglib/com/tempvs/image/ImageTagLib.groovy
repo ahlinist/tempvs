@@ -3,7 +3,7 @@ package com.tempvs.image
 import grails.web.mapping.LinkGenerator
 
 /**
- * {@link com.tempvs.image.Image} handling taglib.
+ * {@link com.tempvs.image.ImageBean} handling taglib.
  */
 class ImageTagLib {
     static defaultEncodeAs = [taglib:'raw']

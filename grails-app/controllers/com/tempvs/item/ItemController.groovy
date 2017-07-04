@@ -1,7 +1,7 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.Image
+import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
@@ -90,8 +90,8 @@ class ItemController {
                 Map properties = [
                         name: command.name,
                         description: command.description,
-                        itemImageId: imageService.createImage(command.itemImage, ITEM_IMAGE_COLLECTION, metaData)?.id,
-                        sourceImageId: imageService.createImage(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData)?.id,
+                        itemImageId: imageService.createImageBean(command.itemImage, ITEM_IMAGE_COLLECTION, metaData)?.id,
+                        sourceImageId: imageService.createImageBean(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData)?.id,
                         itemGroup: itemGroup,
                 ]
 
@@ -181,12 +181,12 @@ class ItemController {
                     MultipartFile multipartSourceImage = command.sourceImage
 
                     if (!multipartItemImage.empty) {
-                        Image itemImage = imageService.replaceImage(multipartItemImage, ITEM_IMAGE_COLLECTION, metaData, item.itemImageId)
+                        ImageBean itemImage = imageService.replaceImageBeans(multipartItemImage, ITEM_IMAGE_COLLECTION, metaData, item.itemImageId)
                         properties.itemImageId = itemImage.id
                     }
 
                     if (!multipartSourceImage.empty) {
-                        Image sourceImage = imageService.replaceImage(multipartSourceImage, SOURCE_IMAGE_COLLECTION, metaData, item.sourceImageId)
+                        ImageBean sourceImage = imageService.replaceImageBeans(multipartSourceImage, SOURCE_IMAGE_COLLECTION, metaData, item.sourceImageId)
                         properties.sourceImageId = sourceImage.id
                     }
 

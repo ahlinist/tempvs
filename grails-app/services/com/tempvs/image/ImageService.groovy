@@ -5,41 +5,41 @@ import groovy.transform.CompileStatic
 import org.springframework.web.multipart.MultipartFile
 
 /**
- * A service that manages {@link com.tempvs.image.Image}-related operations.
+ * A service that manages {@link com.tempvs.image.ImageBean}-related operations.
  */
 @Transactional
 @CompileStatic
 class ImageService {
 
-    ImageDAO imageDAO
+    ImageBeanDAO imageBeanDAO
 
-    Image createImage(MultipartFile multipartFile, String collection, Map metaData) {
+    ImageBean createImageBean(MultipartFile multipartFile, String collection, Map metaData) {
         if (!multipartFile.empty) {
             InputStream inputStream = multipartFile.inputStream
 
             try {
-                Image image = imageDAO.create(inputStream, collection)
-                imageDAO.save(image, metaData)
+                ImageBean imageBean = imageBeanDAO.create(inputStream, collection)
+                imageBeanDAO.save(imageBean, metaData)
             } finally {
                 inputStream?.close()
             }
         }
     }
 
-    Image getImage(String collection, String objectId) {
-        imageDAO.get(collection, objectId)
+    ImageBean getImageBean(String collection, String objectId) {
+        imageBeanDAO.get(collection, objectId)
     }
 
-    Boolean deleteImages(String collection, Collection<String> objectIds) {
+    Boolean deleteImageBeans(String collection, Collection<String> objectIds) {
         if (objectIds?.findAll()) {
-            imageDAO.delete(collection, objectIds)
+            imageBeanDAO.delete(collection, objectIds)
         } else {
             Boolean.TRUE
         }
     }
 
-    Image replaceImage(MultipartFile multipartFile, String collection, Map metaData, String objectId = null) {
-        deleteImages(collection, [objectId])
-        createImage(multipartFile, collection, metaData)
+    ImageBean replaceImageBeans(MultipartFile multipartFile, String collection, Map metaData, String objectId = null) {
+        deleteImageBeans(collection, [objectId])
+        createImageBean(multipartFile, collection, metaData)
     }
 }

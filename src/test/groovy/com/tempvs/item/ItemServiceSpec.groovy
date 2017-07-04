@@ -118,8 +118,8 @@ class ItemServiceSpec extends Specification {
         then:
         1 * item.sourceImageId >> null
         1 * item.itemImageId >> ITEM_IMAGE_ID
-        1 * imageService.deleteImages(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID]) >> Boolean.TRUE
-        1 * imageService.deleteImages(SOURCE_IMAGE_COLLECTION, [null]) >> Boolean.TRUE
+        1 * imageService.deleteImageBeans(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID]) >> Boolean.TRUE
+        1 * imageService.deleteImageBeans(SOURCE_IMAGE_COLLECTION, [null]) >> Boolean.TRUE
         1 * item.delete([failOnError: true])
         0 * _
 
@@ -136,8 +136,8 @@ class ItemServiceSpec extends Specification {
         1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID
         1 * item2.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
         1 * item2.getProperty(SOURCE_IMAGE_ID) >> null
-        1 * imageService.deleteImages(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID, ITEM_IMAGE_ID]) >> Boolean.TRUE
-        1 * imageService.deleteImages(SOURCE_IMAGE_COLLECTION, [SOURCE_IMAGE_ID, null]) >> Boolean.TRUE
+        1 * imageService.deleteImageBeans(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID, ITEM_IMAGE_ID]) >> Boolean.TRUE
+        1 * imageService.deleteImageBeans(SOURCE_IMAGE_COLLECTION, [SOURCE_IMAGE_ID, null]) >> Boolean.TRUE
         1 * itemGroup.delete([failOnError: true])
         0 * _
 

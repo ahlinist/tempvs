@@ -15,12 +15,12 @@ class ImageServiceSpec extends Specification {
     private static final Long ONE_LONG = 1L
     private static final String AVATAR = 'avatar'
 
-    def imageDAO = Mock(ImageDAO)
-    def image = Mock(Image)
+    def imageBeanDAO = Mock(ImageBeanDAO)
+    def imageBean = Mock(ImageBean)
     def multipartFile = new MockMultipartFile(AVATAR, "1234567" as byte[])
 
     def setup() {
-        service.imageDAO = imageDAO
+        service.imageBeanDAO = imageBeanDAO
     }
 
     def cleanup() {
@@ -34,42 +34,42 @@ class ImageServiceSpec extends Specification {
         ]
 
         when:
-        def result = service.createImage(multipartFile, COLLECTION, metaData)
+        def result = service.createImageBean(multipartFile, COLLECTION, metaData)
 
         then:
-        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> image
-        1 * imageDAO.save(image, metaData) >> image
+        1 * imageBeanDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
+        1 * imageBeanDAO.save(imageBean, metaData) >> imageBean
         0 * _
 
         and:
-        result == image
+        result == imageBean
     }
 
     void "Test getImage()"() {
         when:
-        def result = service.getImage(COLLECTION, ID)
+        def result = service.getImageBean(COLLECTION, ID)
 
         then:
-        1 * imageDAO.get(COLLECTION, ID) >> image
+        1 * imageBeanDAO.get(COLLECTION, ID) >> imageBean
         0 * _
 
         and:
-        result == image
+        result == imageBean
     }
 
     void "Test deleteImage()"() {
         when:
-        def result = service.deleteImages(COLLECTION, [ID, ID])
+        def result = service.deleteImageBeans(COLLECTION, [ID, ID])
 
         then:
-        1 * imageDAO.delete(COLLECTION, [ID, ID]) >> Boolean.TRUE
+        1 * imageBeanDAO.delete(COLLECTION, [ID, ID]) >> Boolean.TRUE
         0 * _
 
         and:
         result == Boolean.TRUE
 
         when:
-        result = service.deleteImages(COLLECTION, null)
+        result = service.deleteImageBeans(COLLECTION, null)
 
         then:
         0 * _
@@ -86,15 +86,15 @@ class ImageServiceSpec extends Specification {
         ]
 
         when:
-        def result = service.replaceImage(multipartFile, COLLECTION, metaData, ID)
+        def result = service.replaceImageBeans(multipartFile, COLLECTION, metaData, ID)
 
         then:
-        1 * imageDAO.delete(COLLECTION, [ID]) >> Boolean.TRUE
-        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> image
-        1 * imageDAO.save(image, metaData) >> image
+        1 * imageBeanDAO.delete(COLLECTION, [ID]) >> Boolean.TRUE
+        1 * imageBeanDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
+        1 * imageBeanDAO.save(imageBean, metaData) >> imageBean
         0 * _
 
         and:
-        result == image
+        result == imageBean
     }
 }

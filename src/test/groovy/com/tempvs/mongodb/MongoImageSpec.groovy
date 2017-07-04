@@ -22,12 +22,12 @@ class MongoImageSpec extends Specification {
 
     void "Test construction"() {
         expect:
-        new MongoImage(gridFSFile)
+        new MongoImageBean(gridFSFile)
     }
 
     void "Test save()"() {
         given:
-        def mongoImage = new MongoImage(gridFSFile)
+        def mongoImage = new MongoImageBean(gridFSFile)
 
         when:
         mongoImage.save()
@@ -39,7 +39,7 @@ class MongoImageSpec extends Specification {
 
     void "Test setMetaData()"() {
         given:
-        def mongoImage = new MongoImage(gridFSFile)
+        def mongoImage = new MongoImageBean(gridFSFile)
 
         when:
         mongoImage.setMetaData(dbObject)
@@ -54,7 +54,7 @@ class MongoImageSpec extends Specification {
         byte[] byteList = "test data".bytes
         InputStream inputStream = new ByteArrayInputStream(byteList)
         def gridFSDBFile = Mock(GridFSDBFile)
-        MongoImage mongoImage = new MongoImage(gridFSDBFile)
+        MongoImageBean mongoImage = new MongoImageBean(gridFSDBFile)
 
         when:
         byte[] result = mongoImage.getBytes()
@@ -69,7 +69,7 @@ class MongoImageSpec extends Specification {
 
     void "Test getId()"() {
         given:
-        def mongoImage = new MongoImage(gridFSFile)
+        def mongoImage = new MongoImageBean(gridFSFile)
 
         when:
         def result = mongoImage.getId()
