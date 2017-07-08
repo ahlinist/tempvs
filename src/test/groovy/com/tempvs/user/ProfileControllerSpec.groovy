@@ -2,6 +2,7 @@ package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
+import com.tempvs.image.ImageCommand
 import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
@@ -26,11 +27,11 @@ class ProfileControllerSpec extends Specification {
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
     private static final String AUTH_URL = '/auth/index'
-    private static final String EDIT_PROFILE_PAGE = '/profile/edit'
     private static final String PROFILE_URL = '/profile/index'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String IMAGE_EMPTY = 'image.empty'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
+    private static final String IMAGE_INFO = 'imageInfo'
 
     def userService = Mock(UserService)
 
@@ -44,6 +45,7 @@ class ProfileControllerSpec extends Specification {
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
     def emailVerification = Mock(EmailVerification)
+    def imageCommand = Mock(ImageCommand)
     def clubProfileCommand = Mock(ClubProfileCommand)
     def userProfileCommand = Mock(UserProfileCommand)
     def messageSource = Mock(MessageSource)
@@ -193,8 +195,9 @@ class ProfileControllerSpec extends Specification {
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
         1 * clubProfileCommand.getProperty(PROPERTIES)
-        1 * profileService.createClubProfile(_) >> null
-        1 * ajaxResponseService.renderValidationResponse(clubProfileCommand) >> json
+        1 * profileService.createClubProfile(_) >> clubProfile
+        1 * clubProfile.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(clubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
 
@@ -205,6 +208,7 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.validate() >> Boolean.TRUE
         1 * clubProfileCommand.getProperty(PROPERTIES)
         1 * profileService.createClubProfile(_) >> clubProfile
+        1 * clubProfile.validate() >> Boolean.TRUE
         1 * profileHolder.setProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID
         1 * ajaxResponseService.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
@@ -293,11 +297,13 @@ class ProfileControllerSpec extends Specification {
         controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 
         when:
-        controller.updateAvatar()
+        controller.updateAvatar(imageCommand)
 
         then:
+        1 * imageCommand.image >> avatar
+        1 * imageCommand.imageInfo >> IMAGE_INFO
         1 * profileHolder.profile >> userProfile
-        1 * profileService.updateAvatar(userProfile, avatar) >> userProfile
+        1 * profileService.updateAvatar(userProfile, avatar, IMAGE_INFO) >> userProfile
         1 * userProfile.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -310,9 +316,10 @@ class ProfileControllerSpec extends Specification {
         controller.request.addFile(avatar)
 
         when:
-        controller.updateAvatar()
+        controller.updateAvatar(imageCommand)
 
         then:
+        1 * imageCommand.image >> avatar
         1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

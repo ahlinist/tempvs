@@ -12,7 +12,8 @@ class ImageTagLib {
     LinkGenerator grailsLinkGenerator
 
     String image = { Map attrs ->
-        String link = grailsLinkGenerator.link(controller: 'image', action: 'get', id: attrs.objectId, params: [collection: attrs.collection])
-        out << render(template: '/templates/image/image', model: [src: link, classList: attrs.collection])
+        Image image = attrs.image
+        String link = grailsLinkGenerator.link(controller: 'image', action: 'get', id: image?.objectId, params: [collection: image?.collection])
+        out << render(template: '/templates/image/image', model: [src: link, classList: image?.collection, alt: image?.imageInfo])
     }
 }

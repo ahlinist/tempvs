@@ -2,6 +2,7 @@ package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
+import com.tempvs.image.ImageCommand
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
@@ -20,21 +21,18 @@ import spock.lang.Specification
 class ItemControllerSpec extends Specification {
 
     private static final Long LONG_ID = 1L
-    private static final String ID = 'id'
     private static final String ONE = '1'
     private static final String NAME = 'name'
+    private static final String PROPERTIES = 'properties'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_IMAGE = 'itemImage'
-    private static final String SOURCE_IMAGE = 'sourceImage'
-    private static final String ITEM_IMAGE_ID = 'itemImageId'
-    private static final String SOURCE_IMAGE_ID = 'sourceImageId'
+    private static final String IMAGE_INFO = 'imageInfo'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
     private static final String ITEM_URI = '/item/show'
     private static final String GROUP_ACTION = 'group'
     private static final String SHOW_ACTION = 'show'
-    private static final String ITEM_IMAGE_COLLECTION = 'item'
-    private static final String SOURCE_IMAGE_COLLECTION = 'source'
+    private static final String REFERER = 'referer'
 
     def user = Mock(User)
     def json = Mock(JSON)
@@ -42,18 +40,16 @@ class ItemControllerSpec extends Specification {
     def updatedItem = Mock(Item)
     def image = Mock(ImageBean)
     def itemGroup = Mock(ItemGroup)
-    def itemImage = Mock(ImageBean)
-    def sourceImage = Mock(ImageBean)
     def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def itemService = Mock(ItemService)
     def imageService = Mock(ImageService)
     def ajaxResponseService = Mock(AjaxResponseService)
     def itemCommand = Mock(ItemCommand)
+    def imageCommand = Mock(ImageCommand)
     def createItemGroupCommand = Mock(CreateItemGroupCommand)
     def grailsLinkGenerator = Mock(LinkGenerator)
     def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
-    def multipartSourceImage = new MockMultipartFile(SOURCE_IMAGE, "1234567" as byte[])
 
     def setup() {
         controller.userService = userService
@@ -223,28 +219,18 @@ class ItemControllerSpec extends Specification {
         given:
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         controller.grailsLinkGenerator = grailsLinkGenerator
-        controller.request.addFile(multipartItemImage)
-        controller.request.addFile(multipartSourceImage)
-        controller.request.addHeader('referer', "${ITEM_GROUP_URI}/${LONG_ID}")
+        controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
 
         when:
         params.isAjaxRequest = Boolean.TRUE
         controller.createItem(itemCommand)
 
         then:
-        1 * userService.currentUserId >> LONG_ID
         1 * itemCommand.validate() >> Boolean.TRUE
+        1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.name >> NAME
         1 * itemCommand.description >> DESCRIPTION
-        1 * itemCommand.itemImage >> multipartItemImage
-        1 * itemCommand.sourceImage >> multipartSourceImage
-        1 * imageService.createImageBean(multipartItemImage, _ as String, _ as Map) >> itemImage
-        1 * imageService.createImageBean(multipartSourceImage, _ as String, _ as Map) >> sourceImage
-        1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemService.createItem(_ as Map) >> item
-        1 * itemImage.id >> ID
-        1 * sourceImage.id >> ID
-        1 * itemGroup.id >> LONG_ID
         1 * item.validate() >> Boolean.TRUE
         1 * item.id >> LONG_ID
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ID}"
@@ -335,9 +321,7 @@ class ItemControllerSpec extends Specification {
     void "Test editItem()"() {
         given:
         params.isAjaxRequest = Boolean.TRUE
-        controller.request.addFile(multipartItemImage)
-        controller.request.addFile(multipartSourceImage)
-        controller.request.addHeader('referer', "${ITEM_URI}/${LONG_ID}")
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
 
         when:
         controller.editItem(itemCommand)
@@ -345,22 +329,31 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * itemCommand.validate() >> Boolean.TRUE
-        1 * itemCommand.name >> NAME
-        1 * itemCommand.description >> DESCRIPTION
-        1 * itemCommand.itemImage >> multipartItemImage
-        1 * itemCommand.sourceImage >> multipartSourceImage
-        1 * item.itemImageId >> ITEM_IMAGE_ID
-        1 * item.sourceImageId >> SOURCE_IMAGE_ID
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
-        1 * imageService.replaceImageBeans(multipartItemImage, ITEM_IMAGE_COLLECTION, _ as Map, ITEM_IMAGE_ID) >> itemImage
-        1 * imageService.replaceImageBeans(multipartSourceImage, SOURCE_IMAGE_COLLECTION, _ as Map, SOURCE_IMAGE_ID) >> sourceImage
-        1 * itemImage.id >> ID
-        1 * sourceImage.id >> ID
+        1 * itemCommand.getProperty(PROPERTIES) >> [:]
         1 * itemService.updateItem(item, _ as Map) >> updatedItem
         1 * updatedItem.validate() >> Boolean.TRUE
         1 * updatedItem.id >> LONG_ID
+        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateItemImage()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.request.addFile(multipartItemImage)
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+
+        when:
+        controller.updateItemImage(imageCommand)
+
+        then:
+        2 * imageCommand.image >> multipartItemImage
+        1 * imageCommand.imageInfo >> IMAGE_INFO
+        1 * itemService.getItem(ONE) >> item
+        1 * itemService.updateItemImage(item, multipartItemImage, IMAGE_INFO) >> item
+        1 * item.asType(Item) >> item
+        1 * item.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

@@ -1,6 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.domain.BasePersistent
+import com.tempvs.image.Image
 import grails.compiler.GrailsCompileStatic
 
 /**
@@ -9,28 +10,40 @@ import grails.compiler.GrailsCompileStatic
  */
 @GrailsCompileStatic
 abstract class BaseProfile extends BasePersistent {
+
     Long id
     String firstName
     String lastName
     String profileEmail
     String location
     String profileId
-    String avatar
+    Image avatar
     User user
 
     String getIdentifier() {
         profileId ?: id as String
     }
 
-    Object save(Map params = null) {
+    BaseProfile save(Map params = null) {
+
     }
 
     void delete(Map params = null) {
+
     }
 
     static constraints = {
         profileId shared: "profileId"
         location nullable: true
         avatar nullable: true
+        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
+            User user = User.findByEmail(profileEmail)
+            UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
+            ClubProfile clubProfile = ClubProfile.findByProfileEmail(profileEmail)
+
+            (!user || (user.userProfile == userProfile)) &&
+                    (!userProfile || baseProfile.user == userProfile.user) &&
+                    (!clubProfile || baseProfile.user == clubProfile.user)
+        }
     }
 }

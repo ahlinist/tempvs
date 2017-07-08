@@ -1,11 +1,11 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.ImageCommand
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.MultipartHttpServletRequest
 
 /**
  * Controller for managing {@link com.tempvs.user.UserProfile} and
@@ -21,7 +21,6 @@ class ProfileController {
     private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
     private static final String IMAGE_EMPTY = 'image.empty'
     private static final String EMAIL_EMPTY = 'profile.email.empty'
-    private static final String AVATAR_IMAGE = 'avatarImage'
 
     AjaxResponseService ajaxResponseService
     ProfileHolder profileHolder
@@ -68,14 +67,14 @@ class ProfileController {
 
     def create(ClubProfileCommand command) {
         if (params.isAjaxRequest) {
-            if (command?.validate()) {
-                ClubProfile clubProfile = profileService.createClubProfile(command.properties)
+            if (command.validate()) {
+                BaseProfile profile = profileService.createClubProfile(command.properties)
 
-                if (clubProfile) {
-                    profileHolder.profile = clubProfile
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: clubProfile.id))
+                if (profile.validate()) {
+                    profileHolder.profile = profile
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
                 } else {
-                    render ajaxResponseService.renderValidationResponse(command)
+                    render ajaxResponseService.renderValidationResponse(profile)
                 }
             } else {
                 render ajaxResponseService.renderValidationResponse(command)
@@ -112,13 +111,13 @@ class ProfileController {
         }
     }
     
-    def updateAvatar() {
-	    MultipartFile multipartAvatar = ((MultipartHttpServletRequest) request).getFile(AVATAR_IMAGE)
+    def updateAvatar(ImageCommand command) {
+	    MultipartFile multipartFile = command.image
 
-        if (multipartAvatar.empty) {
+        if (multipartFile.empty) {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY)
         } else {
-            BaseProfile profile = profileService.updateAvatar(profileHolder.profile, multipartAvatar)
+            BaseProfile profile = profileService.updateAvatar(profileHolder.profile, multipartFile, command.imageInfo)
 
             if (profile.validate()) {
                 render ajaxResponseService.renderRedirect(request.getHeader('referer'))

@@ -17,14 +17,11 @@ class ClubProfile extends BaseProfile {
         lastName nullable: true
         nickName nullable: true
         clubName nullable: true
+    }
 
-        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, ClubProfile clubProfile ->
-            User user = User.findByEmail(profileEmail)
-            UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
 
-            !user || (user.userProfile == userProfile) ||
-                    !userProfile || (userProfile.user == clubProfile.user)
-        }
+    static mapping = {
+        avatar cascade: 'all-delete-orphan'
     }
 
     String toString() {

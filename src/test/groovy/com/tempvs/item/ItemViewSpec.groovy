@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.image.Image
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import grails.test.mixin.TestMixin
@@ -12,27 +13,25 @@ import spock.lang.Specification
 @TestMixin(GroovyPageUnitTestMixin)
 class ItemViewSpec extends Specification {
 
-    private static final String ITEM_STASH_TITLE = 'item.stash.title'
-    private static final String ITEM_GROUP_TITLE = 'item.group.title'
-    private static final String ITEM_TITLE = 'item.show.title'
-    private static final String ITEM_GROUPS = 'itemGroups'
-    private static final String ITEM_GROUP = 'itemGroup'
-    private static final String USER = 'user'
-    private static final String USER_PROFILE = 'userProfile'
-    private static final String STASH_NOT_FOUND = 'item.stash.notFound.message'
-    private static final String GROUP_NOT_FOUND = 'item.group.notFound.message'
-    private static final String ITEM_NOT_FOUND = 'item.item.notFound.message'
     private static final String ID = 'id'
     private static final String ONE = '1'
     private static final String NAME = 'name'
     private static final String ITEMS = 'items'
+    private static final String IMAGE_INFO = 'imageInfo'
+    private static final String ITEM_IMAGE = 'itemImage'
     private static final String DESCRIPTION = 'description'
-    private static final String ITEM_IMAGE_ID = 'itemImageId'
-    private static final String SOURCE_IMAGE_ID = 'sourceImageId'
+    private static final String SOURCE_IMAGE = 'sourceImage'
+    private static final String ITEM_TITLE = 'item.show.title'
+    private static final String ITEM_STASH_TITLE = 'item.stash.title'
+    private static final String ITEM_GROUP_TITLE = 'item.group.title'
+    private static final String ITEM_NOT_FOUND = 'item.item.notFound.message'
+    private static final String STASH_NOT_FOUND = 'item.stash.notFound.message'
+    private static final String GROUP_NOT_FOUND = 'item.group.notFound.message'
 
     def user
     def item
     def itemGroup
+    def image = Mock(Image)
     def userProfile = Mock(UserProfile)
 
     def setup() {
@@ -151,8 +150,9 @@ class ItemViewSpec extends Specification {
     void "Test /item/show with id"() {
         given:
         String title = "<title>Tempvs - ${NAME}</title>"
-        String itemImage = "<tempvs:image objectId=\"${ITEM_IMAGE_ID}\" collection=\"item\"/>"
-        String sourceImage = "<tempvs:image objectId=\"${SOURCE_IMAGE_ID}\" collection=\"source\"/>"
+        String itemImage = "<tempvs:image image=\"${image}\"/>"
+        String sourceImage = "<tempvs:image image=\"${image}\"/>"
+        String updateItemImageForm = '<tempvs:ajaxForm action="updateItemImage">'
         Map model = [
                 item: item,
                 itemGroup: itemGroup,
@@ -168,8 +168,9 @@ class ItemViewSpec extends Specification {
         2 * item.getProperty(ID) >> ID
         5 * item.getProperty(NAME) >> NAME
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
-        1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID
+        1 * item.getProperty(ITEM_IMAGE) >> image
+        1 * item.getProperty(SOURCE_IMAGE) >> image
+        2 * image.getProperty(IMAGE_INFO)
         1 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * user.getProperty(ID) >> ID
@@ -181,5 +182,6 @@ class ItemViewSpec extends Specification {
         result.contains DESCRIPTION
         result.contains itemImage
         result.contains sourceImage
+        result .contains updateItemImageForm
     }
 }

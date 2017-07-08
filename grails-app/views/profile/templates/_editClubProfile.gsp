@@ -1,5 +1,6 @@
 <tempvs:ajaxForm controller="profile" action="updateAvatar">
-  <tempvs:formField type="file" name="avatarImage" label="clubProfile.avatar.label" />
+  <tempvs:formField type="file" name="image" label="clubProfile.avatar.label" />
+  <tempvs:formField type="text" name="imageInfo" label="clubProfile.imageInfo.label" />
   <tempvs:ajaxSubmitButton value="clubProfile.update.avatar.button" />
 </tempvs:ajaxForm>
 <tempvs:ajaxForm action="updateProfileEmail">

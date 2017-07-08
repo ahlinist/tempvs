@@ -15,7 +15,6 @@ class ImageControllerSpec extends Specification {
 
     def imageService = Mock(ImageService)
     def assetResourceLocator = Mock(AssetResourceLocator)
-    def image = Mock(ImageBean)
 
     def setup() {
         controller.imageService = imageService
@@ -32,8 +31,7 @@ class ImageControllerSpec extends Specification {
         controller.get()
 
         then:
-        1 * imageService.getImageBean(COLLECTION, ID) >> image
-        1 * image.bytes >> BYTE_LIST
+        1 * imageService.getImageBytes(COLLECTION, ID) >> BYTE_LIST
         0 * _
     }
 }

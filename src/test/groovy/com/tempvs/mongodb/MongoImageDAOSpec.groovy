@@ -8,6 +8,9 @@ import com.tempvs.image.ImageBean
 import org.bson.types.ObjectId
 import spock.lang.Specification
 
+/**
+ * Unit-test suite for {@link com.tempvs.mongodb.MongoImageDAO}.
+ */
 class MongoImageDAOSpec extends Specification {
 
     private static final String COLLECTION = 'collection'
@@ -24,10 +27,10 @@ class MongoImageDAOSpec extends Specification {
     def dbObject = Mock(BasicDBObject)
     def inputStream = Mock(InputStream)
 
-    MongoImageBeanDAO mongoImageDAO
+    MongoImageDAO mongoImageDAO
 
     def setup() {
-        mongoImageDAO = new MongoImageBeanDAO(
+        mongoImageDAO = new MongoImageDAO(
                 gridFSFactory: gridFSFactory,
                 dBObjectFactory: dBObjectFactory,
                 imageBeanFactory: imageBeanFactory,
@@ -36,33 +39,6 @@ class MongoImageDAOSpec extends Specification {
 
     def cleanup() {
 
-    }
-
-    void "Test save()"() {
-        given:
-        Map metaData = [currentAvatar: Boolean.TRUE]
-
-        when:
-        def result = mongoImageDAO.save(image)
-
-        then:
-        1 * image.save() >> image
-        0 * _
-
-        and:
-        result == image
-
-        when:
-        result = mongoImageDAO.save(image, metaData)
-
-        then:
-        1 * dBObjectFactory.createInstance(metaData) >> dbObject
-        1 * image.setMetaData(dbObject)
-        1 * image.save() >> image
-        0 * _
-
-        and:
-        result == image
     }
 
     void "Test get()"() {
@@ -87,6 +63,7 @@ class MongoImageDAOSpec extends Specification {
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
         1 * gridFS.createFile(inputStream, CLOSE_STREAM_ON_PERSIST) >> gridFSInputFile
         1 * imageBeanFactory.createInstance(gridFSInputFile) >> image
+        1 * image.save() >> image
         0 * _
 
         and:
@@ -95,12 +72,12 @@ class MongoImageDAOSpec extends Specification {
 
     void "Test delete()"() {
         when:
-        def result = mongoImageDAO.delete(COLLECTION, [HEX_ID, HEX_ID, HEX_ID])
+        def result = mongoImageDAO.delete(COLLECTION, HEX_ID)
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        3 * gridFS.findOne(_ as ObjectId) >> gridFSDBFile
-        3 * gridFS.remove(gridFSDBFile)
+        1 * gridFS.findOne(_ as ObjectId) >> gridFSDBFile
+        1 * gridFS.remove(gridFSDBFile)
         0 * _
 
         and:

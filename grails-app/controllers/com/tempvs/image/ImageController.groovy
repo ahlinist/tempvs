@@ -17,7 +17,7 @@ class ImageController {
 
     def get(String id) {
         String collection = params.collection
-        byte[] imageInBytes = imageService.getImageBean(collection, id)?.bytes ?:
+        byte[] imageInBytes = imageService.getImageBytes(collection, id) ?:
                 assetResourceLocator.findAssetForURI(DEFAULT_IMAGE)?.getInputStream()?.bytes ?:
                         StreamUtils.emptyInput().bytes
 

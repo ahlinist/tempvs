@@ -1,7 +1,7 @@
 import com.tempvs.domain.hibernate.HibernateObjectDAO
 import com.tempvs.mongodb.DBObjectFactory
 import com.tempvs.mongodb.GridFSFactory
-import com.tempvs.mongodb.MongoImageBeanDAO
+import com.tempvs.mongodb.MongoImageDAO
 import com.tempvs.mongodb.MongoImageBeanFactory
 import com.tempvs.user.ProfileHolder
 import com.tempvs.domain.ObjectFactory
@@ -11,7 +11,7 @@ beans = {
     dBObjectFactory(DBObjectFactory)
     imageBeanFactory(MongoImageBeanFactory)
 
-    imageBeanDAO(MongoImageBeanDAO) {
+    imageDAO(MongoImageDAO) {
         gridFSFactory = ref("gridFSFactory")
         dBObjectFactory = ref("dBObjectFactory")
         imageBeanFactory = ref("imageBeanFactory")

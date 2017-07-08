@@ -1,7 +1,6 @@
 package com.tempvs.item
 
 import grails.test.mixin.TestFor
-import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
 
 /**
@@ -11,8 +10,7 @@ import spock.lang.Specification
 class ItemCommandSpec extends Specification {
 
     private static final String NAME = 'name'
-    private static final String ITEM_IMAGE_FILE_NAME = 'itemImage'
-    private static final String SOURCE_IMAGE_FILE_NAME = 'sourceImage'
+    private static final String DESCRIPTION = 'description'
 
     def setup() {
 
@@ -23,10 +21,6 @@ class ItemCommandSpec extends Specification {
     }
 
     void "Test ItemCommand"() {
-        given:
-        def itemImage = new MockMultipartFile(ITEM_IMAGE_FILE_NAME, "1234567" as byte[])
-        def sourceImage = new MockMultipartFile(SOURCE_IMAGE_FILE_NAME, "1234567" as byte[])
-
         expect:
         !new ItemCommand().validate()
 
@@ -34,6 +28,6 @@ class ItemCommandSpec extends Specification {
         new ItemCommand(name: NAME).validate()
 
         and:
-        new ItemCommand(name: NAME, itemImage: itemImage, sourceImage: sourceImage).validate()
+        new ItemCommand(name: NAME, description: DESCRIPTION).validate()
     }
 }

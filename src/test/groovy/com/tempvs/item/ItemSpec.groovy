@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.image.Image
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -14,6 +15,7 @@ class ItemSpec extends Specification {
     private static final String ITEM_IMAGE_ID = 'itemImageId'
     private static final String SOURCE_IMAGE_ID = 'sourceImageId'
 
+    def image = Mock(Image)
     def itemGroup = Mock(ItemGroup)
 
     def setup() {
@@ -58,8 +60,8 @@ class ItemSpec extends Specification {
         Item item = new Item()
         item.name = NAME
         item.description = DESCRIPTION
-        item.itemImageId = ITEM_IMAGE_ID
-        item.sourceImageId = SOURCE_IMAGE_ID
+        item.itemImage = image
+        item.sourceImage = image
         item.itemGroup = itemGroup
 
         expect:

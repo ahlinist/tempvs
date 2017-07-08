@@ -1,7 +1,7 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.ImageBean
+import com.tempvs.image.ImageCommand
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
@@ -19,6 +19,7 @@ class ItemController {
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
+    private static final String IMAGE_EMPTY = 'image.empty'
 
     static defaultAction = 'stash'
 
@@ -85,13 +86,10 @@ class ItemController {
         if (params.isAjaxRequest) {
             if (command.validate()) {
                 ItemGroup itemGroup = itemService.getGroup request.getHeader('referer').tokenize('/').last()
-                Map metaData = [userId: userService.currentUserId, properties: [itemGroupId: itemGroup.id]]
 
                 Map properties = [
                         name: command.name,
                         description: command.description,
-                        itemImageId: imageService.createImageBean(command.itemImage, ITEM_IMAGE_COLLECTION, metaData)?.id,
-                        sourceImageId: imageService.createImageBean(command.sourceImage, SOURCE_IMAGE_COLLECTION, metaData)?.id,
                         itemGroup: itemGroup,
                 ]
 
@@ -175,22 +173,7 @@ class ItemController {
             Item item = itemService.getItem request.getHeader('referer').tokenize('/').last()
             if (command.validate()) {
                 if (item) {
-                    Map metaData = [userId: userService.currentUserId, properties: [itemGroupId: item.itemGroup.id]]
-                    Map properties = [name: command.name, description: command.description]
-                    MultipartFile multipartItemImage = command.itemImage
-                    MultipartFile multipartSourceImage = command.sourceImage
-
-                    if (!multipartItemImage.empty) {
-                        ImageBean itemImage = imageService.replaceImageBeans(multipartItemImage, ITEM_IMAGE_COLLECTION, metaData, item.itemImageId)
-                        properties.itemImageId = itemImage.id
-                    }
-
-                    if (!multipartSourceImage.empty) {
-                        ImageBean sourceImage = imageService.replaceImageBeans(multipartSourceImage, SOURCE_IMAGE_COLLECTION, metaData, item.sourceImageId)
-                        properties.sourceImageId = sourceImage.id
-                    }
-
-                    Item updatedItem = itemService.updateItem(item, properties)
+                    Item updatedItem = itemService.updateItem(item, command.properties)
 
                     if (updatedItem.validate()) {
                         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: updatedItem.id))
@@ -200,6 +183,35 @@ class ItemController {
                 }
             } else {
                 render ajaxResponseService.renderValidationResponse(command)
+            }
+        }
+    }
+
+    def updateItemImage(ImageCommand command) {
+        updateImage(command) { Item item ->
+            itemService.updateItemImage(item, command.image, command.imageInfo)
+        }
+    }
+
+    def updateSourceImage(ImageCommand command) {
+        updateImage(command) { Item item ->
+            itemService.updateSourceImage(item, command.image, command.imageInfo)
+        }
+    }
+
+    private updateImage(ImageCommand command, Closure updateImage) {
+        MultipartFile multipartFile = command.image
+
+        if (multipartFile.empty) {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY)
+        } else {
+            Item item = itemService.getItem request.getHeader('referer').tokenize('/').last()
+            item = updateImage(item) as Item
+
+            if (item.validate()) {
+                render ajaxResponseService.renderRedirect(request.getHeader('referer'))
+            } else {
+                render ajaxResponseService.renderValidationResponse(item)
             }
         }
     }

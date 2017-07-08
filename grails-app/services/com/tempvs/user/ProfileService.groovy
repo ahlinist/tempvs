@@ -2,7 +2,7 @@ package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
-import com.tempvs.image.ImageBean
+import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
@@ -34,15 +34,12 @@ class ProfileService {
         profile
     }
 
-    ClubProfile createClubProfile(Map properties) {
+    BaseProfile createClubProfile(Map properties) {
         User user = userService.currentUser
-        ClubProfile clubProfile = objectFactory.create(ClubProfile)
-	    clubProfile.firstName = properties.firstName
-	    clubProfile.lastName = properties.lastName
-        clubProfile.nickName = properties.nickName
-	    clubProfile.clubName = properties.clubName
-        user.addToClubProfiles(clubProfile)?.save()
-        clubProfile
+        BaseProfile profile = objectFactory.create(ClubProfile)
+        InvokerHelper.setProperties(profile, properties)
+        user.addToClubProfiles(profile)?.save()
+        profile
     }
 
     BaseProfile updateProfileEmail(Class clazz, Long instanceId, String profileEmail) {
@@ -52,23 +49,18 @@ class ProfileService {
         profile
     }
 
-    BaseProfile updateAvatar(BaseProfile profile, MultipartFile multipartAvatar) {
-        Map metaData = [
-                userId: userService.currentUserId,
-                properties: [
-                        profileClass: profile.class.simpleName,
-                        profileId: profile.id,
-                ],
-        ]
-
-        ImageBean avatar = imageService.replaceImageBeans(multipartAvatar, AVATAR_COLLECTION, metaData, profile.avatar)
-        profile.avatar = avatar.id
+    BaseProfile updateAvatar(BaseProfile profile, MultipartFile multipartFile, String imageInfo) {
+        Image avatar = profile.avatar ?: objectFactory.create(Image) as Image
+        avatar.imageInfo = imageInfo
+        avatar.collection = AVATAR_COLLECTION
+        avatar.objectId = imageService.replaceImage(multipartFile, avatar)
+        profile.avatar = avatar
         profile.save()
         profile
     }
 
     Boolean deleteProfile(BaseProfile profile) {
-        imageService.deleteImageBeans(AVATAR_COLLECTION, [profile.avatar])
+        imageService.deleteImage(profile.avatar)
 
         try {
             profile.delete(failOnError: true)

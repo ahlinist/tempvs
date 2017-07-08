@@ -2,7 +2,7 @@ package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
-import com.tempvs.image.ImageBean
+import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -24,16 +24,17 @@ class ProfileServiceSpec extends Specification {
     private static final String NICK_NAME = 'nickName'
     private static final String CLUB_NAME = 'clubName'
     private static final String AVATAR_COLLECTION = 'avatar'
-    private static final String AVATAR_ID = 'avatarId'
+    private static final String IMAGE_INFO = 'imageInfo'
 
     def user = Mock(User)
-    def image = Mock(ImageBean)
+    def image = Mock(Image)
     def objectDAO = Mock(ObjectDAO)
     def userService = Mock(UserService)
     def clubProfile = Mock(ClubProfile)
     def userProfile = Mock(UserProfile)
     def imageService = Mock(ImageService)
     def objectFactory = Mock(ObjectFactory)
+    def multipartFile = new MockMultipartFile(AVATAR_COLLECTION, "1234567" as byte[])
 
     def setup() {
         service.userService = userService
@@ -138,20 +139,17 @@ class ProfileServiceSpec extends Specification {
     }
 
     void "Test updateAvatar()"() {
-        given:
-        def avatar = new MockMultipartFile(AVATAR_COLLECTION, "1234567" as byte[])
-
         when:
-        def result = service.updateAvatar(userProfile, avatar)
+        def result = service.updateAvatar(userProfile, multipartFile, IMAGE_INFO)
 
         then:
-        1 * userProfile.avatar >> ONE
-        1 * userProfile.setAvatar(ONE)
-        1 * userProfile.id >> LONG_ID
+        1 * userProfile.avatar >> image
+        1 * image.setCollection(AVATAR_COLLECTION)
+        1 * image.setImageInfo(IMAGE_INFO)
+        1 * imageService.replaceImage(multipartFile, image) >> ONE
+        1 * image.setObjectId(ONE)
+        1 * userProfile.setAvatar(image)
         1 * userProfile.save() >> userProfile
-        1 * userService.currentUserId >> LONG_ID
-        1 * imageService.replaceImageBeans(avatar, AVATAR_COLLECTION, _ as Map, ONE) >> image
-        1 * image.id >> ONE
         0 * _
 
         and:
@@ -163,8 +161,8 @@ class ProfileServiceSpec extends Specification {
         def result = service.deleteProfile(clubProfile)
 
         then:
-        1 * clubProfile.avatar >> AVATAR_ID
-        1 * imageService.deleteImageBeans(AVATAR_COLLECTION, [AVATAR_ID]) >> Boolean.TRUE
+        1 * clubProfile.avatar >> image
+        1 * imageService.deleteImage(image) >> Boolean.TRUE
         1 * clubProfile.delete([failOnError: Boolean.TRUE])
 
         and:

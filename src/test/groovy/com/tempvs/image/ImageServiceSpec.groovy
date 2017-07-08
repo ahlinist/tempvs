@@ -1,5 +1,6 @@
 package com.tempvs.image
 
+import com.tempvs.domain.ObjectFactory
 import grails.test.mixin.TestFor
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
@@ -14,87 +15,102 @@ class ImageServiceSpec extends Specification {
     private static final String ID = 'id'
     private static final Long ONE_LONG = 1L
     private static final String AVATAR = 'avatar'
+    private static final List<Byte> BYTE_LIST = "test data".bytes
 
-    def imageBeanDAO = Mock(ImageBeanDAO)
+    def image = Mock(Image)
+    def imageDAO = Mock(ImageDAO)
     def imageBean = Mock(ImageBean)
+    def objectFactory = Mock(ObjectFactory)
     def multipartFile = new MockMultipartFile(AVATAR, "1234567" as byte[])
 
     def setup() {
-        service.imageBeanDAO = imageBeanDAO
+        service.imageDAO = imageDAO
+        service.objectFactory = objectFactory
     }
 
     def cleanup() {
     }
 
-    void "Test createImage()"() {
-        given:
-        Map metaData = [
-                userId: ONE_LONG,
-                properties: [itemGroupId: ONE_LONG]
-        ]
-
+    void "Test getImageBytes()"() {
         when:
-        def result = service.createImageBean(multipartFile, COLLECTION, metaData)
+        def result = service.getImageBytes(COLLECTION, ID)
 
         then:
-        1 * imageBeanDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
-        1 * imageBeanDAO.save(imageBean, metaData) >> imageBean
+        1 * imageDAO.get(COLLECTION, ID) >> imageBean
+        1 * imageBean.bytes >> BYTE_LIST
         0 * _
 
         and:
-        result == imageBean
-    }
-
-    void "Test getImage()"() {
-        when:
-        def result = service.getImageBean(COLLECTION, ID)
-
-        then:
-        1 * imageBeanDAO.get(COLLECTION, ID) >> imageBean
-        0 * _
-
-        and:
-        result == imageBean
+        result == BYTE_LIST
     }
 
     void "Test deleteImage()"() {
         when:
-        def result = service.deleteImageBeans(COLLECTION, [ID, ID])
+        def result = service.deleteImage(COLLECTION, ID)
 
         then:
-        1 * imageBeanDAO.delete(COLLECTION, [ID, ID]) >> Boolean.TRUE
+        1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
         0 * _
 
         and:
         result == Boolean.TRUE
 
         when:
-        result = service.deleteImageBeans(COLLECTION, null)
+        result = service.deleteImage(image)
 
         then:
+        1 * image.collection >> COLLECTION
+        1 * image.objectId >> ID
+        1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
         0 * _
 
         and:
         result == Boolean.TRUE
     }
 
-    void "Test replaceImage()"() {
+    void "Test deleteImages()"() {
         given:
-        Map metaData = [
-                userId: ONE_LONG,
-                properties: [itemGroupId: ONE_LONG]
-        ]
+        List<Image> images = [image, image]
 
         when:
-        def result = service.replaceImageBeans(multipartFile, COLLECTION, metaData, ID)
+        def result = service.deleteImages(images)
 
         then:
-        1 * imageBeanDAO.delete(COLLECTION, [ID]) >> Boolean.TRUE
-        1 * imageBeanDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
-        1 * imageBeanDAO.save(imageBean, metaData) >> imageBean
+        2 * image.collection >> COLLECTION
+        2 * image.objectId >> ID
+        2 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
         0 * _
 
         and:
-        result == imageBean
+        result == Boolean.TRUE
+    }
+
+    void "Test createImage()"() {
+        when:
+        def result = service.createImage(multipartFile, COLLECTION)
+
+        then:
+        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
+        1 * imageBean.id >> ID
+        0 * _
+
+        and:
+        result == ID
+    }
+
+    void "Test replaceImage()"() {
+        when:
+        def result = service.replaceImage(multipartFile, image)
+
+        then:
+        2 * image.collection >> COLLECTION
+        1 * image.objectId >> ID
+        1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
+        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
+        1 * imageBean.id >> ID
+        0 * _
+
+        and:
+        result == ID
     }
 }

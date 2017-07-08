@@ -2,10 +2,12 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
+import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
+import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
@@ -16,19 +18,24 @@ class ItemServiceSpec extends Specification {
     private static final String ID = 'id'
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
+    private static final String IMAGE_INFO = 'imageInfo'
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String SOURCE_IMAGE_COLLECTION = 'source'
-    private static final String ITEM_IMAGE_ID = 'itemImageId'
-    private static final String SOURCE_IMAGE_ID = 'sourceImageId'
+    private static final String ITEM_IMAGE = 'itemImage'
+    private static final String SOURCE_IMAGE = 'sourceImage'
+    private static final String COLLECTION = 'collection'
 
     def userService = Mock(UserService)
     def user = Mock(User)
     def itemGroup = Mock(ItemGroup)
     def item = Mock(Item)
     def item2 = Mock(Item)
+    def image = Mock(Image)
     def objectFactory = Mock(ObjectFactory)
     def objectDAO = Mock(ObjectDAO)
     def imageService = Mock(ImageService)
+    def multipartFile = new MockMultipartFile(COLLECTION, "1234567" as byte[])
+
 
     def setup() {
         service.userService = userService
@@ -116,10 +123,9 @@ class ItemServiceSpec extends Specification {
         def result = service.deleteItem(item)
 
         then:
-        1 * item.sourceImageId >> null
-        1 * item.itemImageId >> ITEM_IMAGE_ID
-        1 * imageService.deleteImageBeans(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID]) >> Boolean.TRUE
-        1 * imageService.deleteImageBeans(SOURCE_IMAGE_COLLECTION, [null]) >> Boolean.TRUE
+        1 * item.sourceImage >> null
+        1 * item.itemImage >> image
+        1 * imageService.deleteImages([image, null]) >> Boolean.TRUE
         1 * item.delete([failOnError: true])
         0 * _
 
@@ -132,12 +138,11 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * itemGroup.items >> [item, item2]
-        1 * item.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
-        1 * item.getProperty(SOURCE_IMAGE_ID) >> SOURCE_IMAGE_ID
-        1 * item2.getProperty(ITEM_IMAGE_ID) >> ITEM_IMAGE_ID
-        1 * item2.getProperty(SOURCE_IMAGE_ID) >> null
-        1 * imageService.deleteImageBeans(ITEM_IMAGE_COLLECTION, [ITEM_IMAGE_ID, ITEM_IMAGE_ID]) >> Boolean.TRUE
-        1 * imageService.deleteImageBeans(SOURCE_IMAGE_COLLECTION, [SOURCE_IMAGE_ID, null]) >> Boolean.TRUE
+        1 * item.getProperty(ITEM_IMAGE) >> image
+        1 * item.getProperty(SOURCE_IMAGE) >> image
+        1 * item2.getProperty(ITEM_IMAGE) >> image
+        1 * item2.getProperty(SOURCE_IMAGE) >> null
+        1 * imageService.deleteImages([image, image, image, null]) >> Boolean.TRUE
         1 * itemGroup.delete([failOnError: true])
         0 * _
 
@@ -152,6 +157,24 @@ class ItemServiceSpec extends Specification {
         def result = service.updateItem(item, properties)
 
         then:
+        1 * item.save() >> item
+        0 * _
+
+        and:
+        result == item
+    }
+
+    void "Test updateItemImage()"() {
+        when:
+        def result = service.updateItemImage(item, multipartFile, IMAGE_INFO)
+
+        then:
+        1 * item.itemImage >> image
+        1 * image.setImageInfo(IMAGE_INFO)
+        1 * image.setCollection(ITEM_IMAGE_COLLECTION)
+        1 * imageService.replaceImage(multipartFile, image) >> ID
+        1 * image.setObjectId(ID)
+        1 * item.setItemImage(image)
         1 * item.save() >> item
         0 * _
 

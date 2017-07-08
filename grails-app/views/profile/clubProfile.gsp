@@ -15,7 +15,7 @@
         <div class="row">
           <div class="col-sm-3">
             <tempvs:fullName profile="${profile}"/>
-            <tempvs:image objectId="${profile.avatar}" collection="avatar"/>
+            <tempvs:image image="${profile.avatar}"/>
           </div>
           <div class="col-sm-3">
             <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${user.lastActive}"/></div>

@@ -6,6 +6,8 @@
     </head>
     <body>
       <g:if test="${item}">
+        <g:set var="itemImage" value="${item.itemImage}"/>
+        <g:set var="sourceImage" value="${item.sourceImage}"/>
         <g:render template="/item/templates/navBar" model="${[item, itemGroup, user, userProfile]}"/>
         <div class="row">
           <b>${item.name}</b>
@@ -13,15 +15,25 @@
           <b>${item.description}</b>
           <hr/>
           <div class="col-sm-3">
-            <g:message code="item.itemImage.label"/>: <tempvs:image objectId="${item.itemImageId}" collection="item"/>
+            <g:message code="item.itemImage.label"/>: <tempvs:image image="${itemImage}"/>
           </div>
           <div class="col-sm-3">
-            <g:message code="item.sourceImage.label"/>: <tempvs:image objectId="${item.sourceImageId}" collection="source"/>
+            <g:message code="item.sourceImage.label"/>: <tempvs:image image="${sourceImage}"/>
           </div>
         </div>
         <g:if test="${editAllowed}">
           <div class="row">
             <tempvs:modalButton id="itemForm" message="item.updateItem.link">
+              <tempvs:ajaxForm action="updateItemImage">
+                <tempvs:formField type="file" name="image" label="item.itemImage.label" />
+                <tempvs:formField type="text" name="imageInfo" value="${itemImage?.imageInfo}" label="item.item.name.label" />
+                <tempvs:ajaxSubmitButton value="item.updateItemImage.button" />
+              </tempvs:ajaxForm>
+              <tempvs:ajaxForm action="updateSourceImage">
+                <tempvs:formField type="file" name="image" label="item.sourceImage.label" />
+                <tempvs:formField type="text" name="imageInfo" value="${sourceImage?.imageInfo}" label="item.item.name.label" />
+                <tempvs:ajaxSubmitButton value="item.updateSourceImage.button" />
+              </tempvs:ajaxForm>
               <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
             </tempvs:modalButton>
             <tempvs:modalButton id="deleteItem" size="modal-sm" message="item.delete.button">
