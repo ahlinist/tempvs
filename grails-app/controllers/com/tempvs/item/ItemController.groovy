@@ -14,9 +14,9 @@ import org.springframework.web.multipart.MultipartFile
 @GrailsCompileStatic
 class ItemController {
 
+    private static final String IMAGE_EMPTY = 'image.empty'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
-    private static final String IMAGE_EMPTY = 'image.empty'
 
     static defaultAction = 'stash'
 
@@ -124,16 +124,12 @@ class ItemController {
 
                 if (itemGroup.user.id == userService.currentUserId) {
                     if (itemService.deleteItem(item)) {
-                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: itemGroup.id))
-                    } else {
-                        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+                        return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: itemGroup.id)))
                     }
-                } else {
-                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
                 }
-            } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
             }
+
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
         }
     }
 
@@ -145,16 +141,12 @@ class ItemController {
                 User user = itemGroup.user
                 if (user.id == userService.currentUserId) {
                     if (itemService.deleteGroup(itemGroup)) {
-                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash', id: user.id))
-                    } else {
-                        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
+                        return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash', id: user.id)))
                     }
-                } else {
-                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
                 }
-            } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
             }
+
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
         }
     }
 
@@ -168,7 +160,7 @@ class ItemController {
                     if (updatedItem.validate()) {
                         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: updatedItem.id))
                     } else {
-                        render ajaxResponseService.renderValidationResponse(itemService.updateItem(item, properties))
+                        render ajaxResponseService.renderValidationResponse(updatedItem)
                     }
                 }
             } else {
