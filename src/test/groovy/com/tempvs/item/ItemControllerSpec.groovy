@@ -3,7 +3,6 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageCommand
-import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
@@ -13,25 +12,30 @@ import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(ItemController)
 class ItemControllerSpec extends Specification {
 
-    private static final Long LONG_ID = 1L
     private static final String ONE = '1'
+    private static final Long LONG_ID = 1L
     private static final String NAME = 'name'
-    private static final String PROPERTIES = 'properties'
-    private static final String DESCRIPTION = 'description'
+    private static final String AUTH_URI = '/auth'
+    private static final String REFERER = 'referer'
+    private static final String SHOW_ACTION = 'show'
+    private static final String GROUP_ACTION = 'group'
+    private static final String ITEM_URI = '/item/show'
     private static final String ITEM_IMAGE = 'itemImage'
     private static final String IMAGE_INFO = 'imageInfo'
+    private static final String PROPERTIES = 'properties'
+    private static final String DESCRIPTION = 'description'
+    private static final String IMAGE_EMPTY = 'image.empty'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
-    private static final String ITEM_URI = '/item/show'
-    private static final String GROUP_ACTION = 'group'
-    private static final String SHOW_ACTION = 'show'
-    private static final String REFERER = 'referer'
+    private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
+    private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
     def user = Mock(User)
     def json = Mock(JSON)
@@ -48,6 +52,7 @@ class ItemControllerSpec extends Specification {
     def createItemGroupCommand = Mock(CreateItemGroupCommand)
     def grailsLinkGenerator = Mock(LinkGenerator)
     def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
+    def emptyMultipartItemImage = new MockMultipartFile(ITEM_IMAGE, '' as byte[])
 
     def setup() {
         controller.userService = userService
@@ -58,7 +63,19 @@ class ItemControllerSpec extends Specification {
     def cleanup() {
     }
 
-    void "Test stash() without id"() {
+    void "Test stash() without id being not logged in"() {
+        when:
+        controller.stash()
+
+        then:
+        1 * userService.currentUser >> null
+        0 * _
+
+        and:
+        response.redirectedUrl == AUTH_URI
+    }
+
+    void "Test stash() without id being logged in"() {
         given:
         Set itemGroups = [itemGroup]
 
@@ -75,27 +92,7 @@ class ItemControllerSpec extends Specification {
         result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: Boolean.TRUE]
     }
 
-    void "Test stash() with id for existing user"() {
-        given:
-        Set itemGroups = [itemGroup]
-
-        when:
-        params.id = ONE
-        def result = controller.stash()
-
-        then:
-        1 * userService.getUser(ONE) >> user
-        1 * user.userProfile >> userProfile
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
-        1 * user.itemGroups >> itemGroups
-        0 * _
-
-        and:
-        result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: true]
-    }
-
-    void "Test stash() with id for non-existing user"() {
+    void "Test stash() with id being not logged in"() {
         when:
         params.id = ONE
         def result = controller.stash()
@@ -108,6 +105,26 @@ class ItemControllerSpec extends Specification {
         !controller.modelAndView
         !response.redirectedUrl
         !result
+    }
+
+    void "Test stash() for success"() {
+        given:
+        params.id = ONE
+        Set itemGroups = [itemGroup]
+
+        when:
+        def result = controller.stash()
+
+        then:
+        1 * userService.getUser(ONE) >> user
+        1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
+        1 * user.itemGroups >> itemGroups
+        0 * _
+
+        and:
+        result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: true]
     }
 
     void "Test group creation against invalid command"() {
@@ -212,14 +229,47 @@ class ItemControllerSpec extends Specification {
         ]
     }
 
-    void "Test createItem()"() {
+    void "Test createItem() against invalid command"() {
         given:
+        params.isAjaxRequest = Boolean.TRUE
+
+        when:
+        controller.createItem(itemCommand)
+
+        then:
+        1 * itemCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(itemCommand) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test createItem() against invalid item"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
+
+        when:
+        controller.createItem(itemCommand)
+
+        then:
+        1 * itemCommand.validate() >> Boolean.TRUE
+        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemService.createItem(_ as Map) >> item
+        1 * item.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(item) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test successful createItem()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
 
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.createItem(itemCommand)
 
         then:
@@ -245,7 +295,6 @@ class ItemControllerSpec extends Specification {
         and:
         controller.modelAndView == null
         !response.redirectedUrl
-
     }
 
     void "Test show() with id"() {
@@ -274,7 +323,22 @@ class ItemControllerSpec extends Specification {
         ]
     }
 
-    void "Test deleteItem()"() {
+    void "Test deleteItem() against unexisting item"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        params.id = ONE
+
+        when:
+        controller.deleteItem()
+
+        then:
+        1 * itemService.getItem(ONE) >> null
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test deleteItem() against failure"() {
         given:
         params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
@@ -286,11 +350,96 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.user >> user
-        1 * itemGroup.id >> LONG_ID
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> (2 * LONG_ID)
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test deleteItem()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        params.id = ONE
+
+        when:
+        controller.deleteItem()
+
+        then: 'Could not delete'
+        1 * itemService.getItem(ONE) >> item
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.user >> user
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
+        1 * itemService.deleteItem(item) >> Boolean.FALSE
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+
+        when:
+        controller.deleteItem()
+
+        then: 'Successfully deleted'
+        1 * itemService.getItem(ONE) >> item
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.user >> user
         1 * user.id >> LONG_ID
         1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteItem(item) >> Boolean.TRUE
+        1 * itemGroup.id >> LONG_ID
         1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test deleteGroup() against unexisting one"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        params.id = ONE
+
+        when:
+        controller.deleteGroup()
+
+        then:
+        1 * itemService.getGroup(ONE) >> null
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test illegal deleteGroup()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        params.id = ONE
+
+        when:
+        controller.deleteGroup()
+
+        then: 'Group belongs to other user'
+        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemGroup.user >> user
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> (2 * LONG_ID)
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test deleteGroup() against failure"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        params.id = ONE
+
+        when:
+        controller.deleteGroup()
+
+        then:
+        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemGroup.user >> user
+        1 * user.id >> LONG_ID
+        1 * userService.currentUserId >> LONG_ID
+        1 * itemService.deleteGroup(itemGroup) >> Boolean.FALSE
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -314,7 +463,42 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test editItem()"() {
+    void "Test editItem() against invalid command"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+
+        when:
+        controller.editItem(itemCommand)
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * itemCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(itemCommand) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test editItem() against invalid item"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+
+        when:
+        controller.editItem(itemCommand)
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * itemCommand.validate() >> Boolean.TRUE
+        1 * itemCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemService.updateItem(item, _ as Map) >> updatedItem
+        1 * updatedItem.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(updatedItem) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test successful editItem()"() {
         given:
         params.isAjaxRequest = Boolean.TRUE
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
@@ -334,16 +518,50 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test updateItemImage()"() {
+    void "Test updateItemImage() with no file"() {
         given:
         params.isAjaxRequest = Boolean.TRUE
-        controller.request.addFile(multipartItemImage)
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
 
         when:
         controller.updateItemImage(imageCommand)
 
         then:
+        1 * imageCommand.image >> emptyMultipartItemImage
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateItemImage() against invalid item"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+
+        when:
+        controller.updateItemImage(imageCommand)
+
+        then:
+        2 * imageCommand.image >> multipartItemImage
+        1 * imageCommand.imageInfo >> IMAGE_INFO
+        1 * itemService.getItem(ONE) >> item
+        1 * itemService.updateItemImage(item, multipartItemImage, IMAGE_INFO) >> item
+        1 * item.asType(Item) >> item
+        1 * item.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(item) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateItemImage()"() {
+        given:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+
+        when:
+        controller.updateItemImage(imageCommand)
+
+        then: 'Success'
         2 * imageCommand.image >> multipartItemImage
         1 * imageCommand.imageInfo >> IMAGE_INFO
         1 * itemService.getItem(ONE) >> item
