@@ -4,7 +4,6 @@ import com.tempvs.tests.utils.TestingUtils
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
@@ -38,6 +37,15 @@ class ClubProfileSpec extends Specification {
         Map params = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
         params.user = user
         params.profileEmail = NON_VALID_EMAIL
+
+        expect:
+        !new ClubProfile(params).validate()
+    }
+
+    void "Test clubProfile creation without a period"() {
+        given:
+        Map params = TestingUtils.DEFAULT_CLUB_PROFILE_PROPS.clone()
+        params.period = null
 
         expect:
         !new ClubProfile(params).validate()

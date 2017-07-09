@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 
 /**
@@ -10,6 +11,7 @@ class ClubProfile extends BaseProfile {
 
     String nickName
     String clubName
+    Period period
 
     static belongsTo = [user: User]
 

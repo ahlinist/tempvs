@@ -18,10 +18,11 @@
             <tempvs:image image="${profile.avatar}"/>
           </div>
           <div class="col-sm-3">
-            <div><g:message code="date.lastActive" /> <tempvs:dateFromNow date="${user.lastActive}"/></div>
-            <div><g:message code="clubProfile.profileEmail.label" />: ${profile.profileEmail}</div>
-            <div><g:message code="clubProfile.location.label" />: ${profile.location}</div>
-            <div><g:message code="clubProfile.clubName.label" />: ${profile.clubName}</div>
+            <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>
+            <div><b><g:message code="clubProfile.profileEmail.label" />:</b> ${profile.profileEmail}</div>
+            <div><b><g:message code="clubProfile.location.label" />:</b> ${profile.location}</div>
+            <div><b><g:message code="clubProfile.clubName.label" />:</b> ${profile.clubName}</div>
+            <div><b><g:message code="periodization.period.value.label"/>:</b> ${profile.period.value}</div>
           </div>
         </div>
         <g:if test="${editAllowed}">

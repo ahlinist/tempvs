@@ -15,17 +15,17 @@ import org.springframework.web.multipart.MultipartFile
  */
 @Transactional
 @GrailsCompileStatic
-class ProfileService {
+class ProfileService<T> {
 
     private static final String AVATAR_COLLECTION = 'avatar'
 
     UserService userService
-    ObjectDAO<BaseProfile> objectDAO
+    ObjectDAO objectDAO
     ObjectFactory objectFactory
     ImageService imageService
 
-    BaseProfile getProfile(Class clazz, String id) {
-        objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
+    T getProfile(Class<T> clazz, String id) {
+        objectDAO.find(clazz, [profileId: id]) as T ?: objectDAO.get(clazz, id) as T
     }
 
     BaseProfile updateProfile(BaseProfile profile, Map params) {
@@ -35,11 +35,10 @@ class ProfileService {
     }
 
     BaseProfile createClubProfile(Map properties) {
-        User user = userService.currentUser
-        BaseProfile profile = objectFactory.create(ClubProfile)
-        InvokerHelper.setProperties(profile, properties)
-        user.addToClubProfiles(profile)?.save()
-        profile
+        ClubProfile clubProfile = objectFactory.create(ClubProfile)
+        InvokerHelper.setProperties(clubProfile, properties)
+        userService.currentUser.addToClubProfiles(clubProfile)?.save()
+        clubProfile
     }
 
     BaseProfile updateProfileEmail(Class clazz, Long instanceId, String profileEmail) {

@@ -10,9 +10,9 @@
         <g:set var="sourceImage" value="${item.sourceImage}"/>
         <g:render template="/item/templates/navBar" model="${[item, itemGroup, user, userProfile]}"/>
         <div class="row">
-          <b>${item.name}</b>
-          <br/>
-          <b>${item.description}</b>
+          <div><b><g:message code="item.name.label"/>:</b> ${item.name}</div>
+          <div><b><g:message code="item.description.label"/>:</b> ${item.description}</div>
+          <div><b><g:message code="periodization.period.value.label"/>:</b> ${item.period.value}</div>
           <hr/>
           <div class="col-sm-3">
             <g:message code="item.itemImage.label"/>: <tempvs:image image="${itemImage}"/>

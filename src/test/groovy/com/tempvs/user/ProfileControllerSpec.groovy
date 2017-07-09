@@ -79,7 +79,7 @@ class ProfileControllerSpec extends Specification {
         when: 'No id given'
         controller.userProfile()
 
-        then: 'For existent profile'
+        then:
         1 * userService.currentUser >> user
         1 * user.getUserProfile()  >> userProfile
         1 * userProfile.getIdentifier() >> IDENTIFIER
@@ -92,9 +92,8 @@ class ProfileControllerSpec extends Specification {
         params.id = ONE
         def result = controller.userProfile()
 
-        then: 'For existent profile'
+        then:
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
-        1 * userProfile.asType(BaseProfile.class) >> userProfile
         1 * userProfile.getIdentifier() >> IDENTIFIER
         1 * profileHolder.profile >> userProfile
         0 * _
@@ -159,6 +158,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(_, ONE) >> userProfile
+        1 * userProfile.asType(BaseProfile) >> userProfile
         1 * profileHolder.setProfile(userProfile)
         0 * _
 
@@ -178,10 +178,10 @@ class ProfileControllerSpec extends Specification {
         result == [user: user]
     }
 
-    void "Test create()"() {
+    void "Test createClubProfile()"() {
         when: 'Command invalid'
         params.isAjaxRequest = Boolean.TRUE
-        controller.create(clubProfileCommand)
+        controller.createClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.FALSE
@@ -190,7 +190,7 @@ class ProfileControllerSpec extends Specification {
         0 * _
 
         when: 'Command valid. Profile not created.'
-        controller.create(clubProfileCommand)
+        controller.createClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
@@ -202,7 +202,7 @@ class ProfileControllerSpec extends Specification {
         0 * _
 
         when: 'Command valid. Profile created.'
-        controller.create(clubProfileCommand)
+        controller.createClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
@@ -224,7 +224,14 @@ class ProfileControllerSpec extends Specification {
         controller.updateClubProfile(clubProfileCommand)
 
         then:
-        7 * clubProfileCommand._
+        1 * clubProfileCommand.lastName
+        1 * clubProfileCommand.period
+        1 * clubProfileCommand.profileId
+        1 * clubProfileCommand.location
+        1 * clubProfileCommand.nickName
+        1 * clubProfileCommand.firstName
+        1 * clubProfileCommand.clubName
+        1 * clubProfileCommand.errors
         1 * profileHolder.getProfile() >> clubProfile
         1 * profileService.updateProfile(clubProfile, _) >> clubProfile
         1 * clubProfile.validate() >> Boolean.TRUE

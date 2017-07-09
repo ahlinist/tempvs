@@ -2,6 +2,7 @@ package com.tempvs.item
 
 import com.tempvs.domain.BasePersistent
 import com.tempvs.image.Image
+import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 
 /**
@@ -14,6 +15,7 @@ class Item extends BasePersistent {
     String description
     Image itemImage
     Image sourceImage
+    Period period
 
     static belongsTo = [itemGroup: ItemGroup]
 

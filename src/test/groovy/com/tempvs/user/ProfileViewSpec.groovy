@@ -1,5 +1,7 @@
 package com.tempvs.user
 
+import com.tempvs.image.Image
+import com.tempvs.periodization.Period
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.GroovyPageUnitTestMixin
 import spock.lang.Specification
@@ -7,18 +9,28 @@ import spock.lang.Specification
 @TestMixin(GroovyPageUnitTestMixin)
 class ProfileViewSpec extends Specification {
 
-    private static final String FIRST_NAME = 'firstName'
+    private static final String ID = 'id'
+    private static final String USER = 'user'
+    private static final String PERIOD = 'period'
+    private static final String AVATAR = 'avatar'
+    private static final String LOCATION = 'location'
+    private static final String CLUB_NAME = 'clubName'
     private static final String LAST_NAME = 'lastName'
     private static final String NICK_NAME = 'nickName'
+    private static final String FIRST_NAME = 'firstName'
+    private static final String PROFILE_ID = 'profileId'
     private static final String LAST_ACTIVE = 'lastActive'
-    private static final String USER = 'user'
     private static final String USER_PROFILE = 'userProfile'
     private static final String CLUB_PROFILES = 'clubProfiles'
+    private static final String PROFILE_EMAIL = 'profileEmail'
+
 
     Date lastActiveDate = new Date()
 
+    def period = Period.valueOf'ANCIENT'
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
+    def image = Mock(Image)
 
     def user = Mock(User) {
         getProperty(LAST_ACTIVE) >> lastActiveDate
@@ -67,7 +79,7 @@ class ProfileViewSpec extends Specification {
 
     void "Test /profile/clubProfile view"() {
         given:
-        String updateProfileButton = 'tempvs:modalButton id="updateProfile" message="profile.updateProfile.link"'
+        String updateProfileButton = '<tempvs:modalButton id="updateProfile" message="profile.updateProfile.link">'
         String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" message="profile.delete.button">'
         String title = "<title>Tempvs - <tempvs:fullName profile=\"${clubProfile}\"/></title>"
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
@@ -77,29 +89,31 @@ class ProfileViewSpec extends Specification {
         String result = render view: '/profile/clubProfile', model: model
 
         then:
+        1 * clubProfile.getProperty(USER) >> user
+        1 * clubProfile.getProperty(AVATAR) >> image
+        2 * clubProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
+        2 * clubProfile.getProperty(LOCATION) >> LOCATION
+        2 * clubProfile.getProperty(CLUB_NAME) >> CLUB_NAME
+        1 * clubProfile.getProperty(PROFILE_ID) >> PROFILE_ID
+        1 * clubProfile.getProperty(FIRST_NAME) >> FIRST_NAME
+        1 * clubProfile.getProperty(LAST_NAME) >> LAST_NAME
+        1 * clubProfile.getProperty(NICK_NAME) >> NICK_NAME
+        2 * clubProfile.getProperty(PERIOD) >> period
+        1 * clubProfile.getProperty(ID) >> ID
+        1 * user.getProperty(LAST_ACTIVE) >> lastActiveDate
+        0 * _
+
+        and:
         result.contains title
         result.contains lastActive
         result.contains updateProfileButton
         result.contains deleteProfileButton
     }
 
-    void "Test /profile/create view"() {
-        given:
-        String title = "<title>Tempvs - Create profile</title>"
-        String createForm = '<tempvs:ajaxForm action="create">'
-
-        when:
-        String result = render view: '/profile/create', model: model
-
-        then:
-        result.contains title
-        result.contains createForm
-    }
-
     void "Test /profile/list view"() {
         given:
         String title = "<title>Tempvs - <tempvs:fullName profile=\"${userProfile}\"/></title>"
-        String createButton = '<a href="/profile/create" class="btn btn-default">'
+        String createButton = '<tempvs:modalButton id="createProfile" message="clubProfile.create.link">'
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
         String clubProfileTag = "<tempvs:fullName profile=\"${clubProfile}\"/>"
         Map model = [user: user]

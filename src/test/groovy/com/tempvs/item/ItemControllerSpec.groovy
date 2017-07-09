@@ -3,7 +3,7 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageCommand
-import com.tempvs.image.ImageService
+import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
@@ -13,7 +13,6 @@ import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -43,7 +42,6 @@ class ItemControllerSpec extends Specification {
     def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def itemService = Mock(ItemService)
-    def imageService = Mock(ImageService)
     def ajaxResponseService = Mock(AjaxResponseService)
     def itemCommand = Mock(ItemCommand)
     def imageCommand = Mock(ImageCommand)
@@ -55,7 +53,6 @@ class ItemControllerSpec extends Specification {
         controller.userService = userService
         controller.itemService = itemService
         controller.ajaxResponseService = ajaxResponseService
-        controller.imageService = imageService
     }
 
     def cleanup() {
@@ -228,8 +225,7 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemCommand.name >> NAME
-        1 * itemCommand.description >> DESCRIPTION
+        1 * itemCommand.getProperty(PROPERTIES) >> [:]
         1 * itemService.createItem(_ as Map) >> item
         1 * item.validate() >> Boolean.TRUE
         1 * item.id >> LONG_ID

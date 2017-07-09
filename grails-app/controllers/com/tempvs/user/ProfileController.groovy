@@ -37,13 +37,17 @@ class ProfileController {
 
     def userProfile(String id) {
         profile(id) {
-            profileService.getProfile(UserProfile.class, id)
+            UserProfile profile = profileService.getProfile(UserProfile.class, id)
+            
+            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile, ] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
         }
     }
 
     def clubProfile(String id) {
         profile(id) {
-            profileService.getProfile(ClubProfile.class, id)
+            ClubProfile profile = profileService.getProfile(ClubProfile.class, id)
+
+            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
         }
     }
 
@@ -51,7 +55,7 @@ class ProfileController {
         Map destination = [uri: request.getHeader('referer')]
 
         if (id) {
-            profileHolder.profile = profileService.getProfile(ClubProfile.class, id)
+            profileHolder.profile = profileService.getProfile(ClubProfile.class, id) as BaseProfile
         } else {
             User user = userService.currentUser
 
@@ -65,7 +69,7 @@ class ProfileController {
         [user: userService.currentUser]
     }
 
-    def create(ClubProfileCommand command) {
+    def createClubProfile(ClubProfileCommand command) {
         if (params.isAjaxRequest) {
             if (command.validate()) {
                 BaseProfile profile = profileService.createClubProfile(command.properties)
@@ -161,11 +165,9 @@ class ProfileController {
         }
     }
 
-    private profile(String id, Closure getProfile) {
+    private profile(String id, Closure renderProfile) {
         if (id) {
-            BaseProfile profile = getProfile.call() as BaseProfile
-
-            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
+            renderProfile()
         } else {
             User user = userService.currentUser
             UserProfile profile = user?.userProfile

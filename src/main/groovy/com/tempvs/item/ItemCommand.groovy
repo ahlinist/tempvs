@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
 
@@ -10,6 +11,7 @@ import grails.validation.Validateable
 class ItemCommand implements Validateable {
     String name
     String description
+    Period period
 
     static constraints = {
         description nullable: true

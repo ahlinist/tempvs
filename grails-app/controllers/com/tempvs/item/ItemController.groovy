@@ -2,7 +2,6 @@ package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageCommand
-import com.tempvs.image.ImageService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -15,8 +14,6 @@ import org.springframework.web.multipart.MultipartFile
 @GrailsCompileStatic
 class ItemController {
 
-    private static final String ITEM_IMAGE_COLLECTION = 'item'
-    private static final String SOURCE_IMAGE_COLLECTION = 'source'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
     private static final String IMAGE_EMPTY = 'image.empty'
@@ -24,7 +21,6 @@ class ItemController {
     static defaultAction = 'stash'
 
     ItemService itemService
-    ImageService imageService
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
     UserService userService
@@ -86,13 +82,7 @@ class ItemController {
         if (params.isAjaxRequest) {
             if (command.validate()) {
                 ItemGroup itemGroup = itemService.getGroup request.getHeader('referer').tokenize('/').last()
-
-                Map properties = [
-                        name: command.name,
-                        description: command.description,
-                        itemGroup: itemGroup,
-                ]
-
+                Map properties = command.properties + [itemGroup: itemGroup]
                 Item item = itemService.createItem(properties)
 
                 if (item.validate()) {

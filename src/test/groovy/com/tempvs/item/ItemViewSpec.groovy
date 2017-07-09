@@ -1,12 +1,12 @@
 package com.tempvs.item
 
 import com.tempvs.image.Image
+import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.GroovyPageUnitTestMixin
 import spock.lang.Specification
-
 /**
  * Unit-test suite for testing {@link com.tempvs.item.Item}-related views.
  */
@@ -17,6 +17,8 @@ class ItemViewSpec extends Specification {
     private static final String ONE = '1'
     private static final String NAME = 'name'
     private static final String ITEMS = 'items'
+    private static final String VALUE = 'value'
+    private static final String PERIOD = 'period'
     private static final String IMAGE_INFO = 'imageInfo'
     private static final String ITEM_IMAGE = 'itemImage'
     private static final String DESCRIPTION = 'description'
@@ -33,6 +35,7 @@ class ItemViewSpec extends Specification {
     def itemGroup
     def image = Mock(Image)
     def userProfile = Mock(UserProfile)
+    def period = Period.valueOf 'ANCIENT'
 
     def setup() {
         user = Mock(User)
@@ -170,7 +173,8 @@ class ItemViewSpec extends Specification {
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(ITEM_IMAGE) >> image
         1 * item.getProperty(SOURCE_IMAGE) >> image
-        2 * image.getProperty(IMAGE_INFO)
+        2 * item.getProperty(PERIOD) >> period
+        2 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
         1 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * user.getProperty(ID) >> ID

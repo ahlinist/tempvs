@@ -4,6 +4,7 @@ import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
@@ -20,20 +21,20 @@ class ItemServiceSpec extends Specification {
     private static final String DESCRIPTION = 'description'
     private static final String IMAGE_INFO = 'imageInfo'
     private static final String ITEM_IMAGE_COLLECTION = 'item'
-    private static final String SOURCE_IMAGE_COLLECTION = 'source'
     private static final String ITEM_IMAGE = 'itemImage'
     private static final String SOURCE_IMAGE = 'sourceImage'
     private static final String COLLECTION = 'collection'
 
-    def userService = Mock(UserService)
     def user = Mock(User)
-    def itemGroup = Mock(ItemGroup)
     def item = Mock(Item)
     def item2 = Mock(Item)
     def image = Mock(Image)
-    def objectFactory = Mock(ObjectFactory)
     def objectDAO = Mock(ObjectDAO)
+    def itemGroup = Mock(ItemGroup)
+    def period = GroovyMock(Period)
+    def userService = Mock(UserService)
     def imageService = Mock(ImageService)
+    def objectFactory = Mock(ObjectFactory)
     def multipartFile = new MockMultipartFile(COLLECTION, "1234567" as byte[])
 
 
@@ -94,12 +95,26 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test createItem()"() {
+        given:
+        Map properties = [
+                name: NAME,
+                description:DESCRIPTION,
+                period: period,
+                itemGroup: itemGroup,
+        ]
+
         when:
-        def result = service.createItem([:])
+        def result = service.createItem(properties)
 
         then:
         1 * objectFactory.create(Item) >> item
-        1 * item.save()
+        1 * item.setName(NAME)
+        1 * item.setDescription(DESCRIPTION)
+        1 * itemGroup.asType(ItemGroup) >> itemGroup
+        1 * item.setItemGroup(itemGroup)
+        1 * period.asType(Period) >> period
+        1 * item.setPeriod(period)
+        1 * item.save() >> item
         0 * _
 
         and:
@@ -151,12 +166,23 @@ class ItemServiceSpec extends Specification {
 
     void "Test updateItem()"() {
         given: 'Props without images'
-        Map properties = [:]
+        Map properties = [
+                name: NAME,
+                description: DESCRIPTION,
+                period: period,
+                itemGroup: itemGroup,
+        ]
 
         when:
         def result = service.updateItem(item, properties)
 
         then:
+        1 * item.setName(NAME)
+        1 * item.setDescription(DESCRIPTION)
+        1 * period.asType(Period) >> period
+        1 * item.setPeriod(period)
+        1 * itemGroup.asType(ItemGroup) >> itemGroup
+        1 * item.setItemGroup(itemGroup)
         1 * item.save() >> item
         0 * _
 

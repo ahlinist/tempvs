@@ -1,5 +1,6 @@
 package com.tempvs.tests.utils
 
+import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 
@@ -17,6 +18,7 @@ class TestingUtils {
     public static final String PROFILE_EMAIL = 'defaultProfileEmail@mail.com'
     public static final String LOCATION = 'defaultLocation'
     public static final String CLUB_NAME = 'defaultClubName'
+    public static final Period PERIOD = Period.ANCIENT
 
     public static final Map DEFAULT_USER_PROPS = [
             email:          EMAIL,
@@ -36,6 +38,7 @@ class TestingUtils {
             location:       LOCATION,
             profileId:      PROFILE_ID,
             clubName:       CLUB_NAME,
+            period: PERIOD,
     ]
 
     static User createUser(Map props = DEFAULT_USER_PROPS){

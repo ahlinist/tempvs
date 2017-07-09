@@ -1,3 +1,4 @@
+<%@ page import="com.tempvs.periodization.Period"%>
 <tempvs:ajaxForm controller="profile" action="updateAvatar">
   <tempvs:formField type="file" name="image" label="clubProfile.avatar.label" />
   <tempvs:formField type="text" name="imageInfo" label="clubProfile.imageInfo.label" />
@@ -14,5 +15,6 @@
   <tempvs:formField type="text" name="location" value="${profile.location}" label="clubProfile.location.label" />
   <tempvs:formField type="text" name="clubName" value="${profile.clubName}" label="clubProfile.clubName.label" />
   <tempvs:formField type="text" name="profileId" value="${profile.profileId}" label="clubProfile.profileId.label" />
+  <tempvs:formField type="select" name="period" value="${profile.period}" from="${Period.values()}" optionKey="key" optionValue="value" label="periodization.period.form.label"/>
   <tempvs:ajaxSubmitButton value="clubProfile.update.button" />
 </tempvs:ajaxForm>

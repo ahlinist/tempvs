@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.periodization.Period
 import grails.test.mixin.TestFor
 import grails.util.ClosureToMapPopulator
 import grails.validation.ConstraintsEvaluator
@@ -14,6 +15,8 @@ class ProfileCommandSpec extends Specification {
     private static final String LOCATION = 'location'
     private static final String PROFILE_ID = 'profileId'
     private static final String NUMERIC_PROFILE_ID = '1234'
+
+    def period = Period.valueOf 'XIX'
 
     def setupSpec(){
         defineBeans {
@@ -35,26 +38,28 @@ class ProfileCommandSpec extends Specification {
 
     }
 
-    void "Create empty UserProfileCommand"() {
+    void "Test invalid UserProfileCommand creation"() {
         expect:
         !new UserProfileCommand().validate()
 
         and:
         !new ClubProfileCommand().validate()
+        !new ClubProfileCommand(firstName: FIRST_NAME).validate()
+
     }
 
-    void "Create UserProfileCommand with first and last name"() {
+    void "Test minimal valid profile commands creation"() {
         expect:
         new UserProfileCommand(firstName: FIRST_NAME, lastName: LAST_NAME).validate()
 
         and:
-        new ClubProfileCommand(firstName: FIRST_NAME).validate()
+        new ClubProfileCommand(firstName: FIRST_NAME, period: period).validate()
     }
 
     void "Create full UserProfileCommand"() {
         given:
         Map userProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID]
-        Map clubProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, lastName: NICK_NAME, location: LOCATION, profileId: PROFILE_ID]
+        Map clubProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, lastName: NICK_NAME, location: LOCATION, profileId: PROFILE_ID, period: period]
 
         expect:
         new UserProfileCommand(userProfileProps).validate()

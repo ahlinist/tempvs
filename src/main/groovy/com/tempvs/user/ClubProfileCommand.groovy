@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
 
@@ -14,6 +15,7 @@ class ClubProfileCommand implements Validateable {
     String clubName
     String location
     String profileId
+    Period period
 
     static constraints = {
         lastName nullable: true

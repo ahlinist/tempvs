@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.periodization.Period
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -10,7 +11,10 @@ import spock.lang.Specification
 class ItemCommandSpec extends Specification {
 
     private static final String NAME = 'name'
+    private static final String PERIOD = 'period'
     private static final String DESCRIPTION = 'description'
+
+    def period = GroovyMock(Period)
 
     def setup() {
 
@@ -25,9 +29,15 @@ class ItemCommandSpec extends Specification {
         !new ItemCommand().validate()
 
         and:
-        new ItemCommand(name: NAME).validate()
+        !new ItemCommand(name: NAME).validate()
 
         and:
-        new ItemCommand(name: NAME, description: DESCRIPTION).validate()
+        !new ItemCommand(name: NAME, description: DESCRIPTION).validate()
+
+        and:
+        new ItemCommand(name: NAME, period: period).validate()
+
+        and:
+        new ItemCommand(name: NAME, description: DESCRIPTION, period: period).validate()
     }
 }

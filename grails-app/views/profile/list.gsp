@@ -14,7 +14,9 @@
         </g:link>
         <g:render template="/profile/templates/clubProfiles" model="${[user: user]}"/>
         <div>
-          <g:link class="btn btn-default" controller="profile" action="create"><g:message code="clubProfile.create.link"/></g:link>
+          <tempvs:modalButton id="createProfile" message="clubProfile.create.link">
+            <g:render template="/profile/templates/createClubProfile" model="${[action: 'createItem', button: 'item.createItem.button']}"/>
+          </tempvs:modalButton>
         </div>
       </div>
     </body>

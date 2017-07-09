@@ -5,9 +5,9 @@ import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.UserService
+import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.MultipartFile
 
 /**
@@ -44,7 +44,10 @@ class ItemService {
 
     Item createItem(Map properties) {
         Item item = objectFactory.create(Item)
-        InvokerHelper.setProperties(item, properties)
+        item.name = properties.name
+        item.description = properties.description
+        item.period = properties.period as Period
+        item.itemGroup = properties.itemGroup as ItemGroup
         item.save()
         item
     }
@@ -93,7 +96,10 @@ class ItemService {
     }
 
     Item updateItem(Item item, Map properties) {
-        InvokerHelper.setProperties(item, properties)
+        item.name = properties.name
+        item.description = properties.description
+        item.period = properties.period as Period
+        item.itemGroup = properties.itemGroup as ItemGroup
         item.save()
         item
     }
