@@ -11,9 +11,10 @@ class ActivityInterceptorSpec extends Specification {
     private static final String AUTH = 'auth'
     private static final String USER = 'user'
     private static final String ITEM = 'item'
-    private static final String PROFILE = 'profile'
     private static final String IMAGE = 'image'
+    private static final String SOURCE = 'source'
     private static final String VERIFY = 'verify'
+    private static final String PROFILE = 'profile'
 
     def setup() {
     }
@@ -49,6 +50,10 @@ class ActivityInterceptorSpec extends Specification {
         ITEM        | 'stash'
         ITEM        | 'group'
         ITEM        | 'createGroup'
+        SOURCE      | 'index'
+        SOURCE      | 'group'
+        SOURCE      | 'show'
+        SOURCE      | 'createSource'
     }
 
     void "Interceptor doesn't match the excluded actions"() {

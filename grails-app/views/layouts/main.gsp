@@ -33,6 +33,9 @@
               </li>
             </ul>
           </span>
+          <g:link class="btn btn-default disableable pull-right" controller="source">
+            <g:message code="source.library.link" />
+          </g:link>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
           <span class="pull-right">
