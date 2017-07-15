@@ -18,16 +18,13 @@
             </g:link>
           </div>
         </g:each>
-        <hr/>
         <sec:ifLoggedIn>
+          <hr/>
           <g:if test="${editAllowed}">
             <div class="row">
               <tempvs:modalButton id="sourceForm" message="source.createSource.button">
-                <tempvs:ajaxForm action="createSource">
-                  <tempvs:formField type="text" name="name" label="source.name.label" />
-                  <tempvs:formField type="text" name="description" label="source.description.label" />
-                  <tempvs:ajaxSubmitButton value="source.createSource.button" />
-                </tempvs:ajaxForm>
+                <g:render template="/source/templates/sourceForm"
+                    model="${[action: 'createSource', button: 'source.createSource.button', period: period]}"/>
               </tempvs:modalButton>
             </div>
           </g:if>
