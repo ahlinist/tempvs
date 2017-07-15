@@ -26,7 +26,7 @@ class ItemViewSpec extends Specification {
     private static final String ITEM_TITLE = 'item.show.title'
     private static final String ITEM_STASH_TITLE = 'item.stash.title'
     private static final String ITEM_GROUP_TITLE = 'item.group.title'
-    private static final String ITEM_NOT_FOUND = 'item.item.notFound.message'
+    private static final String ITEM_NOT_FOUND = 'item.notFound.message'
     private static final String STASH_NOT_FOUND = 'item.stash.notFound.message'
     private static final String GROUP_NOT_FOUND = 'item.group.notFound.message'
 
@@ -139,7 +139,6 @@ class ItemViewSpec extends Specification {
     void "Test /item/show without id"() {
         given:
         String title = "<title>Tempvs - ${ITEM_TITLE}</title>"
-        String notFoundMessage = ITEM_NOT_FOUND
         Map model = [:]
 
         when:
@@ -147,7 +146,7 @@ class ItemViewSpec extends Specification {
 
         then:
         result.contains title
-        result.contains notFoundMessage
+        result.contains ITEM_NOT_FOUND
     }
 
     void "Test /item/show with id"() {
