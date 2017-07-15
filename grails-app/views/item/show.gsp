@@ -46,7 +46,7 @@
         </g:if>
       </g:if>
       <g:else>
-        <g:message code="item.item.notFound.message"/>
+        <g:message code="item.notFound.message"/>
       </g:else>
     </body>
 </html>
