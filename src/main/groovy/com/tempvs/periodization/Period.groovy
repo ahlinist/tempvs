@@ -30,6 +30,10 @@ enum Period {
         this.name()
     }
 
+    String getId() {
+        this.name().toLowerCase()
+    }
+
     String getValue() {
         applicationContext.getMessage(this.value, null, this.name(), LocaleContextHolder.locale)
     }
