@@ -9,4 +9,5 @@ import groovy.transform.CompileStatic
 interface ObjectDAO<T> {
     T get(Class clazz, Object id)
     T find(Class clazz, Map restrictions)
+    List<T> findAll(Class clazz, Map restrictions)
 }

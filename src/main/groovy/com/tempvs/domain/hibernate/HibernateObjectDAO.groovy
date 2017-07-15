@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import org.hibernate.Criteria
 import org.hibernate.SessionFactory
 import org.hibernate.criterion.Restrictions
+
 /**
  * Hibernate implementation of database object retriever.
  */
@@ -20,12 +21,20 @@ class HibernateObjectDAO<T> implements ObjectDAO<T> {
     }
 
     T find(Class clazz, Map restrictions) {
+        createCriteria(clazz, restrictions).uniqueResult() as T
+    }
+
+    List<T> findAll(Class clazz, Map restrictions) {
+        createCriteria(clazz, restrictions).list() as List<T>
+    }
+
+    private Criteria createCriteria(Class clazz, Map restrictions) {
         Criteria criteria = sessionFactory.currentSession.createCriteria(clazz)
 
         restrictions.each { fieldName, value ->
             criteria.add(Restrictions.eq(fieldName as String, value))
         }
 
-        criteria.uniqueResult() as T
+        criteria
     }
 }
