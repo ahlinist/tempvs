@@ -58,8 +58,10 @@ class SourceControllerSpec extends Specification {
     }
 
     void "Test createSource()"() {
-        when:
+        given:
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
+
+        when:
         controller.createSource(sourceCommand)
 
         then:
@@ -87,5 +89,24 @@ class SourceControllerSpec extends Specification {
 
         and:
         result == [sources: sources, period: period, editAllowed: Boolean.TRUE]
+    }
+
+    void "Test editSource()"() {
+        given:
+        controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
+
+        when:
+        controller.editSource(sourceCommand)
+
+        then:
+        1 * sourceCommand.validate() >> Boolean.TRUE
+        1 * sourceCommand.getProperty(PROPERTIES) >> [:]
+        1 * sourceService.getSource(ID) >> source
+        1 * sourceService.editSource(source, [:]) >> source
+        1 * source.validate() >> Boolean.TRUE
+        1 * source.id >> LONG_ID
+        1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
     }
 }

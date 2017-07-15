@@ -11,6 +11,8 @@ import grails.web.mapping.LinkGenerator
 @GrailsCompileStatic
 class SourceController {
 
+    private static final String NO_SOURCE_FOUND = 'source.notFound.message'
+
     SourceService sourceService
     AjaxResponseService ajaxResponseService
     LinkGenerator grailsLinkGenerator
@@ -30,7 +32,7 @@ class SourceController {
     def show(String id) {
         if (id) {
             Source source = sourceService.getSource(id)
-            [source: source, period: source.period, editAllowed: Boolean.TRUE]
+            [source: source, period: source?.period, editAllowed: Boolean.TRUE]
         }
     }
 
@@ -43,6 +45,27 @@ class SourceController {
                 render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
             } else {
                 render ajaxResponseService.renderValidationResponse(source)
+            }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
+        }
+    }
+
+    def editSource(SourceCommand command) {
+        if (command.validate()) {
+            String sourceId = request.getHeader('referer').tokenize('/').last()
+            Source source = sourceService.getSource sourceId
+
+            if (source) {
+                Source editedSource = sourceService.editSource(source, command.properties)
+
+                if (editedSource.validate()) {
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
+                } else {
+                    render ajaxResponseService.renderValidationResponse(editedSource)
+                }
+            } else {
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SOURCE_FOUND)
             }
         } else {
             render ajaxResponseService.renderValidationResponse(command)

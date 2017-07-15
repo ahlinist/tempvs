@@ -35,18 +35,20 @@ class SourceViewSpec extends Specification {
     void "Test /source/show"() {
         given:
         String title = "<title>Tempvs - ${NAME}</title>"
+        String editForm = '<tempvs:modalButton id="sourceForm" message="source.editSource.button">'
         Map model = [source: source, period: period, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/source/show', model: model
 
         then:
-        3 * source.getProperty(NAME) >> NAME
-        1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
+        4 * source.getProperty(NAME) >> NAME
+        2 * source.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * source.getProperty(ID) >> ID
         0 * _
 
         and:
+        result.contains editForm
         result.contains title
     }
 
@@ -63,6 +65,7 @@ class SourceViewSpec extends Specification {
 
     void "Test /source/period"() {
         given:
+        String createForm = '<tempvs:modalButton id="sourceForm" message="source.createSource.button">'
         Map model = [sources: [source], period: period, editAllowed: Boolean.TRUE]
 
         when:
@@ -74,6 +77,7 @@ class SourceViewSpec extends Specification {
         0 * _
 
         and:
+        result.contains createForm
         result.contains SHOW_URI
     }
 }

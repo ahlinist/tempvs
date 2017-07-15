@@ -21,14 +21,18 @@ class SourceService {
         objectDAO.get(Source, id)
     }
 
+    List<Source> getSourcesByPeriod(Period period) {
+        objectDAO.findAll(Source, [period: period])
+    }
+
     Source createSource(Map params) {
         Source source = objectFactory.create(Source)
+        editSource(source, params)
+    }
+
+    Source editSource(Source source, Map params) {
         InvokerHelper.setProperties(source, params)
         source.save()
         source
-    }
-
-    List<Source> getSourcesByPeriod(Period period) {
-        objectDAO.findAll(Source, [period: period])
     }
 }

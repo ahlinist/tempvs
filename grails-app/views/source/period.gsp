@@ -19,20 +19,22 @@
           </div>
         </g:each>
         <hr/>
-        <g:if test="${editAllowed}">
-          <div class="row">
-            <tempvs:modalButton id="sourceForm" message="source.createSource.button">
-              <tempvs:ajaxForm action="createSource">
-                <tempvs:formField type="text" name="name" label="source.name.label" />
-                <tempvs:formField type="text" name="description" label="source.description.label" />
-                <tempvs:ajaxSubmitButton value="source.createSource.button" />
-              </tempvs:ajaxForm>
-            </tempvs:modalButton>
-          </div>
-        </g:if>
+        <sec:ifLoggedIn>
+          <g:if test="${editAllowed}">
+            <div class="row">
+              <tempvs:modalButton id="sourceForm" message="source.createSource.button">
+                <tempvs:ajaxForm action="createSource">
+                  <tempvs:formField type="text" name="name" label="source.name.label" />
+                  <tempvs:formField type="text" name="description" label="source.description.label" />
+                  <tempvs:ajaxSubmitButton value="source.createSource.button" />
+                </tempvs:ajaxForm>
+              </tempvs:modalButton>
+            </div>
+          </g:if>
+        </sec:ifLoggedIn>
       </g:if>
       <g:else>
-        <g:message code="source.notFound.message"/>
+        <g:message code="period.notFound.message"/>
       </g:else>
     </body>
 </html>

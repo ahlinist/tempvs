@@ -69,5 +69,23 @@ class SourceServiceSpec extends Specification {
         then:
         1 * objectDAO.findAll(Source, params) >> sources
         0 * _
+
+        and:
+        result == sources
+    }
+
+    void "Test editSource()"() {
+        given:
+        Map params = [:]
+
+        when:
+        def result = service.editSource(source, params)
+
+        then:
+        1 * source.save() >> source
+        0 * _
+
+        and:
+        result == source
     }
 }
