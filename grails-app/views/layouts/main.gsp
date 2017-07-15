@@ -20,7 +20,19 @@
           <g:link class="btn btn-primary disableable pull-right" controller="auth" action="logout">
             <g:message code="auth.logout.button" />
           </g:link>
-          <g:render template="/templates/navigation/settings"/>
+          <span class="dropdown pull-right">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+              <g:message code="user.settings.button"/>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu list-group">
+              <li>
+                <g:link class="list-group-item disableable" controller="user" action="edit">
+                  <g:message code="user.edit.button" />
+                </g:link>
+              </li>
+            </ul>
+          </span>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
           <span class="pull-right">
