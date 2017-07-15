@@ -26,6 +26,7 @@ class Item extends BasePersistent {
     }
 
     static mapping = {
+        period fetch: 'join'
         itemGroup fetch: 'join'
         itemImage cascade: 'all-delete-orphan'
         sourceImage cascade: 'all-delete-orphan'
