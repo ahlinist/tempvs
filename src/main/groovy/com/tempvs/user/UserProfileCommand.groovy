@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
 
@@ -12,9 +13,10 @@ class UserProfileCommand implements Validateable {
     String lastName
     String location
     String profileId
+    ImageUploadBean avatarBean
 
     static constraints = {
         location nullable: true
-        profileId shared: "profileId"
+        profileId shared: 'profileId'
     }
 }

@@ -15,7 +15,7 @@ class SourceViewSpec extends Specification {
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
     private static final String NAME = 'name'
-    private static final String VALUE = 'value'
+    private static final String IMAGES = 'images'
     private static final String PERIOD = 'period'
     private static final String SHOW_URI = '/source/show'
     private static final String DESCRIPTION = 'description'
@@ -34,6 +34,7 @@ class SourceViewSpec extends Specification {
 
     void "Test /source/show"() {
         given:
+        Set<Image> images = [image] as Set
         String title = "<title>Tempvs - ${NAME}</title>"
         String editForm = '<tempvs:modalButton id="sourceForm" message="source.editSource.button">'
         Map model = [source: source, period: period, editAllowed: Boolean.TRUE]
@@ -45,6 +46,8 @@ class SourceViewSpec extends Specification {
         4 * source.getProperty(NAME) >> NAME
         2 * source.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * source.getProperty(ID) >> ID
+        1 * source.getProperty(IMAGES) >> images
+        1 * source.getProperty(PERIOD) >> period
         0 * _
 
         and:
@@ -60,6 +63,9 @@ class SourceViewSpec extends Specification {
         String result = render view: '/source/index'
 
         then:
+        0 * _
+
+        and:
         result.contains periodLink
     }
 

@@ -4,12 +4,15 @@ import com.tempvs.image.Image
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
+import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.GroovyPageUnitTestMixin
 import spock.lang.Specification
+
 /**
  * Unit-test suite for testing {@link com.tempvs.item.Item}-related views.
  */
+@Mock([Source])
 @TestMixin(GroovyPageUnitTestMixin)
 class ItemViewSpec extends Specification {
 
@@ -17,12 +20,10 @@ class ItemViewSpec extends Specification {
     private static final String ONE = '1'
     private static final String NAME = 'name'
     private static final String ITEMS = 'items'
-    private static final String VALUE = 'value'
     private static final String PERIOD = 'period'
-    private static final String IMAGE_INFO = 'imageInfo'
-    private static final String ITEM_IMAGE = 'itemImage'
+    private static final String SOURCE = 'source'
+    private static final String IMAGES = 'images'
     private static final String DESCRIPTION = 'description'
-    private static final String SOURCE_IMAGE = 'sourceImage'
     private static final String ITEM_TITLE = 'item.show.title'
     private static final String ITEM_STASH_TITLE = 'item.stash.title'
     private static final String ITEM_GROUP_TITLE = 'item.group.title'
@@ -34,6 +35,7 @@ class ItemViewSpec extends Specification {
     def item
     def itemGroup
     def image = Mock(Image)
+    def source = Mock(Source)
     def userProfile = Mock(UserProfile)
     def period = Period.valueOf 'ANCIENT'
 
@@ -152,9 +154,8 @@ class ItemViewSpec extends Specification {
     void "Test /item/show with id"() {
         given:
         String title = "<title>Tempvs - ${NAME}</title>"
-        String itemImage = "<tempvs:image image=\"${image}\"/>"
-        String sourceImage = "<tempvs:image image=\"${image}\"/>"
-        String updateItemImageForm = '<tempvs:ajaxForm action="updateItemImage">'
+        String itemImage = "<tempvs:carousel images="
+
         Map model = [
                 item: item,
                 itemGroup: itemGroup,
@@ -170,10 +171,13 @@ class ItemViewSpec extends Specification {
         2 * item.getProperty(ID) >> ID
         5 * item.getProperty(NAME) >> NAME
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * item.getProperty(ITEM_IMAGE) >> image
-        1 * item.getProperty(SOURCE_IMAGE) >> image
+        2 * item.getProperty(IMAGES) >> [image]
         2 * item.getProperty(PERIOD) >> period
-        2 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
+        2 * item.getProperty(SOURCE) >> source
+        1 * source.getProperty(IMAGES) >> [image]
+        1 * source.getProperty(NAME) >> NAME
+        1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
+        1 * source.getProperty(PERIOD) >> period
         1 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * user.getProperty(ID) >> ID
@@ -184,7 +188,5 @@ class ItemViewSpec extends Specification {
         result.contains NAME
         result.contains DESCRIPTION
         result.contains itemImage
-        result.contains sourceImage
-        result .contains updateItemImageForm
     }
 }

@@ -62,8 +62,7 @@ class ItemSpec extends Specification {
         Item item = new Item()
         item.name = NAME
         item.description = DESCRIPTION
-        item.itemImage = image
-        item.sourceImage = image
+        item.images = [image] as Set
         item.itemGroup = itemGroup
         item.period = period
 

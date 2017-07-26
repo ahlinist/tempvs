@@ -4,10 +4,10 @@ import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.web.multipart.MultipartFile
 
 /**
  * Service for managing {@link com.tempvs.user.UserProfile} and
@@ -28,8 +28,14 @@ class ProfileService<T> {
         objectDAO.find(clazz, [profileId: id]) as T ?: objectDAO.get(clazz, id) as T
     }
 
-    BaseProfile updateProfile(BaseProfile profile, Map params) {
-        InvokerHelper.setProperties(profile, params)
+    BaseProfile updateProfile(BaseProfile profile, Map properties) {
+        InvokerHelper.setProperties(profile, properties)
+        Image extractedImage = imageService.extractImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION, profile.avatar)
+
+        if (extractedImage) {
+            profile.avatar = extractedImage
+        }
+
         profile.save()
         profile
     }
@@ -37,6 +43,7 @@ class ProfileService<T> {
     BaseProfile createClubProfile(Map properties) {
         ClubProfile clubProfile = objectFactory.create(ClubProfile)
         InvokerHelper.setProperties(clubProfile, properties)
+        clubProfile.avatar = imageService.extractImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION)
         userService.currentUser.addToClubProfiles(clubProfile)?.save()
         clubProfile
     }
@@ -44,16 +51,6 @@ class ProfileService<T> {
     BaseProfile updateProfileEmail(Class clazz, Long instanceId, String profileEmail) {
         BaseProfile profile = objectDAO.get(clazz, instanceId)
         profile.profileEmail = profileEmail
-        profile.save()
-        profile
-    }
-
-    BaseProfile updateAvatar(BaseProfile profile, MultipartFile multipartFile, String imageInfo) {
-        Image avatar = profile.avatar ?: objectFactory.create(Image) as Image
-        avatar.imageInfo = imageInfo
-        avatar.collection = AVATAR_COLLECTION
-        avatar.objectId = imageService.replaceImage(multipartFile, avatar)
-        profile.avatar = avatar
         profile.save()
         profile
     }

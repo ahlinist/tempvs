@@ -2,53 +2,47 @@ package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
-import com.tempvs.image.ImageCommand
 import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.context.MessageSource
-import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(ProfileController)
 class ProfileControllerSpec extends Specification {
 
-    private static final String IDENTIFIER = 'identifier'
     private static final String ONE = '1'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
+    private static final String AUTH_URL = '/auth/index'
     private static final String PROPERTIES = 'properties'
-    private static final String AVATAR_IMAGE = 'avatarImage'
-    private static final String DIFFERENT_EMAIL = 'differentEmail'
+    private static final String IDENTIFIER = 'identifier'
+    private static final String PROFILE_URL = '/profile/index'
     private static final String EMAIL_USED = 'user.email.used'
+    private static final String DIFFERENT_EMAIL = 'differentEmail'
+    private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
+    private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
-    private static final String AUTH_URL = '/auth/index'
-    private static final String PROFILE_URL = '/profile/index'
-    private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
-    private static final String IMAGE_EMPTY = 'image.empty'
-    private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
-    private static final String IMAGE_INFO = 'imageInfo'
 
-    def userService = Mock(UserService)
-
-    def profileHolder = Mock(ProfileHolder)
-    def verifyService = Mock(VerifyService)
-    def profileService = Mock(ProfileService)
-    def ajaxResponseService = Mock(AjaxResponseService)
     def json = Mock(JSON)
     def user = Mock(User)
     def image = Mock(ImageBean)
+    def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
+    def profileHolder = Mock(ProfileHolder)
+    def verifyService = Mock(VerifyService)
+    def messageSource = Mock(MessageSource)
+    def profileService = Mock(ProfileService)
     def emailVerification = Mock(EmailVerification)
-    def imageCommand = Mock(ImageCommand)
     def clubProfileCommand = Mock(ClubProfileCommand)
     def userProfileCommand = Mock(UserProfileCommand)
-    def messageSource = Mock(MessageSource)
+    def ajaxResponseService = Mock(AjaxResponseService)
 
     def setup() {
         controller.profileService = profileService
@@ -94,6 +88,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
+        1 * userProfile.asType(BaseProfile) >> userProfile
         1 * userProfile.getIdentifier() >> IDENTIFIER
         1 * profileHolder.profile >> userProfile
         0 * _
@@ -102,9 +97,9 @@ class ProfileControllerSpec extends Specification {
         result == [profile: userProfile, id: IDENTIFIER, editAllowed: Boolean.TRUE]
     }
 
-    void "Test userProfile() for non-existent profile"() {
+    void "Test clubProfile() for non-existent profile"() {
         when:
-        controller.userProfile()
+        controller.clubProfile()
 
         then:
         1 * userService.currentUser
@@ -115,10 +110,10 @@ class ProfileControllerSpec extends Specification {
 
         when: 'Id given'
         params.id = ONE
-        def result = controller.userProfile()
+        def result = controller.clubProfile()
 
         then: 'For non-existing profile'
-        1 * profileService.getProfile(UserProfile.class, ONE) >> null
+        1 * profileService.getProfile(ClubProfile.class, ONE) >> null
         0 * _
 
         and:
@@ -231,6 +226,7 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.nickName
         1 * clubProfileCommand.firstName
         1 * clubProfileCommand.clubName
+        1 * clubProfileCommand.avatarBean
         1 * clubProfileCommand.errors
         1 * profileHolder.getProfile() >> clubProfile
         1 * profileService.updateProfile(clubProfile, _) >> clubProfile
@@ -245,7 +241,12 @@ class ProfileControllerSpec extends Specification {
         controller.updateUserProfile(userProfileCommand)
 
         then:
-        5 * userProfileCommand._
+        1 * userProfileCommand.errors
+        1 * userProfileCommand.lastName
+        1 * userProfileCommand.profileId
+        1 * userProfileCommand.location
+        1 * userProfileCommand.firstName
+        1 * userProfileCommand.avatarBean
         1 * profileHolder.getProfile() >> userProfile
         1 * profileService.updateProfile(userProfile, _) >> userProfile
         1 * userProfile.validate() >> Boolean.FALSE
@@ -293,41 +294,6 @@ class ProfileControllerSpec extends Specification {
         1 * userProfile.getId() >> LONG_ID
         1 * verifyService.createEmailVerification(_) >> emailVerification
         1 * ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_PROFILE_EMAIL_MESSAGE_SENT) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test updateAvatar()"() {
-        given:
-        def avatar = new MockMultipartFile(AVATAR_IMAGE, "1234567" as byte[])
-        controller.request.addFile(avatar)
-        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
-
-        when:
-        controller.updateAvatar(imageCommand)
-
-        then:
-        1 * imageCommand.image >> avatar
-        1 * imageCommand.imageInfo >> IMAGE_INFO
-        1 * profileHolder.profile >> userProfile
-        1 * profileService.updateAvatar(userProfile, avatar, IMAGE_INFO) >> userProfile
-        1 * userProfile.validate() >> Boolean.TRUE
-        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test updateAvatar() without file"() {
-        given:
-        def avatar = new MockMultipartFile(AVATAR_IMAGE, "" as byte[])
-        controller.request.addFile(avatar)
-
-        when:
-        controller.updateAvatar(imageCommand)
-
-        then:
-        1 * imageCommand.image >> avatar
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

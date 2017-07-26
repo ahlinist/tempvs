@@ -15,7 +15,7 @@
         <g:render template="/profile/templates/clubProfiles" model="${[user: user]}"/>
         <div>
           <tempvs:modalButton id="createProfile" message="clubProfile.create.link">
-            <g:render template="/profile/templates/createClubProfile" model="${[action: 'createItem', button: 'item.createItem.button']}"/>
+            <g:render template="/profile/templates/clubProfileForm" model="${[action: 'createClubProfile', button: 'clubProfile.create.button']}"/>
           </tempvs:modalButton>
         </div>
       </div>

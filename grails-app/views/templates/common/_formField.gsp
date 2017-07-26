@@ -1,4 +1,4 @@
-<div class="row">
+<div class="row ${cls}">
   <div class="col-sm-6">
     <label for="${name}"><g:message code="${label}" /></label>
   </div>

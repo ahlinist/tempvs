@@ -5,7 +5,7 @@ import grails.compiler.GrailsCompileStatic
 import org.springframework.util.StreamUtils
 
 /**
- * Controller for {@link com.tempvs.image.ImageBean} handling.
+ * Controller for {@link com.tempvs.image.Image} handling.
  */
 @GrailsCompileStatic
 class ImageController {
@@ -15,9 +15,8 @@ class ImageController {
     ImageService imageService
     AssetResourceLocator assetResourceLocator
 
-    def get(String id) {
-        String collection = params.collection
-        byte[] imageInBytes = imageService.getImageBytes(collection, id) ?:
+    def get() {
+        byte[] imageInBytes = imageService.getImageBytes(params.collection as String, params.id as String) ?:
                 assetResourceLocator.findAssetForURI(DEFAULT_IMAGE)?.getInputStream()?.bytes ?:
                         StreamUtils.emptyInput().bytes
 

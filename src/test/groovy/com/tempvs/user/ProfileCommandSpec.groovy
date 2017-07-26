@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.test.mixin.TestFor
 import grails.util.ClosureToMapPopulator
@@ -7,6 +8,9 @@ import grails.validation.ConstraintsEvaluator
 import org.grails.validation.ConstraintsEvaluatorFactoryBean
 import spock.lang.Specification
 
+/**
+ * Unit-test suite for {@link com.tempvs.user.UserProfileCommand} and {@link com.tempvs.user.ClubProfile}.
+ */
 @TestFor(UserController)
 class ProfileCommandSpec extends Specification {
     private static final String FIRST_NAME = 'firstName'
@@ -17,6 +21,7 @@ class ProfileCommandSpec extends Specification {
     private static final String NUMERIC_PROFILE_ID = '1234'
 
     def period = Period.valueOf 'XIX'
+    def avatarBean = Mock(ImageUploadBean)
 
     def setupSpec(){
         defineBeans {
@@ -50,16 +55,16 @@ class ProfileCommandSpec extends Specification {
 
     void "Test minimal valid profile commands creation"() {
         expect:
-        new UserProfileCommand(firstName: FIRST_NAME, lastName: LAST_NAME).validate()
+        new UserProfileCommand(firstName: FIRST_NAME, lastName: LAST_NAME, avatarBean: avatarBean).validate()
 
         and:
-        new ClubProfileCommand(firstName: FIRST_NAME, period: period).validate()
+        new ClubProfileCommand(firstName: FIRST_NAME, period: period, avatarBean: avatarBean).validate()
     }
 
     void "Create full UserProfileCommand"() {
         given:
-        Map userProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID]
-        Map clubProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, lastName: NICK_NAME, location: LOCATION, profileId: PROFILE_ID, period: period]
+        Map userProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID, avatarBean: avatarBean]
+        Map clubProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, lastName: NICK_NAME, location: LOCATION, profileId: PROFILE_ID, period: period, avatarBean: avatarBean]
 
         expect:
         new UserProfileCommand(userProfileProps).validate()
@@ -70,7 +75,7 @@ class ProfileCommandSpec extends Specification {
 
     void "Create UserProfileCommand with numeric profileId"() {
         given:
-        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, profileId: NUMERIC_PROFILE_ID]
+        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, profileId: NUMERIC_PROFILE_ID, avatarBean: avatarBean]
 
         expect:
         !new UserProfileCommand(props).validate()

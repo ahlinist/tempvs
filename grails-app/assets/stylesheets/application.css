@@ -36,15 +36,12 @@ form {
     border: 4px #eee groove;
 }
 
-img.avatar {
-    width:100%;
+img.horizontal {
+    max-height: 20em;
+    margin: 0 auto;
 }
 
-img.item {
-    width:100%;
-}
-
-img.source {
+img.vertical {
     width:100%;
 }
 

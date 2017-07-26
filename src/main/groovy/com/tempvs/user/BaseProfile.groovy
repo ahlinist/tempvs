@@ -37,13 +37,17 @@ abstract class BaseProfile extends BasePersistent {
         location nullable: true
         avatar nullable: true
         profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
-            User user = User.findByEmail(profileEmail)
-            UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
-            ClubProfile clubProfile = ClubProfile.findByProfileEmail(profileEmail)
+            if (profileEmail) {
+                User user = User.findByEmail(profileEmail)
+                UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
+                ClubProfile clubProfile = ClubProfile.findByProfileEmail(profileEmail)
 
-            (!user || (user.userProfile == userProfile)) &&
-                    (!userProfile || baseProfile.user == userProfile.user) &&
-                    (!clubProfile || baseProfile.user == clubProfile.user)
+                (!user || (user?.userProfile == userProfile)) &&
+                        (!userProfile || baseProfile.user == userProfile.user) &&
+                        (!clubProfile || baseProfile.user == clubProfile.user)
+            } else {
+                Boolean.TRUE
+            }
         }
     }
 }

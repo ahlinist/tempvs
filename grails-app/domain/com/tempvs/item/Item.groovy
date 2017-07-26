@@ -13,22 +13,21 @@ class Item extends BasePersistent {
 
     String name
     String description
-    Image itemImage
-    Image sourceImage
     Period period
+    Source source
 
+    static hasMany = [images: Image]
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
         description nullable: true
-        itemImage nullable: true
-        sourceImage nullable: true
+        source nullable: true
+        images nullable: true
     }
 
     static mapping = {
         period fetch: 'join'
         itemGroup fetch: 'join'
-        itemImage cascade: 'all-delete-orphan'
-        sourceImage cascade: 'all-delete-orphan'
+        images cascade: 'all-delete-orphan'
     }
 }

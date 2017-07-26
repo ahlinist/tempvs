@@ -4,11 +4,11 @@ import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.UserService
-import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
-import org.springframework.web.multipart.MultipartFile
+import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
  * Service that manages {@link com.tempvs.item.Item} and {@link com.tempvs.item.ItemGroup} instances.
@@ -17,18 +17,16 @@ import org.springframework.web.multipart.MultipartFile
 @GrailsCompileStatic
 class ItemService {
 
-    private static final String ITEM_IMAGE_COLLECTION = 'item'
-    private static final String SOURCE_IMAGE_COLLECTION = 'source'
+    private static final String ITEM_COLLECTION = 'item'
 
     ImageService imageService
     UserService userService
     ObjectFactory objectFactory
     ObjectDAO objectDAO
 
-    ItemGroup createGroup(String name, String description) {
+    ItemGroup createGroup(Map properties) {
         ItemGroup itemGroup = objectFactory.create(ItemGroup.class)
-        itemGroup.name = name
-        itemGroup.description = description
+        InvokerHelper.setProperties(itemGroup, properties)
         itemGroup.user = userService.currentUser
         itemGroup.save()
         itemGroup
@@ -44,16 +42,17 @@ class ItemService {
 
     Item createItem(Map properties) {
         Item item = objectFactory.create(Item)
-        item.name = properties.name
-        item.description = properties.description
-        item.period = properties.period as Period
-        item.itemGroup = properties.itemGroup as ItemGroup
-        item.save()
-        item
+        Set<Image> itemImages = imageService.extractImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
+
+        if (itemImages) {
+            item.images = itemImages
+        }
+
+        updateItem(item, properties)
     }
 
     Boolean deleteItem(Item item) {
-        imageService.deleteImages([item.itemImage, item.sourceImage])
+        imageService.deleteImages(item.images)
 
         try {
             item.delete(failOnError: true)
@@ -65,7 +64,7 @@ class ItemService {
 
     Boolean deleteGroup(ItemGroup itemGroup) {
         Set<Item> items = itemGroup.items
-        imageService.deleteImages(items*.itemImage + items*.sourceImage)
+        imageService.deleteImages(items*.images?.flatten() as Set<Image>)
 
         try {
             itemGroup.delete(failOnError: true)
@@ -75,31 +74,8 @@ class ItemService {
         }
     }
 
-    Item updateItemImage(Item item, MultipartFile multipartFile, String imageInfo) {
-        Image image = item.itemImage ?: objectFactory.create(Image) as Image
-        image.imageInfo = imageInfo
-        image.collection = ITEM_IMAGE_COLLECTION
-        image.objectId = imageService.replaceImage(multipartFile, image)
-        item.itemImage = image
-        item.save()
-        item
-    }
-
-    Item updateSourceImage(Item item, MultipartFile multipartFile, String imageInfo) {
-        Image image = item.sourceImage ?: objectFactory.create(Image) as Image
-        image.imageInfo = imageInfo
-        image.collection = SOURCE_IMAGE_COLLECTION
-        image.objectId = imageService.replaceImage(multipartFile, image)
-        item.sourceImage = image
-        item.save()
-        item
-    }
-
     Item updateItem(Item item, Map properties) {
-        item.name = properties.name
-        item.description = properties.description
-        item.period = properties.period as Period
-        item.itemGroup = properties.itemGroup as ItemGroup
+        InvokerHelper.setProperties(item, properties)
         item.save()
         item
     }

@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
@@ -16,6 +17,7 @@ class ClubProfileCommand implements Validateable {
     String location
     String profileId
     Period period
+    ImageUploadBean avatarBean
 
     static constraints = {
         lastName nullable: true

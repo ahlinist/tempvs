@@ -1,11 +1,9 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.ImageCommand
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
-import org.springframework.web.multipart.MultipartFile
 
 /**
  * Controller for managing {@link com.tempvs.user.UserProfile} and
@@ -19,7 +17,6 @@ class ProfileController {
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
-    private static final String IMAGE_EMPTY = 'image.empty'
     private static final String EMAIL_EMPTY = 'profile.email.empty'
 
     AjaxResponseService ajaxResponseService
@@ -37,17 +34,13 @@ class ProfileController {
 
     def userProfile(String id) {
         profile(id) {
-            UserProfile profile = profileService.getProfile(UserProfile.class, id)
-            
-            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile, ] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
+            profileService.getProfile(UserProfile.class, id)
         }
     }
 
     def clubProfile(String id) {
         profile(id) {
-            ClubProfile profile = profileService.getProfile(ClubProfile.class, id)
-
-            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
+            profileService.getProfile(ClubProfile.class, id)
         }
     }
 
@@ -114,22 +107,6 @@ class ProfileController {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_EMPTY)
         }
     }
-    
-    def updateAvatar(ImageCommand command) {
-	    MultipartFile multipartFile = command.image
-
-        if (multipartFile.empty) {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY)
-        } else {
-            BaseProfile profile = profileService.updateAvatar(profileHolder.profile, multipartFile, command.imageInfo)
-
-            if (profile.validate()) {
-                render ajaxResponseService.renderRedirect(request.getHeader('referer'))
-            } else {
-                render ajaxResponseService.renderValidationResponse(profile)
-            }
-        }
-    }
 
     def deleteProfile(String id) {
         if (params.isAjaxRequest) {
@@ -167,7 +144,8 @@ class ProfileController {
 
     private profile(String id, Closure renderProfile) {
         if (id) {
-            renderProfile()
+            BaseProfile profile = renderProfile() as BaseProfile
+            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
         } else {
             User user = userService.currentUser
             UserProfile profile = user?.userProfile

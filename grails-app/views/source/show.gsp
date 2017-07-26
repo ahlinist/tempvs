@@ -8,11 +8,7 @@
     <body>
       <g:if test="${source}">
         <g:render template="/source/templates/navBar" model="${[period, source]}"/>
-        <div class="row">
-          <div><b><g:message code="source.name.label"/>:</b> ${source.name}</div>
-          <div><b><g:message code="source.description.label"/>:</b> ${source.description}</div>
-          <div><b><g:message code="periodization.period.value.label"/>:</b> ${period.value}</div>
-        </div>
+        <g:render template="/source/templates/source" model="${[source]}"/>
         <sec:ifLoggedIn>
           <hr/>
           <g:if test="${editAllowed}">

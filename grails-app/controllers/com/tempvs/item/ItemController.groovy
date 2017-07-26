@@ -1,12 +1,10 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.ImageCommand
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
-import org.springframework.web.multipart.MultipartFile
 
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
@@ -14,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile
 @GrailsCompileStatic
 class ItemController {
 
-    private static final String IMAGE_EMPTY = 'image.empty'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
@@ -26,29 +23,17 @@ class ItemController {
     UserService userService
 
     def stash(String id) {
-        if (id) {
-            User user = userService.getUser(id)
+        User user = id ? userService.getUser(id) : userService.currentUser
 
-            if (user) {
-                [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: user.id == userService.currentUserId]
-            }
-        } else {
-            User user = userService.currentUser
-
-            if (user) {
-                [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: Boolean.TRUE]
-            } else {
-                redirect controller: 'auth'
-            }
+        if (user) {
+            [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE]
         }
     }
 
     def createGroup(CreateItemGroupCommand command) {
         if (params.isAjaxRequest) {
             if (command.validate()) {
-                String name = command.name
-                String description = command.description
-                ItemGroup itemGroup = itemService.createGroup(name, description)
+                ItemGroup itemGroup = itemService.createGroup(command.properties)
 
                 if (itemGroup.validate()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: itemGroup.id))
@@ -82,8 +67,7 @@ class ItemController {
         if (params.isAjaxRequest) {
             if (command.validate()) {
                 ItemGroup itemGroup = itemService.getGroup request.getHeader('referer').tokenize('/').last()
-                Map properties = command.properties + [itemGroup: itemGroup]
-                Item item = itemService.createItem(properties)
+                Item item = itemService.createItem(command.properties + [itemGroup: itemGroup])
 
                 if (item.validate()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: item.id))
@@ -165,35 +149,6 @@ class ItemController {
                 }
             } else {
                 render ajaxResponseService.renderValidationResponse(command)
-            }
-        }
-    }
-
-    def updateItemImage(ImageCommand command) {
-        updateImage(command) { Item item ->
-            itemService.updateItemImage(item, command.image, command.imageInfo)
-        }
-    }
-
-    def updateSourceImage(ImageCommand command) {
-        updateImage(command) { Item item ->
-            itemService.updateSourceImage(item, command.image, command.imageInfo)
-        }
-    }
-
-    private updateImage(ImageCommand command, Closure updateImage) {
-        MultipartFile multipartFile = command.image
-
-        if (multipartFile.empty) {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY)
-        } else {
-            Item item = itemService.getItem request.getHeader('referer').tokenize('/').last()
-            item = updateImage(item) as Item
-
-            if (item.validate()) {
-                render ajaxResponseService.renderRedirect(request.getHeader('referer'))
-            } else {
-                render ajaxResponseService.renderValidationResponse(item)
             }
         }
     }

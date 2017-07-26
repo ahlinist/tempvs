@@ -28,7 +28,12 @@
         <g:if test="${editAllowed}">
           <div class="row">
             <tempvs:modalButton id="updateProfile" message="profile.updateProfile.link">
-              <g:render template="/profile/templates/editClubProfile" model="${[profile: profile]}"/>
+              <tempvs:ajaxForm action="updateProfileEmail">
+                <tempvs:formField type="email" name="email" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
+                <tempvs:ajaxSubmitButton value="clubEmail.update.button" />
+              </tempvs:ajaxForm>
+              <g:render template="/profile/templates/clubProfileForm"
+                  model="${[action: 'updateClubProfile', button: 'clubProfile.update.button', profile: profile]}"/>
             </tempvs:modalButton>
             <tempvs:modalButton id="deleteProfile" size="modal-sm" message="profile.delete.button">
               <g:message code='profile.deleteConfirmation.text' args="${[profile]}"/>

@@ -4,12 +4,13 @@ import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
-import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -18,16 +19,12 @@ class ItemServiceSpec extends Specification {
 
     private static final String ID = 'id'
     private static final String NAME = 'name'
+    private static final String IMAGES = 'images'
     private static final String DESCRIPTION = 'description'
-    private static final String IMAGE_INFO = 'imageInfo'
     private static final String ITEM_IMAGE_COLLECTION = 'item'
-    private static final String ITEM_IMAGE = 'itemImage'
-    private static final String SOURCE_IMAGE = 'sourceImage'
-    private static final String COLLECTION = 'collection'
 
     def user = Mock(User)
     def item = Mock(Item)
-    def item2 = Mock(Item)
     def image = Mock(Image)
     def objectDAO = Mock(ObjectDAO)
     def itemGroup = Mock(ItemGroup)
@@ -35,8 +32,7 @@ class ItemServiceSpec extends Specification {
     def userService = Mock(UserService)
     def imageService = Mock(ImageService)
     def objectFactory = Mock(ObjectFactory)
-    def multipartFile = new MockMultipartFile(COLLECTION, "1234567" as byte[])
-
+    def imageUploadBean = Mock(ImageUploadBean)
 
     def setup() {
         service.userService = userService
@@ -49,8 +45,11 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test createGroup() with fail"() {
+        given:
+        Map propertyMap = [name: NAME, description: DESCRIPTION]
+
         when:
-        def result = service.createGroup(NAME, DESCRIPTION)
+        def result = service.createGroup(propertyMap)
 
         then:
         1 * userService.currentUser >> user
@@ -66,8 +65,11 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test createGroup() with success"() {
+        given:
+        Map propertyMap = [name: NAME, description: DESCRIPTION]
+
         when:
-        def result = service.createGroup(NAME, DESCRIPTION)
+        def result = service.createGroup(propertyMap)
 
         then:
         1 * userService.currentUser >> user
@@ -96,11 +98,15 @@ class ItemServiceSpec extends Specification {
 
     void "Test createItem()"() {
         given:
+        Set<Image> images = [image]
+        List<ImageUploadBean> imageUploadBeans = [imageUploadBean]
+
         Map properties = [
                 name: NAME,
-                description:DESCRIPTION,
+                description: DESCRIPTION,
                 period: period,
                 itemGroup: itemGroup,
+                imageBeans: imageUploadBeans
         ]
 
         when:
@@ -108,12 +114,12 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * objectFactory.create(Item) >> item
+        1 * imageService.extractImages(imageUploadBeans, ITEM_IMAGE_COLLECTION) >> images
+        1 * item.setImages(images)
         1 * item.setName(NAME)
         1 * item.setDescription(DESCRIPTION)
-        1 * itemGroup.asType(ItemGroup) >> itemGroup
-        1 * item.setItemGroup(itemGroup)
-        1 * period.asType(Period) >> period
         1 * item.setPeriod(period)
+        1 * item.setItemGroup(itemGroup)
         1 * item.save() >> item
         0 * _
 
@@ -134,13 +140,15 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test deleteItem()"() {
+        given:
+        Set<Image> images = [image]
+
         when:
         def result = service.deleteItem(item)
 
         then:
-        1 * item.sourceImage >> null
-        1 * item.itemImage >> image
-        1 * imageService.deleteImages([image, null]) >> Boolean.TRUE
+        1 * item.images >> images
+        1 * imageService.deleteImages(images) >> Boolean.TRUE
         1 * item.delete([failOnError: true])
         0 * _
 
@@ -148,16 +156,17 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test deleteGroup()"() {
+        given:
+        Set<Item> items = [item]
+        Set<Image> images = [image]
+
         when:
         def result = service.deleteGroup(itemGroup)
 
         then:
-        1 * itemGroup.items >> [item, item2]
-        1 * item.getProperty(ITEM_IMAGE) >> image
-        1 * item.getProperty(SOURCE_IMAGE) >> image
-        1 * item2.getProperty(ITEM_IMAGE) >> image
-        1 * item2.getProperty(SOURCE_IMAGE) >> null
-        1 * imageService.deleteImages([image, image, image, null]) >> Boolean.TRUE
+        1 * itemGroup.items >> items
+        1 * item.getProperty(IMAGES) >> images
+        1 * imageService.deleteImages(images) >> Boolean.TRUE
         1 * itemGroup.delete([failOnError: true])
         0 * _
 
@@ -179,28 +188,8 @@ class ItemServiceSpec extends Specification {
         then:
         1 * item.setName(NAME)
         1 * item.setDescription(DESCRIPTION)
-        1 * period.asType(Period) >> period
         1 * item.setPeriod(period)
-        1 * itemGroup.asType(ItemGroup) >> itemGroup
         1 * item.setItemGroup(itemGroup)
-        1 * item.save() >> item
-        0 * _
-
-        and:
-        result == item
-    }
-
-    void "Test updateItemImage()"() {
-        when:
-        def result = service.updateItemImage(item, multipartFile, IMAGE_INFO)
-
-        then:
-        1 * item.itemImage >> image
-        1 * image.setImageInfo(IMAGE_INFO)
-        1 * image.setCollection(ITEM_IMAGE_COLLECTION)
-        1 * imageService.replaceImage(multipartFile, image) >> ID
-        1 * image.setObjectId(ID)
-        1 * item.setItemImage(image)
         1 * item.save() >> item
         0 * _
 

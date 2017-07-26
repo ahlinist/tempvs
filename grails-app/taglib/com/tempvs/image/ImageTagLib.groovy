@@ -13,7 +13,16 @@ class ImageTagLib {
 
     String image = { Map attrs ->
         Image image = attrs.image
+        String classList = "${image?.collection} ${attrs.orientation ?: 'vertical'} center-block"
         String link = grailsLinkGenerator.link(controller: 'image', action: 'get', id: image?.objectId, params: [collection: image?.collection])
-        out << render(template: '/templates/image/image', model: [src: link, classList: image?.collection, alt: image?.imageInfo])
+        out << render(template: '/image/templates/image', model: [src: link, classList: classList, alt: image?.imageInfo])
+    }
+
+    String imageUploader = { Map attrs ->
+        out << render(template: '/image/templates/imageUploader', model: attrs)
+    }
+
+    String carousel = { Map attrs ->
+        out << render(template: '/image/templates/carousel', model: attrs)
     }
 }

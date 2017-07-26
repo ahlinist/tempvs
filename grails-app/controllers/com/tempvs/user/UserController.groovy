@@ -72,7 +72,7 @@ class UserController {
                 render ajaxResponseService.renderValidationResponse(command)
             }
         } else {
-            redirect controller: 'userProfile'
+            redirect controller: 'profile'
         }
     }
 }

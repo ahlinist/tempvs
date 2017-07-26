@@ -2,7 +2,6 @@ package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
-import com.tempvs.image.ImageCommand
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
@@ -10,9 +9,7 @@ import grails.converters.JSON
 import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
-import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -21,17 +18,11 @@ class ItemControllerSpec extends Specification {
 
     private static final String ONE = '1'
     private static final Long LONG_ID = 1L
-    private static final String NAME = 'name'
-    private static final String AUTH_URI = '/auth'
     private static final String REFERER = 'referer'
     private static final String SHOW_ACTION = 'show'
     private static final String GROUP_ACTION = 'group'
     private static final String ITEM_URI = '/item/show'
-    private static final String ITEM_IMAGE = 'itemImage'
-    private static final String IMAGE_INFO = 'imageInfo'
     private static final String PROPERTIES = 'properties'
-    private static final String DESCRIPTION = 'description'
-    private static final String IMAGE_EMPTY = 'image.empty'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
@@ -48,11 +39,8 @@ class ItemControllerSpec extends Specification {
     def itemService = Mock(ItemService)
     def ajaxResponseService = Mock(AjaxResponseService)
     def itemCommand = Mock(ItemCommand)
-    def imageCommand = Mock(ImageCommand)
     def createItemGroupCommand = Mock(CreateItemGroupCommand)
     def grailsLinkGenerator = Mock(LinkGenerator)
-    def multipartItemImage = new MockMultipartFile(ITEM_IMAGE, "1234567" as byte[])
-    def emptyMultipartItemImage = new MockMultipartFile(ITEM_IMAGE, '' as byte[])
 
     def setup() {
         controller.userService = userService
@@ -61,18 +49,6 @@ class ItemControllerSpec extends Specification {
     }
 
     def cleanup() {
-    }
-
-    void "Test stash() without id being not logged in"() {
-        when:
-        controller.stash()
-
-        then:
-        1 * userService.currentUser >> null
-        0 * _
-
-        and:
-        response.redirectedUrl == AUTH_URI
     }
 
     void "Test stash() without id being logged in"() {
@@ -143,6 +119,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test group creation against invalid group"() {
         given:
+        Map propertyMap = [:]
         params.isAjaxRequest = Boolean.TRUE
 
         when:
@@ -150,17 +127,17 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getName() >> NAME
-        1 * createItemGroupCommand.getDescription() >> DESCRIPTION
-        1 * itemService.createGroup(NAME, DESCRIPTION) >> itemGroup
+        1 * createItemGroupCommand.getProperty(PROPERTIES) >> propertyMap
+        1 * itemService.createGroup(propertyMap) >> itemGroup
         1 * itemGroup.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Test group creation"() {
+    void "Test successful group creation"() {
         given:
+        Map propertyMap = [:]
         Map linkGeneratorMap = ['action':GROUP_ACTION, 'id':LONG_ID]
         controller.grailsLinkGenerator = grailsLinkGenerator
 
@@ -170,9 +147,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getName() >> NAME
-        1 * createItemGroupCommand.getDescription() >> DESCRIPTION
-        1 * itemService.createGroup(NAME, DESCRIPTION) >> itemGroup
+        1 * createItemGroupCommand.getProperty(PROPERTIES) >> propertyMap
+        1 * itemService.createGroup(propertyMap) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
         1 * itemGroup.getId() >> LONG_ID
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_GROUP_URI}/${LONG_ID}"
@@ -513,61 +489,6 @@ class ItemControllerSpec extends Specification {
         1 * itemService.updateItem(item, _ as Map) >> updatedItem
         1 * updatedItem.validate() >> Boolean.TRUE
         1 * updatedItem.id >> LONG_ID
-        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test updateItemImage() with no file"() {
-        given:
-        params.isAjaxRequest = Boolean.TRUE
-        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
-
-        when:
-        controller.updateItemImage(imageCommand)
-
-        then:
-        1 * imageCommand.image >> emptyMultipartItemImage
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, IMAGE_EMPTY) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test updateItemImage() against invalid item"() {
-        given:
-        params.isAjaxRequest = Boolean.TRUE
-        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
-
-        when:
-        controller.updateItemImage(imageCommand)
-
-        then:
-        2 * imageCommand.image >> multipartItemImage
-        1 * imageCommand.imageInfo >> IMAGE_INFO
-        1 * itemService.getItem(ONE) >> item
-        1 * itemService.updateItemImage(item, multipartItemImage, IMAGE_INFO) >> item
-        1 * item.asType(Item) >> item
-        1 * item.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(item) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test updateItemImage()"() {
-        given:
-        params.isAjaxRequest = Boolean.TRUE
-        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
-
-        when:
-        controller.updateItemImage(imageCommand)
-
-        then: 'Success'
-        2 * imageCommand.image >> multipartItemImage
-        1 * imageCommand.imageInfo >> IMAGE_INFO
-        1 * itemService.getItem(ONE) >> item
-        1 * itemService.updateItemImage(item, multipartItemImage, IMAGE_INFO) >> item
-        1 * item.asType(Item) >> item
-        1 * item.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
