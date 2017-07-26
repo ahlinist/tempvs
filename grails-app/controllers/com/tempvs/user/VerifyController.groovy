@@ -73,7 +73,7 @@ class VerifyController {
             error([message: PROFILE_EMAIL_UPDATE_FAILED])
         } else {
             profileHolder.profile = profile
-            redirect controller: 'profile', action: 'edit'
+            redirect controller: 'profile'
         }
     }
 

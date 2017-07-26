@@ -42,7 +42,7 @@ abstract class BaseProfile extends BasePersistent {
                 UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
                 ClubProfile clubProfile = ClubProfile.findByProfileEmail(profileEmail)
 
-                (!user || (user?.userProfile == userProfile)) &&
+                (!user || (user == baseProfile.user)) &&
                         (!userProfile || baseProfile.user == userProfile.user) &&
                         (!clubProfile || baseProfile.user == clubProfile.user)
             } else {
