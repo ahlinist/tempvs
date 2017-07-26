@@ -16,7 +16,26 @@
     <div class="row">
       <header>
         <sec:ifLoggedIn>
-          <g:render template="/templates/navigation/switchProfile" model="${[user, currentProfile]}"/>
+          <span class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+              <tempvs:fullName profile="${currentProfile}"/>
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu list-group">
+              <li>
+                <g:link class="list-group-item disableable" controller="profile" action="switchProfile">
+                  <tempvs:fullName profile="${user.userProfile}"/>
+                </g:link>
+              </li>
+              <g:each var="clubProfile" in="${user.clubProfiles}">
+                <li>
+                  <g:link class="list-group-item disableable" controller="profile" action="switchProfile" id="${clubProfile.id}">
+                    <tempvs:fullName profile="${clubProfile}"/>
+                  </g:link>
+                </li>
+              </g:each>
+            </ul>
+          </span>
           <g:link class="btn btn-primary disableable pull-right" controller="auth" action="logout">
             <g:message code="auth.logout.button" />
           </g:link>
@@ -50,7 +69,23 @@
     <div class="row">
       <div class="col-sm-2">
         <sec:ifLoggedIn>
-          <g:render template="/templates/navigation/menu"/>
+          <ul class="list-group col-sm-12">
+            <li>
+              <g:link class="list-group-item disableable" controller="profile">
+                <g:message code="profile.show.button" />
+              </g:link>
+            </li>
+            <li>
+              <g:link class="list-group-item disableable" controller="profile" action="list">
+                <g:message code="clubProfile.list.button" />
+              </g:link>
+            </li>
+            <li>
+              <g:link class="list-group-item disableable" controller="item" action="stash">
+                <g:message code="item.stash.button" />
+              </g:link>
+            </li>
+         </ul>
         </sec:ifLoggedIn>
       </div>
       <div class="col-sm-10">
