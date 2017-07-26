@@ -162,15 +162,20 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test list()"() {
+        given:
+        Set<ClubProfile> clubProfiles = [clubProfile]
+
         when:
         def result = controller.list()
 
         then:
         1 * userService.currentUser >> user
+        1 * user.userProfile >> userProfile
+        1 * user.clubProfiles >> clubProfiles
         0 * _
 
         and:
-        result == [user: user]
+        result == [userProfile: userProfile, clubProfiles: clubProfiles]
     }
 
     void "Test createClubProfile()"() {

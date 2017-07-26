@@ -3,26 +3,28 @@
     <head>
       <meta name="layout" content="main"/>
       <g:if test="${profile}">
-        <title>Tempvs - <tempvs:fullName profile="${profile}"/></title>
+        <title>Tempvs - ${profile}</title>
       </g:if>
     </head>
     <body>
       <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
       <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
-
       <g:if test="${profile}">
         <g:set var="user" value="${profile.user}"/>
         <div class="row">
-          <div class="col-sm-3">
-            <tempvs:fullName profile="${profile}"/>
+          <div class="col-sm-4">
+            ${profile}
             <tempvs:image image="${profile.avatar}"/>
           </div>
-          <div class="col-sm-3">
+          <div class="col-sm-4">
             <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>
             <div><b><g:message code="clubProfile.profileEmail.label" />:</b> ${profile.profileEmail}</div>
             <div><b><g:message code="clubProfile.location.label" />:</b> ${profile.location}</div>
             <div><b><g:message code="clubProfile.clubName.label" />:</b> ${profile.clubName}</div>
             <div><b><g:message code="periodization.period.value.label"/>:</b> ${profile.period.value}</div>
+          </div>
+          <div class="col-sm-4">
+            <g:render template="/profile/templates/listedUserProfile" model="${[userProfile: user.userProfile]}"/>
           </div>
         </div>
         <g:if test="${editAllowed}">

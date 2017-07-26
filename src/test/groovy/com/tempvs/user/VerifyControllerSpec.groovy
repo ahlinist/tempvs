@@ -18,7 +18,7 @@ class VerifyControllerSpec extends Specification {
     private static final String REGISTRATION_PAGE_URI = '/verify/registration'
     private static final String ERROR_PAGE_URI = '/verify/error'
     private static final String USER_EDIT_PAGE_URI = '/user/edit'
-    private static final String EDIT_PROFILE_PAGE_URI = '/profile/edit'
+    private static final String PROFILE_PAGE_URI = '/profile'
     private static final String REGISTRATION = 'registration'
     private static final String USERPROFILE = 'userprofile'
     private static final String CLUBPROFILE = 'clubprofile'
@@ -130,7 +130,7 @@ class VerifyControllerSpec extends Specification {
         0 * _
 
         and:
-        response.redirectedUrl == EDIT_PROFILE_PAGE_URI
+        response.redirectedUrl == PROFILE_PAGE_URI
     }
 
     void "Check clubprofile email update verification"() {
@@ -157,6 +157,6 @@ class VerifyControllerSpec extends Specification {
         0 * _
 
         and:
-        response.redirectedUrl == EDIT_PROFILE_PAGE_URI
+        response.redirectedUrl == PROFILE_PAGE_URI
     }
 }

@@ -59,21 +59,17 @@ class ProfileViewSpec extends Specification {
 
     void "Test /profile/userProfile view"() {
         given:
-        String title = "<title>Tempvs - <tempvs:fullName profile=\"${userProfile}\"/></title>"
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
         String updateProfileButton = 'tempvs:modalButton id="updateProfile" message="profile.updateProfile.link"'
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
-        String clubProfileTag = "<tempvs:fullName profile=\"${clubProfile}\"/>"
         Map model = [profile: userProfile, id: 1, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/profile/userProfile', model: model
 
         then:
-        result.contains title
         result.contains lastActive
         result.contains clubProfileLink
-        result.contains clubProfileTag
         result.contains updateProfileButton
     }
 
@@ -81,7 +77,6 @@ class ProfileViewSpec extends Specification {
         given:
         String updateProfileButton = '<tempvs:modalButton id="updateProfile" message="profile.updateProfile.link">'
         String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" message="profile.delete.button">'
-        String title = "<title>Tempvs - <tempvs:fullName profile=\"${clubProfile}\"/></title>"
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
         Map model = [profile: clubProfile, id: 1, editAllowed: Boolean.TRUE]
 
@@ -101,10 +96,11 @@ class ProfileViewSpec extends Specification {
         2 * clubProfile.getProperty(PERIOD) >> period
         1 * clubProfile.getProperty(ID) >> ID
         1 * user.getProperty(LAST_ACTIVE) >> lastActiveDate
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * userProfile.getProperty(ID) >> ID
         0 * _
 
         and:
-        result.contains title
         result.contains lastActive
         result.contains updateProfileButton
         result.contains deleteProfileButton
@@ -112,19 +108,15 @@ class ProfileViewSpec extends Specification {
 
     void "Test /profile/list view"() {
         given:
-        String title = "<title>Tempvs - <tempvs:fullName profile=\"${userProfile}\"/></title>"
         String createButton = '<tempvs:modalButton id="createProfile" message="clubProfile.create.link">'
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
-        String clubProfileTag = "<tempvs:fullName profile=\"${clubProfile}\"/>"
-        Map model = [user: user]
+        Map model = [userProfile: userProfile, clubProfiles: [clubProfile]]
 
         when:
         String result = render view: '/profile/list', model: model
 
         then:
-        result.contains title
         result.contains createButton
         result.contains clubProfileLink
-        result.contains clubProfileTag
     }
 }

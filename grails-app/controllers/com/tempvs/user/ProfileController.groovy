@@ -59,7 +59,8 @@ class ProfileController {
     }
 
     def list() {
-        [user: userService.currentUser]
+        User user = userService.currentUser
+        [userProfile: user.userProfile, clubProfiles: user.clubProfiles]
     }
 
     def createClubProfile(ClubProfileCommand command) {
