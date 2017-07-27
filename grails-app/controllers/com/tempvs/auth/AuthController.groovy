@@ -19,7 +19,7 @@ class AuthController {
     private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
     private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
     private static final String REGISTRATION_ACTION = 'registration'
-    private static final String LOGIN_PAGE_URI = 'auth/index'
+    private static final String LOGIN_PAGE_URI = '/auth/index'
 
     UserService userService
     VerifyService verifyService

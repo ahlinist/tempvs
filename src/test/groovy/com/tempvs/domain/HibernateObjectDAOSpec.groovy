@@ -13,6 +13,7 @@ import spock.lang.Specification
  */
 class HibernateObjectDAOSpec extends Specification {
 
+    private static final String ID = 'id'
     private static final String ONE = '1'
     private static final Long LONG_ONE = 1L
 
@@ -42,6 +43,15 @@ class HibernateObjectDAOSpec extends Specification {
 
         and:
         result == item
+    }
+
+    void "Test get() against invalid id"() {
+        when:
+        objectDAO.get(Item, ID)
+
+        then:
+        1 * sessionFactory.currentSession >> session
+        0 * _
     }
 
     void "Test find()"() {

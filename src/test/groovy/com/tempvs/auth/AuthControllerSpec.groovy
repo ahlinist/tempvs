@@ -13,17 +13,21 @@ import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.context.MessageSource
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(AuthController)
 class AuthControllerSpec extends Specification {
+
     private static final String EMAIL = 'email'
+    private static final String TEST_URI = '/test'
+    private static final String PROFILE = 'profile'
     private static final String PASSWORD = 'password'
+    private static final String LOGIN_PAGE_URI = '/auth/index'
+    private static final String PROFILE_PAGE_URI = '/profile'
     private static final String REGISTER_ACTION = 'registration'
     private static final String NO_SUCH_USER_CODE = 'auth.login.noSuchUser.message'
-    private static final String NO_SUCH_USER_MESSAGE = 'No user with such id found.'
-    private static final String TEST_URI = '/test'
 
     def emailVerification = Mock(EmailVerification)
     def requestRegistrationCommand = Mock(RequestRegistrationCommand)
@@ -128,11 +132,34 @@ class AuthControllerSpec extends Specification {
         0 * _
     }
 
+    void "Testing login() for correct params from login page"() {
+        given:
+        controller.grailsLinkGenerator = grailsLinkGenerator
+        controller.request.addHeader('referer', LOGIN_PAGE_URI)
+        Map linkGeneratorMap = ['controller': PROFILE]
+
+        when:
+        params.isAjaxRequest = Boolean.TRUE
+        controller.login(loginCommand)
+
+        then:
+        1 * loginCommand.validate() >> Boolean.TRUE
+        2 * loginCommand.email >> EMAIL
+        1 * userService.getUserByEmail(EMAIL) >> user
+        1 * user.password >> PASSWORD
+        2 * loginCommand.password >> PASSWORD
+        1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.TRUE
+        1 * springSecurityService.reauthenticate(EMAIL, PASSWORD)
+        1 * grailsLinkGenerator.link(linkGeneratorMap) >> PROFILE_PAGE_URI
+        1 * ajaxResponseService.renderRedirect(PROFILE_PAGE_URI) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
     void "Testing login() for correct params"() {
         given:
         controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addHeader('referer', TEST_URI)
-        Map linkGeneratorMap = ['uri': TEST_URI]
 
         when:
         params.isAjaxRequest = Boolean.TRUE
