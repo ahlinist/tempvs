@@ -155,6 +155,22 @@ class ItemServiceSpec extends Specification {
         result == Boolean.TRUE
     }
 
+    void "Test failed deleteItem()"() {
+        given:
+        Set<Image> images = [image]
+
+        when:
+        def result = service.deleteItem(item)
+
+        then:
+        1 * item.images >> images
+        1 * imageService.deleteImages(images) >> Boolean.TRUE
+        1 * item.delete([failOnError: true]) >> {throw new Exception()}
+        0 * _
+
+        result == Boolean.FALSE
+    }
+
     void "Test deleteGroup()"() {
         given:
         Set<Item> items = [item]
@@ -171,6 +187,24 @@ class ItemServiceSpec extends Specification {
         0 * _
 
         result == Boolean.TRUE
+    }
+
+    void "Test failed deleteGroup()"() {
+        given:
+        Set<Item> items = [item]
+        Set<Image> images = [image]
+
+        when:
+        def result = service.deleteGroup(itemGroup)
+
+        then:
+        1 * itemGroup.items >> items
+        1 * item.getProperty(IMAGES) >> images
+        1 * imageService.deleteImages(images) >> Boolean.TRUE
+        1 * itemGroup.delete([failOnError: true]) >> {throw new Exception()}
+        0 * _
+
+        result == Boolean.FALSE
     }
 
     void "Test updateItem()"() {

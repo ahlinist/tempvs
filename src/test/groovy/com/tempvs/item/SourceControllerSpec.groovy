@@ -19,6 +19,7 @@ class SourceControllerSpec extends Specification {
     private static final String PROPERTIES = 'properties'
     private static final String SHOW_URI = '/source/show'
     private static final String PERIOD_URI = '/source/period'
+    private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
     def json = Mock(JSON)
     def source = Mock(Source)
@@ -75,6 +76,37 @@ class SourceControllerSpec extends Specification {
         0 * _
     }
 
+    void "Test createSource() against invalid item"() {
+        given:
+        controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
+
+        when:
+        controller.createSource(sourceCommand)
+
+        then:
+        1 * sourceCommand.validate() >> Boolean.TRUE
+        1 * sourceCommand.getProperty(PROPERTIES) >> [:]
+        1 * sourceService.createSource(_ as Map) >> source
+        1 * source.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(source) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test createSource() against invalid command"() {
+        given:
+        controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
+
+        when:
+        controller.createSource(sourceCommand)
+
+        then:
+        1 * sourceCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(sourceCommand) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
     void "Test period()"() {
         given:
         params.id = period.id
@@ -106,6 +138,53 @@ class SourceControllerSpec extends Specification {
         1 * source.validate() >> Boolean.TRUE
         1 * source.id >> LONG_ID
         1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test editSource() against invalid source"() {
+        given:
+        controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
+
+        when:
+        controller.editSource(sourceCommand)
+
+        then:
+        1 * sourceCommand.validate() >> Boolean.TRUE
+        1 * sourceService.getSource(ID) >> source
+        1 * sourceCommand.getProperty(PROPERTIES) >> [:]
+        1 * sourceService.editSource(source, [:]) >> source
+        1 * source.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(source) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test editSource() against unexisting source"() {
+        given:
+        controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
+
+        when:
+        controller.editSource(sourceCommand)
+
+        then:
+        1 * sourceCommand.validate() >> Boolean.TRUE
+        1 * sourceService.getSource(ID)
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SOURCE_FOUND) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test editSource() against invalid command"() {
+        given:
+        controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
+
+        when:
+        controller.editSource(sourceCommand)
+
+        then:
+        1 * sourceCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(sourceCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
