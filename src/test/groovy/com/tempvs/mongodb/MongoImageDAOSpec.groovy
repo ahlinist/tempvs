@@ -1,13 +1,11 @@
 package com.tempvs.mongodb
 
-import com.mongodb.BasicDBObject
 import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSInputFile
 import com.tempvs.image.ImageBean
 import org.bson.types.ObjectId
 import spock.lang.Specification
-
 /**
  * Unit-test suite for {@link com.tempvs.mongodb.MongoImageDAO}.
  */
@@ -24,7 +22,6 @@ class MongoImageDAOSpec extends Specification {
     def dBObjectFactory = Mock(DBObjectFactory)
     def imageBeanFactory = Mock(MongoImageBeanFactory)
     def image = Mock(ImageBean)
-    def dbObject = Mock(BasicDBObject)
     def inputStream = Mock(InputStream)
 
     MongoImageDAO mongoImageDAO
@@ -82,5 +79,19 @@ class MongoImageDAOSpec extends Specification {
 
         and:
         result == Boolean.TRUE
+    }
+
+    void "Test delete() with error"() {
+        when:
+        def result = mongoImageDAO.delete(COLLECTION, HEX_ID)
+
+        then:
+        1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
+        1 * gridFS.findOne(_ as ObjectId) >> gridFSDBFile
+        1 * gridFS.remove(gridFSDBFile) >> {throw new Exception()}
+        0 * _
+
+        and:
+        result == Boolean.FALSE
     }
 }

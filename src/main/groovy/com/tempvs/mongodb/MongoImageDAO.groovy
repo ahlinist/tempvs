@@ -38,10 +38,9 @@ class MongoImageDAO implements ImageDAO {
         try {
             GridFS gridFS = gridFSFactory.getGridFS(collection)
             gridFS.remove(gridFS.findOne(new ObjectId(objectId)))
+            Boolean.TRUE
         } catch (Throwable e) {
             Boolean.FALSE
         }
-
-        Boolean.TRUE
     }
 }

@@ -9,7 +9,7 @@ import groovy.transform.CompileStatic
  */
 @CompileStatic
 class MongoImageBeanFactory {
-    ImageBean createInstance(GridFSFile fridFSFile) {
-        new MongoImageBean(fridFSFile)
+    ImageBean createInstance(GridFSFile gridFSFile) {
+        new MongoImageBean(gridFSFile)
     }
 }
