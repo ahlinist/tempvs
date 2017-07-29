@@ -8,6 +8,7 @@ import spock.lang.Specification
  */
 @TestFor(ActivityInterceptor)
 class ActivityInterceptorSpec extends Specification {
+
     private static final String AUTH = 'auth'
     private static final String USER = 'user'
     private static final String ITEM = 'item'
@@ -16,7 +17,10 @@ class ActivityInterceptorSpec extends Specification {
     private static final String VERIFY = 'verify'
     private static final String PROFILE = 'profile'
 
+    def userService = Mock(UserService)
+
     def setup() {
+        interceptor.userService = userService
     }
 
     def cleanup() {
@@ -72,5 +76,17 @@ class ActivityInterceptorSpec extends Specification {
         VERIFY      | 'email'
         VERIFY      | 'profileEmail'
         IMAGE       | 'get'
+    }
+
+    void "Test before()"() {
+        when:
+        Boolean result = interceptor.before()
+
+        then:
+        1 * userService.updateLastActive()
+        0 * _
+
+        and:
+        result == Boolean.TRUE
     }
 }

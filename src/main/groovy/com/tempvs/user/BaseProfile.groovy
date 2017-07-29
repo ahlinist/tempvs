@@ -45,8 +45,6 @@ abstract class BaseProfile extends BasePersistent {
                 (!user || (user == baseProfile.user)) &&
                         (!userProfile || baseProfile.user == userProfile.user) &&
                         (!clubProfile || baseProfile.user == clubProfile.user)
-            } else {
-                Boolean.TRUE
             }
         }
     }

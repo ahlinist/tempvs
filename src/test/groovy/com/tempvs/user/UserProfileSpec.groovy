@@ -1,14 +1,15 @@
 package com.tempvs.user
 
-import com.tempvs.tests.utils.TestingUtils
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+import static com.tempvs.tests.utils.TestingUtils.*
+
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
 @TestFor(UserProfile)
-@Mock([User, UserProfile])
+@Mock([User, ClubProfile])
 class UserProfileSpec extends Specification {
 
     private static final String NOT_EMAIL = 'not email'
@@ -22,49 +23,60 @@ class UserProfileSpec extends Specification {
 
     void "Test fails when firstName is missing"() {
         given:
-        Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
+        Map props = DEFAULT_USER_PROPS.clone()
         props.firstName = null
 
         expect:
-        !TestingUtils.createUser(props)
+        !createUser(props)
     }
 
     void "Test fails when lastName is missing"() {
         given:
-        Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
+        Map props = DEFAULT_USER_PROPS.clone()
         props.lastName = null
 
         expect:
-        !TestingUtils.createUser(props)
+        !createUser(props)
     }
 
     void "User with incorrect email is not created"() {
         given:
-        Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
+        Map props = DEFAULT_USER_PROPS.clone()
         props.email = NOT_EMAIL
 
         expect:
-        !TestingUtils.createUser(props)
+        !createUser(props)
     }
 
     void "User can not be created with numeric profileId"() {
         given:
-        Map props = TestingUtils.DEFAULT_USER_PROPS.clone()
+        Map props = DEFAULT_USER_PROPS.clone()
         props.profileId = NUMERIC_PROFILE_ID
 
         expect:
-        !TestingUtils.createUser(props)
+        !createUser(props)
     }
 
     void "Numeric profileId can't be set to existent user"() {
-        given: 'An existent user'
-        User user = TestingUtils.createUser()
+        given:
+        User user = createUser()
 
-        when: "Set numeric customId to existent user's profile"
+        when:
         UserProfile userProfile = user.userProfile
         userProfile.profileId = NUMERIC_PROFILE_ID
 
-        then: "UserProfile has not been saved"
+        then:
         !userProfile.validate()
+    }
+
+    void "Test getIdentifier()"() {
+        given:
+        User user = createUser()
+
+        when:
+        UserProfile userProfile = user.userProfile
+
+        then:
+        userProfile.identifier == PROFILE_ID
     }
 }
