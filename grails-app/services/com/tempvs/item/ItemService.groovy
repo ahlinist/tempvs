@@ -1,7 +1,6 @@
 package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAO
-import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -9,6 +8,7 @@ import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service that manages {@link com.tempvs.item.Item} and {@link com.tempvs.item.ItemGroup} instances.
@@ -21,16 +21,7 @@ class ItemService {
 
     ImageService imageService
     UserService userService
-    ObjectFactory objectFactory
     ObjectDAO objectDAO
-
-    ItemGroup createGroup(Map properties) {
-        ItemGroup itemGroup = objectFactory.create(ItemGroup.class)
-        InvokerHelper.setProperties(itemGroup, properties)
-        itemGroup.user = userService.currentUser
-        itemGroup.save()
-        itemGroup
-    }
 
     ItemGroup getGroup(String id) {
         objectDAO.get(ItemGroup, id)
@@ -40,28 +31,13 @@ class ItemService {
         objectDAO.get(Item, id)
     }
 
-    Item createItem(Map properties) {
-        Item item = objectFactory.create(Item)
-        Set<Image> itemImages = imageService.extractImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
-
-        if (itemImages) {
-            item.images = itemImages
-        }
-
-        updateItem(item, properties)
+    ItemGroup createGroup(ItemGroup itemGroup) {
+        itemGroup.user = userService.currentUser
+        itemGroup.save()
+        itemGroup
     }
 
-    Boolean deleteItem(Item item) {
-        imageService.deleteImages(item.images)
-
-        try {
-            item.delete(failOnError: true)
-            Boolean.TRUE
-        } catch (Throwable e) {
-            Boolean.FALSE
-        }
-    }
-
+    @PreAuthorize('#itemGroup.user.email == authentication.name')
     Boolean deleteGroup(ItemGroup itemGroup) {
         Set<Item> items = itemGroup.items
         imageService.deleteImages(items*.images?.flatten() as Set<Image>)
@@ -74,6 +50,30 @@ class ItemService {
         }
     }
 
+    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
+    Item createItem(Item item, Map properties) {
+        Set<Image> itemImages = imageService.extractImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
+
+        if (itemImages) {
+            item.images = itemImages
+        }
+
+        item.save()
+    }
+
+    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
+    Boolean deleteItem(Item item) {
+        imageService.deleteImages(item.images)
+
+        try {
+            item.delete(failOnError: true)
+            Boolean.TRUE
+        } catch (Throwable e) {
+            Boolean.FALSE
+        }
+    }
+
+    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item updateItem(Item item, Map properties) {
         InvokerHelper.setProperties(item, properties)
         item.save()

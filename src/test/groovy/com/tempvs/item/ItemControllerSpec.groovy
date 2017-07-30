@@ -10,6 +10,7 @@ import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -119,7 +120,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test group creation against invalid group"() {
         given:
-        Map propertyMap = [:]
         params.isAjaxRequest = Boolean.TRUE
 
         when:
@@ -127,8 +127,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getProperty(PROPERTIES) >> propertyMap
-        1 * itemService.createGroup(propertyMap) >> itemGroup
+        1 * createItemGroupCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -137,7 +137,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test successful group creation"() {
         given:
-        Map propertyMap = [:]
         Map linkGeneratorMap = ['action':GROUP_ACTION, 'id':LONG_ID]
         controller.grailsLinkGenerator = grailsLinkGenerator
 
@@ -147,8 +146,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getProperty(PROPERTIES) >> propertyMap
-        1 * itemService.createGroup(propertyMap) >> itemGroup
+        1 * createItemGroupCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
         1 * itemGroup.getId() >> LONG_ID
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_GROUP_URI}/${LONG_ID}"
@@ -231,7 +230,7 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.getProperty(PROPERTIES) >> [:]
-        1 * itemService.createItem(_ as Map) >> item
+        1 * itemService.createItem(_ as Item, _ as Map) >> item
         1 * item.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -252,7 +251,7 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.getProperty(PROPERTIES) >> [:]
-        1 * itemService.createItem(_ as Map) >> item
+        1 * itemService.createItem(_ as Item, _ as Map) >> item
         1 * item.validate() >> Boolean.TRUE
         1 * item.id >> LONG_ID
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ID}"
@@ -325,10 +324,9 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> (2 * LONG_ID)
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
+        1 * itemGroup.id >> LONG_ID
+        1 * itemService.deleteItem(item) >> {throw new Exception()}
+        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -341,26 +339,9 @@ class ItemControllerSpec extends Specification {
         when:
         controller.deleteItem()
 
-        then: 'Could not delete'
-        1 * itemService.getItem(ONE) >> item
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
-        1 * itemService.deleteItem(item) >> Boolean.FALSE
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-
-        when:
-        controller.deleteItem()
-
         then: 'Successfully deleted'
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteItem(item) >> Boolean.TRUE
         1 * itemGroup.id >> LONG_ID
         1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
@@ -393,29 +374,8 @@ class ItemControllerSpec extends Specification {
 
         then: 'Group belongs to other user'
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> (2 * LONG_ID)
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test deleteGroup() against failure"() {
-        given:
-        params.isAjaxRequest = Boolean.TRUE
-        params.id = ONE
-
-        when:
-        controller.deleteGroup()
-
-        then:
-        1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
-        1 * itemService.deleteGroup(itemGroup) >> Boolean.FALSE
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
+        1 * itemService.deleteGroup(itemGroup) >> {throw new Exception()}
+        1 * ajaxResponseService.renderRedirect(ITEM_STASH_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -430,11 +390,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemGroup.user >> user
-        2 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
         1 * itemService.deleteGroup(itemGroup) >> Boolean.TRUE
-        1 * ajaxResponseService.renderRedirect("${ITEM_STASH_URI}/${LONG_ID}") >> json
+        1 * ajaxResponseService.renderRedirect(ITEM_STASH_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

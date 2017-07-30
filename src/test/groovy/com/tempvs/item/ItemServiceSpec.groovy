@@ -1,7 +1,6 @@
 package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAO
-import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -31,12 +30,10 @@ class ItemServiceSpec extends Specification {
     def period = GroovyMock(Period)
     def userService = Mock(UserService)
     def imageService = Mock(ImageService)
-    def objectFactory = Mock(ObjectFactory)
     def imageUploadBean = Mock(ImageUploadBean)
 
     def setup() {
         service.userService = userService
-        service.objectFactory = objectFactory
         service.objectDAO = objectDAO
         service.imageService = imageService
     }
@@ -44,38 +41,12 @@ class ItemServiceSpec extends Specification {
     def cleanup() {
     }
 
-    void "Test createGroup() with fail"() {
-        given:
-        Map propertyMap = [name: NAME, description: DESCRIPTION]
-
+    void "Test createGroup()"() {
         when:
-        def result = service.createGroup(propertyMap)
+        def result = service.createGroup(itemGroup)
 
         then:
         1 * userService.currentUser >> user
-        1 * objectFactory.create(ItemGroup.class) >> itemGroup
-        1 * itemGroup.setName(NAME)
-        1 * itemGroup.setDescription(DESCRIPTION)
-        1 * itemGroup.setUser(user)
-        1 * itemGroup.save() >> null
-        0 * _
-
-        and:
-        result == itemGroup
-    }
-
-    void "Test createGroup() with success"() {
-        given:
-        Map propertyMap = [name: NAME, description: DESCRIPTION]
-
-        when:
-        def result = service.createGroup(propertyMap)
-
-        then:
-        1 * userService.currentUser >> user
-        1 * objectFactory.create(ItemGroup.class) >> itemGroup
-        1 * itemGroup.setName(NAME)
-        1 * itemGroup.setDescription(DESCRIPTION)
         1 * itemGroup.setUser(user)
         1 * itemGroup.save() >> itemGroup
         0 * _
@@ -110,16 +81,11 @@ class ItemServiceSpec extends Specification {
         ]
 
         when:
-        def result = service.createItem(properties)
+        def result = service.createItem(item, properties)
 
         then:
-        1 * objectFactory.create(Item) >> item
         1 * imageService.extractImages(imageUploadBeans, ITEM_IMAGE_COLLECTION) >> images
         1 * item.setImages(images)
-        1 * item.setName(NAME)
-        1 * item.setDescription(DESCRIPTION)
-        1 * item.setPeriod(period)
-        1 * item.setItemGroup(itemGroup)
         1 * item.save() >> item
         0 * _
 
