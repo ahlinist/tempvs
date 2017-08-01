@@ -8,7 +8,7 @@ import grails.compiler.GrailsCompileStatic
  * Abstract Profile inherited by {@link com.tempvs.user.UserProfile}
  * or {@link com.tempvs.user.ClubProfile}.
  */
-@GrailsCompileStatic
+//@GrailsCompileStatic
 abstract class BaseProfile extends BasePersistent {
 
     Long id
@@ -38,13 +38,7 @@ abstract class BaseProfile extends BasePersistent {
         avatar nullable: true
         profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
             if (profileEmail) {
-                User user = User.findByEmail(profileEmail)
-                UserProfile userProfile = UserProfile.findByProfileEmail(profileEmail)
-                ClubProfile clubProfile = ClubProfile.findByProfileEmail(profileEmail)
-
-                (!user || (user == baseProfile.user)) &&
-                        (!userProfile || baseProfile.user == userProfile.user) &&
-                        (!clubProfile || baseProfile.user == clubProfile.user)
+                grails.util.Holders.applicationContext.userService.isEmailUnique(profileEmail)
             }
         }
     }

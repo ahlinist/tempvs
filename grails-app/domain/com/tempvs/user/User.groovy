@@ -32,11 +32,7 @@ class User extends BasePersistent implements Serializable {
 	static constraints = {
 		password blank: false, password: true
 		email email: true, unique: true, blank: false, validator: {email, user ->
-			UserProfile userProfile = UserProfile.findByProfileEmail(email)
-			ClubProfile clubProfile = ClubProfile.findByProfileEmail(email)
-
-			!userProfile || (userProfile.user == user) ||
-					!clubProfile || (clubProfile.user == user)
+			grails.util.Holders.applicationContext.userService.isEmailUnique(email)
 		}
 	}
 

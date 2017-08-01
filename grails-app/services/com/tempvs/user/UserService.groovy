@@ -78,14 +78,14 @@ class UserService {
     }
 
     Boolean isEmailUnique(String email) {
-        User currentUser = currentUser
+        if (currentUserEmail == email) {
+            Boolean.TRUE
+        } else {
+            UserProfile userProfile = UserProfile.findByProfileEmail(email)
+            ClubProfile clubProfile = ClubProfile.findByProfileEmail(email)
 
-        User user = User.findByEmail(email)
-        UserProfile userProfile = UserProfile.findByProfileEmail(email)
-        ClubProfile clubProfile = ClubProfile.findByProfileEmail(email)
-
-        (!user || currentUser == user) &&
-                (!userProfile || userProfile.user == currentUser) &&
-                (!clubProfile || clubProfile.user == currentUser)
+            (!userProfile || userProfile.user.email == currentUserEmail) &&
+                    (!clubProfile || clubProfile.user.email == currentUserEmail)
+        }
     }
 }

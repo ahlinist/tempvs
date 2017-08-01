@@ -15,7 +15,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
  */
 @Transactional
 @GrailsCompileStatic
-class ProfileService<T> {
+class ProfileService {
 
     private static final String AVATAR_COLLECTION = 'avatar'
 
@@ -24,8 +24,8 @@ class ProfileService<T> {
     ObjectFactory objectFactory
     ImageService imageService
 
-    T getProfile(Class<T> clazz, String id) {
-        objectDAO.find(clazz, [profileId: id]) as T ?: objectDAO.get(clazz, id) as T
+    public <T> T getProfile(Class<T> clazz, String id) {
+        objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
     }
 
     BaseProfile updateProfile(BaseProfile profile, Map properties) {
