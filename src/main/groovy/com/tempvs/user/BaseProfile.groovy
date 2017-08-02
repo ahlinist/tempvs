@@ -8,7 +8,7 @@ import grails.compiler.GrailsCompileStatic
  * Abstract Profile inherited by {@link com.tempvs.user.UserProfile}
  * or {@link com.tempvs.user.ClubProfile}.
  */
-//@GrailsCompileStatic
+@GrailsCompileStatic
 abstract class BaseProfile extends BasePersistent {
 
     Long id
@@ -38,7 +38,7 @@ abstract class BaseProfile extends BasePersistent {
         avatar nullable: true
         profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
             if (profileEmail) {
-                grails.util.Holders.applicationContext.userService.isEmailUnique(profileEmail)
+                grails.util.Holders.applicationContext.getBean('userService').asType(UserService).isEmailUnique(profileEmail)
             }
         }
     }
