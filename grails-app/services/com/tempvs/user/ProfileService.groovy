@@ -30,10 +30,10 @@ class ProfileService {
 
     BaseProfile updateProfile(BaseProfile profile, Map properties) {
         InvokerHelper.setProperties(profile, properties)
-        Image extractedImage = imageService.extractImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION, profile.avatar)
+        Image avatar = imageService.extractImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION, profile.avatar)
 
-        if (extractedImage) {
-            profile.avatar = extractedImage
+        if (avatar) {
+            profile.avatar = avatar
         }
 
         profile.save()

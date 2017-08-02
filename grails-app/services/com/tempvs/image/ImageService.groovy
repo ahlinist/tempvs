@@ -48,13 +48,13 @@ class ImageService {
     }
 
     Image extractImage(ImageUploadBean imageUploadBean, String collection, Image image = null) {
-        if (image) {
-            image = replaceImage(imageUploadBean, image)
-        } else {
-            image = createImage(imageUploadBean, collection)
+        if (!imageUploadBean.image.empty) {
+            if (image) {
+                return replaceImage(imageUploadBean, image)
+            } else {
+                return createImage(imageUploadBean, collection)
+            }
         }
-
-        image
     }
 
     Set<Image> extractImages(List<ImageUploadBean> imageUploadBeans, String collection) {
