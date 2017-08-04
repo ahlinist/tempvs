@@ -8,6 +8,7 @@
 * compiled file, but it's generally better to create a new file per style scope.
 *
 *= require bootstrap
+*= require /webjars/bootstrap/3.3.7-1/css/bootstrap.min
 *= require grails
 *= require main
 *= require mobile
