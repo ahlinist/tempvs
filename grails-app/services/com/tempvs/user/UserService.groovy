@@ -31,11 +31,15 @@ class UserService {
     }
 
     String getCurrentUserEmail() {
-        ((GrailsUser) springSecurityService.principal).username
+        if (springSecurityService.loggedIn) {
+            ((GrailsUser) springSecurityService.principal).username
+        }
     }
 
     String getCurrentUserPassword() {
-        ((GrailsUser) springSecurityService.principal).password
+        if (springSecurityService.loggedIn) {
+            ((GrailsUser) springSecurityService.principal).password
+        }
     }
 
     User getUserByEmail(String email) {
@@ -78,7 +82,7 @@ class UserService {
     }
 
     Boolean isEmailUnique(String email) {
-        if (currentUserEmail == email) {
+        if (!email || currentUserEmail == email) {
             Boolean.TRUE
         } else {
             UserProfile userProfile = UserProfile.findByProfileEmail(email)

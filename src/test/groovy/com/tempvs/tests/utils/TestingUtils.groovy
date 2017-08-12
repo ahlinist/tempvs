@@ -1,14 +1,13 @@
 package com.tempvs.tests.utils
 
 import com.tempvs.periodization.Period
-import com.tempvs.user.User
-import com.tempvs.user.UserProfile
 
 /**
- * Utility class that encapsulates user-related operations to simplify
- * application unit-testing.
+ * Utility class that holds test data for dummy {@link com.tempvs.user.User},
+ * {@link com.tempvs.user.UserProfile}, {@link com.tempvs.user.ClubProfile} creation.
  */
 class TestingUtils {
+
     public static final String EMAIL = 'defaultTest@mail.com'
     public static final String PASSWORD = 'defaultPassW0rd!'
     public static final String FIRST_NAME = 'defaultFirstName'
@@ -23,29 +22,24 @@ class TestingUtils {
     public static final Map DEFAULT_USER_PROPS = [
             email:          EMAIL,
             password:       PASSWORD,
-            firstName:      FIRST_NAME,
-            lastName:       LAST_NAME,
-            profileId:       PROFILE_ID,
-            profileEmail:   PROFILE_EMAIL,
-            location:       LOCATION,
     ]
 
     public static final Map DEFAULT_CLUB_PROFILE_PROPS = [
             firstName:      FIRST_NAME,
             lastName:       LAST_NAME,
             nickName:       NICK_NAME,
-            profileEmail:   EMAIL,
+            profileEmail:   PROFILE_EMAIL,
             location:       LOCATION,
             profileId:      PROFILE_ID,
             clubName:       CLUB_NAME,
-            period: PERIOD,
+            period:         PERIOD,
     ]
 
-    static User createUser(Map props = DEFAULT_USER_PROPS){
-        User user = new User(props)
-        UserProfile userProfile = new UserProfile(props)
-        user.userProfile = userProfile
-        userProfile.user = user
-        user.save(flush:true)
-    }
+    public static final Map DEFAULT_USER_PROFILE_PROPS = [
+            firstName:      FIRST_NAME,
+            lastName:       LAST_NAME,
+            profileEmail:   PROFILE_EMAIL,
+            location:       LOCATION,
+            profileId:      PROFILE_ID,
+    ]
 }

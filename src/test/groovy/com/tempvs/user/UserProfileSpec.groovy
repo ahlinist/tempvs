@@ -1,21 +1,30 @@
 package com.tempvs.user
 
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-import static com.tempvs.tests.utils.TestingUtils.*
+
+import static com.tempvs.tests.utils.TestingUtils.DEFAULT_USER_PROFILE_PROPS
 
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
 @TestFor(UserProfile)
-@Mock([User, ClubProfile])
 class UserProfileSpec extends Specification {
 
     private static final String NOT_EMAIL = 'not email'
     private static final String NUMERIC_PROFILE_ID = '123456'
 
+    def user = Mock(User)
+
+    def userService = Mock(UserService) {
+        isEmailUnique(_ as String) >> Boolean.TRUE
+    }
+
+    UserProfile userProfile
+
     def setup() {
+        Map params = DEFAULT_USER_PROFILE_PROPS.clone()
+        userProfile = new UserProfile(params + [user: user, userService: userService])
     }
 
     def cleanup() {
@@ -23,60 +32,46 @@ class UserProfileSpec extends Specification {
 
     void "Test fails when firstName is missing"() {
         given:
-        Map props = DEFAULT_USER_PROPS.clone()
-        props.firstName = null
+        userProfile.firstName = null
 
         expect:
-        !createUser(props)
+        !userProfile.validate()
     }
 
     void "Test fails when lastName is missing"() {
         given:
-        Map props = DEFAULT_USER_PROPS.clone()
-        props.lastName = null
+        userProfile.lastName = null
 
         expect:
-        !createUser(props)
+        !userProfile.validate()
     }
 
     void "User with incorrect email is not created"() {
         given:
-        Map props = DEFAULT_USER_PROPS.clone()
-        props.email = NOT_EMAIL
+        userProfile.profileEmail = NOT_EMAIL
 
         expect:
-        !createUser(props)
+        !userProfile.validate()
     }
 
     void "User can not be created with numeric profileId"() {
         given:
-        Map props = DEFAULT_USER_PROPS.clone()
-        props.profileId = NUMERIC_PROFILE_ID
-
-        expect:
-        !createUser(props)
-    }
-
-    void "Numeric profileId can't be set to existent user"() {
-        given:
-        User user = createUser()
-
-        when:
-        UserProfile userProfile = user.userProfile
         userProfile.profileId = NUMERIC_PROFILE_ID
 
-        then:
+        expect:
         !userProfile.validate()
     }
 
-    void "Test getIdentifier()"() {
+    void "Test profileEmail uniqueness"() {
         given:
-        User user = createUser()
+        def userService = Mock(UserService) {
+            isEmailUnique(_ as String) >> Boolean.FALSE
+        }
 
-        when:
-        UserProfile userProfile = user.userProfile
+        and:
+        userProfile.userService = userService
 
-        then:
-        userProfile.identifier == PROFILE_ID
+        expect:
+        !userProfile.validate()
     }
 }

@@ -10,15 +10,7 @@ class UserProfile extends BaseProfile {
 
     static belongsTo = [user: User]
 
-    static constraints = {
-
-    }
-
     static mapping = {
         avatar cascade: 'all-delete-orphan'
-    }
-
-    String toString() {
-        "${firstName} ${lastName}"
     }
 }

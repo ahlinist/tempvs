@@ -19,9 +19,14 @@ abstract class BaseProfile extends BasePersistent {
     String profileId
     Image avatar
     User user
+    protected UserService userService
 
     String getIdentifier() {
         profileId ?: id as String
+    }
+
+    String toString() {
+        "${firstName} ${lastName}"
     }
 
     BaseProfile save(Map params = null) {
@@ -32,13 +37,18 @@ abstract class BaseProfile extends BasePersistent {
 
     }
 
+    static transients = ['userService']
+
     static constraints = {
         profileId shared: "profileId"
         location nullable: true
         avatar nullable: true
+
         profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
             if (profileEmail) {
-                grails.util.Holders.applicationContext.getBean('userService').asType(UserService).isEmailUnique(profileEmail)
+                baseProfile.userService?.isEmailUnique(profileEmail)
+            } else {
+                Boolean.TRUE
             }
         }
     }

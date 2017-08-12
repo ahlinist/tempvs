@@ -153,7 +153,6 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(_, ONE) >> userProfile
-        1 * userProfile.asType(BaseProfile) >> userProfile
         1 * profileHolder.setProfile(userProfile)
         0 * _
 

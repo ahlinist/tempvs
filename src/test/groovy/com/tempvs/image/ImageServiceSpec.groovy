@@ -145,7 +145,7 @@ class ImageServiceSpec extends Specification {
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * image.setObjectId(ID)
-        2 * imageUploadBean.image >> multipartFile
+        3 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
         1 * image.setCollection(COLLECTION)
         1 * image.setImageInfo(IMAGE_INFO)
@@ -161,7 +161,7 @@ class ImageServiceSpec extends Specification {
 
         then:
         1 * objectFactory.create(Image) >> image
-        2 * imageUploadBean.image >> multipartFile
+        3 * imageUploadBean.image >> multipartFile
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * image.setObjectId(ID)

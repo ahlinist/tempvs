@@ -1,9 +1,7 @@
 package com.tempvs.auth
 
-import com.tempvs.user.ClubProfile
 import com.tempvs.user.EmailVerification
-import com.tempvs.user.User
-import com.tempvs.user.UserProfile
+import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
 
@@ -14,14 +12,17 @@ import grails.validation.Validateable
  */
 @GrailsCompileStatic
 class RequestRegistrationCommand implements Validateable {
+
     String email
+    UserService userService
 
     static constraints = {
-        email email: true, blank: false, validator: { email, RequestRegistrationCommand command ->
-            !User.findByEmail(email) &&
-                    !UserProfile.findByProfileEmail(email) &&
-                    !ClubProfile.findByProfileEmail(email) &&
-                    !EmailVerification.findByEmail(email)
+        email email: true, blank: false, validator: { String email, RequestRegistrationCommand command ->
+            if (email) {
+                command.userService.isEmailUnique(email) && !EmailVerification.findByEmail(email)
+            } else {
+                Boolean.TRUE
+            }
         }
     }
 }

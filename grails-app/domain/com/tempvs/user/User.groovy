@@ -21,7 +21,9 @@ class User extends BasePersistent implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
 	Date lastActive = new Date()
+	UserService userService
 
+	static transients = ['userService']
 	static hasOne = [userProfile: UserProfile]
 	static hasMany = [clubProfiles: ClubProfile, itemGroups: ItemGroup]
 
@@ -31,8 +33,12 @@ class User extends BasePersistent implements Serializable {
 
 	static constraints = {
 		password blank: false, password: true
-		email email: true, unique: true, blank: false, validator: {email, user ->
-			grails.util.Holders.applicationContext.userService.isEmailUnique(email)
+		email email: true, unique: true, blank: false, validator: { String email, User user ->
+			if (email) {
+                user.userService.isEmailUnique(email)
+            } else {
+                Boolean.TRUE
+            }
 		}
 	}
 

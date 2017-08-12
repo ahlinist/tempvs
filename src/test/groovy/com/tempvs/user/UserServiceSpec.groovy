@@ -5,15 +5,12 @@ import com.tempvs.domain.ObjectFactory
 import com.tempvs.tests.utils.TestingUtils
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
-import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 @TestFor(UserService)
-@Mock([User, UserProfile])
 class UserServiceSpec extends Specification {
 
     private static final String ID = 'id'
@@ -80,6 +77,7 @@ class UserServiceSpec extends Specification {
         def result = service.getCurrentUserEmail()
 
         then:
+        1 * springSecurityService.loggedIn >> Boolean.TRUE
         1 * springSecurityService.principal >> grailsUser
         1 * grailsUser.username >> EMAIL
         0 * _
@@ -92,6 +90,7 @@ class UserServiceSpec extends Specification {
         def result = service.getCurrentUserPassword()
 
         then:
+        1 * springSecurityService.loggedIn >> Boolean.TRUE
         1 * springSecurityService.principal >> grailsUser
         1 * grailsUser.password >> PASSWORD
         0 * _
