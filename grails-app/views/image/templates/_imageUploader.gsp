@@ -22,6 +22,7 @@
   <tempvs:formField cls="imageInfo" type="text" name="${fieldName}[0].imageInfo" label="${infoLabel}" />
   <hr/>
 </div>
-<div>
-  <span class="btn btn-default" onclick="createFields();"><g:message code="image.add"/></span>
+<div class="row">
+  <span class="btn btn-default glyphicon glyphicon-plus pull-right" data-toggle="tooltip"
+      data-placement="bottom" title="${g.message(code: 'image.add.tooltip')}" onclick="createFields();"></span>
 </div>

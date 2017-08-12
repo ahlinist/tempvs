@@ -36,7 +36,7 @@ class SourceViewSpec extends Specification {
         given:
         Set<Image> images = [image] as Set
         String title = "<title>Tempvs - ${NAME}</title>"
-        String editForm = '<tempvs:modalButton id="sourceForm" message="source.editSource.button">'
+        String editForm = '<tempvs:modalButton id="sourceForm" cls="glyphicon glyphicon-edit">'
         Map model = [source: source, period: period, editAllowed: Boolean.TRUE]
 
         when:

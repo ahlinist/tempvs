@@ -16,6 +16,10 @@ $(function (){
         $(this).attr("disabled", true);
     });
 
+    //enabling tooltips for glyphiconed buttons
+    $('[data-toggle="tooltip"]').tooltip();
+
+    //incrementing lastActive
     incrementMinutes()
 });
 

@@ -24,33 +24,34 @@
 <div class="tab-content">
   <div id="itemContent" class="tab-pane fade in active">
     <div class="row">
-      <div><b><g:message code="item.name.label"/>:</b> ${item.name}</div>
-      <div><b><g:message code="item.description.label"/>:</b> ${item.description}</div>
-      <div><b><g:message code="periodization.period.value.label"/>:</b> ${item.period.value}</div>
-      <hr/>
-      <div class="row">
-        <div class="col-sm-4">
-        </div>
-        <div class="col-sm-4">
-          <tempvs:carousel images="${item.images}" orientation="horizontal"/>
-        </div>
-        <div class="col-sm-4">
-        </div>
+      <g:if test="${editAllowed}">
+        <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.delete.button')}">
+          <tempvs:modalButton id="deleteItem" size="modal-sm" cls="glyphicon glyphicon-trash">
+            <g:message code='item.deleteConfirmation.text' args="${[item.name]}"/>
+            <br/>
+            <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${item.id}"/>
+            <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+          </tempvs:modalButton>
+        </span>
+        <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.updateItem.link')}">
+          <tempvs:modalButton id="itemForm" cls="glyphicon glyphicon-edit">
+            <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
+          </tempvs:modalButton>
+        </span>
+      </g:if>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <div><b><g:message code="item.name.label"/>:</b> ${item.name}</div>
+        <div><b><g:message code="item.description.label"/>:</b> ${item.description}</div>
+        <div><b><g:message code="periodization.period.value.label"/>:</b> ${item.period.value}</div>
+      </div>
+      <div class="col-sm-4">
+        <tempvs:carousel images="${item.images}" orientation="horizontal"/>
+      </div>
+      <div class="col-sm-4">
       </div>
     </div>
-    <g:if test="${editAllowed}">
-      <div class="row">
-        <tempvs:modalButton id="itemForm" message="item.updateItem.link">
-          <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
-        </tempvs:modalButton>
-        <tempvs:modalButton id="deleteItem" size="modal-sm" message="item.delete.button">
-          <g:message code='item.deleteConfirmation.text' args="${[item.name]}"/>
-          <br/>
-          <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${item.id}"/>
-          <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-        </tempvs:modalButton>
-      </div>
-    </g:if>
   </div>
   <div id="sourceContent" class="tab-pane fade">
     <g:if test="${source}">

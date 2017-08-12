@@ -36,29 +36,30 @@
               </g:each>
             </ul>
           </span>
-          <g:link class="btn btn-primary disableable pull-right" controller="auth" action="logout">
-            <g:message code="auth.logout.button" />
-          </g:link>
-          <span class="dropdown pull-right">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-              <g:message code="user.settings.button"/>
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu list-group">
-              <li>
-                <g:link class="list-group-item disableable" controller="user" action="edit">
-                  <g:message code="user.edit.button" />
-                </g:link>
-              </li>
-            </ul>
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.button')}">
+            <g:link class="btn btn-primary disableable pull-right glyphicon glyphicon-log-out" controller="auth" action="logout"/>
           </span>
-          <g:link class="btn btn-default disableable pull-right" controller="source">
-            <g:message code="source.library.link" />
-          </g:link>
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'user.setting.tooltip')}">
+            <span class="dropdown">
+              <button class="btn btn-default dropdown-toggle glyphicon glyphicon-cog" type="button" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu list-group">
+                <li>
+                  <g:link class="list-group-item disableable" controller="user" action="edit">
+                    <g:message code="user.edit.button" />
+                  </g:link>
+                </li>
+              </ul>
+            </span>
+          </span>
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.library.tooltip')}">
+            <g:link class="btn btn-default disableable pull-right glyphicon glyphicon-book" controller="source"/>
+          </span>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
-          <span class="pull-right">
-            <tempvs:modalButton id="itemForm" message="auth.link">
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.link.tooltip')}">
+            <tempvs:modalButton id="loginForm" cls="glyphicon glyphicon-log-in">
               <g:render template="/auth/templates/loginForm"/>
             </tempvs:modalButton>
           </span>

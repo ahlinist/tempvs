@@ -12,39 +12,46 @@
       <g:if test="${profile}">
         <g:set var="user" value="${profile.user}"/>
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             ${profile}
             <tempvs:image image="${profile.avatar}"/>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>
             <div><b><g:message code="clubProfile.profileEmail.label" />:</b> ${profile.profileEmail}</div>
             <div><b><g:message code="clubProfile.location.label" />:</b> ${profile.location}</div>
             <div><b><g:message code="clubProfile.clubName.label" />:</b> ${profile.clubName}</div>
             <div><b><g:message code="periodization.period.value.label"/>:</b> ${profile.period.value}</div>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <g:render template="/profile/templates/listedUserProfile" model="${[userProfile: user.userProfile]}"/>
           </div>
-        </div>
-        <g:if test="${editAllowed}">
+          <div class="col-sm-3">
+            <g:if test="${editAllowed}">
           <div class="row">
-            <tempvs:modalButton id="updateProfile" message="profile.updateProfile.link">
-              <tempvs:ajaxForm action="updateProfileEmail">
-                <tempvs:formField type="email" name="email" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
-                <tempvs:ajaxSubmitButton value="clubEmail.update.button" />
-              </tempvs:ajaxForm>
-              <g:render template="/profile/templates/clubProfileForm"
-                  model="${[action: 'updateClubProfile', button: 'clubProfile.update.button', profile: profile]}"/>
-            </tempvs:modalButton>
-            <tempvs:modalButton id="deleteProfile" size="modal-sm" message="profile.delete.button">
-              <g:message code='profile.deleteConfirmation.text' args="${[profile]}"/>
-              <br/>
-              <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${profile.id}"/>
-              <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-            </tempvs:modalButton>
+            <div><b><g:message code="profile.actions.label"/></b></div>
+            <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
+              <tempvs:modalButton id="updateProfile" cls="glyphicon glyphicon-edit">
+                <tempvs:ajaxForm action="updateProfileEmail">
+                  <tempvs:formField type="email" name="email" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
+                  <tempvs:ajaxSubmitButton value="clubEmail.update.button" />
+                </tempvs:ajaxForm>
+                <g:render template="/profile/templates/clubProfileForm"
+                    model="${[action: 'updateClubProfile', button: 'clubProfile.update.button', profile: profile]}"/>
+              </tempvs:modalButton>
+            </span>
+            <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.delete.tooltip')}">
+              <tempvs:modalButton id="deleteProfile" size="modal-sm" cls="glyphicon glyphicon-trash">
+                <g:message code='profile.deleteConfirmation.text' args="${[profile]}"/>
+                <br/>
+                <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${profile.id}"/>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+              </tempvs:modalButton>
+            </span>
           </div>
         </g:if>
+          </div>
+        </div>
       </g:if>
       <g:elseif test="${message}">
         <g:message code="${message}" args="${args}" />
