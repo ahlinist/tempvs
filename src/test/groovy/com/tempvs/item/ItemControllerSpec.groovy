@@ -105,9 +105,6 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test group creation against invalid command"() {
-        given:
-        params.isAjaxRequest = Boolean.TRUE
-
         when:
         controller.createGroup(createItemGroupCommand)
 
@@ -119,9 +116,6 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test group creation against invalid group"() {
-        given:
-        params.isAjaxRequest = Boolean.TRUE
-
         when:
         controller.createGroup(createItemGroupCommand)
 
@@ -141,7 +135,6 @@ class ItemControllerSpec extends Specification {
         controller.grailsLinkGenerator = grailsLinkGenerator
 
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.createGroup(createItemGroupCommand)
 
         then:
@@ -205,9 +198,6 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test createItem() against invalid command"() {
-        given:
-        params.isAjaxRequest = Boolean.TRUE
-
         when:
         controller.createItem(itemCommand)
 
@@ -220,7 +210,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem() against invalid item"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
 
         when:
@@ -239,7 +228,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test successful createItem()"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
@@ -300,7 +288,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem() against unexisting item"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:
@@ -315,7 +302,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem() against failure"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:
@@ -333,7 +319,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem()"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:
@@ -351,7 +336,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteGroup() against unexisting one"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:
@@ -366,7 +350,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test illegal deleteGroup()"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:
@@ -382,7 +365,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteGroup()"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:
@@ -398,7 +380,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test editItem() against invalid command"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
 
         when:
@@ -414,7 +395,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test editItem() against invalid item"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
 
         when:
@@ -433,7 +413,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test successful editItem()"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
 
         when:

@@ -133,7 +133,6 @@ class UserControllerSpec extends Specification {
 
     void "Check register action against invalid command"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.register(registerCommand)
 
         then:
@@ -145,7 +144,6 @@ class UserControllerSpec extends Specification {
 
     void "Check register action against valid command and invalid user data"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.register(registerCommand)
 
         then:
@@ -160,7 +158,6 @@ class UserControllerSpec extends Specification {
 
     void "Check register action against valid command and valid user data"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.register(registerCommand)
 
         then:

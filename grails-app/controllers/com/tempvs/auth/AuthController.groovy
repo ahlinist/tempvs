@@ -33,40 +33,36 @@ class AuthController {
     }
 
     def login(LoginCommand command) {
-        if (params.isAjaxRequest) {
-            if (command.validate()) {
-                User user = userService.getUserByEmail(command.email)
+        if (command.validate()) {
+            User user = userService.getUserByEmail(command.email)
 
-                if (user) {
-                    if (passwordEncoder.isPasswordValid(user.password, command.password, null)) {
-                        springSecurityService.reauthenticate(command.email, command.password)
-                        String referer = request.getHeader('referer')
+            if (user) {
+                if (passwordEncoder.isPasswordValid(user.password, command.password, null)) {
+                    springSecurityService.reauthenticate(command.email, command.password)
+                    String referer = request.getHeader('referer')
 
-                        if (referer.contains(LOGIN_PAGE_URI)) {
-                            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
-                        } else {
-                            render ajaxResponseService.renderRedirect(referer)
-                        }
+                    if (referer.contains(LOGIN_PAGE_URI)) {
+                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
                     } else {
-                        render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
+                        render ajaxResponseService.renderRedirect(referer)
                     }
                 } else {
                     render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
                 }
             } else {
-                render ajaxResponseService.renderValidationResponse(command)
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
             }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 
     def register(RequestRegistrationCommand command) {
-        if (params.isAjaxRequest) {
-            if (command.validate()) {
-                Map props = [action: REGISTRATION_ACTION, email: command.email]
-                render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
-            } else {
-                render ajaxResponseService.renderValidationResponse(command)
-            }
+        if (command.validate()) {
+            Map props = [action: REGISTRATION_ACTION, email: command.email]
+            render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 

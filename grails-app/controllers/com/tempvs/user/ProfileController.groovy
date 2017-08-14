@@ -64,19 +64,16 @@ class ProfileController {
     }
 
     def createClubProfile(ClubProfileCommand command) {
-        if (params.isAjaxRequest) {
-            if (command.validate()) {
-                BaseProfile profile = profileService.createClubProfile(command.properties)
+        if (command.validate()) {
+            BaseProfile profile = profileService.createClubProfile(command.properties)
 
-                if (profile.validate()) {
-                    profileHolder.profile = profile
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
-                } else {
-                    render ajaxResponseService.renderValidationResponse(profile)
-                }
+            if (profile.validate()) {
+                profileHolder.profile = profile
+                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
             } else {
-                render ajaxResponseService.renderValidationResponse(command)
-            }
+                render ajaxResponseService.renderValidationResponse(profile)                }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 
@@ -110,27 +107,16 @@ class ProfileController {
     }
 
     def deleteProfile(String id) {
-        if (params.isAjaxRequest) {
-            BaseProfile profile = profileService.getProfile(ClubProfile.class, id)
-            Boolean success = Boolean.FALSE
-            String message = PROFILE_DELETION_FAILED
+        BaseProfile profile = profileService.getProfile(ClubProfile.class, id)
 
-            if (profile) {
-                Long currentUserId = userService.currentUserId
-
-                if (profile.user.id == currentUserId) {
-                    if (profileService.deleteProfile(profile)) {
-                        profileHolder.profile = null
-                        success = Boolean.TRUE
-                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
-                    }
-                }
-            }
-
-            if (!success) {
-                render ajaxResponseService.renderFormMessage(success, message)
+        if (profile && (profile.user.id == userService.currentUserId)) {
+            if (profileService.deleteProfile(profile)) {
+                profileHolder.profile = null
+                return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile')))
             }
         }
+
+        render ajaxResponseService.renderFormMessage(Boolean.FALSE, PROFILE_DELETION_FAILED)
     }
 
     private updateProfile(command) {

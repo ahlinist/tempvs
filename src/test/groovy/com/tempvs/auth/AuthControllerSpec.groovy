@@ -65,7 +65,6 @@ class AuthControllerSpec extends Specification {
 
     void "Testing register() action with invalid params"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.register(requestRegistrationCommand)
 
         then:
@@ -77,7 +76,6 @@ class AuthControllerSpec extends Specification {
 
     void "Testing register() action with valid params"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.register(requestRegistrationCommand)
 
         then:
@@ -91,7 +89,6 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for non-valid params"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
         then:
@@ -103,7 +100,6 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for non-existing user"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
         then:
@@ -117,7 +113,6 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for incorrect password"() {
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
         then:
@@ -139,7 +134,6 @@ class AuthControllerSpec extends Specification {
         Map linkGeneratorMap = ['controller': PROFILE]
 
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
         then:
@@ -162,7 +156,6 @@ class AuthControllerSpec extends Specification {
         controller.request.addHeader('referer', TEST_URI)
 
         when:
-        params.isAjaxRequest = Boolean.TRUE
         controller.login(loginCommand)
 
         then:

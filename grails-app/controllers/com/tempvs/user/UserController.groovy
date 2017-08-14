@@ -57,22 +57,18 @@ class UserController {
     }
 
     def register(RegisterCommand command) {
-        if (params.isAjaxRequest) {
-            if (command.validate()) {
-                User user = userService.createUser(command.properties + [email: session.getAttribute(EMAIL) as String])
+        if (command.validate()) {
+            User user = userService.createUser(command.properties + [email: session.getAttribute(EMAIL) as String])
 
-                if (user?.hasErrors()) {
-                    render ajaxResponseService.renderValidationResponse(user)
-                } else {
-                    springSecurityService.reauthenticate(session.getAttribute(EMAIL) as String, command.password)
-                    session.setAttribute(EMAIL, null)
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
-                }
+            if (user?.hasErrors()) {
+                render ajaxResponseService.renderValidationResponse(user)
             } else {
-                render ajaxResponseService.renderValidationResponse(command)
+                springSecurityService.reauthenticate(session.getAttribute(EMAIL) as String, command.password)
+                session.setAttribute(EMAIL, null)
+                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
             }
         } else {
-            redirect controller: 'profile'
+            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 }

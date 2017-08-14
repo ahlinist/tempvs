@@ -179,7 +179,6 @@ class ProfileControllerSpec extends Specification {
 
     void "Test createClubProfile()"() {
         when: 'Command invalid'
-        params.isAjaxRequest = Boolean.TRUE
         controller.createClubProfile(clubProfileCommand)
 
         then:
@@ -304,7 +303,6 @@ class ProfileControllerSpec extends Specification {
 
     void "Test deleteProfile()"() {
         given:
-        params.isAjaxRequest = Boolean.TRUE
         params.id = ONE
 
         when:

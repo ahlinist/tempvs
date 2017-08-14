@@ -12,7 +12,6 @@ function sendAjaxRequest(element, url) {
 function processAjaxRequest(element, url, data) {
     var spinner = $(element).find('.ajaxSpinner');
     var submitButton = $(element).find('.submit-button');
-    data.append("isAjaxRequest", true);
 
     $.ajax({
         url: url,
