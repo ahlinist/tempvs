@@ -66,7 +66,7 @@ class ImageTagLibSpec extends Specification {
     void "Test carousel()"() {
         given:
         Map properties = [images:[image, image], orientation: HORIZONTAL]
-        String imageTag = "<img class=\"collection ${HORIZONTAL} center-block\" src=\"/image/get/${OBJECT_ID}?collection=${COLLECTION}\" alt=\"${IMAGE_INFO}\"/>"
+        String imageTag = "<img style=\"\" class=\"collection ${HORIZONTAL} center-block\" src=\"/image/get/${OBJECT_ID}?collection=${COLLECTION}\" alt=\"${IMAGE_INFO}\"/>"
 
         when:
         String result = tagLib.carousel(properties)

@@ -1,4 +1,4 @@
-<div id="carousel${images.hashCode()}" class="carousel slide" data-ride="carousel">
+<div id="carousel-${images.hashCode()}" class="carousel slide" data-ride="carousel">
   <!-- Indicators -->
   <ol class="carousel-indicators">
     <g:each in="${images}" status="i" var="image">
@@ -16,11 +16,11 @@
   </div>
               
   <!-- Left and right controls -->
-  <a class="left carousel-control" href="#carousel${images.hashCode()}" data-slide="prev" style="background:none">
+  <a class="left carousel-control" href="#carousel-${images.hashCode()}" data-slide="prev" style="background:none">
     <span class="glyphicon glyphicon-chevron-left"></span>
     <span class="sr-only">Previous</span>
   </a>
-  <a class="right carousel-control" href="#carousel${images.hashCode()}" data-slide="next" style="background:none">
+  <a class="right carousel-control" href="#carousel-${images.hashCode()}" data-slide="next" style="background:none">
     <span class="glyphicon glyphicon-chevron-right"></span>
     <span class="sr-only">Next</span>
   </a>

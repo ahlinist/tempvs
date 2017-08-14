@@ -14,7 +14,7 @@
         <div class="row">
           <div class="col-sm-3">
             ${profile}
-            <tempvs:image image="${profile.avatar}"/>
+            <tempvs:modalImage image="${profile.avatar}"/>
           </div>
           <div class="col-sm-3">
             <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>

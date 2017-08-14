@@ -59,6 +59,7 @@ class ProfileViewSpec extends Specification {
 
     void "Test /profile/userProfile view"() {
         given:
+        String avatar = '<tempvs:modalImage image="'
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
         String updateProfileButton = '<tempvs:modalButton id="updateProfile" cls="glyphicon glyphicon-edit">'
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
@@ -68,6 +69,7 @@ class ProfileViewSpec extends Specification {
         String result = render view: '/profile/userProfile', model: model
 
         then:
+        result.contains avatar
         result.contains lastActive
         result.contains clubProfileLink
         result.contains updateProfileButton
@@ -75,6 +77,7 @@ class ProfileViewSpec extends Specification {
 
     void "Test /profile/clubProfile view"() {
         given:
+        String avatar = '<tempvs:modalImage image="'
         String updateProfileButton = '<tempvs:modalButton id="updateProfile" cls="glyphicon glyphicon-edit">'
         String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" cls="glyphicon glyphicon-trash">'
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
@@ -101,6 +104,7 @@ class ProfileViewSpec extends Specification {
         0 * _
 
         and:
+        result.contains avatar
         result.contains lastActive
         result.contains updateProfileButton
         result.contains deleteProfileButton
