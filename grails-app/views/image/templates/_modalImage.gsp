@@ -10,7 +10,7 @@
   <span class="modal-dialog" style="display: table; padding:0; margin-top:10px; width:0px;">
     <span class="modal-content" style="display: table-cell;">
       <span class="modal-body" style="padding: 0px;">
-        <tempvs:image image="${image}" orientation="${orientation}" styles="min-height:90vh; max-height:90vh; max-width:90vw; width: auto;"/>
+        <tempvs:image image="${image}" orientation="${orientation}" styles="height:90vh; max-width:90vw; width: auto;"/>
         <p class="text-center">${image?.imageInfo}</p>
       </span>
     </span>
