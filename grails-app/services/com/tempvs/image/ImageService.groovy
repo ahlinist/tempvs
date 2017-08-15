@@ -18,14 +18,13 @@ class ImageService {
         imageDAO.get(collection, objectId)?.bytes
     }
 
-    Boolean deleteImage(Image image) {
+    void deleteImage(Image image) {
         imageDAO.delete(image?.collection, image?.objectId)
+        image.delete()
     }
 
-    Boolean deleteImages(Collection<Image> images) {
-        images.findAll().each { Image image ->
-            deleteImage(image)
-        }
+    void deleteImages(Collection<Image> images) {
+        images.findAll().each { deleteImage(it) }
     }
 
     Image createImage(ImageUploadBean imageUploadBean, String collection) {
@@ -66,7 +65,7 @@ class ImageService {
     }
 
     Image replaceImage(ImageUploadBean imageUploadBean, Image image) {
-        deleteImage(image)
+        imageDAO.delete(image?.collection, image?.objectId)
         createImage(imageUploadBean, image.collection)
     }
 }

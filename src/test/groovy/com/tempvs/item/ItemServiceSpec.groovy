@@ -114,7 +114,7 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * item.images >> images
-        1 * imageService.deleteImages(images) >> Boolean.TRUE
+        1 * imageService.deleteImages(images)
         1 * item.delete([failOnError: true])
         0 * _
 
@@ -130,7 +130,7 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * item.images >> images
-        1 * imageService.deleteImages(images) >> Boolean.TRUE
+        1 * imageService.deleteImages(images)
         1 * item.delete([failOnError: true]) >> {throw new Exception()}
         0 * _
 
@@ -148,7 +148,7 @@ class ItemServiceSpec extends Specification {
         then:
         1 * itemGroup.items >> items
         1 * item.getProperty(IMAGES) >> images
-        1 * imageService.deleteImages(images) >> Boolean.TRUE
+        1 * imageService.deleteImages(images)
         1 * itemGroup.delete([failOnError: true])
         0 * _
 
@@ -166,7 +166,7 @@ class ItemServiceSpec extends Specification {
         then:
         1 * itemGroup.items >> items
         1 * item.getProperty(IMAGES) >> images
-        1 * imageService.deleteImages(images) >> Boolean.TRUE
+        1 * imageService.deleteImages(images)
         1 * itemGroup.delete([failOnError: true]) >> {throw new Exception()}
         0 * _
 

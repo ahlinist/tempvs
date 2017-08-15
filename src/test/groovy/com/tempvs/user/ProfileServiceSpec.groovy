@@ -155,7 +155,7 @@ class ProfileServiceSpec extends Specification {
 
         then:
         1 * clubProfile.avatar >> image
-        1 * imageService.deleteImage(image) >> Boolean.TRUE
+        1 * imageService.deleteImage(image)
         1 * clubProfile.delete([failOnError: Boolean.TRUE])
 
         and:

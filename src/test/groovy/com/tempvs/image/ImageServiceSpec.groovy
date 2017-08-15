@@ -47,16 +47,14 @@ class ImageServiceSpec extends Specification {
 
     void "Test deleteImage()"() {
         when:
-        def result = service.deleteImage(image)
+        service.deleteImage(image)
 
         then:
         1 * image.collection >> COLLECTION
         1 * image.objectId >> ID
         1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
+        1 * image.delete()
         0 * _
-
-        and:
-        result == Boolean.TRUE
     }
 
     void "Test deleteImages()"() {
@@ -64,16 +62,14 @@ class ImageServiceSpec extends Specification {
         List<Image> images = [image, image]
 
         when:
-        def result = service.deleteImages(images)
+        service.deleteImages(images)
 
         then:
         2 * image.collection >> COLLECTION
         2 * image.objectId >> ID
-        2 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
+        2 * imageDAO.delete(COLLECTION, ID)
+        2 * image.delete()
         0 * _
-
-        and:
-        result == Boolean.TRUE
     }
 
     void "Test createImage()"() {
