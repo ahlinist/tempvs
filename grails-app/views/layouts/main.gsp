@@ -59,7 +59,7 @@
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.link.tooltip')}">
-            <tempvs:modalButton id="loginForm" cls="glyphicon glyphicon-log-in">
+            <tempvs:modalButton id="loginForm" classes="glyphicon glyphicon-log-in">
               <g:render template="/auth/templates/loginForm"/>
             </tempvs:modalButton>
           </span>

@@ -31,7 +31,7 @@
           <div class="row">
             <div><b><g:message code="profile.actions.label"/></b></div>
             <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
-              <tempvs:modalButton id="updateProfile" cls="glyphicon glyphicon-edit">
+              <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">
                 <tempvs:ajaxForm action="updateProfileEmail">
                   <tempvs:formField type="email" name="email" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
                   <tempvs:ajaxSubmitButton value="clubEmail.update.button" />
@@ -41,7 +41,7 @@
               </tempvs:modalButton>
             </span>
             <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.delete.tooltip')}">
-              <tempvs:modalButton id="deleteProfile" size="modal-sm" cls="glyphicon glyphicon-trash">
+              <tempvs:modalButton id="deleteProfile" size="modal-sm" classes="glyphicon glyphicon-trash">
                 <g:message code='profile.deleteConfirmation.text' args="${[profile]}"/>
                 <br/>
                 <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${profile.id}"/>

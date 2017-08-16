@@ -29,7 +29,7 @@
               <div class="row">
                 <div><b><g:message code="profile.actions.label"/></b></div>
                 <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
-                  <tempvs:modalButton id="updateProfile" cls="glyphicon glyphicon-edit">
+                  <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">
                     <g:render template="/profile/templates/editUserProfile" model="${[profile: profile]}"/>
                   </tempvs:modalButton>
                 </span>

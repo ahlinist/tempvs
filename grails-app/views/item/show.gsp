@@ -26,7 +26,7 @@
     <div class="row">
       <g:if test="${editAllowed}">
         <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.delete.button')}">
-          <tempvs:modalButton id="deleteItem" size="modal-sm" cls="glyphicon glyphicon-trash">
+          <tempvs:modalButton id="deleteItem" size="modal-sm" classes="glyphicon glyphicon-trash">
             <g:message code='item.deleteConfirmation.text' args="${[item.name]}"/>
             <br/>
             <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${item.id}"/>
@@ -34,7 +34,7 @@
           </tempvs:modalButton>
         </span>
         <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.updateItem.link')}">
-          <tempvs:modalButton id="itemForm" cls="glyphicon glyphicon-edit">
+          <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-edit">
             <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
           </tempvs:modalButton>
         </span>
