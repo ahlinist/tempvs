@@ -12,7 +12,7 @@
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.editSource.button')}">
             <g:if test="${editAllowed}">
               <div class="row">
-                <tempvs:modalButton id="sourceForm" cls="glyphicon glyphicon-edit">
+                <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-edit">
                   <g:render template="/source/templates/sourceForm"
                       model="${[action: 'editSource', source: source, button: 'source.editSource.button', period: period]}"/>
                 </tempvs:modalButton>
