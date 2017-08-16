@@ -19,7 +19,7 @@ class AuthController {
     private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
     private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
     private static final String REGISTRATION_ACTION = 'registration'
-    private static final String LOGIN_PAGE_URI = '/auth/index'
+    private static final String AUTH_PATTERN = '/auth'
 
     UserService userService
     VerifyService verifyService
@@ -41,7 +41,7 @@ class AuthController {
                     springSecurityService.reauthenticate(command.email, command.password)
                     String referer = request.getHeader('referer')
 
-                    if (referer.contains(LOGIN_PAGE_URI)) {
+                    if (referer.contains(AUTH_PATTERN)) {
                         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
                     } else {
                         render ajaxResponseService.renderRedirect(referer)
