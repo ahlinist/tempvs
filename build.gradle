@@ -59,6 +59,7 @@ dependencies {
     compile 'org.mongodb:mongodb-driver:3.4.2'
     console "org.grails:grails-console"
     compile 'org.webjars:bootstrap:3.3.7-1'
+    compile 'org.webjars:jquery:3.2.1'
     profile "org.grails.profiles:web:3.1.7"
     compile "com.bertramlabs.plugins:asset-pipeline-grails:2.14.1"
     runtime "com.h2database:h2"
