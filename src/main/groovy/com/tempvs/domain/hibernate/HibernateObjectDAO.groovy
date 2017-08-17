@@ -10,21 +10,21 @@ import org.hibernate.criterion.Restrictions
  * Hibernate implementation of database object retriever.
  */
 @CompileStatic
-class HibernateObjectDAO<T> implements ObjectDAO<T> {
+class HibernateObjectDAO implements ObjectDAO {
     SessionFactory sessionFactory
 
-    T get(Class clazz, Object id) {
+    public <T> T get(Class clazz, Object id) {
         try {
             sessionFactory.currentSession.get(clazz, id as Long) as T
         } catch (NumberFormatException e) {
         }
     }
 
-    T find(Class clazz, Map restrictions) {
+    public <T> T find(Class clazz, Map restrictions) {
         createCriteria(clazz, restrictions).uniqueResult() as T
     }
 
-    List<T> findAll(Class clazz, Map restrictions) {
+    public <T> List<T> findAll(Class clazz, Map restrictions) {
         createCriteria(clazz, restrictions).list() as List<T>
     }
 

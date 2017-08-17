@@ -11,10 +11,10 @@
       <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
       <g:if test="${profile}">
         <g:set var="user" value="${profile.user}"/>
+        <g:set var="avatar" value="${profile.avatar}"/>
         <div class="row">
           <div class="col-sm-3">
-            ${profile}
-            <tempvs:modalImage image="${profile.avatar}"/>
+            <g:render template="/profile/templates/identity" args="${[avatar, editAllowed]}"/>
           </div>
           <div class="col-sm-3">
             <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>
@@ -30,7 +30,7 @@
                 <div><b><g:message code="profile.actions.label"/></b></div>
                 <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
                   <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">
-                    <g:render template="/profile/templates/editUserProfile" model="${[profile: profile]}"/>
+                    <g:render template="/profile/templates/userProfileForm" model="${[profile: profile]}"/>
                   </tempvs:modalButton>
                 </span>
               </div>
@@ -38,8 +38,8 @@
           </div>
         </div>
       </g:if>
-      <g:elseif test="${message}">
-        <g:message code="${message}" args="${args}" />
+      <g:elseif test="${notFoundMessage}">
+        <g:message code="${notFoundMessage}" args="${id}" />
       </g:elseif>
     </body>
 </html>

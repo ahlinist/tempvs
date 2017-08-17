@@ -72,77 +72,18 @@ class ImageServiceSpec extends Specification {
         0 * _
     }
 
-    void "Test createImage()"() {
+    void "Test updateImage()"() {
         when:
-        def result = service.createImage(imageUploadBean, COLLECTION)
+        def result = service.updateImage(imageUploadBean, COLLECTION, image)
 
         then:
-        1 * objectFactory.create(Image) >> image
-        2 * imageUploadBean.image >> multipartFile
-        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
-        1 * imageBean.id >> ID
-        1 * image.setObjectId(ID)
-        1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.setCollection(COLLECTION)
-        1 * image.setImageInfo(IMAGE_INFO)
-        0 * _
-
-        and:
-        result == image
-    }
-
-    void "Test createImage() with empty file"() {
-        given:
-        def emptyMultipartFile = new MockMultipartFile('1234567', "" as byte[])
-
-        when:
-        def result = service.createImage(imageUploadBean, COLLECTION)
-
-        then:
-        1 * objectFactory.create(Image) >> image
-        1 * imageUploadBean.image >> emptyMultipartFile
-        0 * _
-
-        and:
-        result == image
-    }
-
-    void "Test replaceImage()"() {
-        when:
-        def result = service.replaceImage(imageUploadBean, image)
-
-        then:
-        1 * objectFactory.create(Image) >> image
-        2 * image.collection >> COLLECTION
-        1 * image.objectId >> ID
-        1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
-        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
-        1 * imageBean.id >> ID
-        1 * image.setObjectId(ID)
         2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.setCollection(COLLECTION)
-        1 * image.setImageInfo(IMAGE_INFO)
-        0 * _
-
-        and:
-        result == image
-    }
-
-    void "Test extractImage() with image"() {
-        when:
-        def result = service.extractImage(imageUploadBean, COLLECTION, image)
-
-        then:
-        1 * objectFactory.create(Image) >> image
-        2 * image.collection >> COLLECTION
         1 * image.objectId >> ID
-        1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
+        1 * imageDAO.delete(COLLECTION, ID)
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * image.setObjectId(ID)
-        3 * imageUploadBean.image >> multipartFile
-        1 * imageUploadBean.imageInfo >> IMAGE_INFO
         1 * image.setCollection(COLLECTION)
         1 * image.setImageInfo(IMAGE_INFO)
         0 * _
@@ -151,31 +92,12 @@ class ImageServiceSpec extends Specification {
         result == image
     }
 
-    void "Test extractImage() without image passed"() {
-        when:
-        def result = service.extractImage(imageUploadBean, COLLECTION)
-
-        then:
-        1 * objectFactory.create(Image) >> image
-        3 * imageUploadBean.image >> multipartFile
-        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
-        1 * imageBean.id >> ID
-        1 * image.setObjectId(ID)
-        1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.setCollection(COLLECTION)
-        1 * image.setImageInfo(IMAGE_INFO)
-        0 * _
-
-        and:
-        result == image
-    }
-
-    void "Test extractImages()"() {
+    void "Test updateImages()"() {
         given:
         List<ImageUploadBean> imageUploadBeans = [imageUploadBean]
 
         when:
-        def result = service.extractImages(imageUploadBeans, COLLECTION)
+        def result = service.updateImages(imageUploadBeans, COLLECTION)
 
         then:
         1 * imageUploadBean.image >> multipartFile

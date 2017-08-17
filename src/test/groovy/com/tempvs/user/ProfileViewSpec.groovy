@@ -10,7 +10,9 @@ import spock.lang.Specification
 class ProfileViewSpec extends Specification {
 
     private static final String ID = 'id'
+    private static final Long LONG_ID = 1L
     private static final String USER = 'user'
+    private static final String CLASS = 'class'
     private static final String PERIOD = 'period'
     private static final String AVATAR = 'avatar'
     private static final String LOCATION = 'location'
@@ -26,11 +28,11 @@ class ProfileViewSpec extends Specification {
 
 
     Date lastActiveDate = new Date()
-
     def period = Period.valueOf'ANCIENT'
-    def userProfile = Mock(UserProfile)
-    def clubProfile = Mock(ClubProfile)
+
     def image = Mock(Image)
+    def clubProfile = Mock(ClubProfile)
+    def userProfile = Mock(UserProfile)
 
     def user = Mock(User) {
         getProperty(LAST_ACTIVE) >> lastActiveDate
@@ -61,14 +63,29 @@ class ProfileViewSpec extends Specification {
         given:
         String avatar = '<tempvs:modalImage image="'
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
-        String updateProfileButton = '<tempvs:modalButton id="updateProfile" cls="glyphicon glyphicon-edit">'
-        String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
+        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">'
+        String clubProfileLink = '<a href="/profile/clubProfile/id" class="list-group-item">'
         Map model = [profile: userProfile, id: 1, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/profile/userProfile', model: model
 
         then:
+        1 * userProfile.getProperty(USER) >> user
+        1 * userProfile.getProperty(AVATAR) >> image
+        2 * userProfile.getProperty(CLASS) >> UserProfile
+        2 * userProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
+        2 * userProfile.getProperty(LOCATION) >> LOCATION
+        1 * userProfile.getProperty(PROFILE_ID) >> PROFILE_ID
+        1 * user.getProperty(LAST_ACTIVE) >> lastActiveDate
+        1 * userProfile.getProperty(FIRST_NAME) >> FIRST_NAME
+        1 * userProfile.getProperty(LAST_NAME) >> LAST_NAME
+        2 * userProfile.getProperty(ID) >> ID
+        1 * user.getProperty(CLUB_PROFILES) >> [clubProfile]
+        1 * clubProfile.getProperty(ID) >> ID
+        0 * _
+
+        and:
         result.contains avatar
         result.contains lastActive
         result.contains clubProfileLink
@@ -78,9 +95,8 @@ class ProfileViewSpec extends Specification {
     void "Test /profile/clubProfile view"() {
         given:
         String avatar = '<tempvs:modalImage image="'
-        String updateProfileButton = '<tempvs:modalButton id="updateProfile" cls="glyphicon glyphicon-edit">'
-        String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" cls="glyphicon glyphicon-trash">'
-        String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
+        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">'
+        String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" classes="glyphicon glyphicon-trash">'
         Map model = [profile: clubProfile, id: 1, editAllowed: Boolean.TRUE]
 
         when:
@@ -89,6 +105,7 @@ class ProfileViewSpec extends Specification {
         then:
         1 * clubProfile.getProperty(USER) >> user
         1 * clubProfile.getProperty(AVATAR) >> image
+        2 * clubProfile.getProperty(CLASS) >> ClubProfile
         2 * clubProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
         2 * clubProfile.getProperty(LOCATION) >> LOCATION
         2 * clubProfile.getProperty(CLUB_NAME) >> CLUB_NAME
@@ -97,15 +114,13 @@ class ProfileViewSpec extends Specification {
         1 * clubProfile.getProperty(LAST_NAME) >> LAST_NAME
         1 * clubProfile.getProperty(NICK_NAME) >> NICK_NAME
         2 * clubProfile.getProperty(PERIOD) >> period
-        1 * clubProfile.getProperty(ID) >> ID
-        1 * user.getProperty(LAST_ACTIVE) >> lastActiveDate
+        3 * clubProfile.getProperty(ID) >> ID
         1 * user.getProperty(USER_PROFILE) >> userProfile
         1 * userProfile.getProperty(ID) >> ID
         0 * _
 
         and:
         result.contains avatar
-        result.contains lastActive
         result.contains updateProfileButton
         result.contains deleteProfileButton
     }

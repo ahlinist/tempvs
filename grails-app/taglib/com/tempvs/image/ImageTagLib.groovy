@@ -18,8 +18,8 @@ class ImageTagLib {
         out << render(template: '/image/templates/image', model: [src: link, classes: classes, alt: image?.imageInfo, styles: attrs.styles])
     }
 
-    String modalImage = { Map attrs ->
-        out << render(template: '/image/templates/modalImage', model: attrs)
+    String modalImage = { Map attrs, Closure body ->
+        out << render(template: '/image/templates/modalImage', model: attrs + [body: body()])
     }
 
     String imageUploader = { Map attrs ->

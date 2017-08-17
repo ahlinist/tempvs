@@ -52,7 +52,7 @@ class ItemService {
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item createItem(Item item, Map properties) {
-        Set<Image> itemImages = imageService.extractImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
+        Set<Image> itemImages = imageService.updateImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
 
         if (itemImages) {
             item.images = itemImages

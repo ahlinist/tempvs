@@ -75,7 +75,7 @@ class SourceServiceSpec extends Specification {
 
         then:
         1 * objectFactory.create(Source) >> source
-        1 * imageService.extractImages(imageUploadBeans, SOURCE_COLLECTION) >> images
+        1 * imageService.updateImages(imageUploadBeans, SOURCE_COLLECTION) >> images
         1 * source.setImages(images)
         1 * source.setName(NAME)
         1 * source.setPeriod(period)

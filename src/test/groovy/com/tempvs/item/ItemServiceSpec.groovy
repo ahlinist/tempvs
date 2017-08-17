@@ -84,7 +84,7 @@ class ItemServiceSpec extends Specification {
         def result = service.createItem(item, properties)
 
         then:
-        1 * imageService.extractImages(imageUploadBeans, ITEM_IMAGE_COLLECTION) >> images
+        1 * imageService.updateImages(imageUploadBeans, ITEM_IMAGE_COLLECTION) >> images
         1 * item.setImages(images)
         1 * item.save() >> item
         0 * _

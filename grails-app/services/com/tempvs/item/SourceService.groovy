@@ -33,7 +33,7 @@ class SourceService {
 
     Source createSource(Map params) {
         Source source = objectFactory.create(Source)
-        Set<Image> sourceImages = imageService.extractImages(params.imageBeans as List<ImageUploadBean>, SOURCE_COLLECTION)
+        Set<Image> sourceImages = imageService.updateImages(params.imageBeans as List<ImageUploadBean>, SOURCE_COLLECTION)
 
         if (sourceImages) {
             source.images = sourceImages

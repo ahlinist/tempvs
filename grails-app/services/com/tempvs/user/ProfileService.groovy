@@ -8,6 +8,7 @@ import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service for managing {@link com.tempvs.user.UserProfile} and
@@ -28,9 +29,10 @@ class ProfileService {
         objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
     }
 
+    @PreAuthorize('#profile.user.email == authentication.name')
     BaseProfile updateProfile(BaseProfile profile, Map properties) {
         InvokerHelper.setProperties(profile, properties)
-        Image avatar = imageService.extractImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION, profile.avatar)
+        Image avatar = imageService.updateImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION, profile.avatar)
 
         if (avatar) {
             profile.avatar = avatar
@@ -43,7 +45,7 @@ class ProfileService {
     BaseProfile createClubProfile(Map properties) {
         ClubProfile clubProfile = objectFactory.create(ClubProfile)
         InvokerHelper.setProperties(clubProfile, properties)
-        clubProfile.avatar = imageService.extractImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION)
+        clubProfile.avatar = imageService.updateImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION)
         userService.currentUser.addToClubProfiles(clubProfile)?.save()
         clubProfile
     }
@@ -55,8 +57,9 @@ class ProfileService {
         profile
     }
 
+    @PreAuthorize('#profile.user.email == authentication.name')
     Boolean deleteProfile(BaseProfile profile) {
-        imageService.deleteImage(profile.avatar)
+        deleteAvatar(profile)
 
         try {
             profile.delete(failOnError: true)
@@ -64,5 +67,24 @@ class ProfileService {
         } catch (Throwable e) {
             Boolean.FALSE
         }
+    }
+
+    @PreAuthorize('#profile.user.email == authentication.name')
+    void deleteAvatar(BaseProfile profile) {
+        imageService.deleteImage(profile.avatar)
+        profile.avatar = null
+        profile.save()
+    }
+
+    @PreAuthorize('#profile.user.email == authentication.name')
+    BaseProfile updateAvatar(BaseProfile profile, ImageUploadBean imageUploadBean) {
+        Image avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
+
+        if (avatar) {
+            profile.avatar = avatar
+            profile.save()
+        }
+
+        profile
     }
 }

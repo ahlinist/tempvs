@@ -21,6 +21,14 @@ $(function (){
 
     //incrementing lastActive
     incrementMinutes()
+
+    //hide inner modals and their backdrops after hiding the outer modal
+    $('.modal').on('hidden.bs.modal', function (e) {
+        if ($('.modal:visible').length == 0) {
+            $('.modal-backdrop').remove();
+            $('.modal').modal('hide');
+        }
+    });
 });
 
 function incrementMinutes() {

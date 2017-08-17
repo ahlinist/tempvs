@@ -1,4 +1,4 @@
-<span onclick="sendAjaxRequest(this, '${g.createLink(controller: controller, action: action, id: id)}');">
+<span onclick="sendAjaxRequest(this, '${g.createLink(controller: controller, action: action, id: id, params: params)}');">
   <span class="btn btn-default submit-button">
     <g:message code="${g.message(code: message)}" />
   </span>

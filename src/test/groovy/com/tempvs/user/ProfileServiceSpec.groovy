@@ -7,9 +7,7 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -25,7 +23,6 @@ class ProfileServiceSpec extends Specification {
     private static final String NICK_NAME = 'nickName'
     private static final String CLUB_NAME = 'clubName'
     private static final String AVATAR_COLLECTION = 'avatar'
-    private static final String IMAGE_INFO = 'imageInfo'
 
     def user = Mock(User)
     def image = Mock(Image)
@@ -36,7 +33,6 @@ class ProfileServiceSpec extends Specification {
     def imageService = Mock(ImageService)
     def objectFactory = Mock(ObjectFactory)
     def imageUploadBean = Mock(ImageUploadBean)
-    def multipartFile = new MockMultipartFile(AVATAR_COLLECTION, "1234567" as byte[])
 
     def setup() {
         service.userService = userService
@@ -83,7 +79,7 @@ class ProfileServiceSpec extends Specification {
 
         then:
         1 * userProfile.avatar >> image
-        1 * imageService.extractImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * userProfile.setAvatar(image)
         1 * userProfile.save() >> userProfile
         0 * _
@@ -96,7 +92,7 @@ class ProfileServiceSpec extends Specification {
 
         then:
         1 * clubProfile.avatar >> image
-        1 * imageService.extractImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * clubProfile.setAvatar(image)
         1 * clubProfile.save() >> clubProfile
         0 * _
@@ -121,7 +117,7 @@ class ProfileServiceSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * objectFactory.create(ClubProfile) >> clubProfile
-        1 * imageService.extractImage(imageUploadBean, AVATAR_COLLECTION) >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * clubProfile.setFirstName(FIRST_NAME)
         1 * clubProfile.setLastName(LAST_NAME)
         1 * clubProfile.setNickName(NICK_NAME)
@@ -160,5 +156,31 @@ class ProfileServiceSpec extends Specification {
 
         and:
         result == Boolean.TRUE
+    }
+
+    void "Test deleteAvatar()"() {
+        when:
+        service.deleteAvatar(userProfile)
+
+        then:
+        1 * userProfile.avatar >> image
+        1 * imageService.deleteImage(image)
+        1 * userProfile.setAvatar(null)
+        1 * userProfile.save() >> userProfile
+        0 * _
+    }
+
+    void "Test updateAvatar()"() {
+        when:
+        def result = service.updateAvatar(clubProfile, imageUploadBean)
+
+        then:
+        1 * clubProfile.avatar >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * clubProfile.setAvatar(image)
+        1 * clubProfile.save() >> clubProfile
+        0 * _
+
+        result == clubProfile
     }
 }

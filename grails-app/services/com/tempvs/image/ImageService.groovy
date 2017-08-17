@@ -20,17 +20,21 @@ class ImageService {
 
     void deleteImage(Image image) {
         imageDAO.delete(image?.collection, image?.objectId)
-        image.delete()
+        image?.delete()
     }
 
     void deleteImages(Collection<Image> images) {
-        images.findAll().each { deleteImage(it) }
+        images.each { deleteImage(it) }
     }
 
-    Image createImage(ImageUploadBean imageUploadBean, String collection) {
-        Image image = objectFactory.create(Image)
-
+    Image updateImage(ImageUploadBean imageUploadBean, String collection, Image image = null) {
         if (!imageUploadBean.image.empty) {
+            if (image) {
+                imageDAO.delete(collection, image.objectId)
+            } else {
+                image = objectFactory.create(Image)
+            }
+
             InputStream inputStream = imageUploadBean.image.inputStream
 
             try {
@@ -46,26 +50,11 @@ class ImageService {
         image
     }
 
-    Image extractImage(ImageUploadBean imageUploadBean, String collection, Image image = null) {
-        if (!imageUploadBean.image.empty) {
-            if (image) {
-                return replaceImage(imageUploadBean, image)
-            } else {
-                return createImage(imageUploadBean, collection)
-            }
-        }
-    }
-
-    Set<Image> extractImages(List<ImageUploadBean> imageUploadBeans, String collection) {
+    Set<Image> updateImages(List<ImageUploadBean> imageUploadBeans, String collection) {
         List<ImageUploadBean> validBeans = imageUploadBeans.findAll { ImageUploadBean bean -> !bean.image.empty }
 
         validBeans.collect { ImageUploadBean validBean ->
-            createImage(validBean, collection)
+            updateImage(validBean, collection)
         } as Set
-    }
-
-    Image replaceImage(ImageUploadBean imageUploadBean, Image image) {
-        imageDAO.delete(image?.collection, image?.objectId)
-        createImage(imageUploadBean, image.collection)
     }
 }

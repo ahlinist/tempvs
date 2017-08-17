@@ -1,7 +1,10 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.domain.ObjectDAO
 import com.tempvs.image.ImageBean
+import com.tempvs.image.ImageUploadBean
+import com.tempvs.image.ImageUploadCommand
 import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
@@ -32,6 +35,7 @@ class ProfileControllerSpec extends Specification {
     def json = Mock(JSON)
     def user = Mock(User)
     def image = Mock(ImageBean)
+    def objectDAO = Mock(ObjectDAO)
     def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
@@ -39,18 +43,21 @@ class ProfileControllerSpec extends Specification {
     def verifyService = Mock(VerifyService)
     def messageSource = Mock(MessageSource)
     def profileService = Mock(ProfileService)
+    def imageUploadBean = Mock(ImageUploadBean)
     def emailVerification = Mock(EmailVerification)
     def clubProfileCommand = Mock(ClubProfileCommand)
     def userProfileCommand = Mock(UserProfileCommand)
+    def imageUploadCommand = Mock(ImageUploadCommand)
     def ajaxResponseService = Mock(AjaxResponseService)
 
     def setup() {
-        controller.profileService = profileService
-        controller.profileHolder = profileHolder
-        controller.ajaxResponseService = ajaxResponseService
+        controller.objectDAO = objectDAO
         controller.userService = userService
+        controller.profileHolder = profileHolder
         controller.verifyService = verifyService
         controller.messageSource = messageSource
+        controller.profileService = profileService
+        controller.ajaxResponseService = ajaxResponseService
     }
 
     def cleanup() {
@@ -117,7 +124,7 @@ class ProfileControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [id: ONE, message: NO_SUCH_PROFILE, args: [ONE]]
+        result == [id: ONE, notFoundMessage: NO_SUCH_PROFILE, args: [ONE]]
     }
 
     void "Test switchProfile() being not logged in"() {
@@ -316,6 +323,43 @@ class ProfileControllerSpec extends Specification {
         1 * profileService.deleteProfile(clubProfile) >> Boolean.TRUE
         1 * profileHolder.setProfile(null)
         1 * ajaxResponseService.renderRedirect(PROFILE_URL) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test deleteAvatar()"() {
+        given:
+        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
+        params.id = ONE
+        params.className = UserProfile.class.name
+
+        when:
+        controller.deleteAvatar()
+
+        then:
+        1 * objectDAO.get(UserProfile, LONG_ID) >> userProfile
+        1 * profileService.deleteAvatar(userProfile)
+        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateAvatar()"() {
+        given:
+        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
+
+        when:
+        controller.uploadAvatar(imageUploadCommand)
+
+        then:
+        1 * imageUploadCommand.validate() >> Boolean.TRUE
+        1 * imageUploadCommand.id >> LONG_ID
+        1 * imageUploadCommand.className >> {UserProfile.class.name}
+        1 * imageUploadCommand.imageUploadBean >> imageUploadBean
+        1 * objectDAO.get(UserProfile, LONG_ID) >> userProfile
+        1 * profileService.updateAvatar(userProfile, imageUploadBean) >> userProfile
+        1 * userProfile.validate() >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

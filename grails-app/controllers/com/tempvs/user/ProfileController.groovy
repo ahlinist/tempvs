@@ -1,9 +1,12 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.domain.ObjectDAO
+import com.tempvs.image.ImageUploadCommand
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
+import org.springframework.security.access.AccessDeniedException
 
 /**
  * Controller for managing {@link com.tempvs.user.UserProfile} and
@@ -12,20 +15,22 @@ import org.springframework.context.MessageSource
 @GrailsCompileStatic
 class ProfileController {
 
-    private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
-    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EMAIL_USED = 'user.email.used'
-    private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
     private static final String EMAIL_EMPTY = 'profile.email.empty'
+    private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
+    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
+    private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
+    private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
+    
 
-    AjaxResponseService ajaxResponseService
-    ProfileHolder profileHolder
-    ProfileService profileService
-    VerifyService verifyService
+    ObjectDAO objectDAO
     UserService userService
-    LinkGenerator grailsLinkGenerator
     MessageSource messageSource
+    ProfileHolder profileHolder
+    VerifyService verifyService
+    ProfileService profileService
+    LinkGenerator grailsLinkGenerator
+    AjaxResponseService ajaxResponseService
 
     def index() {
         BaseProfile profile = profileHolder.profile
@@ -119,6 +124,40 @@ class ProfileController {
         render ajaxResponseService.renderFormMessage(Boolean.FALSE, PROFILE_DELETION_FAILED)
     }
 
+    def deleteAvatar() {
+        BaseProfile profile = objectDAO.get(Class.forName(params.className as String), params.id as Long)
+        profileService.deleteAvatar(profile)
+        render ajaxResponseService.renderRedirect(request.getHeader('referer'))
+    }
+
+    def uploadAvatar(ImageUploadCommand command) {
+        if (command.validate()) {
+            BaseProfile profile = objectDAO.get(Class.forName(command.className), command.id)
+
+            if (profile) {
+                BaseProfile updatedProfile = profileService.updateAvatar(profile, command.imageUploadBean)
+
+                if (updatedProfile.validate()) {
+                    render ajaxResponseService.renderRedirect(request.getHeader('referer'))
+                } else {
+                    render ajaxResponseService.renderValidationResponse(updatedProfile)
+                }
+            } else {
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_PROFILE)
+            }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
+        }
+    }
+
+    def accessDeniedThrown(AccessDeniedException exception) {
+        if (request.xhr) {
+            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+        } else {
+            redirect grailsLinkGenerator.link(controller: 'auth')
+        }
+    }
+
     private updateProfile(command) {
         BaseProfile profile = profileService.updateProfile(profileHolder.profile, command.properties)
 
@@ -132,7 +171,7 @@ class ProfileController {
     private profile(String id, Closure renderProfile) {
         if (id) {
             BaseProfile profile = renderProfile() as BaseProfile
-            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, message: NO_SUCH_PROFILE, args: [id]]
+            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, notFoundMessage: NO_SUCH_PROFILE, args: [id]]
         } else {
             User user = userService.currentUser
             UserProfile profile = user?.userProfile
