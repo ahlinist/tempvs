@@ -67,13 +67,7 @@ class ItemController {
             String referer = request.getHeader('referer')
             ItemGroup itemGroup = itemService.getGroup referer.tokenize('/').last()
             Map properties = command.properties + [itemGroup: itemGroup]
-            Item item
-
-            try {
-                item = itemService.createItem(properties as Item, properties)
-            } catch (AccessDeniedException e) {
-                return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link([uri: referer])))
-            }
+            Item item = itemService.createItem(properties as Item, properties)
 
             if (item.validate()) {
                 render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: item.id))
@@ -108,28 +102,22 @@ class ItemController {
         Item item = itemService.getItem id
 
         if (item) {
-            try {
-                itemService.deleteItem(item)
-            } finally {
-                return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: item.itemGroup.id)))
-            }
+            itemService.deleteItem(item)
+            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: item.itemGroup.id))
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
         }
-
-        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
     }
 
     def deleteGroup(String id) {
         ItemGroup itemGroup = itemService.getGroup id
 
         if (itemGroup) {
-            try {
-                itemService.deleteGroup(itemGroup)
-            } finally {
-                return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash')))
-            }
+            itemService.deleteGroup(itemGroup)
+            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash'))
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
         }
-
-        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
     }
 
     def editItem(ItemCommand command) {
@@ -140,11 +128,7 @@ class ItemController {
             if (item) {
                 Item updatedItem
 
-                try {
-                    updatedItem = itemService.updateItem(item, command.properties)
-                } catch (AccessDeniedException e) {
-                    return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link([uri: referer])))
-                }
+                updatedItem = itemService.updateItem(item, command.properties)
 
                 if (updatedItem.validate()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: updatedItem.id))
@@ -154,6 +138,14 @@ class ItemController {
             }
         } else {
             render ajaxResponseService.renderValidationResponse(command)
+        }
+    }
+
+    def accessDeniedThrown(AccessDeniedException exception) {
+        if (request.xhr) {
+            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+        } else {
+            redirect grailsLinkGenerator.link(controller: 'auth')
         }
     }
 }

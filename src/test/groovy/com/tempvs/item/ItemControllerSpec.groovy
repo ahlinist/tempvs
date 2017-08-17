@@ -38,10 +38,10 @@ class ItemControllerSpec extends Specification {
     def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def itemService = Mock(ItemService)
-    def ajaxResponseService = Mock(AjaxResponseService)
     def itemCommand = Mock(ItemCommand)
-    def createItemGroupCommand = Mock(CreateItemGroupCommand)
     def grailsLinkGenerator = Mock(LinkGenerator)
+    def ajaxResponseService = Mock(AjaxResponseService)
+    def createItemGroupCommand = Mock(CreateItemGroupCommand)
 
     def setup() {
         controller.userService = userService
@@ -300,23 +300,6 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test deleteItem() against failure"() {
-        given:
-        params.id = ONE
-
-        when:
-        controller.deleteItem()
-
-        then:
-        1 * itemService.getItem(ONE) >> item
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.id >> LONG_ID
-        1 * itemService.deleteItem(item) >> {throw new Exception()}
-        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
     void "Test deleteItem()"() {
         given:
         params.id = ONE
@@ -344,21 +327,6 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getGroup(ONE) >> null
         1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test illegal deleteGroup()"() {
-        given:
-        params.id = ONE
-
-        when:
-        controller.deleteGroup()
-
-        then: 'Group belongs to other user'
-        1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemService.deleteGroup(itemGroup) >> {throw new Exception()}
-        1 * ajaxResponseService.renderRedirect(ITEM_STASH_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
