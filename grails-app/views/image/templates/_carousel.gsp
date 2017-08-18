@@ -11,6 +11,7 @@
     <g:each in="${images}" var="image" status="i">
       <div class="item ${i == 0 ? 'active' : ''}">
         <tempvs:image image="${image}" orientation="${orientation}"/>
+        <p class="text-center">${image.imageInfo}</p>
       </div>
     </g:each>
   </div>
