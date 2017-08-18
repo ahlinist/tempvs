@@ -211,6 +211,7 @@ class ItemControllerSpec extends Specification {
     void "Test createItem() against invalid item"() {
         given:
         controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
+        params.groupId = ONE
 
         when:
         controller.createItem(itemCommand)
@@ -231,6 +232,7 @@ class ItemControllerSpec extends Specification {
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
+        params.groupId = ONE
 
         when:
         controller.createItem(itemCommand)
@@ -349,6 +351,7 @@ class ItemControllerSpec extends Specification {
     void "Test editItem() against invalid command"() {
         given:
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+        params.itemId = ONE
 
         when:
         controller.editItem(itemCommand)
@@ -364,6 +367,7 @@ class ItemControllerSpec extends Specification {
     void "Test editItem() against invalid item"() {
         given:
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+        params.itemId = ONE
 
         when:
         controller.editItem(itemCommand)
@@ -382,6 +386,7 @@ class ItemControllerSpec extends Specification {
     void "Test successful editItem()"() {
         given:
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+        params.itemId = ONE
 
         when:
         controller.editItem(itemCommand)

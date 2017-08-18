@@ -8,7 +8,9 @@
     <g:if test="${item}">
       <g:set var="itemImages" value="${item.images}"/>
       <g:set var="source" value="${item.source}"/>
-      <g:render template="/item/templates/navBar" model="${[item, itemGroup, user, userProfile]}"/>
+      <div class="row">
+        <g:render template="/item/templates/navBar" model="${[item, itemGroup, user, userProfile]}"/>
+      </div>
 <ul class="nav nav-tabs">
   <li style="padding:0px; margin:0px;" class="col-sm-6 pull-left active">
     <a data-toggle="tab" href="#itemContent">
@@ -25,19 +27,12 @@
   <div id="itemContent" class="tab-pane fade in active">
     <div class="row">
       <g:if test="${editAllowed}">
-        <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.delete.button')}">
-          <tempvs:modalButton id="deleteItem" size="modal-sm" classes="glyphicon glyphicon-trash">
-            <g:message code='item.deleteConfirmation.text' args="${[item.name]}"/>
-            <br/>
-            <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${item.id}"/>
-            <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-          </tempvs:modalButton>
-        </span>
-        <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.updateItem.link')}">
-          <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-edit">
-            <g:render template="/item/templates/itemForm" model="${[action: 'editItem', button: 'item.updateItem.button', item: item]}"/>
-          </tempvs:modalButton>
-        </span>
+        <div class="pull-right">
+          <g:render template="/item/templates/deleteItemButton" model="${[item: item]}"/>
+        </div>
+        <div class="pull-right">
+          <g:render template="/item/templates/editItemButton" model="${[item: item]}"/>
+        </div>
       </g:if>
     </div>
     <div class="row">

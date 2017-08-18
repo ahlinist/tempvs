@@ -23,11 +23,11 @@ class ItemService {
     UserService userService
     ObjectDAO objectDAO
 
-    ItemGroup getGroup(String id) {
+    ItemGroup getGroup(Object id) {
         objectDAO.get(ItemGroup, id)
     }
 
-    Item getItem(String id) {
+    Item getItem(Object id) {
         objectDAO.get(Item, id)
     }
 

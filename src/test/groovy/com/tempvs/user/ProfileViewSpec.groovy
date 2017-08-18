@@ -63,7 +63,7 @@ class ProfileViewSpec extends Specification {
         given:
         String avatar = '<tempvs:modalImage image="'
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
-        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">'
+        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">'
         String clubProfileLink = '<a href="/profile/clubProfile/id" class="list-group-item">'
         Map model = [profile: userProfile, id: 1, editAllowed: Boolean.TRUE]
 
@@ -95,7 +95,7 @@ class ProfileViewSpec extends Specification {
     void "Test /profile/clubProfile view"() {
         given:
         String avatar = '<tempvs:modalImage image="'
-        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">'
+        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">'
         String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" classes="glyphicon glyphicon-trash">'
         Map model = [profile: clubProfile, id: 1, editAllowed: Boolean.TRUE]
 

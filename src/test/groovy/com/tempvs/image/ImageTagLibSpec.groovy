@@ -74,7 +74,7 @@ class ImageTagLibSpec extends Specification {
         then:
         4 * image.getProperty(COLLECTION) >> COLLECTION
         2 * image.getProperty(OBJECT_ID) >> OBJECT_ID
-        2 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
+        4 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
         0 * _
 
         and:

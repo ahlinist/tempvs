@@ -19,9 +19,9 @@ class ItemController {
     static defaultAction = 'stash'
 
     ItemService itemService
+    UserService userService
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
-    UserService userService
 
     def stash(String id) {
         User user = id ? userService.getUser(id) : userService.currentUser
@@ -47,7 +47,7 @@ class ItemController {
 
     def group(String id) {
         if (id) {
-            ItemGroup itemGroup = itemService.getGroup(id)
+            ItemGroup itemGroup = itemService.getGroup id
 
             if (itemGroup) {
                 User user = itemGroup.user
@@ -64,8 +64,7 @@ class ItemController {
 
     def createItem(ItemCommand command) {
         if (command.validate()) {
-            String referer = request.getHeader('referer')
-            ItemGroup itemGroup = itemService.getGroup referer.tokenize('/').last()
+            ItemGroup itemGroup = itemService.getGroup params.groupId
             Map properties = command.properties + [itemGroup: itemGroup]
             Item item = itemService.createItem(properties as Item, properties)
 
@@ -81,7 +80,7 @@ class ItemController {
 
     def show(String id) {
         if (id) {
-            Item item = itemService.getItem(id)
+            Item item = itemService.getItem id
 
             if (item) {
                 ItemGroup itemGroup = item.itemGroup
@@ -121,14 +120,11 @@ class ItemController {
     }
 
     def editItem(ItemCommand command) {
-        String referer = request.getHeader('referer')
-        Item item = itemService.getItem referer.tokenize('/').last()
+        Item item = itemService.getItem params.itemId
 
         if (command.validate()) {
             if (item) {
-                Item updatedItem
-
-                updatedItem = itemService.updateItem(item, command.properties)
+                Item updatedItem = itemService.updateItem(item, command.properties)
 
                 if (updatedItem.validate()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: updatedItem.id))

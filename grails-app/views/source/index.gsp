@@ -7,12 +7,15 @@
     </head>
     <body>
       <g:render template="/source/templates/navBar"/>
-      <g:each in="${Period.values()}" var="period">
-        <div>
-          <g:link action="period" id="${period.id}" class="btn btn-default">
-            ${period.value}
-          </g:link>
-        </div>
-      </g:each>
+      <b><g:message code="source.period.list.title"/></b>:
+      <ul>
+        <g:each in="${Period.values()}" var="period">
+          <li class="row">
+            <g:link action="period" id="${period.id}" class="btn btn-default col-sm-3">
+              ${period.value}
+            </g:link>
+          </li>
+        </g:each>
+      </ul>
     </body>
 </html>

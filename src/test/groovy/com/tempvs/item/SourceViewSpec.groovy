@@ -36,7 +36,7 @@ class SourceViewSpec extends Specification {
         given:
         Set<Image> images = [image] as Set
         String title = "<title>Tempvs - ${NAME}</title>"
-        String editForm = '<tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-edit">'
+        String editForm = '<tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-pencil">'
         Map model = [source: source, period: period, editAllowed: Boolean.TRUE]
 
         when:
@@ -57,7 +57,7 @@ class SourceViewSpec extends Specification {
 
     void "Test /source/index"() {
         given:
-        String periodLink = '<a href="/test/period/ancient" class="btn btn-default">'
+        String periodLink = '<a href="/test/period/ancient" class="btn btn-default col-sm-3">'
 
         when:
         String result = render view: '/source/index'
@@ -71,7 +71,7 @@ class SourceViewSpec extends Specification {
 
     void "Test /source/period"() {
         given:
-        String createForm = '<tempvs:modalButton id="sourceForm" message="source.createSource.button">'
+        String createForm = '<tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-plus">'
         Map model = [sources: [source], period: period, editAllowed: Boolean.TRUE]
 
         when:

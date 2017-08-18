@@ -4,7 +4,7 @@
   </div>
   <div class="col-sm-6">
     <g:if test="${type == 'select'}">
-      <g:select class="col-sm-12 tempvs-form-field" name="${name}" from="${from}" value="${value}" noSelection="${['null':'...']}"
+      <g:select class="col-sm-12 tempvs-form-field" name="${name}" from="${from}" value="${value}" noSelection="${['':'...']}"
           optionKey="${optionKey}" optionValue="${optionValue}" disabled="${disabled}"/>
     </g:if>
     <g:else>

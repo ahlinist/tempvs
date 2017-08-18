@@ -6,20 +6,51 @@
     </head>
     <body>
       <g:if test="${user}">
-        <g:render template="/item/templates/navBar" model="${[user, userProfile]}"/>
-        <div class="col-sm-3">
-          <g:render template="/item/templates/itemGroups" model="${[itemGroups]}"/>
-          <g:if test="${editAllowed}">
+        <div class="row">
+          <div class="col-sm-8">
+            <g:render template="/item/templates/navBar" model="${[user, userProfile]}"/>
+          </div>
+          <div class="col-sm-4">
+            <b><g:message code="actions.label"/></b>:
+            <g:if test="${editAllowed}">
+              <div class="row">
+                <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createGroup.tooltip')}">
+                  <tempvs:modalButton id="createGroup" classes="glyphicon glyphicon-plus">
+                    <g:render template="/item/templates/groupForm" model="${[action: 'createGroup']}"/>
+                  </tempvs:modalButton>
+                </span>
+              </div>
+            </g:if>
+          </div>
+        </div>
+        <div class="row">
+          <g:if test="${itemGroups}">
+            <b><g:message code="item.groups.message"/></b>:
             <div class="row">
-              <tempvs:modalButton id="createGroup" message="item.createGroup.link">
-                <tempvs:ajaxForm action="createGroup">
-                  <tempvs:formField type="text" name="name" label="item.group.name.label" />
-                  <tempvs:formField type="text" name="description" label="item.group.description.label" />
-                  <tempvs:ajaxSubmitButton value="item.createGroup.button" />
-                </tempvs:ajaxForm>
-              </tempvs:modalButton>
+              <ul>
+                <g:each var="itemGroup" in="${itemGroups.sort { it.id }}">
+                  <li>
+                    <div class="row">
+                      <g:link class="btn btn-default col-sm-3" controller="item" action="group" id="${itemGroup.id}" data-toggle="tooltip" data-placement="bottom" title="${itemGroup.description}">
+                          ${itemGroup.name}
+                      </g:link>
+                      <g:if test="${editAllowed}">
+                        <div class="pull-left">
+                          <g:render template="/item/templates/editGroupButton" model="${[itemGroup: itemGroup]}"/>
+                        </div>
+                        <div class="pull-left">
+                          <g:render template="/item/templates/deleteGroupButton" model="${[itemGroup: itemGroup]}"/>
+                        </div>
+                      </g:if>
+                    </div>
+                  </li>
+                </g:each>
+              </ul>
             </div>
           </g:if>
+          <g:else>
+            <i><g:message code="item.noGroups.message"/></i>
+          </g:else>
         </div>
       </g:if>
       <g:else>

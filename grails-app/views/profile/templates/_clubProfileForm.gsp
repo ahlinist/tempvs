@@ -8,6 +8,6 @@
   <tempvs:formField type="text" name="location" value="${profile?.location}" label="clubProfile.location.label" />
   <tempvs:formField type="text" name="clubName" value="${profile?.clubName}" label="clubProfile.clubName.label" />
   <tempvs:formField type="text" name="profileId" value="${profile?.profileId}" label="clubProfile.profileId.label" />
-  <tempvs:formField type="select" name="period" value="${profile?.period}" from="${Period.values()}" optionKey="key" optionValue="value" label="periodization.period.form.label"/>
+  <tempvs:formField type="select" name="period" value="${profile?.period}" from="${Period.values()}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
   <tempvs:ajaxSubmitButton value="${button}" />
 </tempvs:ajaxForm>

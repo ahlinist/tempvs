@@ -64,3 +64,7 @@ input, .list-group-item {
 .tempvs-form-field {
     margin:0.3em 0 0.3em 0;
 }
+
+.glyphicon {
+    top: 0px;
+}

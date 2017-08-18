@@ -27,9 +27,9 @@
           <div class="col-sm-3">
             <g:if test="${editAllowed}">
               <div class="row">
-                <div><b><g:message code="profile.actions.label"/></b></div>
+                <div><b><g:message code="actions.label"/></b>:</div>
                 <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
-                  <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-edit">
+                  <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">
                     <g:render template="/profile/templates/userProfileForm" model="${[profile: profile]}"/>
                   </tempvs:modalButton>
                 </span>

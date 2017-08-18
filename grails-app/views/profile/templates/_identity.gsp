@@ -13,7 +13,7 @@ ${profile}
         </span>
       </g:if>
       <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.editAvatar.tooltip')}">
-        <tempvs:modalButton id="uploadAvatar" classes="glyphicon glyphicon-edit">
+        <tempvs:modalButton id="uploadAvatar" classes="glyphicon glyphicon-pencil">
           <tempvs:ajaxForm action="uploadAvatar">
             <tempvs:formField type="file" name="imageUploadBean.image" label="profile.avatar.label" />
             <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="profile.avatarInfo.label" />

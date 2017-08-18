@@ -7,20 +7,26 @@
     </head>
     <body>
       <g:if test="${source}">
-        <g:render template="/source/templates/navBar" model="${[period, source]}"/>
         <div class="row">
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.editSource.button')}">
+          <div class="col-sm-8">
+            <g:render template="/source/templates/navBar" model="${[period, source]}"/>
+          </div>
+          <div class="col-sm-4">
+            <b><g:message code="actions.label"/></b>:
+            <br/>
             <g:if test="${editAllowed}">
-              <div class="row">
-                <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-edit">
+              <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.editSource.button')}">
+                <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-pencil">
                   <g:render template="/source/templates/sourceForm"
                       model="${[action: 'editSource', source: source, button: 'source.editSource.button', period: period]}"/>
                 </tempvs:modalButton>
               </div>
             </g:if>
-          </span>
+          </div>
         </div>
-        <g:render template="/source/templates/source" model="${[source]}"/>
+        <div class="row">
+          <g:render template="/source/templates/source" model="${[source]}"/>
+        </div>
       </g:if>
       <g:else>
         <g:message code="source.notFound.message"/>

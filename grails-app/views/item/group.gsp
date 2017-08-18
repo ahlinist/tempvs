@@ -6,30 +6,64 @@
     </head>
     <body>
       <g:if test="${itemGroup}">
-        <g:render template="/item/templates/navBar" model="${[itemGroup, user, userProfile]}"/>
-        <div class="col-sm-3">
-          <b>${itemGroup.name}</b>
-          <br/>
-          <b>${itemGroup.description}</b>
-          <hr/>
-          <g:each var="item" in="${itemGroup.items}">
-             <div>
-               <g:link class="btn btn-default" action="show" id="${item.id}">${item.name}</g:link>
-             </div>
-          </g:each>
-          <g:if test="${editAllowed}">
-            <div class="row">
-              <tempvs:modalButton id="itemForm" message="item.createItem.link">
-                <g:render template="/item/templates/itemForm" model="${[action: 'createItem', button: 'item.createItem.button']}"/>
-              </tempvs:modalButton>
-              <tempvs:modalButton id="deleteGroup" size="modal-sm" message="item.group.delete.button">
-                <g:message code='item.group.deleteConfirmation.text' args="${[itemGroup.name]}"/>
-                <br/>
-                <tempvs:ajaxLink message="yes" controller="item" action="deleteGroup" id="${itemGroup.id}"/>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-              </tempvs:modalButton>
+        <g:set var="items" value="${itemGroup.items}"/>
+        <div class="row">
+          <div class="col-sm-8">
+            <g:render template="/item/templates/navBar" model="${[itemGroup, user, userProfile]}"/>
+          </div>
+          <div class="col-sm-4">
+            <b><g:message code="actions.label"/></b>:
+          </div>
+        </div>        
+        <div class="row">
+          <div class="row">
+            <div class="col-sm-8">
+              <b><g:message code="item.group.name.label"/>: </b>${itemGroup.name}
+              <br/>
+              <b><g:message code="item.group.description.label"/>: </b>${itemGroup.description}
+              <hr/>
             </div>
-          </g:if>
+            <div class="col-sm-4">
+              <g:if test="${editAllowed}">
+                <div class="row">
+                  <div class="pull-right">
+                    <g:render template="/item/templates/deleteGroupButton" model="${[itemGroup: itemGroup]}"/>
+                  </div>
+                  <div class="pull-right">
+                    <g:render template="/item/templates/editGroupButton" model="${[itemGroup: itemGroup]}"/>
+                  </div>
+                  <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createItem.tooltip')}">
+                    <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">
+                      <g:render template="/item/templates/itemForm" model="${[action: 'createItem', button: 'item.createItem.button', itemGroup: itemGroup]}"/>
+                    </tempvs:modalButton>
+                  </span>
+                </div>
+              </g:if>
+            </div>
+          </div>
+          <div class="row">
+            <g:if test="${items}">
+              <b><g:message code="item.items.message"/></b>:
+              <ul>
+                <g:each var="item" in="${items.sort { it.id }}">
+                   <li class="row">
+                     <g:link class="btn btn-default col-sm-4" action="show" id="${item.id}"  data-toggle="tooltip" data-placement="bottom" title="${item.description}">${item.name}</g:link>
+                     <g:if test="${editAllowed}">
+                       <div class="pull-left">
+                         <g:render template="/item/templates/editItemButton" model="${[item: item]}"/>
+                       </div>
+                       <div class="pull-left">
+                         <g:render template="/item/templates/deleteItemButton" model="${[item: item]}"/>
+                       </div>
+                     </g:if>
+                   </li>
+                </g:each>
+              </ul> 
+            </g:if>
+            <g:else>
+              <i><g:message code="item.noItems.message"/></i>
+            </g:else>
+          </div>
         </div>
       </g:if>
       <g:else>

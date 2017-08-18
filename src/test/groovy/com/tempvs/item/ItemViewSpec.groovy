@@ -67,8 +67,8 @@ class ItemViewSpec extends Specification {
     void "Test /item/stash view with id"() {
         given:
         String title = "<title>Tempvs - ${ITEM_STASH_TITLE}</title>"
-        String createButton = '<tempvs:modalButton id="createGroup" message="item.createGroup.link">'
-        String itemGroupLink = '<a href="/item/group/1" class="list-group-item">'
+        String createButton = '<tempvs:modalButton id="createGroup" classes="glyphicon glyphicon-plus">'
+        String itemGroupLink = '<a href="/item/group/1" class="btn btn-default col-sm-3" data-toggle="tooltip" data-placement="bottom" title="description">'
         Map model = [
                 user: user,
                 itemGroups: [itemGroup],
@@ -80,9 +80,9 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/stash', model: model
 
         then:
-        1 * itemGroup.getProperty(NAME) >> NAME
-        1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * itemGroup.getProperty(ID) >> ONE
+        3 * itemGroup.getProperty(NAME) >> NAME
+        2 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
+        3 * itemGroup.getProperty(ID) >> ONE
         1 * user.getProperty(ID) >> ONE
         1 * userProfile.toString()
         0 * _
@@ -111,7 +111,7 @@ class ItemViewSpec extends Specification {
     void "Test /item/group view with id"() {
         given:
         String title = "<title>Tempvs - ${ITEM_GROUP_TITLE}</title>"
-        String createItemButton = '<tempvs:modalButton id="itemForm" message="item.createItem.link">'
+        String createItemButton = '<tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">'
         List items = [item]
         Map model = [
                 itemGroup: itemGroup,
@@ -124,13 +124,17 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/group', model: model
 
         then:
-        3 * itemGroup.getProperty(NAME) >> NAME
-        1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        2 * itemGroup.getProperty(ID) >> ID
+        4 * itemGroup.getProperty(NAME) >> NAME
+        2 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
+        5 * itemGroup.getProperty(ID) >> ONE
         1 * itemGroup.getProperty(ITEMS) >> items
-        1 * item.getProperty(ID) >> ID
-        1 * item.getProperty(NAME) >> NAME
+        3 * item.getProperty(ID) >> ONE
+        3 * item.getProperty(NAME) >> NAME
+        2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * user.getProperty(ID) >> ONE
+        1 * item.getProperty(PERIOD) >> period
+        1 * item.getProperty(SOURCE) >> source
+        1 * source.getProperty(ID) >> ONE
         0 * _
 
         and:
@@ -168,7 +172,7 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/show', model: model
 
         then:
-        2 * item.getProperty(ID) >> ID
+        3 * item.getProperty(ID) >> ID
         5 * item.getProperty(NAME) >> NAME
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * item.getProperty(IMAGES) >> [image]
@@ -178,7 +182,8 @@ class ItemViewSpec extends Specification {
         1 * source.getProperty(NAME) >> NAME
         1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * source.getProperty(PERIOD) >> period
-        1 * itemGroup.getProperty(ID) >> ID
+        1 * source.getProperty(ID) >> ID
+        2 * itemGroup.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * user.getProperty(ID) >> ID
         0 * _
