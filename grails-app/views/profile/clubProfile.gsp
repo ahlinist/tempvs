@@ -39,10 +39,6 @@
                 </span>
                 <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
                   <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">
-                    <tempvs:ajaxForm action="updateProfileEmail">
-                      <tempvs:formField type="email" name="email" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
-                      <tempvs:ajaxSubmitButton value="clubEmail.update.button" />
-                    </tempvs:ajaxForm>
                     <g:render template="/profile/templates/clubProfileForm"
                         model="${[action: 'updateClubProfile', button: 'clubProfile.update.button', profile: profile]}"/>
                   </tempvs:modalButton>

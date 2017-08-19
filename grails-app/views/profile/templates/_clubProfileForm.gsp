@@ -1,4 +1,8 @@
 <%@ page import="com.tempvs.periodization.Period"%>
+<tempvs:ajaxForm action="updateProfileEmail">
+  <tempvs:formField type="email" name="email" value="${profile.profileEmail}" label="clubProfile.profileEmail.label" />
+  <tempvs:ajaxSubmitButton value="clubEmail.update.button" />
+</tempvs:ajaxForm>
 <tempvs:ajaxForm action="${action}">
   <tempvs:formField type="file" name="avatarBean.image" label="profile.avatar.label" />
   <tempvs:formField type="text" name="avatarBean.imageInfo" label="profile.avatarInfo.label" />
