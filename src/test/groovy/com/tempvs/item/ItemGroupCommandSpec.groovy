@@ -4,10 +4,10 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 /**
- * Unit-test suite for CreateItemGroupCommand.
+ * Unit-test suite for ItemGroupCommand.
  */
 @TestFor(ItemController)
-class CreateItemGroupCommandSpec extends Specification {
+class ItemGroupCommandSpec extends Specification {
     private static final String NAME = 'name'
 
     def setup() {
@@ -20,7 +20,7 @@ class CreateItemGroupCommandSpec extends Specification {
 
     void "Test CreateItemGroupCommand"() {
         expect:
-        !new CreateItemGroupCommand().validate()
-        new CreateItemGroupCommand(name: NAME).validate()
+        !new ItemGroupCommand().validate()
+        new ItemGroupCommand(name: NAME).validate()
     }
 }

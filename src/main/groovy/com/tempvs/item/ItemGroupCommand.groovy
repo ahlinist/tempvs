@@ -7,7 +7,7 @@ import grails.validation.Validateable
  * Command object used for creation of new {@link com.tempvs.item.ItemGroup} instance.
  */
 @GrailsCompileStatic
-class CreateItemGroupCommand implements Validateable {
+class ItemGroupCommand implements Validateable {
     String name
     String description
 

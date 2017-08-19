@@ -19,11 +19,13 @@ class ItemControllerSpec extends Specification {
 
     private static final String ONE = '1'
     private static final Long LONG_ID = 1L
+    private static final String NAME = 'name'
     private static final String REFERER = 'referer'
     private static final String SHOW_ACTION = 'show'
     private static final String GROUP_ACTION = 'group'
     private static final String ITEM_URI = '/item/show'
     private static final String PROPERTIES = 'properties'
+    private static final String DESCRIPTION = 'description'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
@@ -32,16 +34,16 @@ class ItemControllerSpec extends Specification {
     def user = Mock(User)
     def json = Mock(JSON)
     def item = Mock(Item)
-    def updatedItem = Mock(Item)
+    def editedItem = Mock(Item)
     def image = Mock(ImageBean)
     def itemGroup = Mock(ItemGroup)
     def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def itemService = Mock(ItemService)
     def itemCommand = Mock(ItemCommand)
+    def itemGroupCommand = Mock(ItemGroupCommand)
     def grailsLinkGenerator = Mock(LinkGenerator)
     def ajaxResponseService = Mock(AjaxResponseService)
-    def createItemGroupCommand = Mock(CreateItemGroupCommand)
 
     def setup() {
         controller.userService = userService
@@ -106,22 +108,22 @@ class ItemControllerSpec extends Specification {
 
     void "Test group creation against invalid command"() {
         when:
-        controller.createGroup(createItemGroupCommand)
+        controller.createGroup(itemGroupCommand)
 
         then:
-        1 * createItemGroupCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(createItemGroupCommand) >> json
+        1 * itemGroupCommand.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(itemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
     void "Test group creation against invalid group"() {
         when:
-        controller.createGroup(createItemGroupCommand)
+        controller.createGroup(itemGroupCommand)
 
         then:
-        1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemGroupCommand.validate() >> Boolean.TRUE
+        1 * itemGroupCommand.getProperty(PROPERTIES) >> [:]
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemGroup) >> json
@@ -135,11 +137,11 @@ class ItemControllerSpec extends Specification {
         controller.grailsLinkGenerator = grailsLinkGenerator
 
         when:
-        controller.createGroup(createItemGroupCommand)
+        controller.createGroup(itemGroupCommand)
 
         then:
-        1 * createItemGroupCommand.validate() >> Boolean.TRUE
-        1 * createItemGroupCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemGroupCommand.validate() >> Boolean.TRUE
+        1 * itemGroupCommand.getProperty(PROPERTIES) >> [:]
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
         1 * itemGroup.getId() >> LONG_ID
@@ -210,7 +212,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem() against invalid item"() {
         given:
-        controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
         params.groupId = ONE
 
         when:
@@ -231,7 +232,6 @@ class ItemControllerSpec extends Specification {
         given:
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         controller.grailsLinkGenerator = grailsLinkGenerator
-        controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
         params.groupId = ONE
 
         when:
@@ -348,9 +348,28 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
+    void "Test editGroup()"() {
+        given:
+        params.groupId = ONE
+        Map properties = [name: NAME, description: DESCRIPTION]
+        controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
+
+        when:
+        controller.editGroup(itemGroupCommand)
+
+        then:
+        1 * itemGroupCommand.validate() >> Boolean.TRUE
+        1 * itemGroupCommand.getProperty(PROPERTIES) >> properties
+        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemService.editGroup(itemGroup, properties) >> itemGroup
+        1 * itemGroup.validate() >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
     void "Test editItem() against invalid command"() {
         given:
-        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
         params.itemId = ONE
 
         when:
@@ -366,7 +385,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test editItem() against invalid item"() {
         given:
-        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
         params.itemId = ONE
 
         when:
@@ -376,17 +394,17 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.getProperty(PROPERTIES) >> [:]
-        1 * itemService.updateItem(item, _ as Map) >> updatedItem
-        1 * updatedItem.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(updatedItem) >> json
+        1 * itemService.editItem(item, _ as Map) >> editedItem
+        1 * editedItem.validate() >> Boolean.FALSE
+        1 * ajaxResponseService.renderValidationResponse(editedItem) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
     void "Test successful editItem()"() {
         given:
-        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
         params.itemId = ONE
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
 
         when:
         controller.editItem(itemCommand)
@@ -395,9 +413,8 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.getProperty(PROPERTIES) >> [:]
-        1 * itemService.updateItem(item, _ as Map) >> updatedItem
-        1 * updatedItem.validate() >> Boolean.TRUE
-        1 * updatedItem.id >> LONG_ID
+        1 * itemService.editItem(item, _ as Map) >> editedItem
+        1 * editedItem.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

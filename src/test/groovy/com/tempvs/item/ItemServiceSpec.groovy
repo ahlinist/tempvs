@@ -173,7 +173,24 @@ class ItemServiceSpec extends Specification {
         result == Boolean.FALSE
     }
 
-    void "Test updateItem()"() {
+    void "Test editGroup()"() {
+        given:
+        Map properties = [name: NAME, description: DESCRIPTION]
+
+        when:
+        def result = service.editGroup(itemGroup, properties)
+
+        then:
+        1 * itemGroup.setName(NAME)
+        1 * itemGroup.setDescription(DESCRIPTION)
+        1 * itemGroup.save() >> itemGroup
+        0 * _
+
+        and:
+        result == itemGroup
+    }
+
+    void "Test editItem()"() {
         given: 'Props without images'
         Map properties = [
                 name: NAME,
@@ -183,7 +200,7 @@ class ItemServiceSpec extends Specification {
         ]
 
         when:
-        def result = service.updateItem(item, properties)
+        def result = service.editItem(item, properties)
 
         then:
         1 * item.setName(NAME)

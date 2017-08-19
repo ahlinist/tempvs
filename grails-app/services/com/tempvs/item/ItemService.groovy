@@ -38,6 +38,13 @@ class ItemService {
     }
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')
+    ItemGroup editGroup(ItemGroup itemGroup, Map properties) {
+        InvokerHelper.setProperties(itemGroup, properties)
+        itemGroup.save()
+        itemGroup
+    }
+
+    @PreAuthorize('#itemGroup.user.email == authentication.name')
     Boolean deleteGroup(ItemGroup itemGroup) {
         Set<Item> items = itemGroup.items
         imageService.deleteImages(items*.images?.flatten() as Set<Image>)
@@ -74,7 +81,7 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item updateItem(Item item, Map properties) {
+    Item editItem(Item item, Map properties) {
         InvokerHelper.setProperties(item, properties)
         item.save()
         item
