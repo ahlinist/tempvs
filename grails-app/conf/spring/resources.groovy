@@ -3,6 +3,7 @@ import com.tempvs.domain.hibernate.HibernateObjectDAO
 import com.tempvs.mongodb.GridFSFactory
 import com.tempvs.mongodb.MongoImageDAO
 import com.tempvs.user.ProfileHolder
+import org.grails.plugins.web.taglib.ValidationTagLib
 
 beans = {
     gridFSFactory(GridFSFactory)
@@ -23,4 +24,5 @@ beans = {
     }
 
     objectFactory(ObjectFactory)
+    validationTagLib(ValidationTagLib)
 }

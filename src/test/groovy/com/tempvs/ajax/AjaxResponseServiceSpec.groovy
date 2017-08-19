@@ -3,8 +3,7 @@ package com.tempvs.ajax
 import com.tempvs.user.User
 import grails.converters.JSON
 import grails.test.mixin.TestFor
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
+import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import spock.lang.Specification
@@ -15,30 +14,33 @@ import spock.lang.Specification
 @TestFor(AjaxResponseService)
 class AjaxResponseServiceSpec extends Specification {
 
-    private static final String SUCCESS_MESSAGE = 'Success Message'
-    private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
-    private static final String FAILED = 'failed'
+    private static final String FIELD = 'field'
     private static final String TEST_URI = '/test/uri'
+    private static final String FAIL_MESSAGE = 'Fail Message'
+    private static final String SUCCESS_MESSAGE = 'Success Message'
 
     def user = Mock(User)
-    def messageSource = Mock(MessageSource)
+    def validationTagLib = Mock(ValidationTagLib)
     def errors = Mock(Errors)
     def fieldError = Mock(FieldError)
 
     def setup() {
-        service.messageSource = messageSource
+        service.validationTagLib = validationTagLib
     }
 
     def cleanup() {
     }
 
     void "Check successful renderValidationResponse() for 2 args"() {
+        given:
+        Map messageMap = [code: SUCCESS_MESSAGE]
+
         when: 'renderValidationResponse() called for 2 args'
         def result = service.renderValidationResponse(user, SUCCESS_MESSAGE)
 
         then:
         1 * user.hasErrors() >> Boolean.FALSE
-        1 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale) >> SUCCESS_MESSAGE
+        1 * validationTagLib.message(messageMap) >> SUCCESS_MESSAGE
         0 * _
 
         and:
@@ -47,6 +49,9 @@ class AjaxResponseServiceSpec extends Specification {
     }
 
     void "Check failed renderValidationResponse() for 1 arg"() {
+        given:
+        Map errorMap = [error: fieldError]
+
         when: 'renderValidationResponse() called for 1 arg'
         def result = service.renderValidationResponse(user)
 
@@ -54,8 +59,8 @@ class AjaxResponseServiceSpec extends Specification {
         1 * user.hasErrors() >> Boolean.TRUE
         1 * user.errors >> errors
         1 * errors.allErrors >> [fieldError, fieldError]
-        2 * messageSource.getMessage(fieldError, LocaleContextHolder.locale) >> FAILED
-        _ * fieldError._
+        2 * validationTagLib.message(errorMap) >> FAIL_MESSAGE
+        2 * fieldError.field >> FIELD
         0 * _
 
         and:
@@ -64,11 +69,14 @@ class AjaxResponseServiceSpec extends Specification {
     }
 
     void "Check renderFormMessage() method"() {
+        given:
+        Map messageMap = [code: SUCCESS_MESSAGE]
+
         when: 'renderMessage() called'
         def result = service.renderFormMessage(Boolean.TRUE, SUCCESS_MESSAGE)
 
         then: 'Ajax response returned'
-        1 * messageSource.getMessage(SUCCESS_MESSAGE, null, DEFAULT_SUCCESS_MESSAGE, LocaleContextHolder.locale) >> SUCCESS_MESSAGE
+        1 * validationTagLib.message(messageMap) >> SUCCESS_MESSAGE
         0 * _
 
         and:

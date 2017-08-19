@@ -4,8 +4,7 @@ import grails.converters.JSON
 import grails.transaction.Transactional
 import grails.validation.Validateable
 import groovy.transform.CompileStatic
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
+import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 
@@ -16,18 +15,12 @@ import org.springframework.validation.ObjectError
 @CompileStatic
 class AjaxResponseService {
 
-    private static final String DEFAULT_SUCCESS_MESSAGE = 'Success'
-    private static final String DEFAULT_FAIL_MESSAGE = 'Fail'
-
-    MessageSource messageSource
+    ValidationTagLib validationTagLib
 
     JSON renderValidationResponse(Validateable instance, String successMessage = null) {
         if (instance.hasErrors()) {
-            List<Map> result = []
-
-            instance.errors.allErrors.each { ObjectError error ->
-                String message = messageSource.getMessage(error, LocaleContextHolder.locale)
-                result << [message: message, name: ((FieldError) error).field]
+            List result = instance.errors.allErrors.collect { ObjectError error ->
+                [message: validationTagLib.message(error: error), name: ((FieldError) error).field]
             }
 
             result as JSON
@@ -37,9 +30,7 @@ class AjaxResponseService {
     }
 
     JSON renderFormMessage(Boolean success, String code) {
-        String defaultMessage = success ? DEFAULT_SUCCESS_MESSAGE : DEFAULT_FAIL_MESSAGE
-        String message = messageSource.getMessage(code, null, defaultMessage, LocaleContextHolder.locale)
-        [formMessage: Boolean.TRUE, success: success, message: message] as JSON
+        [formMessage: Boolean.TRUE, success: success, message: validationTagLib.message(code: code)] as JSON
     }
 
     JSON renderRedirect(String uri) {
