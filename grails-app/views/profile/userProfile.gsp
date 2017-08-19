@@ -18,8 +18,8 @@
           </div>
           <div class="col-sm-3">
             <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>
-            <div><b><g:message code="userProfile.profileEmail.label" /></b>: ${profile.profileEmail}</div>
-            <div><b><g:message code="userProfile.location.label" /></b>: ${profile.location}</div>
+            <div><b><g:message code="profile.profileEmail.label" /></b>: ${profile.profileEmail}</div>
+            <div><b><g:message code="profile.location.label" /></b>: ${profile.location}</div>
           </div>
           <div class="col-sm-3">
             <g:render template="/profile/templates/listedClubProfiles" model="${[clubProfiles: user.clubProfiles]}"/>
@@ -30,7 +30,8 @@
                 <div><b><g:message code="actions.label"/></b>:</div>
                 <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
                   <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">
-                    <g:render template="/profile/templates/userProfileForm" model="${[profile: profile]}"/>
+                    <g:render template="/profile/templates/profileForm"
+                        model="${[action: 'editUserProfile', button: 'profile.edit.button', profile: profile]}"/>
                   </tempvs:modalButton>
                 </span>
               </div>

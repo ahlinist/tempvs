@@ -2,6 +2,7 @@ package com.tempvs.image
 
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * Unit-test suite for {@link ImageUploadCommand}.
  */
@@ -19,13 +20,10 @@ class ImageUploadCommandSpec extends Specification {
     }
 
     void "Test ImageCommand"() {
-        given:
-        Map properties = [className: Object.class.name, id: 1L]
-
         expect:
-        !new ImageUploadCommand(properties).validate()
+        !new ImageUploadCommand().validate()
 
         and:
-        new ImageUploadCommand(properties + [imageUploadBean: imageUploadBean]).validate()
+        new ImageUploadCommand(imageUploadBean: imageUploadBean).validate()
     }
 }

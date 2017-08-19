@@ -123,7 +123,7 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getAction() >> USERPROFILE
         1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.getInstanceId() >> LONG_ID
-        1 * profileService.updateProfileEmail(UserProfile.class, LONG_ID, EMAIL) >> userProfile
+        1 * profileService.editProfileEmail(UserProfile.class, LONG_ID, EMAIL) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProfile(userProfile)
         1 * emailVerification.delete(['flush':true])
@@ -150,7 +150,7 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getAction() >> CLUBPROFILE
         1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.getInstanceId() >> LONG_ID
-        1 * profileService.updateProfileEmail(ClubProfile.class, LONG_ID, EMAIL) >> clubProfile
+        1 * profileService.editProfileEmail(ClubProfile.class, LONG_ID, EMAIL) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProfile(clubProfile)
         1 * emailVerification.delete(['flush':true])

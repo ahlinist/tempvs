@@ -17,9 +17,9 @@
             <g:render template="/profile/templates/identity" args="${[avatar, editAllowed]}"/>
           </div>
           <div class="col-sm-3">
-            <div><b><g:message code="clubProfile.profileEmail.label" />:</b> ${profile.profileEmail}</div>
-            <div><b><g:message code="clubProfile.location.label" />:</b> ${profile.location}</div>
-            <div><b><g:message code="clubProfile.clubName.label" />:</b> ${profile.clubName}</div>
+            <div><b><g:message code="profile.profileEmail.label" />:</b> ${profile.profileEmail}</div>
+            <div><b><g:message code="profile.location.label" />:</b> ${profile.location}</div>
+            <div><b><g:message code="profile.clubName.label" />:</b> ${profile.clubName}</div>
             <div><b><g:message code="periodization.period.value.label"/>:</b> ${profile.period.value}</div>
           </div>
           <div class="col-sm-3">
@@ -39,8 +39,8 @@
                 </span>
                 <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.updateProfile.tooltip')}">
                   <tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">
-                    <g:render template="/profile/templates/clubProfileForm"
-                        model="${[action: 'updateClubProfile', button: 'clubProfile.update.button', profile: profile]}"/>
+                    <g:render template="/profile/templates/profileForm"
+                        model="${[action: 'editClubProfile', button: 'profile.edit.button', profile: profile]}"/>
                   </tempvs:modalButton>
                 </span>
               </div>

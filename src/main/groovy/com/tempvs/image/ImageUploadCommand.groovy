@@ -8,13 +8,5 @@ import grails.validation.Validateable
  */
 @GrailsCompileStatic
 class ImageUploadCommand implements Validateable {
-
-    Long id
-    String className
     ImageUploadBean imageUploadBean
-
-    static constraints = {
-        className nullable: true
-        id nullable: true
-    }
 }

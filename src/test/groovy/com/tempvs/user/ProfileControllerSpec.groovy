@@ -1,7 +1,6 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.domain.ObjectDAO
 import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.image.ImageUploadCommand
@@ -29,13 +28,12 @@ class ProfileControllerSpec extends Specification {
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
+    private static final String EDIT_EMAIL_DUPLICATE = 'user.edit.email.duplicate'
+    private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
 
     def json = Mock(JSON)
     def user = Mock(User)
     def image = Mock(ImageBean)
-    def objectDAO = Mock(ObjectDAO)
     def userService = Mock(UserService)
     def userProfile = Mock(UserProfile)
     def clubProfile = Mock(ClubProfile)
@@ -51,7 +49,6 @@ class ProfileControllerSpec extends Specification {
     def ajaxResponseService = Mock(AjaxResponseService)
 
     def setup() {
-        controller.objectDAO = objectDAO
         controller.userService = userService
         controller.profileHolder = profileHolder
         controller.verifyService = verifyService
@@ -221,12 +218,12 @@ class ProfileControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test updateClubProfile()"() {
+    void "Test editClubProfile()"() {
         given:
         controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 
         when:
-        controller.updateClubProfile(clubProfileCommand)
+        controller.editClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.lastName
@@ -239,16 +236,16 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.avatarBean
         1 * clubProfileCommand.errors
         1 * profileHolder.getProfile() >> clubProfile
-        1 * profileService.updateProfile(clubProfile, _) >> clubProfile
+        1 * profileService.editProfile(clubProfile, _) >> clubProfile
         1 * clubProfile.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Test updateUserProfile()"() {
+    void "Test editUserProfile()"() {
         when:
-        controller.updateUserProfile(userProfileCommand)
+        controller.editUserProfile(userProfileCommand)
 
         then:
         1 * userProfileCommand.errors
@@ -258,30 +255,30 @@ class ProfileControllerSpec extends Specification {
         1 * userProfileCommand.firstName
         1 * userProfileCommand.avatarBean
         1 * profileHolder.getProfile() >> userProfile
-        1 * profileService.updateProfile(userProfile, _) >> userProfile
+        1 * profileService.editProfile(userProfile, _) >> userProfile
         1 * userProfile.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(userProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Test updateProfileEmail() for duplicate"() {
+    void "Test editProfileEmail() for duplicate"() {
         when: 'Email duplicate'
         params.email = EMAIL
-        controller.updateProfileEmail()
+        controller.editProfileEmail()
 
         then:
         1 * profileHolder.getProfile() >> userProfile
         1 * userProfile.getProfileEmail() >> EMAIL
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE) >> json
+        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EDIT_EMAIL_DUPLICATE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Test updateProfileEmail() for non-unique entry"() {
+    void "Test editProfileEmail() for non-unique entry"() {
         when:
         params.email = EMAIL
-        controller.updateProfileEmail()
+        controller.editProfileEmail()
 
         then:
         1 * profileHolder.getProfile() >> clubProfile
@@ -292,10 +289,10 @@ class ProfileControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test updateProfileEmail()"() {
+    void "Test editProfileEmail()"() {
         when:
         params.email = EMAIL
-        controller.updateProfileEmail()
+        controller.editProfileEmail()
 
         then:
         1 * profileHolder.getProfile() >> userProfile
@@ -303,7 +300,7 @@ class ProfileControllerSpec extends Specification {
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userProfile.getId() >> LONG_ID
         1 * verifyService.createEmailVerification(_) >> emailVerification
-        1 * ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_PROFILE_EMAIL_MESSAGE_SENT) >> json
+        1 * ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -330,22 +327,24 @@ class ProfileControllerSpec extends Specification {
     void "Test deleteAvatar()"() {
         given:
         controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
-        params.id = ONE
-        params.className = UserProfile.class.name
+        params.profileId = ONE
+        params.profileClass = UserProfile.class.name
 
         when:
         controller.deleteAvatar()
 
         then:
-        1 * objectDAO.get(UserProfile, LONG_ID) >> userProfile
+        1 * profileService.getProfile(UserProfile, ONE) >> userProfile
         1 * profileService.deleteAvatar(userProfile)
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Test updateAvatar()"() {
+    void "Test editAvatar()"() {
         given:
+        params.profileId = ONE
+        params.profileClass = UserProfile.class.name
         controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 
         when:
@@ -353,11 +352,9 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * imageUploadCommand.validate() >> Boolean.TRUE
-        1 * imageUploadCommand.id >> LONG_ID
-        1 * imageUploadCommand.className >> {UserProfile.class.name}
         1 * imageUploadCommand.imageUploadBean >> imageUploadBean
-        1 * objectDAO.get(UserProfile, LONG_ID) >> userProfile
-        1 * profileService.updateAvatar(userProfile, imageUploadBean) >> userProfile
+        1 * profileService.getProfile(UserProfile, ONE) >> userProfile
+        1 * profileService.editAvatar(userProfile, imageUploadBean) >> userProfile
         1 * userProfile.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

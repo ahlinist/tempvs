@@ -10,7 +10,8 @@
         <g:render template="/profile/templates/listedClubProfiles" model="${[clubProfiles: clubProfiles]}"/>
         <div>
           <tempvs:modalButton id="createProfile" message="clubProfile.create.link">
-            <g:render template="/profile/templates/clubProfileForm" model="${[action: 'createClubProfile', button: 'clubProfile.create.button']}"/>
+            <g:render template="/profile/templates/profileForm"
+                model="${[action: 'createClubProfile', button: 'clubProfile.create.button']}"/>
           </tempvs:modalButton>
         </div>
       </div>

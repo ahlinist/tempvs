@@ -67,7 +67,7 @@ class VerifyController {
     }
 
     private profileEmail(Class clazz, EmailVerification emailVerification) {
-        BaseProfile profile = profileService.updateProfileEmail(clazz, emailVerification.instanceId, emailVerification.email)
+        BaseProfile profile = profileService.editProfileEmail(clazz, emailVerification.instanceId, emailVerification.email)
 
         if (profile?.hasErrors()) {
             error([message: PROFILE_EMAIL_UPDATE_FAILED])

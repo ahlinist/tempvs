@@ -1,7 +1,6 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.domain.ObjectDAO
 import com.tempvs.image.ImageUploadCommand
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
@@ -18,12 +17,10 @@ class ProfileController {
     private static final String EMAIL_USED = 'user.email.used'
     private static final String EMAIL_EMPTY = 'profile.email.empty'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
+    private static final String EDIT_EMAIL_DUPLICATE = 'user.edit.email.duplicate'
     private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
-    private static final String UPDATE_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
+    private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
     
-
-    ObjectDAO objectDAO
     UserService userService
     MessageSource messageSource
     ProfileHolder profileHolder
@@ -53,7 +50,7 @@ class ProfileController {
         Map destination = [uri: request.getHeader('referer')]
 
         if (id) {
-            profileHolder.profile = profileService.getProfile(ClubProfile.class, id) as BaseProfile
+            profileHolder.profile = profileService.getProfile(ClubProfile, id)
         } else {
             User user = userService.currentUser
 
@@ -82,20 +79,20 @@ class ProfileController {
         }
     }
 
-    def updateUserProfile(UserProfileCommand command) {
-        updateProfile(command)
+    def editUserProfile(UserProfileCommand command) {
+        editProfile(command)
     }
 
-    def updateClubProfile(ClubProfileCommand command) {
-        updateProfile(command)
+    def editClubProfile(ClubProfileCommand command) {
+        editProfile(command)
     }
 
-    def updateProfileEmail(String email) {
+    def editProfileEmail(String email) {
         if (email) {
             BaseProfile profile = profileHolder.profile
 
             if (email == profile.profileEmail) {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EDIT_EMAIL_DUPLICATE)
             } else {
                 if (!userService.isEmailUnique(email)) {
                     render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
@@ -103,7 +100,7 @@ class ProfileController {
                     Map props = [instanceId: profile.id,
                                  email: email,
                                  action: profile.class.simpleName.toLowerCase()]
-                    render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), UPDATE_PROFILE_EMAIL_MESSAGE_SENT)
+                    render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), EDIT_PROFILE_EMAIL_MESSAGE_SENT)
                 }
             }
         } else {
@@ -125,22 +122,22 @@ class ProfileController {
     }
 
     def deleteAvatar() {
-        BaseProfile profile = objectDAO.get(Class.forName(params.className as String), params.id as Long)
+        BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
         profileService.deleteAvatar(profile)
         render ajaxResponseService.renderRedirect(request.getHeader('referer'))
     }
 
     def uploadAvatar(ImageUploadCommand command) {
         if (command.validate()) {
-            BaseProfile profile = objectDAO.get(Class.forName(command.className), command.id)
+            BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
 
             if (profile) {
-                BaseProfile updatedProfile = profileService.updateAvatar(profile, command.imageUploadBean)
+                BaseProfile editedProfile = profileService.editAvatar(profile, command.imageUploadBean)
 
-                if (updatedProfile.validate()) {
+                if (editedProfile.validate()) {
                     render ajaxResponseService.renderRedirect(request.getHeader('referer'))
                 } else {
-                    render ajaxResponseService.renderValidationResponse(updatedProfile)
+                    render ajaxResponseService.renderValidationResponse(editedProfile)
                 }
             } else {
                 render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_PROFILE)
@@ -158,8 +155,8 @@ class ProfileController {
         }
     }
 
-    private updateProfile(command) {
-        BaseProfile profile = profileService.updateProfile(profileHolder.profile, command.properties)
+    private editProfile(command) {
+        BaseProfile profile = profileService.editProfile(profileHolder.profile, command.properties)
 
         if (profile.validate()) {
             render ajaxResponseService.renderRedirect(request.getHeader('referer'))

@@ -70,12 +70,12 @@ class ProfileServiceSpec extends Specification {
         result == userProfile
     }
 
-    void "Test updateProfile()"() {
+    void "Test editProfile()"() {
         given:
         Map params = [avatarBean: imageUploadBean]
 
         when:
-        def result = service.updateProfile(userProfile, params)
+        def result = service.editProfile(userProfile, params)
 
         then:
         1 * userProfile.avatar >> image
@@ -88,7 +88,7 @@ class ProfileServiceSpec extends Specification {
         result == userProfile
 
         when:
-        result = service.updateProfile(clubProfile, params)
+        result = service.editProfile(clubProfile, params)
 
         then:
         1 * clubProfile.avatar >> image
@@ -131,9 +131,9 @@ class ProfileServiceSpec extends Specification {
         result == clubProfile
     }
 
-    void "Test updateProfileEmail()"() {
+    void "Test editProfileEmail()"() {
         when:
-        def result = service.updateProfileEmail(ClubProfile, LONG_ID, EMAIL)
+        def result = service.editProfileEmail(ClubProfile, LONG_ID, EMAIL)
 
         then:
         1 * objectDAO.get(ClubProfile, LONG_ID) >> clubProfile
@@ -170,9 +170,9 @@ class ProfileServiceSpec extends Specification {
         0 * _
     }
 
-    void "Test updateAvatar()"() {
+    void "Test editAvatar()"() {
         when:
-        def result = service.updateAvatar(clubProfile, imageUploadBean)
+        def result = service.editAvatar(clubProfile, imageUploadBean)
 
         then:
         1 * clubProfile.avatar >> image

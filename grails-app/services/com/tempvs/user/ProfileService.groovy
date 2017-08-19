@@ -25,12 +25,12 @@ class ProfileService {
     ObjectFactory objectFactory
     ImageService imageService
 
-    public <T> T getProfile(Class<T> clazz, String id) {
+    public <T> T getProfile(Class<T> clazz, Object id) {
         objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile updateProfile(BaseProfile profile, Map properties) {
+    BaseProfile editProfile(BaseProfile profile, Map properties) {
         InvokerHelper.setProperties(profile, properties)
         Image avatar = imageService.updateImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION, profile.avatar)
 
@@ -50,7 +50,7 @@ class ProfileService {
         clubProfile
     }
 
-    BaseProfile updateProfileEmail(Class clazz, Long instanceId, String profileEmail) {
+    BaseProfile editProfileEmail(Class clazz, Long instanceId, String profileEmail) {
         BaseProfile profile = objectDAO.get(clazz, instanceId)
         profile.profileEmail = profileEmail
         profile.save()
@@ -77,7 +77,7 @@ class ProfileService {
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile updateAvatar(BaseProfile profile, ImageUploadBean imageUploadBean) {
+    BaseProfile editAvatar(BaseProfile profile, ImageUploadBean imageUploadBean) {
         Image avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
 
         if (avatar) {
