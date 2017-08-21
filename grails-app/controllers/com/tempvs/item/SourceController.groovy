@@ -3,6 +3,7 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
+import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 
 /**
@@ -21,12 +22,17 @@ class SourceController {
 
     }
 
-    def period(String id) {
+    Map period(String id) {
         if (id) {
             Period period = Period.valueOf(id.toUpperCase())
             List<Source> sources = sourceService.getSourcesByPeriod(period)
             [sources: sources, period: period, editAllowed: Boolean.TRUE]
         }
+    }
+
+    def getSourcesByPeriod(String id) {
+        List<Source> sources = period(id).sources as List<Source>
+        render(sources.collect { Source source -> [id: source.id, name: source.name]} as JSON)
     }
 
     def show(String id) {

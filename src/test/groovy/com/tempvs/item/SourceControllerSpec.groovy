@@ -15,6 +15,7 @@ class SourceControllerSpec extends Specification {
 
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
+    private static final String NAME = 'name'
     private static final String REFERER = 'referer'
     private static final String PROPERTIES = 'properties'
     private static final String SHOW_URI = '/source/show'
@@ -121,6 +122,21 @@ class SourceControllerSpec extends Specification {
 
         and:
         result == [sources: sources, period: period, editAllowed: Boolean.TRUE]
+    }
+
+    void "Test getSourcesByPeriod()"() {
+        given:
+        params.id = period.id
+        List<Source> sources = [source, source]
+
+        when:
+        controller.getSourcesByPeriod()
+
+        then:
+        1 * sourceService.getSourcesByPeriod(period) >> sources
+        2 * source.id >> LONG_ID
+        2 * source.name >> NAME
+        0 * _
     }
 
     void "Test editSource()"() {
