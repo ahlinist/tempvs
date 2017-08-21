@@ -1,52 +1,65 @@
 function submitAjaxForm(form) {
+    var method = 'POST'
     var url = form.action;
     var data = new FormData(form);
-    processAjaxRequest(form, url, data);
+    processAjaxRequest(form, url, data, method);
 }
 
-function sendAjaxRequest(element, url) {
+function sendAjaxRequest(element, url, method) {
     var data = new FormData();
-    processAjaxRequest(element, url, data);
+    processAjaxRequest(element, url, data, method);
 }
 
-function processAjaxRequest(element, url, data) {
+function processAjaxRequest(element, url, data, method) {
     var spinner = $(element).find('.ajaxSpinner');
     var submitButton = $(element).find('.submit-button');
 
     $.ajax({
         url: url,
-        type: 'post',
+        method: method,
         data: data,
         dataType: 'json',
         processData: false,
         contentType: false,
         beforeSend: function() {
-            clearForm(element);
-            submitButton.attr("disabled", true);
-            spinner.fadeIn();
+            beforeSend(element, submitButton, spinner);
         },
         complete: function() {
-            submitButton.removeAttr("disabled");
-            spinner.fadeOut();
+            complete(submitButton, spinner);
         },
         success: function(response) {
-            if (response.redirect) {
-                window.location.href = response.redirect;
-            } else if (response.formMessage) {
-                createFormMessage(element, response.success, response.message);
-            } else {
-                $.each(response, function(index, fieldEntry) {
-                    createPopover(element, fieldEntry);
-                });
-
-                $('.popped-over').popover('show');
-            }
+            success(response, element);
         },
         error: function() {
             createFormMessage(element, false, "Something went wrong :(");
         }
     });
 };
+
+function beforeSend(element, submitButton, spinner) {
+    clearForm(element);
+    submitButton.attr("disabled", true);
+    spinner.fadeIn();
+}
+
+function complete(submitButton, spinner) {
+    submitButton.removeAttr("disabled");
+    spinner.fadeOut();
+}
+
+function success(response, element) {
+    if (response.redirect) {
+        window.location.href = response.redirect;
+    } else if (response.formMessage) {
+        createFormMessage(element, response.success, response.message);
+    } else {
+        $.each(response, function(index, fieldEntry) {
+            createPopover(element, fieldEntry);
+        });
+
+        $('.popped-over').popover('show');
+    }
+}
 
 function createPopover(element, fieldEntry) {
     var field = $(element).find('[name="' + fieldEntry.name + '"]')

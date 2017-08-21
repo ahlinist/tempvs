@@ -21,6 +21,8 @@ class AuthController {
     private static final String REGISTRATION_ACTION = 'registration'
     private static final String AUTH_PATTERN = '/auth'
 
+    static allowedMethods = [index: 'GET', login: 'POST', register: 'POST']
+
     UserService userService
     VerifyService verifyService
     SpringSecurityService springSecurityService

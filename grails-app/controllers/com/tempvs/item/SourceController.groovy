@@ -14,6 +14,8 @@ class SourceController {
 
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
+    static allowedMethods = [index: 'GET', period: 'GET', getSourcesByPeriod: 'GET', show: 'GET', createSource: 'POST', editSource: 'POST']
+
     SourceService sourceService
     AjaxResponseService ajaxResponseService
     LinkGenerator grailsLinkGenerator

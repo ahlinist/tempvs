@@ -33,7 +33,7 @@
                   <tempvs:modalButton id="deleteProfile" size="modal-sm" classes="glyphicon glyphicon-trash">
                     <g:message code='profile.deleteConfirmation.text' args="${[profile]}"/>
                     <br/>
-                    <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${profile.id}"/>
+                    <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${profile.id}" method="DELETE"/>
                     <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                   </tempvs:modalButton>
                 </span>

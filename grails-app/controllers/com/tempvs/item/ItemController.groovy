@@ -20,6 +20,8 @@ class ItemController {
 
     static defaultAction = 'stash'
 
+    static allowedMethods = [stash: 'GET', createGroup: 'POST', editGroup: 'POST', group: 'GET', createItem: 'POST', show: 'GET', deleteItem: 'DELETE', deleteGroup: 'DELETE', editItem: 'POST']
+
     ItemService itemService
     UserService userService
     LinkGenerator grailsLinkGenerator

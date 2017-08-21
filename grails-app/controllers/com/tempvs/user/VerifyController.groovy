@@ -13,6 +13,8 @@ class VerifyController {
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'profileEmail.update.failed.message'
     private static final String EMAIL = 'email'
 
+    static allowedMethods = [byEmail: 'GET']
+
     VerifyService verifyService
     UserService userService
     ProfileService profileService

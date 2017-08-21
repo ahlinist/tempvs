@@ -11,6 +11,8 @@ class ImageController {
 
     private static final String DEFAULT_IMAGE = 'defaultImage.jpg'
 
+    static allowedMethods = [get: 'GET']
+
     ImageService imageService
     AssetResourceLocator assetResourceLocator
 

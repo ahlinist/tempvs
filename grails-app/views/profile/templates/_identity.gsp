@@ -7,7 +7,7 @@ ${profile}
           <tempvs:modalButton id="deleteAvatar" size="modal-sm" classes="glyphicon glyphicon-trash">
             <g:message code='profile.avatar.deleteConfirmation.text'/>
             <br/>
-            <tempvs:ajaxLink message="yes" controller="profile" action="deleteAvatar" id="${profile.id}" params="${[className: profile.class.name]}"/>
+            <tempvs:ajaxLink message="yes" controller="profile" action="deleteAvatar" params="${[profileClass: profile.class.name, profileId: profile.id]}" method="DELETE"/>
             <button type="button" class="btn btn-default" onclick="$('#deleteAvatar').modal('hide');"><g:message code="no"/></button>
           </tempvs:modalButton>
         </span>

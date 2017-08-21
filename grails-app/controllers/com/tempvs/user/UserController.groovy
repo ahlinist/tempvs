@@ -20,6 +20,8 @@ class UserController {
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
 
+    static allowedMethods = [index: 'GET', edit: 'GET', updateEmail: 'POST', updatePassword: 'POST', register: 'POST']
+
     UserService userService
     VerifyService verifyService
     SpringSecurityService springSecurityService

@@ -21,6 +21,8 @@ class ProfileController {
     private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
     
+    static allowedMethods = [index: 'GET', userProfile: 'GET', clubProfile: 'GET', switchProfile: 'GET', list: 'GET', createClubProfile: 'POST', editUserProfile: 'POST', editClubProfile: 'POST', editProfileEmail: 'POST', deleteProfile: 'DELETE', deleteAvatar: 'DELETE', uploadAvatar: 'POST']
+
     UserService userService
     MessageSource messageSource
     ProfileHolder profileHolder
