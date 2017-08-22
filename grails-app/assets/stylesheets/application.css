@@ -68,3 +68,7 @@ input, .list-group-item {
 .glyphicon {
     top: 0px;
 }
+
+select:disabled {
+    background: #dddddd;
+}
