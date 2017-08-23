@@ -133,9 +133,9 @@ class ItemViewSpec extends Specification {
         2 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
         1 * sourceService.getSourcesByPeriod(period) >> {[source]}
         1 * sourceService.getSourcesByPeriod(null)
-        4 * itemGroup.getProperty(NAME) >> NAME
-        2 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        5 * itemGroup.getProperty(ID) >> ONE
+        2 * itemGroup.getProperty(NAME) >> NAME
+        1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
+        3 * itemGroup.getProperty(ID) >> ONE
         1 * itemGroup.getProperty(ITEMS) >> items
         3 * item.getProperty(ID) >> ONE
         3 * item.getProperty(NAME) >> NAME

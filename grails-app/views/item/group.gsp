@@ -26,17 +26,11 @@
             <div class="col-sm-4">
               <g:if test="${editAllowed}">
                 <div class="row">
-                  <div class="pull-right">
-                    <g:render template="/item/templates/deleteGroupButton" model="${[itemGroup: itemGroup]}"/>
-                  </div>
-                  <div class="pull-right">
-                    <g:render template="/item/templates/editGroupButton" model="${[itemGroup: itemGroup]}"/>
-                  </div>
-                  <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createItem.tooltip')}">
+                  <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createItem.tooltip')}">
                     <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">
                       <g:render template="/item/templates/itemForm" model="${[action: 'createItem', button: 'item.createItem.button', itemGroup: itemGroup]}"/>
                     </tempvs:modalButton>
-                  </span>
+                  </div>
                 </div>
               </g:if>
             </div>
