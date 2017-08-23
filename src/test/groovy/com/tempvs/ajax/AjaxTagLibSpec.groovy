@@ -9,11 +9,12 @@ import spock.lang.Specification
 @TestFor(AjaxTagLib)
 class AjaxTagLibSpec extends Specification {
 
-    private static final String MESSAGE = 'message'
     private static final String ID = 'id'
-    private static final String DELETE_ITEM_URL = "'/item/deleteItem/id'"
     private static final String ITEM = 'item'
+    private static final String MESSAGE = 'message'
+    private static final String DELETE_METHOD = 'DELETE'
     private static final String DELETE_ITEM = 'deleteItem'
+    private static final String DELETE_ITEM_URL = '/item/deleteItem/id'
 
     def setup() {
     }
@@ -37,11 +38,11 @@ class AjaxTagLibSpec extends Specification {
 
     void "Test tempvs:ajaxLink"() {
         given:
-        String event = "<span onclick=\"sendAjaxRequest(this, ${DELETE_ITEM_URL});\">"
+        String event = "<span onclick=\"sendAjaxRequest(this, '${DELETE_ITEM_URL}', '${DELETE_METHOD}');\">"
         String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
-        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\"/>")
+        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\" method=\"${DELETE_METHOD}\"/>")
 
         then:
         template.contains spinner

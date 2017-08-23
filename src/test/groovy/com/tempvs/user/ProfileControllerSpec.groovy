@@ -19,6 +19,8 @@ class ProfileControllerSpec extends Specification {
     private static final String ONE = '1'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
+    private static final String POST_METHOD = 'POST'
+    private static final String DELETE_METHOD = 'DELETE'
     private static final String AUTH_URL = '/auth/index'
     private static final String PROPERTIES = 'properties'
     private static final String IDENTIFIER = 'identifier'
@@ -182,6 +184,9 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test createClubProfile()"() {
+        given:
+        request.method = POST_METHOD
+
         when: 'Command invalid'
         controller.createClubProfile(clubProfileCommand)
 
@@ -220,6 +225,7 @@ class ProfileControllerSpec extends Specification {
 
     void "Test editClubProfile()"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 
         when:
@@ -244,6 +250,9 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test editUserProfile()"() {
+        given:
+        request.method = POST_METHOD
+
         when:
         controller.editUserProfile(userProfileCommand)
 
@@ -263,8 +272,11 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test editProfileEmail() for duplicate"() {
-        when: 'Email duplicate'
+        given:
         params.email = EMAIL
+        request.method = POST_METHOD
+
+        when: 'Email duplicate'
         controller.editProfileEmail()
 
         then:
@@ -276,8 +288,11 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test editProfileEmail() for non-unique entry"() {
-        when:
+        given:
         params.email = EMAIL
+        request.method = POST_METHOD
+
+        when:
         controller.editProfileEmail()
 
         then:
@@ -290,8 +305,11 @@ class ProfileControllerSpec extends Specification {
     }
 
     void "Test editProfileEmail()"() {
-        when:
+        given:
         params.email = EMAIL
+        request.method = POST_METHOD
+
+        when:
         controller.editProfileEmail()
 
         then:
@@ -308,6 +326,7 @@ class ProfileControllerSpec extends Specification {
     void "Test deleteProfile()"() {
         given:
         params.id = ONE
+        request.method = DELETE_METHOD
 
         when:
         controller.deleteProfile()
@@ -326,9 +345,10 @@ class ProfileControllerSpec extends Specification {
 
     void "Test deleteAvatar()"() {
         given:
-        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
         params.profileId = ONE
+        request.method = DELETE_METHOD
         params.profileClass = UserProfile.class.name
+        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 
         when:
         controller.deleteAvatar()
@@ -344,6 +364,7 @@ class ProfileControllerSpec extends Specification {
     void "Test editAvatar()"() {
         given:
         params.profileId = ONE
+        request.method = POST_METHOD
         params.profileClass = UserProfile.class.name
         controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 

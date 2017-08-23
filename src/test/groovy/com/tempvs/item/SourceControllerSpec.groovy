@@ -17,6 +17,7 @@ class SourceControllerSpec extends Specification {
     private static final Long LONG_ID = 1L
     private static final String NAME = 'name'
     private static final String REFERER = 'referer'
+    private static final String POST_METHOD = 'POST'
     private static final String PROPERTIES = 'properties'
     private static final String SHOW_URI = '/source/show'
     private static final String PERIOD_URI = '/source/period'
@@ -61,6 +62,7 @@ class SourceControllerSpec extends Specification {
 
     void "Test createSource()"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
 
         when:
@@ -79,6 +81,7 @@ class SourceControllerSpec extends Specification {
 
     void "Test createSource() against invalid item"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
 
         when:
@@ -96,6 +99,7 @@ class SourceControllerSpec extends Specification {
 
     void "Test createSource() against invalid command"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
 
         when:
@@ -127,13 +131,12 @@ class SourceControllerSpec extends Specification {
     void "Test getSourcesByPeriod()"() {
         given:
         params.id = period.id
-        List<Source> sources = [source, source]
 
         when:
         controller.getSourcesByPeriod()
 
         then:
-        1 * sourceService.getSourcesByPeriod(period) >> sources
+        1 * sourceService.getSourcesByPeriod(period) >> {[source, source]}
         2 * source.id >> LONG_ID
         2 * source.name >> NAME
         0 * _
@@ -141,6 +144,7 @@ class SourceControllerSpec extends Specification {
 
     void "Test editSource()"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
 
         when:
@@ -160,6 +164,7 @@ class SourceControllerSpec extends Specification {
 
     void "Test editSource() against invalid source"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
 
         when:
@@ -178,6 +183,7 @@ class SourceControllerSpec extends Specification {
 
     void "Test editSource() against unexisting source"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
 
         when:
@@ -193,6 +199,7 @@ class SourceControllerSpec extends Specification {
 
     void "Test editSource() against invalid command"() {
         given:
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
 
         when:

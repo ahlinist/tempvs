@@ -69,5 +69,6 @@
       <g:else>
         <g:message code="item.group.notFound.message"/>
       </g:else>
+      <g:render template="/item/templates/sourceDropdownPopulator"/>
     </body>
 </html>

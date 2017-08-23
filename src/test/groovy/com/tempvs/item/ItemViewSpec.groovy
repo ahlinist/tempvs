@@ -7,6 +7,7 @@ import com.tempvs.user.UserProfile
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.GroovyPageUnitTestMixin
+import org.springframework.context.ApplicationContext
 import spock.lang.Specification
 
 /**
@@ -25,6 +26,7 @@ class ItemViewSpec extends Specification {
     private static final String IMAGES = 'images'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_TITLE = 'item.show.title'
+    private static final String SOURCE_SERVICE = 'sourceService'
     private static final String ITEM_STASH_TITLE = 'item.stash.title'
     private static final String ITEM_GROUP_TITLE = 'item.group.title'
     private static final String ITEM_NOT_FOUND = 'item.notFound.message'
@@ -34,15 +36,17 @@ class ItemViewSpec extends Specification {
     def user
     def item
     def itemGroup
-    def image = Mock(Image)
-    def source = Mock(Source)
-    def userProfile = Mock(UserProfile)
+    def image = Mock Image
+    def source = Mock Source
+    def userProfile = Mock UserProfile
+    def sourceService = Mock SourceService
     def period = Period.valueOf 'ANCIENT'
+    def applicationContext = Mock ApplicationContext
 
     def setup() {
-        user = Mock(User)
-        itemGroup = Mock(ItemGroup)
-        item = Mock(Item)
+        user = Mock User
+        itemGroup = Mock ItemGroup
+        item = Mock Item
     }
 
     def cleanup() {
@@ -118,12 +122,17 @@ class ItemViewSpec extends Specification {
                 user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
+                applicationContext: applicationContext,
         ]
 
         when:
         String result = render view: '/item/group', model: model
 
         then:
+        2 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
+        2 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
+        1 * sourceService.getSourcesByPeriod(period) >> {[source]}
+        1 * sourceService.getSourcesByPeriod(null)
         4 * itemGroup.getProperty(NAME) >> NAME
         2 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         5 * itemGroup.getProperty(ID) >> ONE
@@ -132,7 +141,7 @@ class ItemViewSpec extends Specification {
         3 * item.getProperty(NAME) >> NAME
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * user.getProperty(ID) >> ONE
-        1 * item.getProperty(PERIOD) >> period
+        2 * item.getProperty(PERIOD) >> period
         1 * item.getProperty(SOURCE) >> source
         1 * source.getProperty(ID) >> ONE
         0 * _
@@ -166,17 +175,21 @@ class ItemViewSpec extends Specification {
                 user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
+                applicationContext: applicationContext,
         ]
 
         when:
         String result = render view: '/item/show', model: model
 
         then:
+        1 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
+        1 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
+        1 * sourceService.getSourcesByPeriod(period) >> {[source]}
         3 * item.getProperty(ID) >> ID
         5 * item.getProperty(NAME) >> NAME
         2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * item.getProperty(IMAGES) >> [image]
-        2 * item.getProperty(PERIOD) >> period
+        3 * item.getProperty(PERIOD) >> period
         2 * item.getProperty(SOURCE) >> source
         1 * source.getProperty(IMAGES) >> [image]
         1 * source.getProperty(NAME) >> NAME

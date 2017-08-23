@@ -2,15 +2,16 @@ function submitAjaxForm(form) {
     var method = 'POST'
     var url = form.action;
     var data = new FormData(form);
-    processAjaxRequest(form, url, data, method);
+    processAjaxRequest(form, url, data, method, defaultSuccess);
 }
 
-function sendAjaxRequest(element, url, method) {
+function sendAjaxRequest(element, url, method, success) {
     var data = new FormData();
-    processAjaxRequest(element, url, data, method);
+    var successAction = (typeof success === "function") ? success : defaultSuccess;
+    processAjaxRequest(element, url, data, method, successAction);
 }
 
-function processAjaxRequest(element, url, data, method) {
+function processAjaxRequest(element, url, data, method, success) {
     var spinner = $(element).find('.ajaxSpinner');
     var submitButton = $(element).find('.submit-button');
 
@@ -28,7 +29,7 @@ function processAjaxRequest(element, url, data, method) {
             complete(submitButton, spinner);
         },
         success: function(response) {
-            success(response, element);
+            success(element, response);
         },
         error: function() {
             createFormMessage(element, false, "Something went wrong :(");
@@ -47,7 +48,7 @@ function complete(submitButton, spinner) {
     spinner.fadeOut();
 }
 
-function success(response, element) {
+function defaultSuccess(element, response) {
     if (response.redirect) {
         window.location.href = response.redirect;
     } else if (response.formMessage) {

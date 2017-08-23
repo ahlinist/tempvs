@@ -7,22 +7,25 @@ import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.context.MessageSource
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
 @TestFor(UserController)
 class UserControllerSpec extends Specification {
-    private static final String PROFILE_PAGE_URI = '/profile'
+
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
-    private static final String NEW_PASSWORD = 'newPassword'
+    private static final String POST_METHOD = 'POST'
     private static final String PROPERTIES = 'properties'
+    private static final String NEW_PASSWORD = 'newPassword'
     private static final String UPDATE_EMAIL_ACTION = 'email'
+    private static final String PROFILE_PAGE_URI = '/profile'
+    private static final String EMAIL_USED = 'user.email.used'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String EMAIL_USED = 'user.email.used'
-    private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
+    private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
 
     def ajaxResponseService = Mock(AjaxResponseService)
     def userService = Mock(UserService)
@@ -68,8 +71,11 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check updateEmail() for duplicate"() {
-        when:
+        given:
         params.email = EMAIL
+        request.method = POST_METHOD
+
+        when:
         controller.updateEmail()
 
         then:
@@ -80,8 +86,11 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check updateEmail action for used email"() {
-        when:
+        given:
         params.email = EMAIL
+        request.method = POST_METHOD
+
+        when:
         controller.updateEmail()
 
         then:
@@ -93,6 +102,10 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check updateEmail action"() {
+        given:
+        params.email = EMAIL
+        request.method = POST_METHOD
+
         when:
         params.email = EMAIL
         controller.updateEmail()
@@ -108,6 +121,9 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check updatePassword action for invalid params"() {
+        given:
+        request.method = POST_METHOD
+
         when:
         controller.updatePassword(userPasswordCommand)
 
@@ -119,6 +135,9 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check updatePassword action for valid params"() {
+        given:
+        request.method = POST_METHOD
+
         when:
         controller.updatePassword(userPasswordCommand)
 
@@ -132,6 +151,9 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check register action against invalid command"() {
+        given:
+        request.method = POST_METHOD
+
         when:
         controller.register(registerCommand)
 
@@ -143,6 +165,9 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check register action against valid command and invalid user data"() {
+        given:
+        request.method = POST_METHOD
+
         when:
         controller.register(registerCommand)
 
@@ -157,6 +182,9 @@ class UserControllerSpec extends Specification {
     }
 
     void "Check register action against valid command and valid user data"() {
+        given:
+        request.method = POST_METHOD
+        
         when:
         controller.register(registerCommand)
 

@@ -33,8 +33,11 @@ class SourceController {
     }
 
     def getSourcesByPeriod(String id) {
-        List<Source> sources = period(id).sources as List<Source>
-        render(sources.collect { Source source -> [id: source.id, name: source.name]} as JSON)
+        if (id) {
+            Period period = Period.valueOf(id.toUpperCase())
+            List<Source> sources = sourceService.getSourcesByPeriod(period)
+            render((sources?.collect { Source source -> [id: source.id, name: source.name]} ?: []) as JSON)
+        }
     }
 
     def show(String id) {

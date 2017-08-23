@@ -21,9 +21,11 @@ class ItemControllerSpec extends Specification {
     private static final Long LONG_ID = 1L
     private static final String NAME = 'name'
     private static final String REFERER = 'referer'
+    private static final String POST_METHOD = 'POST'
     private static final String SHOW_ACTION = 'show'
     private static final String GROUP_ACTION = 'group'
     private static final String ITEM_URI = '/item/show'
+    private static final String DELETE_METHOD = 'DELETE'
     private static final String PROPERTIES = 'properties'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_GROUP_URI = '/item/group'
@@ -108,6 +110,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test group creation against invalid command"() {
         when:
+        request.method = POST_METHOD
         controller.createGroup(itemGroupCommand)
 
         then:
@@ -119,6 +122,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test group creation against invalid group"() {
         when:
+        request.method = POST_METHOD
         controller.createGroup(itemGroupCommand)
 
         then:
@@ -133,6 +137,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test successful group creation"() {
         given:
+        request.method = POST_METHOD
         Map linkGeneratorMap = ['action':GROUP_ACTION, 'id':LONG_ID]
         controller.grailsLinkGenerator = grailsLinkGenerator
 
@@ -201,6 +206,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem() against invalid command"() {
         when:
+        request.method = POST_METHOD
         controller.createItem(itemCommand)
 
         then:
@@ -213,6 +219,7 @@ class ItemControllerSpec extends Specification {
     void "Test createItem() against invalid item"() {
         given:
         params.groupId = ONE
+        request.method = POST_METHOD
 
         when:
         controller.createItem(itemCommand)
@@ -230,6 +237,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test successful createItem()"() {
         given:
+        request.method = POST_METHOD
         Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
         controller.grailsLinkGenerator = grailsLinkGenerator
         params.groupId = ONE
@@ -290,6 +298,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem() against unexisting item"() {
         given:
+        request.method = DELETE_METHOD
         params.id = ONE
 
         when:
@@ -304,6 +313,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem()"() {
         given:
+        request.method = DELETE_METHOD
         params.id = ONE
 
         when:
@@ -322,6 +332,7 @@ class ItemControllerSpec extends Specification {
     void "Test deleteGroup() against unexisting one"() {
         given:
         params.id = ONE
+        request.method = DELETE_METHOD
 
         when:
         controller.deleteGroup()
@@ -336,6 +347,7 @@ class ItemControllerSpec extends Specification {
     void "Test deleteGroup()"() {
         given:
         params.id = ONE
+        request.method = DELETE_METHOD
 
         when:
         controller.deleteGroup()
@@ -351,6 +363,7 @@ class ItemControllerSpec extends Specification {
     void "Test editGroup()"() {
         given:
         params.groupId = ONE
+        request.method = POST_METHOD
         Map properties = [name: NAME, description: DESCRIPTION]
         controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
 
@@ -371,6 +384,7 @@ class ItemControllerSpec extends Specification {
     void "Test editItem() against invalid command"() {
         given:
         params.itemId = ONE
+        request.method = POST_METHOD
 
         when:
         controller.editItem(itemCommand)
@@ -386,6 +400,7 @@ class ItemControllerSpec extends Specification {
     void "Test editItem() against invalid item"() {
         given:
         params.itemId = ONE
+        request.method = POST_METHOD
 
         when:
         controller.editItem(itemCommand)
@@ -404,6 +419,7 @@ class ItemControllerSpec extends Specification {
     void "Test successful editItem()"() {
         given:
         params.itemId = ONE
+        request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
 
         when:

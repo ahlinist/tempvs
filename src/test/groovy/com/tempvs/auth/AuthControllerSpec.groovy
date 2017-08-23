@@ -22,7 +22,9 @@ class AuthControllerSpec extends Specification {
 
     private static final String EMAIL = 'email'
     private static final String TEST_URI = '/test'
+    private static final String GET_METHOD = 'GET'
     private static final String PROFILE = 'profile'
+    private static final String POST_METHOD = 'POST'
     private static final String PASSWORD = 'password'
     private static final String LOGIN_PAGE_URI = '/auth/index'
     private static final String PROFILE_PAGE_URI = '/profile'
@@ -56,6 +58,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing index() page rendering"() {
         when:
+        request.method = GET_METHOD
         controller.index()
 
         then:
@@ -65,6 +68,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing register() action with invalid params"() {
         when:
+        request.method = POST_METHOD
         controller.register(requestRegistrationCommand)
 
         then:
@@ -76,6 +80,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing register() action with valid params"() {
         when:
+        request.method = POST_METHOD
         controller.register(requestRegistrationCommand)
 
         then:
@@ -89,6 +94,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for non-valid params"() {
         when:
+        request.method = POST_METHOD
         controller.login(loginCommand)
 
         then:
@@ -100,6 +106,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for non-existing user"() {
         when:
+        request.method = POST_METHOD
         controller.login(loginCommand)
 
         then:
@@ -113,6 +120,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for incorrect password"() {
         when:
+        request.method = POST_METHOD
         controller.login(loginCommand)
 
         then:
@@ -129,6 +137,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for correct params from login page"() {
         given:
+        request.method = POST_METHOD
         controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addHeader('referer', LOGIN_PAGE_URI)
         Map linkGeneratorMap = ['controller': PROFILE]
@@ -152,6 +161,7 @@ class AuthControllerSpec extends Specification {
 
     void "Testing login() for correct params"() {
         given:
+        request.method = POST_METHOD
         controller.grailsLinkGenerator = grailsLinkGenerator
         controller.request.addHeader('referer', TEST_URI)
 
