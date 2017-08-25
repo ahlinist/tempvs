@@ -8,5 +8,5 @@ import grails.validation.Validateable
  */
 @GrailsCompileStatic
 class ImageUploadCommand implements Validateable {
-    ImageUploadBean imageUploadBean
+    List<ImageUploadBean> imageUploadBeans
 }

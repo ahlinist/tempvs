@@ -3,7 +3,6 @@ package com.tempvs.user
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageUploadBean
-import com.tempvs.image.ImageUploadCommand
 import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
@@ -47,7 +46,6 @@ class ProfileControllerSpec extends Specification {
     def emailVerification = Mock(EmailVerification)
     def clubProfileCommand = Mock(ClubProfileCommand)
     def userProfileCommand = Mock(UserProfileCommand)
-    def imageUploadCommand = Mock(ImageUploadCommand)
     def ajaxResponseService = Mock(AjaxResponseService)
 
     def setup() {
@@ -369,11 +367,9 @@ class ProfileControllerSpec extends Specification {
         controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
 
         when:
-        controller.uploadAvatar(imageUploadCommand)
+        controller.uploadAvatar(imageUploadBean)
 
         then:
-        1 * imageUploadCommand.validate() >> Boolean.TRUE
-        1 * imageUploadCommand.imageUploadBean >> imageUploadBean
         1 * profileService.getProfile(UserProfile, ONE) >> userProfile
         1 * profileService.editAvatar(userProfile, imageUploadBean) >> userProfile
         1 * userProfile.validate() >> Boolean.TRUE

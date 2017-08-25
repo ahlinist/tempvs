@@ -15,8 +15,8 @@ ${profile}
       <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.editAvatar.tooltip')}">
         <tempvs:modalButton id="uploadAvatar" classes="glyphicon glyphicon-picture">
           <tempvs:ajaxForm action="uploadAvatar">
-            <tempvs:formField type="file" name="imageUploadBean.image" label="profile.avatar.label" />
-            <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="profile.avatarInfo.label" />
+            <tempvs:formField type="file" name="image" label="profile.avatar.label" />
+            <tempvs:formField type="text" name="imageInfo" label="profile.avatarInfo.label" />
             <input type="hidden" name="profileClass" value="${profile.class.name}"/>
             <input type="hidden" name="profileId" value="${profile.id}"/>
             <tempvs:ajaxSubmitButton value="profile.updateAvatar.button" />
