@@ -70,5 +70,9 @@ input, .list-group-item {
 }
 
 select:disabled {
-    background: #dddddd;
+    background: #DDD;
+}
+
+.btn {
+    border: 1px #DDD solid;
 }

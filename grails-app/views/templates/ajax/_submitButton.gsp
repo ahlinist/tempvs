@@ -1,6 +1,6 @@
-<div class="row">
-  <button name="submit-button" class="btn btn-primary submit-button">
+<button name="submit-button" class="btn btn-light submit-button">
+  <span class="${icon}">
     <g:message code="${g.message(code: value)}" />
-  </button>
-  <asset:image class="ajaxSpinner" style="display: none" src="spinner.gif" />
-</div>
+  </span>
+</button>
+<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif" />

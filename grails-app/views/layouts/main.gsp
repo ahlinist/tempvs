@@ -37,7 +37,7 @@
             </ul>
           </span>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.button')}">
-            <g:link class="btn btn-primary disableable pull-right glyphicon glyphicon-log-out" controller="auth" action="logout"/>
+            <g:link class="btn btn-secondary disableable pull-right glyphicon glyphicon-log-out" controller="auth" action="logout"/>
           </span>
           <span class="dropdown pull-right">
             <button class="btn btn-default dropdown-toggle glyphicon glyphicon-cog" type="button" data-toggle="dropdown">

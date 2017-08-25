@@ -24,7 +24,7 @@ class AjaxTagLibSpec extends Specification {
 
     void "Test tempvs:ajaxSubmitButton"() {
         given:
-        String submitButton = '<button name="submit-button" class="btn btn-primary submit-button">'
+        String submitButton = '<button name="submit-button" class="btn btn-light submit-button">'
         String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
