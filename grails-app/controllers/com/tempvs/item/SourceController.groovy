@@ -1,6 +1,9 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
@@ -12,13 +15,15 @@ import grails.web.mapping.LinkGenerator
 @GrailsCompileStatic
 class SourceController {
 
+    private static final String SOURCE_COLLECTION = 'source'
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
     static allowedMethods = [index: 'GET', period: 'GET', getSourcesByPeriod: 'GET', show: 'GET', createSource: 'POST', editSource: 'POST']
 
+    ImageService imageService
     SourceService sourceService
-    AjaxResponseService ajaxResponseService
     LinkGenerator grailsLinkGenerator
+    AjaxResponseService ajaxResponseService
 
     def index() {
 
@@ -50,7 +55,9 @@ class SourceController {
     def createSource(SourceCommand command) {
         if (command.validate()) {
             Period period = Period.valueOf(request.getHeader('referer').tokenize('/').last().toUpperCase())
-            Source source = sourceService.createSource(command.properties + [period: period])
+            Map properties = command.properties + [period: period]
+            List<Image> images = imageService.uploadImages(properties.imageBeans as List<ImageUploadBean>, SOURCE_COLLECTION)
+            Source source = sourceService.createSource(properties as Source, images)
 
             if (source.validate()) {
                 render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))

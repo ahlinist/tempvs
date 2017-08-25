@@ -1,6 +1,9 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.converters.JSON
 import grails.test.mixin.TestFor
@@ -20,17 +23,22 @@ class SourceControllerSpec extends Specification {
     private static final String POST_METHOD = 'POST'
     private static final String PROPERTIES = 'properties'
     private static final String SHOW_URI = '/source/show'
+    private static final String SOURCE_COLLECTION = 'source'
     private static final String PERIOD_URI = '/source/period'
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
-    def json = Mock(JSON)
-    def source = Mock(Source)
+    def json = Mock JSON
+    def image = Mock Image
     def period = Period.XIX
-    def sourceService = Mock(SourceService)
-    def sourceCommand = Mock(SourceCommand)
-    def ajaxResponseService = Mock(AjaxResponseService)
+    def source = Mock Source
+    def imageService = Mock ImageService
+    def sourceService = Mock SourceService
+    def sourceCommand = Mock SourceCommand
+    def imageUploadBean = Mock ImageUploadBean
+    def ajaxResponseService = Mock AjaxResponseService
 
     def setup() {
+        controller.imageService = imageService
         controller.sourceService = sourceService
         controller.ajaxResponseService = ajaxResponseService
     }
@@ -63,15 +71,18 @@ class SourceControllerSpec extends Specification {
     void "Test createSource()"() {
         given:
         request.method = POST_METHOD
+        List<Image> images = [image]
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
+        Map properties = [imageBeans: [imageUploadBean]]
 
         when:
         controller.createSource(sourceCommand)
 
         then:
         1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceCommand.getProperty(PROPERTIES) >> [:]
-        1 * sourceService.createSource(_ as Map) >> source
+        1 * sourceCommand.getProperty(PROPERTIES) >> properties
+        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> images
+        1 * sourceService.createSource(_ as Source, images) >> source
         1 * source.validate() >> Boolean.TRUE
         1 * source.id >> LONG_ID
         1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${LONG_ID}") >> json
@@ -79,18 +90,21 @@ class SourceControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test createSource() against invalid item"() {
+    void "Test createSource() against invalid source"() {
         given:
         request.method = POST_METHOD
+        List<Image> images = [image]
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
+        Map properties = [imageBeans: [imageUploadBean]]
 
         when:
         controller.createSource(sourceCommand)
 
         then:
         1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceCommand.getProperty(PROPERTIES) >> [:]
-        1 * sourceService.createSource(_ as Map) >> source
+        1 * sourceCommand.getProperty(PROPERTIES) >> properties
+        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> images
+        1 * sourceService.createSource(_ as Source, images) >> source
         1 * source.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

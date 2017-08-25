@@ -1,7 +1,10 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
 import com.tempvs.image.ImageBean
+import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
@@ -18,8 +21,9 @@ import spock.lang.Specification
 class ItemControllerSpec extends Specification {
 
     private static final String ONE = '1'
-    private static final Long LONG_ID = 1L
+    private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
+    private static final String AUTH_URI = '/auth'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String SHOW_ACTION = 'show'
@@ -28,6 +32,7 @@ class ItemControllerSpec extends Specification {
     private static final String DELETE_METHOD = 'DELETE'
     private static final String PROPERTIES = 'properties'
     private static final String DESCRIPTION = 'description'
+    private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
@@ -43,6 +48,8 @@ class ItemControllerSpec extends Specification {
     def userProfile = Mock(UserProfile)
     def itemService = Mock(ItemService)
     def itemCommand = Mock(ItemCommand)
+    def imageService = Mock(ImageService)
+    def imageUploadBean = Mock(ImageUploadBean)
     def itemGroupCommand = Mock(ItemGroupCommand)
     def grailsLinkGenerator = Mock(LinkGenerator)
     def ajaxResponseService = Mock(AjaxResponseService)
@@ -50,6 +57,7 @@ class ItemControllerSpec extends Specification {
     def setup() {
         controller.userService = userService
         controller.itemService = itemService
+        controller.imageService = imageService
         controller.ajaxResponseService = ajaxResponseService
     }
 
@@ -99,8 +107,8 @@ class ItemControllerSpec extends Specification {
         then:
         1 * userService.getUser(ONE) >> user
         1 * user.userProfile >> userProfile
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
+        1 * user.id >> LONG_ONE
+        1 * userService.currentUserId >> LONG_ONE
         1 * user.itemGroups >> itemGroups
         0 * _
 
@@ -138,7 +146,7 @@ class ItemControllerSpec extends Specification {
     void "Test successful group creation"() {
         given:
         request.method = POST_METHOD
-        Map linkGeneratorMap = ['action':GROUP_ACTION, 'id':LONG_ID]
+        Map linkGeneratorMap = ['action':GROUP_ACTION, 'id':LONG_ONE]
         controller.grailsLinkGenerator = grailsLinkGenerator
 
         when:
@@ -149,9 +157,9 @@ class ItemControllerSpec extends Specification {
         1 * itemGroupCommand.getProperty(PROPERTIES) >> [:]
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
-        1 * itemGroup.getId() >> LONG_ID
-        1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_GROUP_URI}/${LONG_ID}"
-        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
+        1 * itemGroup.getId() >> LONG_ONE
+        1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_GROUP_URI}/${LONG_ONE}"
+        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -191,8 +199,8 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
+        1 * user.id >> LONG_ONE
+        1 * userService.currentUserId >> LONG_ONE
         0 * _
 
         and:
@@ -220,6 +228,8 @@ class ItemControllerSpec extends Specification {
         given:
         params.groupId = ONE
         request.method = POST_METHOD
+        List<Image> images = [image]
+        Map properties = [imageBeans: [imageUploadBean]]
 
         when:
         controller.createItem(itemCommand)
@@ -227,8 +237,9 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemCommand.getProperty(PROPERTIES) >> [:]
-        1 * itemService.createItem(_ as Item, _ as Map) >> item
+        1 * itemCommand.getProperty(PROPERTIES) >> properties
+        1 * imageService.uploadImages(_ as List<ImageUploadBean>, ITEM_IMAGE_COLLECTION) >> images
+        1 * itemService.createItem(_ as Item, images) >> item
         1 * item.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -237,10 +248,12 @@ class ItemControllerSpec extends Specification {
 
     void "Test successful createItem()"() {
         given:
-        request.method = POST_METHOD
-        Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
-        controller.grailsLinkGenerator = grailsLinkGenerator
         params.groupId = ONE
+        request.method = POST_METHOD
+        List<Image> images = [image]
+        Map properties = [imageBeans: [imageUploadBean]]
+        controller.grailsLinkGenerator = grailsLinkGenerator
+        Map linkGeneratorMap = ['action':SHOW_ACTION, 'id':1]
 
         when:
         controller.createItem(itemCommand)
@@ -248,12 +261,13 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemCommand.getProperty(PROPERTIES) >> [:]
-        1 * itemService.createItem(_ as Item, _ as Map) >> item
+        1 * itemCommand.getProperty(PROPERTIES) >> properties
+        1 * imageService.uploadImages(_ as List<ImageUploadBean>, ITEM_IMAGE_COLLECTION) >> images
+        1 * itemService.createItem(_ as Item, images) >> item
         1 * item.validate() >> Boolean.TRUE
-        1 * item.id >> LONG_ID
-        1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ID}"
-        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
+        1 * item.id >> LONG_ONE
+        1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ONE}"
+        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -282,8 +296,8 @@ class ItemControllerSpec extends Specification {
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
-        1 * user.id >> LONG_ID
-        1 * userService.currentUserId >> LONG_ID
+        1 * user.id >> LONG_ONE
+        1 * userService.currentUserId >> LONG_ONE
         0 * _
 
         and:
@@ -323,8 +337,8 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * itemService.deleteItem(item) >> Boolean.TRUE
-        1 * itemGroup.id >> LONG_ID
-        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
+        1 * itemGroup.id >> LONG_ONE
+        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -365,7 +379,7 @@ class ItemControllerSpec extends Specification {
         params.groupId = ONE
         request.method = POST_METHOD
         Map properties = [name: NAME, description: DESCRIPTION]
-        controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ID}")
+        controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ONE}")
 
         when:
         controller.editGroup(itemGroupCommand)
@@ -376,7 +390,7 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemService.editGroup(itemGroup, properties) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
-        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ID}") >> json
+        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -420,7 +434,7 @@ class ItemControllerSpec extends Specification {
         given:
         params.itemId = ONE
         request.method = POST_METHOD
-        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ID}")
+        controller.request.addHeader(REFERER, "${ITEM_URI}/${LONG_ONE}")
 
         when:
         controller.editItem(itemCommand)
@@ -431,7 +445,7 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.getProperty(PROPERTIES) >> [:]
         1 * itemService.editItem(item, _ as Map) >> editedItem
         1 * editedItem.validate() >> Boolean.TRUE
-        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ID}") >> json
+        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

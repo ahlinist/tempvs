@@ -3,7 +3,6 @@ package com.tempvs.item
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
@@ -16,8 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 @Transactional
 @GrailsCompileStatic
 class ItemService {
-
-    private static final String ITEM_COLLECTION = 'item'
 
     ImageService imageService
     UserService userService
@@ -58,14 +55,13 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item createItem(Item item, Map properties) {
-        Set<Image> itemImages = imageService.updateImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
-
-        if (itemImages) {
-            item.images = itemImages
+    Item createItem(Item item, List<Image> images) {
+        images.each { Image image ->
+            item.addToImages(image)
         }
 
         item.save()
+        item
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')

@@ -1,6 +1,9 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -14,16 +17,17 @@ import org.springframework.security.access.AccessDeniedException
 class ItemController {
 
     private static final String REFERER = 'referer'
+    private static final String ITEM_COLLECTION = 'item'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
     private static final String EDIT_GROUP_FAILED_MESSAGE = 'item.group.edit.failed.message'
 
     static defaultAction = 'stash'
-
     static allowedMethods = [stash: 'GET', createGroup: 'POST', editGroup: 'POST', group: 'GET', createItem: 'POST', show: 'GET', deleteItem: 'DELETE', deleteGroup: 'DELETE', editItem: 'POST']
 
     ItemService itemService
     UserService userService
+    ImageService imageService
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
 
@@ -88,7 +92,8 @@ class ItemController {
         if (command.validate()) {
             ItemGroup itemGroup = itemService.getGroup params.groupId
             Map properties = command.properties + [itemGroup: itemGroup]
-            Item item = itemService.createItem(properties as Item, properties)
+            List<Image> images = imageService.uploadImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
+            Item item = itemService.createItem(properties as Item, images)
 
             if (item.validate()) {
                 render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: item.id))
@@ -161,7 +166,7 @@ class ItemController {
         if (request.xhr) {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
-            redirect grailsLinkGenerator.link(controller: 'auth')
+            redirect(controller: 'auth')
         }
     }
 }

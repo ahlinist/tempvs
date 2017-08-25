@@ -4,7 +4,6 @@ import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
@@ -16,8 +15,6 @@ import org.codehaus.groovy.runtime.InvokerHelper
 @Transactional
 @GrailsCompileStatic
 class SourceService {
-
-    private static final String SOURCE_COLLECTION = 'source'
 
     ObjectDAO objectDAO
     ImageService imageService
@@ -31,15 +28,13 @@ class SourceService {
         objectDAO.findAll(Source, [period: period])
     }
 
-    Source createSource(Map params) {
-        Source source = objectFactory.create(Source)
-        Set<Image> sourceImages = imageService.updateImages(params.imageBeans as List<ImageUploadBean>, SOURCE_COLLECTION)
-
-        if (sourceImages) {
-            source.images = sourceImages
+    Source createSource(Source source, List<Image> images) {
+        images.each { Image image ->
+            source.addToImages(image)
         }
 
-        editSource(source, params)
+        source.save()
+        source
     }
 
     Source editSource(Source source, Map properties) {

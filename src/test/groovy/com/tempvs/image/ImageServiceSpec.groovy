@@ -97,7 +97,7 @@ class ImageServiceSpec extends Specification {
         List<ImageUploadBean> imageUploadBeans = [imageUploadBean]
 
         when:
-        def result = service.updateImages(imageUploadBeans, COLLECTION)
+        def result = service.uploadImages(imageUploadBeans, COLLECTION)
 
         then:
         1 * imageUploadBean.image >> multipartFile
@@ -112,6 +112,6 @@ class ImageServiceSpec extends Specification {
         0 * _
 
         and:
-        result == [image] as Set
+        result == [image]
     }
 }

@@ -3,13 +3,11 @@ package com.tempvs.item
 import com.tempvs.domain.ObjectDAO
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -20,7 +18,6 @@ class ItemServiceSpec extends Specification {
     private static final String NAME = 'name'
     private static final String IMAGES = 'images'
     private static final String DESCRIPTION = 'description'
-    private static final String ITEM_IMAGE_COLLECTION = 'item'
 
     def user = Mock(User)
     def item = Mock(Item)
@@ -30,11 +27,10 @@ class ItemServiceSpec extends Specification {
     def period = GroovyMock(Period)
     def userService = Mock(UserService)
     def imageService = Mock(ImageService)
-    def imageUploadBean = Mock(ImageUploadBean)
 
     def setup() {
-        service.userService = userService
         service.objectDAO = objectDAO
+        service.userService = userService
         service.imageService = imageService
     }
 
@@ -69,23 +65,13 @@ class ItemServiceSpec extends Specification {
 
     void "Test createItem()"() {
         given:
-        Set<Image> images = [image]
-        List<ImageUploadBean> imageUploadBeans = [imageUploadBean]
-
-        Map properties = [
-                name: NAME,
-                description: DESCRIPTION,
-                period: period,
-                itemGroup: itemGroup,
-                imageBeans: imageUploadBeans
-        ]
+        List<Image> images = [image, image]
 
         when:
-        def result = service.createItem(item, properties)
+        def result = service.createItem(item, images)
 
         then:
-        1 * imageService.updateImages(imageUploadBeans, ITEM_IMAGE_COLLECTION) >> images
-        1 * item.setImages(images)
+        2 * item.addToImages(image)
         1 * item.save() >> item
         0 * _
 
