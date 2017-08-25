@@ -1,7 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.ImageUploadCommand
+import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
@@ -129,23 +129,19 @@ class ProfileController {
         render ajaxResponseService.renderRedirect(request.getHeader('referer'))
     }
 
-    def uploadAvatar(ImageUploadCommand command) {
-        if (command.validate()) {
-            BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
+    def uploadAvatar(ImageUploadBean imageUploadBean) {
+        BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
 
-            if (profile) {
-                BaseProfile editedProfile = profileService.editAvatar(profile, command.imageUploadBean)
+        if (profile) {
+            BaseProfile editedProfile = profileService.editAvatar(profile, imageUploadBean)
 
-                if (editedProfile.validate()) {
-                    render ajaxResponseService.renderRedirect(request.getHeader('referer'))
-                } else {
-                    render ajaxResponseService.renderValidationResponse(editedProfile)
-                }
+            if (editedProfile.validate()) {
+                render ajaxResponseService.renderRedirect(request.getHeader('referer'))
             } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_PROFILE)
+                render ajaxResponseService.renderValidationResponse(editedProfile)
             }
         } else {
-            render ajaxResponseService.renderValidationResponse(command)
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_PROFILE)
         }
     }
 
