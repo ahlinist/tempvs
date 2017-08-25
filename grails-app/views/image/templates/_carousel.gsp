@@ -11,7 +11,7 @@
     <div class="carousel-inner">
       <g:each in="${images}" var="image" status="i">
         <div class="item ${i == 0 ? 'active' : ''}">
-          <tempvs:image image="${image}" orientation="${orientation}"/>
+          <tempvs:image image="${image}" orientation="${orientation}" styles="${styles}"/>
           <p class="text-center">${image.imageInfo}</p>
         </div>
       </g:each>
