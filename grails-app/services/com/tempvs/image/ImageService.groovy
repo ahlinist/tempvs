@@ -51,9 +51,9 @@ class ImageService {
     }
 
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
-        List<ImageUploadBean> validBeans = imageUploadBeans.findAll { ImageUploadBean bean -> !bean.image.empty }
+        List<ImageUploadBean> validBeans = imageUploadBeans?.findAll { ImageUploadBean bean -> !bean.image.empty }
 
-        validBeans.collect { ImageUploadBean validBean ->
+        validBeans?.collect { ImageUploadBean validBean ->
             updateImage(validBean, collection)
         }
     }

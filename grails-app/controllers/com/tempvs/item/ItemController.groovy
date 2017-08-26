@@ -3,11 +3,11 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.AccessDeniedException
 
 /**
@@ -18,6 +18,7 @@ class ItemController {
 
     private static final String REFERER = 'referer'
     private static final String ITEM_COLLECTION = 'item'
+    private static final String NO_ITEM_FOUND = 'item.notFound.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
     private static final String EDIT_GROUP_FAILED_MESSAGE = 'item.group.edit.failed.message'
@@ -89,19 +90,20 @@ class ItemController {
     }
 
     def createItem(ItemCommand command) {
-        if (command.validate()) {
-            ItemGroup itemGroup = itemService.getGroup params.groupId
-            Map properties = command.properties + [itemGroup: itemGroup]
-            List<Image> images = imageService.uploadImages(properties.imageBeans as List<ImageUploadBean>, ITEM_COLLECTION)
-            Item item = itemService.createItem(properties as Item, images)
+        processItem(command) {
+            Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
+            properties as Item
+        }
+    }
 
-            if (item.validate()) {
-                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: item.id))
-            } else {
-                render ajaxResponseService.renderValidationResponse(item)
+    def editItem(ItemCommand command) {
+        processItem(command) {
+            Item item = itemService.getItem params.itemId
+
+            if (item) {
+                InvokerHelper.setProperties(item, command.properties)
+                item
             }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 
@@ -144,29 +146,31 @@ class ItemController {
         render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
     }
 
-    def editItem(ItemCommand command) {
-        Item item = itemService.getItem params.itemId
-
-        if (command.validate()) {
-            if (item) {
-                Item editedItem = itemService.editItem(item, command.properties)
-
-                if (editedItem.validate()) {
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
-                } else {
-                    render ajaxResponseService.renderValidationResponse(editedItem)
-                }
-            }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
-        }
-    }
-
     def accessDeniedThrown(AccessDeniedException exception) {
         if (request.xhr) {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect(controller: 'auth')
+        }
+    }
+
+    private processItem(ItemCommand command, Closure generateItem) {
+        if (command.validate()) {
+            Item item = generateItem() as Item
+
+            if (item) {
+                if (item.validate()) {
+                    List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
+                    itemService.saveItem(item, images)
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
+                } else {
+                    render ajaxResponseService.renderValidationResponse(item)
+                }
+            } else {
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_ITEM_FOUND)
+            }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 }

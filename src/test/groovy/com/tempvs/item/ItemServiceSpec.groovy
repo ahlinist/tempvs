@@ -8,6 +8,7 @@ import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -63,12 +64,12 @@ class ItemServiceSpec extends Specification {
         result == itemGroup
     }
 
-    void "Test createItem()"() {
+    void "Test saveItem()"() {
         given:
         List<Image> images = [image, image]
 
         when:
-        def result = service.createItem(item, images)
+        def result = service.saveItem(item, images)
 
         then:
         2 * item.addToImages(image)
@@ -174,29 +175,5 @@ class ItemServiceSpec extends Specification {
 
         and:
         result == itemGroup
-    }
-
-    void "Test editItem()"() {
-        given: 'Props without images'
-        Map properties = [
-                name: NAME,
-                description: DESCRIPTION,
-                period: period,
-                itemGroup: itemGroup,
-        ]
-
-        when:
-        def result = service.editItem(item, properties)
-
-        then:
-        1 * item.setName(NAME)
-        1 * item.setDescription(DESCRIPTION)
-        1 * item.setPeriod(period)
-        1 * item.setItemGroup(itemGroup)
-        1 * item.save() >> item
-        0 * _
-
-        and:
-        result == item
     }
 }

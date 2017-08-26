@@ -14,7 +14,7 @@ class ItemCommand implements Validateable {
     String description
     Source source
     Period period
-    List<ImageUploadBean> imageBeans
+    List<ImageUploadBean> imageUploadBeans
 
     static constraints = {
         description nullable: true

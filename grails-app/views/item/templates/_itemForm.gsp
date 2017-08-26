@@ -1,8 +1,7 @@
 <%@ page import="com.tempvs.periodization.Period"%>
-<%@ page import="com.tempvs.item.Source"%>
 <tempvs:ajaxForm action="${action}">
   <g:if test="${action == 'createItem'}">
-    <tempvs:imageUploader fieldName="imageBeans" imageLabel="item.image.label" infoLabel="item.imageInfo.label"/>
+    <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="item.image.label" infoLabel="item.imageInfo.label"/>
   </g:if>
   <tempvs:formField type="text" name="name" value="${item?.name}" label="item.name.label" />
   <tempvs:formField type="text" name="description" value="${item?.description}" label="item.description.label" />

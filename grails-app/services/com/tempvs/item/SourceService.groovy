@@ -7,7 +7,6 @@ import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
-import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
  * Service that manages operations with {@link com.tempvs.item.Source}
@@ -20,7 +19,7 @@ class SourceService {
     ImageService imageService
     ObjectFactory objectFactory
 
-    Source getSource(String id) {
+    Source getSource(Object id) {
         objectDAO.get(Source, id)
     }
 
@@ -28,17 +27,11 @@ class SourceService {
         objectDAO.findAll(Source, [period: period])
     }
 
-    Source createSource(Source source, List<Image> images) {
-        images.each { Image image ->
+    Source saveSource(Source source, List<Image> images = null) {
+        images?.each { Image image ->
             source.addToImages(image)
         }
 
-        source.save()
-        source
-    }
-
-    Source editSource(Source source, Map properties) {
-        InvokerHelper.setProperties(source, properties)
         source.save()
         source
     }

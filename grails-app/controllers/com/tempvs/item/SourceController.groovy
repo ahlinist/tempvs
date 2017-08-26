@@ -8,6 +8,7 @@ import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
+import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
  * Controller for {@link com.tempvs.item.Source} entities managing.
@@ -15,6 +16,7 @@ import grails.web.mapping.LinkGenerator
 @GrailsCompileStatic
 class SourceController {
 
+    private static final String REFERER = 'referer'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
@@ -53,34 +55,33 @@ class SourceController {
     }
 
     def createSource(SourceCommand command) {
-        if (command.validate()) {
-            Period period = Period.valueOf(request.getHeader('referer').tokenize('/').last().toUpperCase())
-            Map properties = command.properties + [period: period]
-            List<Image> images = imageService.uploadImages(properties.imageBeans as List<ImageUploadBean>, SOURCE_COLLECTION)
-            Source source = sourceService.createSource(properties as Source, images)
-
-            if (source.validate()) {
-                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
-            } else {
-                render ajaxResponseService.renderValidationResponse(source)
-            }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
+        processSource(command) {
+            command.properties as Source
         }
     }
 
     def editSource(SourceCommand command) {
-        if (command.validate()) {
-            String sourceId = request.getHeader('referer').tokenize('/').last()
-            Source source = sourceService.getSource sourceId
+        processSource(command) {
+            Source source = sourceService.getSource params.sourceId
 
             if (source) {
-                Source editedSource = sourceService.editSource(source, command.properties)
+                InvokerHelper.setProperties(source, command.properties)
+                source
+            }
+        }
+    }
 
-                if (editedSource.validate()) {
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
+    private processSource(SourceCommand command, Closure generateSource) {
+        if (command.validate()) {
+            Source source = generateSource() as Source
+
+            if (source) {
+                if (source.validate()) {
+                    List<Image> images = imageService.uploadImages(command.imageUploadBeans as List<ImageUploadBean>, SOURCE_COLLECTION)
+                    sourceService.saveSource(source, images)
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
                 } else {
-                    render ajaxResponseService.renderValidationResponse(editedSource)
+                    render ajaxResponseService.renderValidationResponse(source)
                 }
             } else {
                 render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SOURCE_FOUND)

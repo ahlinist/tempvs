@@ -1,6 +1,7 @@
 package com.tempvs.item
 
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
 
@@ -12,7 +13,8 @@ class SourceCommand implements Validateable {
 
     String name
     String description
-    List<ImageUploadBean> imageBeans
+    Period period
+    List<ImageUploadBean> imageUploadBeans
 
     static constraints = {
         description nullable: true

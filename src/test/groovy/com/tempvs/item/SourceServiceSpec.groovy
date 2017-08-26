@@ -6,6 +6,7 @@ import com.tempvs.image.Image
 import com.tempvs.periodization.Period
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -56,30 +57,15 @@ class SourceServiceSpec extends Specification {
         result == sources
     }
 
-    void "Test createSource()"() {
+    void "Test saveSource()"() {
         given:
         List<Image> images = [image, image]
 
         when:
-        def result = service.createSource(source, images)
+        def result = service.saveSource(source, images)
 
         then:
         2 * source.addToImages(image)
-        1 * source.save() >> source
-        0 * _
-
-        and:
-        result == source
-    }
-
-    void "Test editSource()"() {
-        given:
-        Map params = [:]
-
-        when:
-        def result = service.editSource(source, params)
-
-        then:
         1 * source.save() >> source
         0 * _
 

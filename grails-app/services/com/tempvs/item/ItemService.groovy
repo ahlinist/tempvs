@@ -55,8 +55,8 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item createItem(Item item, List<Image> images) {
-        images.each { Image image ->
+    Item saveItem(Item item, List<Image> images = null) {
+        images?.each { Image image ->
             item.addToImages(image)
         }
 
@@ -74,12 +74,5 @@ class ItemService {
         } catch (Throwable e) {
             Boolean.FALSE
         }
-    }
-
-    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item editItem(Item item, Map properties) {
-        InvokerHelper.setProperties(item, properties)
-        item.save()
-        item
     }
 }

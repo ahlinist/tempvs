@@ -45,7 +45,7 @@ class SourceViewSpec extends Specification {
         then:
         4 * source.getProperty(NAME) >> NAME
         2 * source.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * source.getProperty(ID) >> ID
+        2 * source.getProperty(ID) >> ID
         1 * source.getProperty(IMAGES) >> images
         1 * source.getProperty(PERIOD) >> period
         0 * _
