@@ -24,6 +24,7 @@ class ItemViewSpec extends Specification {
     private static final String PERIOD = 'period'
     private static final String SOURCE = 'source'
     private static final String IMAGES = 'images'
+    private static final String IMAGE_INFO = 'imageInfo'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_TITLE = 'item.show.title'
     private static final String SOURCE_SERVICE = 'sourceService'
@@ -87,8 +88,6 @@ class ItemViewSpec extends Specification {
         3 * itemGroup.getProperty(NAME) >> NAME
         2 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         3 * itemGroup.getProperty(ID) >> ONE
-        1 * user.getProperty(ID) >> ONE
-        1 * userProfile.toString()
         0 * _
 
         and:
@@ -129,21 +128,16 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/group', model: model
 
         then:
-        2 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
-        2 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
-        1 * sourceService.getSourcesByPeriod(period) >> {[source]}
+        1 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
+        1 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
         1 * sourceService.getSourcesByPeriod(null)
-        2 * itemGroup.getProperty(NAME) >> NAME
+        1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        3 * itemGroup.getProperty(ID) >> ONE
+        1 * itemGroup.getProperty(ID) >> ONE
         1 * itemGroup.getProperty(ITEMS) >> items
         3 * item.getProperty(ID) >> ONE
-        3 * item.getProperty(NAME) >> NAME
-        2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * user.getProperty(ID) >> ONE
-        2 * item.getProperty(PERIOD) >> period
-        1 * item.getProperty(SOURCE) >> source
-        1 * source.getProperty(ID) >> ONE
+        2 * item.getProperty(NAME) >> NAME
+        1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         0 * _
 
         and:
@@ -167,7 +161,7 @@ class ItemViewSpec extends Specification {
     void "Test /item/show with id"() {
         given:
         String title = "<title>Tempvs - ${NAME}</title>"
-        String itemImage = "<tempvs:carousel images="
+        String carousel = "<tempvs:carousel images="
 
         Map model = [
                 item: item,
@@ -182,29 +176,60 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/show', model: model
 
         then:
-        1 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
-        1 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
-        1 * sourceService.getSourcesByPeriod(period) >> {[source]}
-        3 * item.getProperty(ID) >> ID
-        5 * item.getProperty(NAME) >> NAME
-        2 * item.getProperty(DESCRIPTION) >> DESCRIPTION
+        2 * item.getProperty(ID) >> ID
+        3 * item.getProperty(NAME) >> NAME
+        1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * item.getProperty(IMAGES) >> [image]
-        3 * item.getProperty(PERIOD) >> period
-        2 * item.getProperty(SOURCE) >> source
+        1 * item.getProperty(PERIOD) >> period
+        1 * item.getProperty(SOURCE) >> source
         1 * source.getProperty(IMAGES) >> [image]
         1 * source.getProperty(NAME) >> NAME
         1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * source.getProperty(PERIOD) >> period
-        1 * source.getProperty(ID) >> ID
-        2 * itemGroup.getProperty(ID) >> ID
-        1 * itemGroup.getProperty(NAME) >> NAME
-        1 * user.getProperty(ID) >> ID
         0 * _
 
         and:
         result.contains title
         result.contains NAME
         result.contains DESCRIPTION
-        result.contains itemImage
+        result.contains carousel
+    }
+
+    void "Test /item/editItemPage with id"() {
+        given:
+        String title = '<title>Tempvs - Edit'
+
+        Map model = [
+                item: item,
+                itemGroup: itemGroup,
+                user: user,
+                userProfile: userProfile,
+                editAllowed: Boolean.TRUE,
+                applicationContext: applicationContext,
+        ]
+
+        when:
+        String result = render view: '/item/editItemPage', model: model
+
+        then:
+        1 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
+        1 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
+        1 * sourceService.getSourcesByPeriod(period) >> [source]
+        4 * item.getProperty(ID) >> ID
+        2 * item.getProperty(NAME) >> NAME
+        1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
+        1 * item.getProperty(IMAGES) >> [image]
+        2 * item.getProperty(PERIOD) >> period
+        2 * item.getProperty(SOURCE) >> source
+        2 * image.getProperty(ID) >> ID
+        3 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
+        1 * source.getProperty(ID) >> ID
+        1 * itemGroup.getProperty(ID) >> ID
+        0 * _
+
+        and:
+        result.contains title
+        result.contains NAME
+        result.contains DESCRIPTION
     }
 }

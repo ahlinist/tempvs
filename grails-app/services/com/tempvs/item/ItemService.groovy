@@ -41,19 +41,6 @@ class ItemService {
         itemGroup
     }
 
-    @PreAuthorize('#itemGroup.user.email == authentication.name')
-    Boolean deleteGroup(ItemGroup itemGroup) {
-        Set<Item> items = itemGroup.items
-        imageService.deleteImages(items*.images?.flatten() as Set<Image>)
-
-        try {
-            itemGroup.delete(failOnError: true)
-            Boolean.TRUE
-        } catch (Throwable e) {
-            Boolean.FALSE
-        }
-    }
-
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item saveItem(Item item, List<Image> images = null) {
         images?.each { Image image ->
@@ -64,13 +51,34 @@ class ItemService {
         item
     }
 
+    @PreAuthorize('#itemGroup.user.email == authentication.name')
+    Boolean deleteGroup(ItemGroup itemGroup) {
+        try {
+            imageService.deleteImages(itemGroup.items*.images?.flatten() as Set<Image>)
+            itemGroup.delete(failOnError: true)
+            Boolean.TRUE
+        } catch (Throwable e) {
+            Boolean.FALSE
+        }
+    }
+
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Boolean deleteItem(Item item) {
-        imageService.deleteImages(item.images)
-
         try {
+            imageService.deleteImages(item.images)
             item.delete(failOnError: true)
             Boolean.TRUE
+        } catch (Throwable e) {
+            Boolean.FALSE
+        }
+    }
+
+    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
+    Boolean deleteItemImage(Item item, Image image) {
+        try {
+            item.removeFromImages(image)
+            imageService.deleteImage(image)
+            item.save(failOnError: true)
         } catch (Throwable e) {
             Boolean.FALSE
         }

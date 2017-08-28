@@ -8,7 +8,7 @@ import grails.validation.Validateable
  * A bean for uploading multipartFiles along with their text descriptions.
  */
 @CompileStatic
-class ImageUploadBean  implements Validateable{
+class ImageUploadBean implements Validateable {
 
     MultipartFile image
     String imageInfo

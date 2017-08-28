@@ -1,20 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-      <meta name="layout" content="main"/>
+      <meta name="layout" content="item"/>
       <title>Tempvs - <g:message code="item.group.title"/></title>
     </head>
     <body>
       <g:if test="${itemGroup}">
-        <g:set var="items" value="${itemGroup.items}"/>
-        <div class="row">
-          <div class="col-sm-8">
-            <g:render template="/item/templates/navBar" model="${[itemGroup, user, userProfile]}"/>
-          </div>
-          <div class="col-sm-4">
-            <b><g:message code="actions.label"/></b>:
-          </div>
-        </div>        
+        <g:set var="items" value="${itemGroup.items}"/>      
         <div class="row">
           <div class="row">
             <div class="col-sm-8">
@@ -44,7 +36,7 @@
                      <g:link class="btn btn-default col-sm-4" action="show" id="${item.id}"  data-toggle="tooltip" data-placement="bottom" title="${item.description}">${item.name}</g:link>
                      <g:if test="${editAllowed}">
                        <div class="pull-left">
-                         <g:render template="/item/templates/editItemButton" model="${[item: item]}"/>
+                         <g:link action="editItemPage" id="${item.id}" class="btn btn-default glyphicon glyphicon-pencil"/>
                        </div>
                        <div class="pull-left">
                          <g:render template="/item/templates/deleteItemButton" model="${[item: item]}"/>
@@ -63,6 +55,5 @@
       <g:else>
         <g:message code="item.group.notFound.message"/>
       </g:else>
-      <g:render template="/item/templates/sourceDropdownPopulator"/>
     </body>
 </html>

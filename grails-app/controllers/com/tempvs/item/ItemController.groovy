@@ -3,6 +3,7 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -20,11 +21,26 @@ class ItemController {
     private static final String ITEM_COLLECTION = 'item'
     private static final String NO_ITEM_FOUND = 'item.notFound.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
-    private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
     private static final String EDIT_GROUP_FAILED_MESSAGE = 'item.group.edit.failed.message'
+    private static final String ITEM_IMAGE_EDIT_FAILED_MESSAGE = 'item.image.edit.failed.message'
+    private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
     static defaultAction = 'stash'
-    static allowedMethods = [stash: 'GET', createGroup: 'POST', editGroup: 'POST', group: 'GET', createItem: 'POST', show: 'GET', deleteItem: 'DELETE', deleteGroup: 'DELETE', editItem: 'POST']
+    static allowedMethods = [
+            stash: 'GET',
+            createGroup: 'POST',
+            editGroup: 'POST',
+            group: 'GET',
+            createItem: 'POST',
+            show: 'GET',
+            deleteItem: 'DELETE',
+            deleteGroup: 'DELETE',
+            editItem: 'POST',
+            editItemImage: 'POST',
+            editItemPage: 'GET',
+            addItemImages: 'POST',
+            deleteItemImage: 'DELETE',
+    ]
 
     ItemService itemService
     UserService userService
@@ -107,6 +123,19 @@ class ItemController {
         }
     }
 
+    def addItemImages(ItemImageUploadCommand command) {
+        processItem(command) {
+            itemService.getItem(params.itemId)
+        }
+    }
+
+    def deleteItemImage(String itemId, String imageId) {
+        Item item = itemService.getItem(itemId)
+        Image image = imageService.getImage(imageId)
+        itemService.deleteItemImage(item, image)
+        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
+    }
+
     def show(String id) {
         if (id) {
             Item item = itemService.getItem id
@@ -146,6 +175,30 @@ class ItemController {
         render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
     }
 
+    def editItemPage(String id) {
+        Item item = itemService.getItem id
+        ItemGroup itemGroup = item.itemGroup
+        User user = itemGroup.user
+
+        if (user.id == userService.currentUserId) {
+            [item: item, itemGroup: itemGroup, user: user, userProfile: user.userProfile]
+        } else {
+            throw new AccessDeniedException('')
+        }
+    }
+
+    def editItemImage(ImageUploadBean imageUploadBean) {
+        Item item = itemService.getItem(params.itemId)
+        Image image = imageService.getImage(params.imageId)
+        imageService.updateImage(imageUploadBean, image.collection, image)
+
+        if (itemService.saveItem(item)) {
+            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, ITEM_IMAGE_EDIT_FAILED_MESSAGE)
+        }
+    }
+
     def accessDeniedThrown(AccessDeniedException exception) {
         if (request.xhr) {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
@@ -154,7 +207,7 @@ class ItemController {
         }
     }
 
-    private processItem(ItemCommand command, Closure generateItem) {
+    private processItem(BaseItemCommand command, Closure generateItem) {
         if (command.validate()) {
             Item item = generateItem() as Item
 

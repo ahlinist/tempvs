@@ -21,4 +21,11 @@
     </g:link>
   </span>
 </g:if>
-
+<g:if test="${item && actionName == 'editItemPage'}">
+  <span class="pull-left">&nbsp;&gt;&nbsp;</span>
+  <span class="pull-left">
+    <g:link action="editItemPage" id="${item.id}" class="pull-left">
+      <u><g:message code="edit"/> ${item.name}</u>
+    </g:link>
+  </span>
+</g:if>

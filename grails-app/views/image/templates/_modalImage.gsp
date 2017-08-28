@@ -2,7 +2,7 @@
 
 <div>
   <a data-toggle="modal" data-target="#modal-${image?.hashCode() ?: timestamp}" href="#">
-    <tempvs:image image="${image}" orientation="${orientation}"/>
+    <tempvs:image image="${image}" orientation="${orientation}" styles="${styles}"/>
   </a>
 </div>
 

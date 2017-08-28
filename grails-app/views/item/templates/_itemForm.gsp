@@ -9,5 +9,5 @@
   <tempvs:formField type="select" name="source" value="${item?.source?.id}" from="${applicationContext.sourceService.getSourcesByPeriod(item?.period)}" optionKey="id" optionValue="name" label="item.source.dropdown.label" styles="${action == 'createItem' ? 'display:none;' : ''}"/>
   <input type="hidden" name="itemId" value="${item?.id}"/>
   <input type="hidden" name="groupId" value="${itemGroup?.id}"/>
-  <tempvs:ajaxSubmitButton value="${button}" />
+  <tempvs:ajaxSubmitButton value="${button}" icon="${icon}"/>
 </tempvs:ajaxForm>

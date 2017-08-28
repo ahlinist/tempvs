@@ -1,28 +1,20 @@
 <!DOCTYPE html>
 <html>
     <head>
-      <meta name="layout" content="main"/>
+      <meta name="layout" content="item"/>
       <title>Tempvs - <g:message code="item.stash.title"/></title>
     </head>
     <body>
       <g:if test="${user}">
-        <div class="row">
-          <div class="col-sm-8">
-            <g:render template="/item/templates/navBar" model="${[user, userProfile]}"/>
+        <g:if test="${editAllowed}">
+          <div class="row">
+            <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createGroup.tooltip')}">
+              <tempvs:modalButton id="createGroup" classes="glyphicon glyphicon-plus">
+                <g:render template="/item/templates/groupForm" model="${[action: 'createGroup']}"/>
+              </tempvs:modalButton>
+            </div>
           </div>
-          <div class="col-sm-4">
-            <b><g:message code="actions.label"/></b>:
-            <g:if test="${editAllowed}">
-              <div class="row">
-                <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createGroup.tooltip')}">
-                  <tempvs:modalButton id="createGroup" classes="glyphicon glyphicon-plus">
-                    <g:render template="/item/templates/groupForm" model="${[action: 'createGroup']}"/>
-                  </tempvs:modalButton>
-                </span>
-              </div>
-            </g:if>
-          </div>
-        </div>
+        </g:if>
         <div class="row">
           <g:if test="${itemGroups}">
             <b><g:message code="item.groups.message"/></b>:

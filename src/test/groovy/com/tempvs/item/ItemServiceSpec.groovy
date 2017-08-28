@@ -176,4 +176,15 @@ class ItemServiceSpec extends Specification {
         and:
         result == itemGroup
     }
+
+    void "Test deleteItemImage()"() {
+        when:
+        service.deleteItemImage(item, image)
+
+        then:
+        1 * item.removeFromImages(image)
+        1 * imageService.deleteImage(image)
+        1 * item.save(['failOnError':true]) >> item
+        0 * _
+    }
 }

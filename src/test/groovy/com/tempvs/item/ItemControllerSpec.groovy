@@ -2,7 +2,6 @@ package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
-import com.tempvs.image.ImageBean
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
@@ -24,6 +23,7 @@ import spock.lang.Specification
 class ItemControllerSpec extends Specification {
 
     private static final String ONE = '1'
+    private static final String TWO = '2'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
@@ -38,24 +38,26 @@ class ItemControllerSpec extends Specification {
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
+    private static final String EDIT_ITEM_PAGE_URI = '/item/editItemPage'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
-    def user = Mock(User)
-    def json = Mock(JSON)
-    def item = Mock(Item)
-    def image = Mock(ImageBean)
-    def itemGroup = Mock(ItemGroup)
+    def user = Mock User
+    def json = Mock JSON
+    def item = Mock Item
+    def image = Mock Image
+    def itemGroup = Mock ItemGroup
     def period = Period.valueOf'XIX'
-    def userService = Mock(UserService)
-    def userProfile = Mock(UserProfile)
-    def itemService = Mock(ItemService)
-    def itemCommand = Mock(ItemCommand)
-    def imageService = Mock(ImageService)
-    def imageUploadBean = Mock(ImageUploadBean)
-    def itemGroupCommand = Mock(ItemGroupCommand)
-    def grailsLinkGenerator = Mock(LinkGenerator)
-    def ajaxResponseService = Mock(AjaxResponseService)
+    def userService = Mock UserService
+    def userProfile = Mock UserProfile
+    def itemService = Mock ItemService
+    def itemCommand = Mock ItemCommand
+    def imageService = Mock ImageService
+    def imageUploadBean = Mock ImageUploadBean
+    def itemGroupCommand = Mock ItemGroupCommand
+    def grailsLinkGenerator = Mock LinkGenerator
+    def itemImageUploadCommand = Mock ItemImageUploadCommand
+    def ajaxResponseService = Mock AjaxResponseService
 
     def setup() {
         controller.userService = userService
@@ -455,6 +457,106 @@ class ItemControllerSpec extends Specification {
         1 * imageService.uploadImages([imageUploadBean], ITEM_IMAGE_COLLECTION) >> [image]
         1 * itemService.saveItem(item, [image]) >> item
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test editItemPage()"() {
+        given:
+        params.id = ONE
+
+        when:
+        def result = controller.editItemPage()
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.user >> user
+        1 * user.id >> LONG_ONE
+        1 * userService.currentUserId >> LONG_ONE
+        1 * user.userProfile >> userProfile
+        0 * _
+
+        and:
+        result == [item: item, itemGroup: itemGroup, user: user, userProfile: userProfile]
+    }
+
+    void "Test unauthorized editItemPage()"() {
+        given:
+        params.id = ONE
+
+        when:
+        def result = controller.editItemPage()
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.user >> user
+        1 * user.id >> LONG_ONE
+        1 * userService.currentUserId >> LONG_TWO
+        0 * _
+
+        and:
+        response.redirectedUrl == AUTH_URI
+        !result
+    }
+
+    void "Test addImagesToItem()"() {
+        given:
+        params.itemId = ONE
+        request.method = POST_METHOD
+        controller.request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
+
+        when:
+        controller.addItemImages(itemImageUploadCommand)
+
+        then:
+        1 * itemImageUploadCommand.validate() >> Boolean.TRUE
+        1 * itemService.getItem(ONE) >> item
+        1 * item.asType(Item) >> item
+        1 * item.validate() >> Boolean.TRUE
+        1 * itemImageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * imageService.uploadImages([imageUploadBean], ITEM_IMAGE_COLLECTION) >> [image]
+        1 * itemService.saveItem(item, [image]) >> item
+        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test deleteItemImage()"() {
+        given:
+        request.method = DELETE_METHOD
+        request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
+
+        when:
+        controller.deleteItemImage(ONE, TWO)
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * imageService.getImage(TWO) >> image
+        1 * itemService.deleteItemImage(item, image)
+        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test editItemImage()"() {
+        given:
+        params.itemId = ONE
+        params.imageId = TWO
+        request.method = POST_METHOD
+        request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
+
+        when:
+        controller.editItemImage(imageUploadBean)
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * imageService.getImage(TWO) >> image
+        1 * image.collection >> ITEM_IMAGE_COLLECTION
+        1 * imageService.updateImage(imageUploadBean, ITEM_IMAGE_COLLECTION, image) >> image
+        1 * itemService.saveItem(item) >> item
+        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

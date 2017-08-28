@@ -18,8 +18,8 @@
   }
 </script>
 <div class="${fieldName}-container">
-  <tempvs:formField cls="image" type="file" name="${fieldName}[0].image" label="${imageLabel}" />
-  <tempvs:formField cls="imageInfo" type="text" name="${fieldName}[0].imageInfo" label="${infoLabel}" />
+  <tempvs:formField classes="image" type="file" name="${fieldName}[0].image" label="${imageLabel}" />
+  <tempvs:formField classes="imageInfo" type="text" name="${fieldName}[0].imageInfo" label="${infoLabel}" />
   <hr/>
 </div>
 <div class="row">
