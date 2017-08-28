@@ -38,13 +38,11 @@ class ItemServiceSpec extends Specification {
     def cleanup() {
     }
 
-    void "Test createGroup()"() {
+    void "Test saveGroup()"() {
         when:
-        def result = service.createGroup(itemGroup)
+        def result = service.saveGroup(itemGroup)
 
         then:
-        1 * userService.currentUser >> user
-        1 * itemGroup.setUser(user)
         1 * itemGroup.save() >> itemGroup
         0 * _
 
@@ -158,23 +156,6 @@ class ItemServiceSpec extends Specification {
         0 * _
 
         result == Boolean.FALSE
-    }
-
-    void "Test editGroup()"() {
-        given:
-        Map properties = [name: NAME, description: DESCRIPTION]
-
-        when:
-        def result = service.editGroup(itemGroup, properties)
-
-        then:
-        1 * itemGroup.setName(NAME)
-        1 * itemGroup.setDescription(DESCRIPTION)
-        1 * itemGroup.save() >> itemGroup
-        0 * _
-
-        and:
-        result == itemGroup
     }
 
     void "Test deleteItemImage()"() {

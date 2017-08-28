@@ -1,10 +1,12 @@
-<span class="pull-left">
-  <g:link action="stash" id="${user.id}">
-    <u>
-      <g:message code="item.stash.link" args="${[userProfile]}"/>
-    </u>
-  </g:link>
-</span>
+<g:if test="${userProfile}">
+  <span class="pull-left">
+    <g:link action="stash" id="${user?.id}">
+      <u>
+        <g:message code="item.stash.link" args="${[userProfile]}"/>
+      </u>
+    </g:link>
+  </span>
+</g:if>
 <g:if test="${itemGroup}">
   <span class="pull-left">&nbsp;&gt;&nbsp;</span>
   <span class="pull-left">

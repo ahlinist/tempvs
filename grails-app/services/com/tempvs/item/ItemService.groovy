@@ -6,7 +6,6 @@ import com.tempvs.image.ImageService
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
@@ -28,15 +27,8 @@ class ItemService {
         objectDAO.get(Item, id)
     }
 
-    ItemGroup createGroup(ItemGroup itemGroup) {
-        itemGroup.user = userService.currentUser
-        itemGroup.save()
-        itemGroup
-    }
-
     @PreAuthorize('#itemGroup.user.email == authentication.name')
-    ItemGroup editGroup(ItemGroup itemGroup, Map properties) {
-        InvokerHelper.setProperties(itemGroup, properties)
+    ItemGroup saveGroup(ItemGroup itemGroup) {
         itemGroup.save()
         itemGroup
     }

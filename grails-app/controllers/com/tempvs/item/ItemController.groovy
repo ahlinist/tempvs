@@ -20,8 +20,8 @@ class ItemController {
     private static final String REFERER = 'referer'
     private static final String ITEM_COLLECTION = 'item'
     private static final String NO_ITEM_FOUND = 'item.notFound.message'
+    private static final String NO_GROUP_FOUND = 'item.group.notFound.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
-    private static final String EDIT_GROUP_FAILED_MESSAGE = 'item.group.edit.failed.message'
     private static final String ITEM_IMAGE_EDIT_FAILED_MESSAGE = 'item.image.edit.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
@@ -57,34 +57,20 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
-        if (command.validate()) {
-            ItemGroup itemGroup = itemService.createGroup(command.properties as ItemGroup)
-
-            if (itemGroup.validate()) {
-                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: itemGroup.id))
-            } else {
-                render ajaxResponseService.renderValidationResponse(itemGroup)
-            }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
+        processItemGroup(command) {
+            Map properties = command.properties + [user: userService.currentUser]
+            properties as ItemGroup
         }
     }
 
     def editGroup(ItemGroupCommand command) {
-        if (command.validate()) {
+        processItemGroup(command) {
             ItemGroup itemGroup = itemService.getGroup params.groupId
 
             if (itemGroup) {
-                ItemGroup editedGroup = itemService.editGroup(itemGroup, command.properties)
-
-                if (editedGroup.validate()) {
-                    return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER))))
-                }
+                InvokerHelper.setProperties(itemGroup, command.properties)
+                itemGroup
             }
-
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EDIT_GROUP_FAILED_MESSAGE)
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 
@@ -221,6 +207,25 @@ class ItemController {
                 }
             } else {
                 render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_ITEM_FOUND)
+            }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
+        }
+    }
+
+    private processItemGroup(ItemGroupCommand command, Closure generateGroup) {
+        if (command.validate()) {
+            ItemGroup itemGroup = generateGroup() as ItemGroup
+
+            if (itemGroup) {
+                if (itemGroup.validate()) {
+                    itemService.saveGroup(itemGroup)
+                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
+                } else {
+                    render ajaxResponseService.renderValidationResponse(itemGroup)
+                }
+            } else {
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_GROUP_FOUND)
             }
         } else {
             render ajaxResponseService.renderValidationResponse(command)

@@ -17,7 +17,6 @@ class ItemGroup extends BasePersistent {
     static hasMany = [items: Item]
 
     static constraints = {
-        name unique: ['user']
         description nullable: true
     }
 
