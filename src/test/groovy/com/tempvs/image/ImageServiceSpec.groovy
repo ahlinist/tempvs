@@ -1,5 +1,6 @@
 package com.tempvs.image
 
+import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import grails.test.mixin.TestFor
 import org.springframework.mock.web.MockMultipartFile
@@ -16,20 +17,34 @@ class ImageServiceSpec extends Specification {
     private static final String COLLECTION = 'collection'
     private static final List<Byte> BYTE_LIST = "test data".bytes
 
-    def image = Mock(Image)
-    def imageDAO = Mock(ImageDAO)
-    def imageBean = Mock(ImageBean)
-    def objectFactory = Mock(ObjectFactory)
-    def imageUploadBean = Mock(ImageUploadBean)
+    def image = Mock Image
+    def imageDAO = Mock ImageDAO
+    def objectDAO = Mock ObjectDAO
+    def imageBean = Mock ImageBean
+    def objectFactory = Mock ObjectFactory
+    def imageUploadBean = Mock ImageUploadBean
     def multipartFile = new MockMultipartFile('1234567', "1234567" as byte[])
 
 
     def setup() {
         service.imageDAO = imageDAO
+        service.objectDAO = objectDAO
         service.objectFactory = objectFactory
     }
 
     def cleanup() {
+    }
+
+    void "Test getImage()"() {
+        when:
+        def result = service.getImage(ID)
+
+        then:
+        1 * objectDAO.get(Image, ID) >> image
+        0 * _
+
+        and:
+        result == image
     }
 
     void "Test getImageBytes()"() {

@@ -1,5 +1,6 @@
 package com.tempvs.image
 
+import com.tempvs.domain.ObjectDAO
 import com.tempvs.domain.ObjectFactory
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
@@ -12,7 +13,12 @@ import grails.transaction.Transactional
 class ImageService {
 
     ImageDAO imageDAO
+    ObjectDAO objectDAO
     ObjectFactory objectFactory
+
+    Image getImage(Object id) {
+        objectDAO.get(Image, id)
+    }
 
     byte[] getImageBytes(String collection, String objectId) {
         imageDAO.get(collection, objectId)?.bytes
