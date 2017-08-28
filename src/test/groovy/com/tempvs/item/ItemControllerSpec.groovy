@@ -11,6 +11,7 @@ import com.tempvs.user.UserService
 import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
+import grails.validation.Validateable
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -399,8 +400,9 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemGroup.setName(NAME)
         1 * itemGroup.setDescription(DESCRIPTION)
-        1 * itemGroup.asType(ItemGroup) >> itemGroup
+        1 * itemGroup.asType(Validateable) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
+        1 * itemGroup.asType(ItemGroup) >> itemGroup
         1 * itemService.saveGroup(itemGroup) >> itemGroup
         1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -434,7 +436,7 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.getProperty(PROPERTIES) >> properties
         1 * itemService.getItem(ONE) >> item
-        1 * item.asType(Item) >> item
+        1 * item.asType(Validateable) >> item
         1 * item.setName(NAME)
         1 * item.setDescription(DESCRIPTION)
         1 * item.validate()
@@ -460,11 +462,10 @@ class ItemControllerSpec extends Specification {
         1 * item.setName(NAME)
         1 * item.setDescription(DESCRIPTION)
         1 * item.setPeriod(period)
-        1 * item.asType(Item) >> item
+        1 * item.asType(Validateable) >> item
         1 * item.validate() >> Boolean.TRUE
-        1 * itemCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], ITEM_IMAGE_COLLECTION) >> [image]
-        1 * itemService.saveItem(item, [image]) >> item
+        1 * item.asType(Item) >> item
+        1 * itemService.saveItem(item) >> item
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -522,10 +523,11 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemImageUploadCommand.validate() >> Boolean.TRUE
         1 * itemService.getItem(ONE) >> item
-        1 * item.asType(Item) >> item
+        1 * item.asType(Validateable) >> item
         1 * item.validate() >> Boolean.TRUE
         1 * itemImageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], ITEM_IMAGE_COLLECTION) >> [image]
+        1 * item.asType(Item) >> item
         1 * itemService.saveItem(item, [image]) >> item
         1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

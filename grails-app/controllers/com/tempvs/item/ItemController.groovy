@@ -7,6 +7,7 @@ import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
+import grails.validation.Validateable
 import grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.AccessDeniedException
@@ -19,13 +20,13 @@ class ItemController {
 
     private static final String REFERER = 'referer'
     private static final String ITEM_COLLECTION = 'item'
-    private static final String NO_ITEM_FOUND = 'item.notFound.message'
-    private static final String NO_GROUP_FOUND = 'item.group.notFound.message'
+    private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String ITEM_IMAGE_EDIT_FAILED_MESSAGE = 'item.image.edit.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
     static defaultAction = 'stash'
+
     static allowedMethods = [
             stash: 'GET',
             createGroup: 'POST',
@@ -57,14 +58,22 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
-        processItemGroup(command) {
+        Closure successAction = { Validateable entity ->
+            itemService.saveGroup(entity as ItemGroup)
+        }
+
+        processEntity(command, successAction) {
             Map properties = command.properties + [user: userService.currentUser]
             properties as ItemGroup
         }
     }
 
     def editGroup(ItemGroupCommand command) {
-        processItemGroup(command) {
+        Closure successAction = { Validateable entity ->
+            itemService.saveGroup(entity as ItemGroup)
+        }
+
+        processEntity(command, successAction) {
             ItemGroup itemGroup = itemService.getGroup params.groupId
 
             if (itemGroup) {
@@ -92,14 +101,23 @@ class ItemController {
     }
 
     def createItem(ItemCommand command) {
-        processItem(command) {
+        Closure successAction = { Validateable entity ->
+            List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
+            itemService.saveItem(entity as Item, images)
+        }
+
+        processEntity(command, successAction) {
             Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
             properties as Item
         }
     }
 
     def editItem(ItemCommand command) {
-        processItem(command) {
+        Closure successAction = { Validateable entity ->
+            itemService.saveItem(entity as Item)
+        }
+
+        processEntity(command, successAction) {
             Item item = itemService.getItem params.itemId
 
             if (item) {
@@ -110,7 +128,12 @@ class ItemController {
     }
 
     def addItemImages(ItemImageUploadCommand command) {
-        processItem(command) {
+        Closure successAction = { Validateable entity ->
+            List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
+            itemService.saveItem(entity as Item, images)
+        }
+
+        processEntity(command, successAction) {
             itemService.getItem(params.itemId)
         }
     }
@@ -193,39 +216,19 @@ class ItemController {
         }
     }
 
-    private processItem(BaseItemCommand command, Closure generateItem) {
+    private processEntity(Validateable command, Closure successAction, Closure generateEntity) {
         if (command.validate()) {
-            Item item = generateItem() as Item
+            Validateable entity = generateEntity() as Validateable
 
-            if (item) {
-                if (item.validate()) {
-                    List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
-                    itemService.saveItem(item, images)
+            if (entity) {
+                if (entity.validate()) {
+                    successAction(entity)
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
                 } else {
-                    render ajaxResponseService.renderValidationResponse(item)
+                    render ajaxResponseService.renderValidationResponse(entity)
                 }
             } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_ITEM_FOUND)
-            }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
-        }
-    }
-
-    private processItemGroup(ItemGroupCommand command, Closure generateGroup) {
-        if (command.validate()) {
-            ItemGroup itemGroup = generateGroup() as ItemGroup
-
-            if (itemGroup) {
-                if (itemGroup.validate()) {
-                    itemService.saveGroup(itemGroup)
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
-                } else {
-                    render ajaxResponseService.renderValidationResponse(itemGroup)
-                }
-            } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_GROUP_FOUND)
+                render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
             }
         } else {
             render ajaxResponseService.renderValidationResponse(command)
