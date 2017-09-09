@@ -1,19 +1,33 @@
 <script>
     $(function() {
-         $('select[name="period"]').change(
-             function() {
-                var sourcesURL = '${g.createLink(controller: "source", action: "getSourcesByPeriod")}' + '/' + $(this).val();
-                var closestForm = $(this).closest("form");
-                var sourceSelect = closestForm.find('select[name="source"]');
-                sourceSelect.find('option').remove();
-                sourceSelect.append(createOption('', '...'));
-                closestForm.find('.source-wrapper').css('display', '');
-                sendAjaxRequest(sourceSelect, sourcesURL, 'GET', populateSources);
-            }
-        );
+         $('select[name="period"]').change(populateSources);
+         $('#period-input > select[name="fieldValue"]').change(populateSmartSources);
     });
 
-    function populateSources(element, response) {
+    function populateSources() {
+        var sourcesURL = '${g.createLink(controller: "source", action: "getSourcesByPeriod")}' + '/' + $(this).val();
+        var closestForm = $(this).closest("form");
+        var sourceSelect = closestForm.find('select[name="source"]');
+
+        sourceSelect.find('option').remove();
+        sourceSelect.append(createOption('', '-'));
+        closestForm.find('.source-wrapper').css('display', '');
+        sendAjaxRequest(sourceSelect, sourcesURL, 'GET', successAction);
+    }
+
+    function populateSmartSources() {
+        var sourcesURL = '${g.createLink(controller: "source", action: "getSourcesByPeriod")}' + '/' + $(this).val();
+        var closestForm = $(this).closest("form");
+        var sourceSelectInput = closestForm.parent().find('#source-input > select[name="fieldValue"]');
+        var sourceSelectText = closestForm.parent().find('#source-text');
+
+        sourceSelectText.html('-');
+        sourceSelectInput.find('option').remove();
+        sourceSelectInput.append(createOption('', '-'));
+        sendAjaxRequest(sourceSelectInput, sourcesURL, 'GET', successAction);
+    }
+
+    function successAction(element, response) {
         if (Object.keys(response).length) {
             $.each(response, function(i, value) {
                 element.append(createOption(value.id, value.name));

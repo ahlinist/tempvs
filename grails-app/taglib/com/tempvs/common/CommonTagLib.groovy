@@ -9,10 +9,10 @@ class CommonTagLib {
     static namespace = 'tempvs'
 
     def modalButton = { Map attrs, Closure body ->
-        out << render(template: '/templates/common/modalButton', model: attrs + [body: body()])
+        out << render(template: '/common/templates/modalButton', model: attrs + [body: body()])
     }
 
     def formField = { Map attrs ->
-        out << render(template: '/templates/common/formField', model: attrs)
+        out << render(template: '/common/templates/formField', model: attrs)
     }
 }

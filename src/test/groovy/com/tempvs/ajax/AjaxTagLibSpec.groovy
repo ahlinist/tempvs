@@ -53,7 +53,7 @@ class AjaxTagLibSpec extends Specification {
         given:
         String controller = 'testController'
         String action = 'testAction'
-        String ajaxForm = '<form action="/testController/testAction" method="post" onsubmit="submitAjaxForm(this); return false;" >'
+        String ajaxForm = '<form action="/testController/testAction" method="post" onsubmit="submitAjaxForm(this); return false;" class="ajax-form" >'
 
         when:
         def template = applyTemplate("<tempvs:ajaxForm controller=\"${controller}\" action=\"${action}\"/>")

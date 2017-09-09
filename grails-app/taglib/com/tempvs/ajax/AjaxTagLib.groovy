@@ -9,14 +9,18 @@ class AjaxTagLib {
     static namespace = 'tempvs'
 
     def ajaxForm = { Map attrs, Closure body ->
-        out << render(template: '/templates/ajax/ajaxForm', model: attrs + [body: body()])
+        out << render(template: '/ajax/templates/ajaxForm', model: attrs + [body: body()])
+    }
+
+    def ajaxSmartForm = { Map attrs, Closure body ->
+        out << render(template: '/ajax/templates/ajaxSmartForm', model: attrs + [body: body()])
     }
 
     def ajaxLink = { Map attrs ->
-        out << render(template: '/templates/ajax/ajaxLink', model: attrs)
+        out << render(template: '/ajax/templates/ajaxLink', model: attrs)
     }
 
     def ajaxSubmitButton = { Map attrs ->
-        out << render(template: '/templates/ajax/submitButton', model: attrs)
+        out << render(template: '/ajax/templates/submitButton', model: attrs)
     }
 }

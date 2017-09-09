@@ -4,9 +4,11 @@ import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
+import grails.converters.JSON
 import grails.validation.Validateable
 import grails.web.mapping.LinkGenerator
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -46,6 +48,7 @@ class ItemController {
     ItemService itemService
     UserService userService
     ImageService imageService
+    SourceService sourceService
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
 
@@ -205,6 +208,41 @@ class ItemController {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, ITEM_IMAGE_EDIT_FAILED_MESSAGE)
+        }
+    }
+
+    def updateItemField() {
+        Item item = itemService.getItem(params.objectId)
+
+        if (item) {
+            String fieldName = params.fieldName
+            String fieldValue = params.fieldValue
+            Map properties
+
+            if (fieldName == 'source') {
+                properties = [source: sourceService.getSource(fieldValue)]
+            } else if (fieldName == 'period') {
+                try {
+                    properties = [period: Period.valueOf(fieldValue), source: null]
+                } catch (IllegalArgumentException exception) {
+                    item.period = null
+                    item.validate()
+                    return render(ajaxResponseService.renderValidationResponse(item))
+                }
+            } else {
+                properties = ["${fieldName}": fieldValue]
+            }
+
+            InvokerHelper.setProperties(item, properties)
+
+            if (item.validate()) {
+                itemService.saveItem(item)
+                render([success: Boolean.TRUE] as JSON)
+            } else {
+                render ajaxResponseService.renderValidationResponse(item)
+            }
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
         }
     }
 

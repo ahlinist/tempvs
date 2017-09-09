@@ -215,7 +215,7 @@ class ItemViewSpec extends Specification {
         1 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
         1 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
         1 * sourceService.getSourcesByPeriod(period) >> [source]
-        4 * item.getProperty(ID) >> ID
+        1 * item.getProperty(ID) >> ID
         2 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(IMAGES) >> [image]
@@ -223,8 +223,7 @@ class ItemViewSpec extends Specification {
         2 * item.getProperty(SOURCE) >> source
         2 * image.getProperty(ID) >> ID
         3 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
-        1 * source.getProperty(ID) >> ID
-        1 * itemGroup.getProperty(ID) >> ID
+        1 * source.getProperty(NAME) >> NAME
         0 * _
 
         and:

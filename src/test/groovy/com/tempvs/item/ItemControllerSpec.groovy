@@ -33,8 +33,11 @@ class ItemControllerSpec extends Specification {
     private static final String POST_METHOD = 'POST'
     private static final String ITEM_URI = '/item/show'
     private static final String DELETE_METHOD = 'DELETE'
+    private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
+    private static final String FIELD_VALUE = 'fieldValue'
     private static final String DESCRIPTION = 'description'
+    private static final String OBJECT_CLASS = 'objectClass'
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
@@ -569,6 +572,22 @@ class ItemControllerSpec extends Specification {
         1 * itemService.saveItem(item) >> item
         1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateItemField()"() {
+        given:
+        params.fieldName = FIELD_NAME
+        params.fieldValue = FIELD_VALUE
+        params.objectId = ONE
+
+        when:
+        controller.updateItemField()
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * item.validate() >> Boolean.TRUE
+        1 * itemService.saveItem(item) >> item
         0 * _
     }
 }

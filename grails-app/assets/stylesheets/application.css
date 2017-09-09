@@ -30,7 +30,7 @@ a:hover {
     text-decoration: underline;
 }
 
-.image-list, form {
+.image-list, .ajax-form {
     margin-bottom: 10px;
     padding: 10px;
     border: 4px #eee groove;
@@ -74,4 +74,8 @@ select:disabled {
 
 .btn {
     border: 1px #DDD solid;
+}
+
+p:empty:before {
+    content: "\200b";
 }

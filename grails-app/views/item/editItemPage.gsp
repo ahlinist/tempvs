@@ -1,3 +1,4 @@
+<%@ page import="com.tempvs.periodization.Period"%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,9 +8,13 @@
   <body>
     <g:set var="images" value="${item.images}"/>
     <g:set var="source" value="${item.source}"/>
+    <g:set var="itemId" value="${item?.id}"/>
     <div class="row">
-      <div class="row">
-        <g:render template="/item/templates/itemForm" model="${[action: 'editItem', icon: 'glyphicon glyphicon-floppy-disk', item: item]}"/>
+      <div class="row ajax-form">
+        <tempvs:ajaxSmartForm type="text" action="updateItemField" name="name" value="${item?.name}" objectId="${itemId}" label="item.name.label"/>
+        <tempvs:ajaxSmartForm type="text" action="updateItemField" name="description" value="${item?.description}" objectId="${itemId}" label="item.description.label"/>
+        <tempvs:ajaxSmartForm type="select" action="updateItemField" name="period" value="${item?.period}" optionKey="key" optionValue="value" from="${Period.values()}" objectId="${itemId}" label="periodization.period.dropdown.label"/>
+        <tempvs:ajaxSmartForm type="select" action="updateItemField" name="source" value="${item?.source?.name}" optionKey="id" optionValue="name" from="${applicationContext.sourceService.getSourcesByPeriod(item?.period)}" objectId="${itemId}" label="item.source.dropdown.label"/>
       </div>
       <div class="row">
         <g:if test="${images}">
@@ -26,7 +31,7 @@
                     <tempvs:modalButton id="deleteItemImage-${image.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
                       <g:message code='item.imageDeleteConfirmation.text'/>
                       <br/>
-                      <tempvs:ajaxLink message="yes" controller="item" action="deleteItemImage" params="${[itemId: item.id, imageId: image.id]}" method="DELETE"/>
+                      <tempvs:ajaxLink message="yes" controller="item" action="deleteItemImage" params="${[itemId: itemId, imageId: image.id]}" method="DELETE"/>
                       <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                     </tempvs:modalButton>
                   </span>
@@ -35,7 +40,7 @@
                       <tempvs:ajaxForm action="editItemImage">
                         <tempvs:formField classes="image" type="file" name="image" label="item.image.label" />
                         <tempvs:formField classes="imageInfo" type="text" name="imageInfo" value="${image.imageInfo}" label="item.imageInfo.label" />
-                        <input type="hidden" name="itemId" value="${item.id}"/>
+                        <input type="hidden" name="itemId" value="${itemId}"/>
                         <input type="hidden" name="imageId" value="${image.id}"/>
                         <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk" />
                       </tempvs:ajaxForm>
@@ -54,7 +59,7 @@
       <div class="row">
         <tempvs:ajaxForm action="addItemImages">
           <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="item.image.label" infoLabel="item.imageInfo.label"/>
-          <input type="hidden" name="itemId" value="${item.id}"/>
+          <input type="hidden" name="itemId" value="${itemId}"/>
           <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
         </tempvs:ajaxForm>
       </div>

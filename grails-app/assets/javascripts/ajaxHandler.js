@@ -1,8 +1,9 @@
-function submitAjaxForm(form) {
+function submitAjaxForm(form, success) {
     var method = 'POST'
     var url = form.action;
     var data = new FormData(form);
-    processAjaxRequest(form, url, data, method, defaultSuccess);
+    var successAction = (typeof success === "function") ? success : defaultSuccess;
+    processAjaxRequest(form, url, data, method, successAction);
 }
 
 function sendAjaxRequest(element, url, method, success) {
@@ -64,8 +65,7 @@ function defaultSuccess(element, response) {
 
 function createPopover(element, fieldEntry) {
     var field = $(element).find('[name="' + fieldEntry.name + '"]')
-    field.addClass('popped-over').attr('data-placement','right').attr('data-content', fieldEntry.message).attr('data-html', true);
-    field.addClass('bg-danger');
+    field.addClass('popped-over').addClass('bg-danger').attr('data-placement','right').attr('data-content', fieldEntry.message).attr('data-html', true);
 }
 
 function clearForm(element) {

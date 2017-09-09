@@ -20,9 +20,12 @@ class Item extends BasePersistent {
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
+        name blank: false
         description nullable: true
-        source nullable: true
         images nullable: true
+        source nullable: true, validator: { Source source, Item item ->
+            source ? source?.period == item.period : Boolean.TRUE
+        }
     }
 
     static mapping = {
