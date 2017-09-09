@@ -4,7 +4,9 @@
       <label for="fieldValue"><g:message code="${label}" /></label>
     </div>
     <div class="col-sm-6">
-      <p id="${name}-text" style="padding: 8px 15px;" onclick="activateInput('${name}');">${(type == 'select' ? value?.value : value) ?: '-'}</p>
+      <p id="${name}-text" class="hovering" style="padding: 8px 15px;" onclick="activateInput('${name}');">
+        ${(type == 'select' ? value?.value : value) ?: '-'} <span  class="glyphicon glyphicon-pencil"></span>
+      </p>
       <span id="${name}-input" class="hidden" onmouseleave="waitForClickOut('${name}', '${type == 'select' ? 'select' : 'input'}');">
         <g:if test="${type == 'select'}">
           <g:select class="col-sm-12 tempvs-form-field" name="fieldValue" from="${from}" value="${value}" noSelection="${['':'-']}"

@@ -76,6 +76,16 @@ select:disabled {
     border: 1px #DDD solid;
 }
 
-p:empty:before {
+p:empty:after {
     content: "\200b";
 }
+
+.hovering > .glyphicon-pencil {
+    display: none;
+}
+
+.hovering:hover > .glyphicon-pencil {
+    color: #AAA;
+    display: inline-block;
+}
+
