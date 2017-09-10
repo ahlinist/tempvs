@@ -133,7 +133,7 @@ class ItemViewSpec extends Specification {
         1 * sourceService.getSourcesByPeriod(null)
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * itemGroup.getProperty(ID) >> ONE
+        2 * itemGroup.getProperty(ID) >> ONE
         1 * itemGroup.getProperty(ITEMS) >> items
         3 * item.getProperty(ID) >> ONE
         2 * item.getProperty(NAME) >> NAME
@@ -179,11 +179,11 @@ class ItemViewSpec extends Specification {
         2 * item.getProperty(ID) >> ID
         3 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
-        2 * item.getProperty(IMAGES) >> [image]
+        1 * item.getProperty(IMAGES) >> [image]
         1 * item.getProperty(PERIOD) >> period
         1 * item.getProperty(SOURCE) >> source
         1 * source.getProperty(IMAGES) >> [image]
-        1 * source.getProperty(NAME) >> NAME
+        2 * source.getProperty(NAME) >> NAME
         1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * source.getProperty(PERIOD) >> period
         0 * _
@@ -212,23 +212,16 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/editItemPage', model: model
 
         then:
-        1 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
-        1 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
-        1 * sourceService.getSourcesByPeriod(period) >> [source]
         1 * item.getProperty(ID) >> ID
-        2 * item.getProperty(NAME) >> NAME
-        1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
+        1 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(IMAGES) >> [image]
-        2 * item.getProperty(PERIOD) >> period
-        2 * item.getProperty(SOURCE) >> source
+        1 * item.getProperty(SOURCE) >> source
         2 * image.getProperty(ID) >> ID
         3 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
-        1 * source.getProperty(NAME) >> NAME
         0 * _
 
         and:
         result.contains title
         result.contains NAME
-        result.contains DESCRIPTION
     }
 }

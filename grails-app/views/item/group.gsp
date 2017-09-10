@@ -6,14 +6,13 @@
     </head>
     <body>
       <g:if test="${itemGroup}">
+        <g:set var="itemGroupId" value="${itemGroup.id}"/>
         <g:set var="items" value="${itemGroup.items}"/>      
         <div class="row">
           <div class="row">
-            <div class="col-sm-8">
-              <b><g:message code="item.group.name.label"/>: </b>${itemGroup.name}
-              <br/>
-              <b><g:message code="item.group.description.label"/>: </b>${itemGroup.description}
-              <hr/>
+            <div class="col-sm-8 ajax-form">
+              <tempvs:ajaxSmartForm type="text" action="updateItemGroupField" name="name" value="${itemGroup.name}" objectId="${itemGroupId}" label="item.group.name.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="text" action="updateItemGroupField" name="description" value="${itemGroup.description}" objectId="${itemGroupId}" label="item.group.description.label" editAllowed="${editAllowed}"/>
             </div>
             <div class="col-sm-4">
               <g:if test="${editAllowed}">

@@ -37,7 +37,6 @@ class ItemControllerSpec extends Specification {
     private static final String PROPERTIES = 'properties'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String DESCRIPTION = 'description'
-    private static final String OBJECT_CLASS = 'objectClass'
     private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
@@ -49,6 +48,7 @@ class ItemControllerSpec extends Specification {
     def json = Mock JSON
     def item = Mock Item
     def image = Mock Image
+    def source = Mock Source
     def itemGroup = Mock ItemGroup
     def period = Period.valueOf'XIX'
     def userService = Mock UserService
@@ -56,6 +56,7 @@ class ItemControllerSpec extends Specification {
     def itemService = Mock ItemService
     def itemCommand = Mock ItemCommand
     def imageService = Mock ImageService
+    def sourceService = Mock SourceService
     def imageUploadBean = Mock ImageUploadBean
     def itemGroupCommand = Mock ItemGroupCommand
     def grailsLinkGenerator = Mock LinkGenerator
@@ -66,6 +67,7 @@ class ItemControllerSpec extends Specification {
         controller.userService = userService
         controller.itemService = itemService
         controller.imageService = imageService
+        controller.sourceService = sourceService
         controller.ajaxResponseService = ajaxResponseService
     }
 
@@ -307,10 +309,12 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
+        1 * item.period >> period
         1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
+        1 * sourceService.getSourcesByPeriod(period) >> [source]
         0 * _
 
         and:
@@ -320,6 +324,7 @@ class ItemControllerSpec extends Specification {
                 user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
+                sources: [source]
         ]
     }
 
@@ -588,6 +593,22 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * item.validate() >> Boolean.TRUE
         1 * itemService.saveItem(item) >> item
+        0 * _
+    }
+
+    void "Test updateItemGroupField()"() {
+        given:
+        params.fieldName = FIELD_NAME
+        params.fieldValue = FIELD_VALUE
+        params.objectId = ONE
+
+        when:
+        controller.updateItemGroupField()
+
+        then:
+        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemGroup.validate() >> Boolean.TRUE
+        1 * itemService.saveGroup(itemGroup) >> itemGroup
         0 * _
     }
 }

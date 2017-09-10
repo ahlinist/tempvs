@@ -1,3 +1,4 @@
+<%@ page import="com.tempvs.periodization.Period"%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,7 +7,9 @@
   </head>
   <body>
     <g:if test="${item}">
+      <g:set var="itemId" value="${item.id}"/>
       <g:set var="itemImages" value="${item.images}"/>
+      <g:set var="period" value="${item.period}"/>
       <g:set var="source" value="${item.source}"/>
       <ul class="nav nav-tabs">
         <li style="padding:0px; margin:0px;" class="col-sm-6 pull-left active">
@@ -28,17 +31,20 @@
                 <g:render template="/item/templates/deleteItemButton" model="${[item: item]}"/>
               </div>
               <div class="pull-right">
-                <g:link action="editItemPage" id="${item.id}" class="btn btn-default glyphicon glyphicon-pencil"/>
+                <g:link action="editItemPage" id="${itemId}" class="btn btn-default glyphicon glyphicon-pencil"/>
               </div>
             </g:if>
           </div>
           <div class="row">
-            <div><b><g:message code="item.name.label"/>:</b> ${item.name}</div>
-            <div><b><g:message code="item.description.label"/>:</b> ${item.description}</div>
-            <div><b><g:message code="periodization.period.value.label"/>:</b> ${item.period.value}</div>
+            <div class="col-sm-8 ajax-form">
+              <tempvs:ajaxSmartForm type="text" action="updateItemField" name="name" value="${item?.name}" objectId="${itemId}" label="item.name.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="text" action="updateItemField" name="description" value="${item?.description}" objectId="${itemId}" label="item.description.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="select" action="updateItemField" name="period" value="${period}" optionKey="key" optionValue="value" from="${Period.values()}" objectId="${itemId}" label="periodization.period.dropdown.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="select" action="updateItemField" name="source" value="${source?.name}" optionKey="id" optionValue="name" from="${sources}" objectId="${itemId}" label="item.source.dropdown.label" editAllowed="${editAllowed}"/>
+            </div>
           </div>
           <div class="row">
-            <tempvs:carousel images="${item.images}" orientation="horizontal" styles="min-height: 25vw; max-height: 25vw;"/>
+            <tempvs:carousel images="${itemImages}" orientation="horizontal" styles="min-height: 25vw; max-height: 25vw;"/>
           </div>
         </div>
         <div id="sourceContent" class="tab-pane fade">

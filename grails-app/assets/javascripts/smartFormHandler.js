@@ -14,7 +14,13 @@ function waitForClickOut(fieldName, fieldType) {
             var field = document.querySelector(textSelector);
             field.classList.add('popped-over', 'bg-danger');
             field.setAttribute('data-placement','right');
-            field.setAttribute('data-content', response[0].message);   
+        
+            if (response.formMessage) {
+                field.setAttribute('data-content', response.message);   
+            } else {
+                field.setAttribute('data-content', response[0].message);   
+            }
+
             field.setAttribute('data-html', true);   
             $('.popped-over').popover('show');
         } else {

@@ -162,6 +162,7 @@ class ItemController {
                         itemGroup: itemGroup,
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
+                        sources: sourceService.getSourcesByPeriod(item.period)
                 ]
             }
         }
@@ -240,6 +241,26 @@ class ItemController {
                 render([success: Boolean.TRUE] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(item)
+            }
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
+        }
+    }
+
+    def updateItemGroupField() {
+        ItemGroup itemGroup = itemService.getGroup(params.objectId)
+
+        if (itemGroup) {
+            String fieldName = params.fieldName
+            String fieldValue = params.fieldValue
+            Map properties = ["${fieldName}": fieldValue]
+            InvokerHelper.setProperties(itemGroup, properties)
+
+            if (itemGroup.validate()) {
+                itemService.saveGroup(itemGroup)
+                render([success: Boolean.TRUE] as JSON)
+            } else {
+                render ajaxResponseService.renderValidationResponse(itemGroup)
             }
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
