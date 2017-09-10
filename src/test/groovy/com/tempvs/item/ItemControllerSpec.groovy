@@ -491,7 +491,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [item: item, itemGroup: itemGroup, user: user, userProfile: userProfile]
+        result == [item: item, itemGroup: itemGroup, user: user, userProfile: userProfile, editAllowed: Boolean.TRUE]
     }
 
     void "Test unauthorized editItemPage()"() {

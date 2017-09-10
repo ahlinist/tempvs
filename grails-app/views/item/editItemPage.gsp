@@ -11,10 +11,10 @@
     <g:set var="itemId" value="${item?.id}"/>
     <div class="row">
       <div class="row ajax-form">
-        <tempvs:ajaxSmartForm type="text" action="updateItemField" name="name" value="${item?.name}" objectId="${itemId}" label="item.name.label"/>
-        <tempvs:ajaxSmartForm type="text" action="updateItemField" name="description" value="${item?.description}" objectId="${itemId}" label="item.description.label"/>
-        <tempvs:ajaxSmartForm type="select" action="updateItemField" name="period" value="${item?.period}" optionKey="key" optionValue="value" from="${Period.values()}" objectId="${itemId}" label="periodization.period.dropdown.label"/>
-        <tempvs:ajaxSmartForm type="select" action="updateItemField" name="source" value="${item?.source?.name}" optionKey="id" optionValue="name" from="${applicationContext.sourceService.getSourcesByPeriod(item?.period)}" objectId="${itemId}" label="item.source.dropdown.label"/>
+        <tempvs:ajaxSmartForm type="text" action="updateItemField" name="name" value="${item?.name}" objectId="${itemId}" label="item.name.label" editAllowed="${editAllowed}"/>
+        <tempvs:ajaxSmartForm type="text" action="updateItemField" name="description" value="${item?.description}" objectId="${itemId}" label="item.description.label" editAllowed="${editAllowed}"/>
+        <tempvs:ajaxSmartForm type="select" action="updateItemField" name="period" value="${item?.period}" optionKey="key" optionValue="value" from="${Period.values()}" objectId="${itemId}" label="periodization.period.dropdown.label" editAllowed="${editAllowed}"/>
+        <tempvs:ajaxSmartForm type="select" action="updateItemField" name="source" value="${item?.source?.name}" optionKey="id" optionValue="name" from="${applicationContext.sourceService.getSourcesByPeriod(item?.period)}" objectId="${itemId}" label="item.source.dropdown.label" editAllowed="${editAllowed}"/>
       </div>
       <div class="row">
         <g:if test="${images}">

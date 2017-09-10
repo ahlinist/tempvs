@@ -7,9 +7,8 @@ function submitAjaxForm(form, success) {
 }
 
 function sendAjaxRequest(element, url, method, success) {
-    var data = new FormData();
     var successAction = (typeof success === "function") ? success : defaultSuccess;
-    processAjaxRequest(element, url, data, method, successAction);
+    processAjaxRequest(element, url, '', method, successAction);
 }
 
 function processAjaxRequest(element, url, data, method, success) {

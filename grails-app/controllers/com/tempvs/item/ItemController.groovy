@@ -193,7 +193,7 @@ class ItemController {
         User user = itemGroup.user
 
         if (user.id == userService.currentUserId) {
-            [item: item, itemGroup: itemGroup, user: user, userProfile: user.userProfile]
+            [item: item, itemGroup: itemGroup, user: user, userProfile: user.userProfile, editAllowed: Boolean.TRUE]
         } else {
             throw new AccessDeniedException('')
         }

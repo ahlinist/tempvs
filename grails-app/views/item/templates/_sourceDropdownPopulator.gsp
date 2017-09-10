@@ -17,10 +17,8 @@
 
     function populateSmartSources() {
         var sourcesURL = '${g.createLink(controller: "source", action: "getSourcesByPeriod")}' + '/' + $(this).val();
-        var closestForm = $(this).closest("form");
-        var sourceSelectInput = closestForm.parent().find('#source-input > select[name="fieldValue"]');
-        var sourceSelectText = closestForm.parent().find('#source-text');
-
+        var sourceSelectInput = $('#source-input > select[name="fieldValue"]');
+        var sourceSelectText = $('#source-text');
         sourceSelectText.html('-');
         sourceSelectInput.find('option').remove();
         sourceSelectInput.append(createOption('', '-'));
