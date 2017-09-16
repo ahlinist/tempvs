@@ -71,21 +71,6 @@ class ItemController {
         }
     }
 
-    def editGroup(ItemGroupCommand command) {
-        Closure successAction = { Validateable entity ->
-            itemService.saveGroup(entity as ItemGroup)
-        }
-
-        processEntity(command, successAction) {
-            ItemGroup itemGroup = itemService.getGroup params.groupId
-
-            if (itemGroup) {
-                InvokerHelper.setProperties(itemGroup, command.properties)
-                itemGroup
-            }
-        }
-    }
-
     def group(String id) {
         if (id) {
             ItemGroup itemGroup = itemService.getGroup id
@@ -112,21 +97,6 @@ class ItemController {
         processEntity(command, successAction) {
             Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
             properties as Item
-        }
-    }
-
-    def editItem(ItemCommand command) {
-        Closure successAction = { Validateable entity ->
-            itemService.saveItem(entity as Item)
-        }
-
-        processEntity(command, successAction) {
-            Item item = itemService.getItem params.itemId
-
-            if (item) {
-                InvokerHelper.setProperties(item, command.properties)
-                item
-            }
         }
     }
 
