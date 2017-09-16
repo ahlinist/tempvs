@@ -495,9 +495,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test editItemField()"() {
         given:
+        params.objectId = ONE
         params.fieldName = FIELD_NAME
         params.fieldValue = FIELD_VALUE
-        params.objectId = ONE
+        request.method = POST_METHOD
 
         when:
         controller.editItemField()
@@ -511,9 +512,11 @@ class ItemControllerSpec extends Specification {
 
     void "Test editItemGroupField()"() {
         given:
+        params.objectId = ONE
         params.fieldName = FIELD_NAME
         params.fieldValue = FIELD_VALUE
-        params.objectId = ONE
+        request.method = POST_METHOD
+
 
         when:
         controller.editItemGroupField()
