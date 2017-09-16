@@ -580,14 +580,14 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test updateItemField()"() {
+    void "Test editItemField()"() {
         given:
         params.fieldName = FIELD_NAME
         params.fieldValue = FIELD_VALUE
         params.objectId = ONE
 
         when:
-        controller.updateItemField()
+        controller.editItemField()
 
         then:
         1 * itemService.getItem(ONE) >> item
@@ -596,14 +596,14 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test updateItemGroupField()"() {
+    void "Test editItemGroupField()"() {
         given:
         params.fieldName = FIELD_NAME
         params.fieldValue = FIELD_VALUE
         params.objectId = ONE
 
         when:
-        controller.updateItemGroupField()
+        controller.editItemGroupField()
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup

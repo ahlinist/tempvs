@@ -11,8 +11,8 @@
         <div class="row">
           <div class="row">
             <div class="col-sm-8 ajax-form">
-              <tempvs:ajaxSmartForm type="text" action="updateItemGroupField" name="name" value="${itemGroup.name}" objectId="${itemGroupId}" label="item.group.name.label" editAllowed="${editAllowed}"/>
-              <tempvs:ajaxSmartForm type="text" action="updateItemGroupField" name="description" value="${itemGroup.description}" objectId="${itemGroupId}" label="item.group.description.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="text" action="editItemGroupField" name="name" value="${itemGroup.name}" objectId="${itemGroupId}" label="item.group.name.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="text" action="editItemGroupField" name="description" value="${itemGroup.description}" objectId="${itemGroupId}" label="item.group.description.label" editAllowed="${editAllowed}"/>
             </div>
             <div class="col-sm-4">
               <g:if test="${editAllowed}">

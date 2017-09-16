@@ -212,7 +212,7 @@ class ItemController {
         }
     }
 
-    def updateItemField() {
+    def editItemField() {
         Item item = itemService.getItem(params.objectId)
 
         if (item) {
@@ -247,7 +247,7 @@ class ItemController {
         }
     }
 
-    def updateItemGroupField() {
+    def editItemGroupField() {
         ItemGroup itemGroup = itemService.getGroup(params.objectId)
 
         if (itemGroup) {
