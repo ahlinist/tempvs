@@ -2,16 +2,19 @@ package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.ImageBean
+import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.periodization.Period
 import grails.converters.JSON
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
-import org.springframework.context.MessageSource
 import spock.lang.Specification
 
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
+@Mock([ClubProfile])
 @TestFor(ProfileController)
 class ProfileControllerSpec extends Specification {
 
@@ -19,10 +22,12 @@ class ProfileControllerSpec extends Specification {
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String POST_METHOD = 'POST'
+    private static final String FIRST_NAME = 'firstName'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String AUTH_URL = '/auth/index'
     private static final String PROPERTIES = 'properties'
     private static final String IDENTIFIER = 'identifier'
+    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String PROFILE_URL = '/profile/index'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
@@ -32,27 +37,28 @@ class ProfileControllerSpec extends Specification {
     private static final String EDIT_EMAIL_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
 
-    def json = Mock(JSON)
-    def user = Mock(User)
-    def image = Mock(ImageBean)
-    def userService = Mock(UserService)
-    def userProfile = Mock(UserProfile)
-    def clubProfile = Mock(ClubProfile)
-    def profileHolder = Mock(ProfileHolder)
-    def verifyService = Mock(VerifyService)
-    def messageSource = Mock(MessageSource)
-    def profileService = Mock(ProfileService)
-    def imageUploadBean = Mock(ImageUploadBean)
-    def emailVerification = Mock(EmailVerification)
-    def clubProfileCommand = Mock(ClubProfileCommand)
-    def userProfileCommand = Mock(UserProfileCommand)
-    def ajaxResponseService = Mock(AjaxResponseService)
+    def json = Mock JSON
+    def user = Mock User
+    def image = Mock ImageBean
+    def period = Period.valueOf 'XIX'
+    def userService = Mock UserService
+    def userProfile = Mock UserProfile
+    def clubProfile = Mock ClubProfile
+    def imageService = Mock ImageService
+    def profileHolder = Mock ProfileHolder
+    def verifyService = Mock VerifyService
+    def profileService = Mock ProfileService
+    def imageUploadBean = Mock ImageUploadBean
+    def emailVerification = Mock EmailVerification
+    def clubProfileCommand = Mock ClubProfileCommand
+    def userProfileCommand = Mock UserProfileCommand
+    def ajaxResponseService = Mock AjaxResponseService
 
     def setup() {
         controller.userService = userService
+        controller.imageService = imageService
         controller.profileHolder = profileHolder
         controller.verifyService = verifyService
-        controller.messageSource = messageSource
         controller.profileService = profileService
         controller.ajaxResponseService = ajaxResponseService
     }
@@ -181,11 +187,11 @@ class ProfileControllerSpec extends Specification {
         result == [userProfile: userProfile, clubProfiles: clubProfiles]
     }
 
-    void "Test createClubProfile()"() {
+    void "Test createClubProfile() against invalid command"() {
         given:
         request.method = POST_METHOD
 
-        when: 'Command invalid'
+        when:
         controller.createClubProfile(clubProfileCommand)
 
         then:
@@ -193,27 +199,42 @@ class ProfileControllerSpec extends Specification {
         1 * ajaxResponseService.renderValidationResponse(clubProfileCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+    }
 
-        when: 'Command valid. Profile not created.'
+    void "Test createClubProfile() against invalid profile"() {
+        given:
+        request.method = POST_METHOD
+        Map properties = [firstName: FIRST_NAME]
+
+        when:
         controller.createClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.getProperty(PROPERTIES)
-        1 * profileService.createClubProfile(_) >> clubProfile
-        1 * clubProfile.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(clubProfile) >> json
+        1 * clubProfileCommand.avatarBean >> imageUploadBean
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION)
+        1 * userService.currentUser >> user
+        1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
+        1 * ajaxResponseService.renderValidationResponse(_ as ClubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+    }
+
+    void "Test createClubProfile()"() {
+        given:
+        request.method = POST_METHOD
+        Map properties = [user: user, period: period, firstName: FIRST_NAME]
 
         when: 'Command valid. Profile created.'
         controller.createClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.getProperty(PROPERTIES)
-        1 * profileService.createClubProfile(_) >> clubProfile
-        1 * clubProfile.validate() >> Boolean.TRUE
+        1 * clubProfileCommand.avatarBean >> imageUploadBean
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION)
+        1 * userService.currentUser >> user
+        1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
+        1 * profileService.saveProfile(_ as ClubProfile) >> clubProfile
         1 * profileHolder.setProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID
         1 * ajaxResponseService.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json

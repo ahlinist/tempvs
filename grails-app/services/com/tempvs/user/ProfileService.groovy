@@ -42,12 +42,10 @@ class ProfileService {
         profile
     }
 
-    BaseProfile createClubProfile(Map properties) {
-        ClubProfile clubProfile = objectFactory.create(ClubProfile)
-        InvokerHelper.setProperties(clubProfile, properties)
-        clubProfile.avatar = imageService.updateImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION)
-        userService.currentUser.addToClubProfiles(clubProfile)?.save()
-        clubProfile
+    @PreAuthorize('#profile.user.email == authentication.name')
+    BaseProfile saveProfile(BaseProfile profile) {
+        profile.save()
+        profile
     }
 
     BaseProfile editProfileEmail(Class clazz, Long instanceId, String profileEmail) {

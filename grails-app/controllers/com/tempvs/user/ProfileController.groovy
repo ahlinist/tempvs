@@ -1,10 +1,11 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
 import org.springframework.security.access.AccessDeniedException
 
 /**
@@ -14,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class ProfileController {
 
+    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String EMAIL_EMPTY = 'profile.email.empty'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -24,7 +26,7 @@ class ProfileController {
     static allowedMethods = [index: 'GET', userProfile: 'GET', clubProfile: 'GET', switchProfile: 'GET', list: 'GET', createClubProfile: 'POST', editUserProfile: 'POST', editClubProfile: 'POST', editProfileEmail: 'POST', deleteProfile: 'DELETE', deleteAvatar: 'DELETE', uploadAvatar: 'POST']
 
     UserService userService
-    MessageSource messageSource
+    ImageService imageService
     ProfileHolder profileHolder
     VerifyService verifyService
     ProfileService profileService
@@ -69,11 +71,14 @@ class ProfileController {
 
     def createClubProfile(ClubProfileCommand command) {
         if (command.validate()) {
-            BaseProfile profile = profileService.createClubProfile(command.properties)
+            Image avatar = imageService.updateImage(command.avatarBean, AVATAR_COLLECTION)
+            Map properties = command.properties + [avatar: avatar, user: userService.currentUser]
+            BaseProfile profile = properties as ClubProfile
 
             if (profile.validate()) {
-                profileHolder.profile = profile
-                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
+                BaseProfile persistedProfile = profileService.saveProfile(profile)
+                profileHolder.profile = persistedProfile
+                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: persistedProfile.id))
             } else {
                 render ajaxResponseService.renderValidationResponse(profile)                }
         } else {

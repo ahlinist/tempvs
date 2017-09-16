@@ -101,30 +101,12 @@ class ProfileServiceSpec extends Specification {
         result == clubProfile
     }
 
-    void "Test createClubProfile()"() {
-        given:
-        Map props = [
-                firstName: FIRST_NAME,
-                lastName: LAST_NAME,
-                nickName: NICK_NAME,
-                clubName: CLUB_NAME,
-                avatarBean: imageUploadBean
-        ]
-
+    void "Test saveProfile()"() {
         when:
-        def result = service.createClubProfile(props)
+        def result = service.saveProfile(clubProfile)
 
         then:
-        1 * userService.currentUser >> user
-        1 * objectFactory.create(ClubProfile) >> clubProfile
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * clubProfile.setFirstName(FIRST_NAME)
-        1 * clubProfile.setLastName(LAST_NAME)
-        1 * clubProfile.setNickName(NICK_NAME)
-        1 * clubProfile.setClubName(CLUB_NAME)
-        1 * clubProfile.setAvatar(image)
-        1 * user.addToClubProfiles(clubProfile) >> user
-        1 * user.save()
+        1 * clubProfile.save()
         0 * _
 
         and:
