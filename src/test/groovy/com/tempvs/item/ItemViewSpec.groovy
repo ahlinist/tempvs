@@ -116,6 +116,7 @@ class ItemViewSpec extends Specification {
         String title = "<title>Tempvs - ${ITEM_GROUP_TITLE}</title>"
         String createItemButton = '<tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">'
         List items = [item]
+        String smartForm = '<tempvs:ajaxSmartForm type="text" action="editItemGroupField"'
         Map model = [
                 itemGroup: itemGroup,
                 user: user,
@@ -143,6 +144,7 @@ class ItemViewSpec extends Specification {
         and:
         result.contains title
         result.contains createItemButton
+        result.contains smartForm
     }
 
     void "Test /item/show without id"() {
@@ -162,6 +164,7 @@ class ItemViewSpec extends Specification {
         given:
         String title = "<title>Tempvs - ${NAME}</title>"
         String carousel = "<tempvs:carousel images="
+        String smartForm = '<tempvs:ajaxSmartForm type="text" action="editItemField"'
 
         Map model = [
                 item: item,
@@ -193,6 +196,7 @@ class ItemViewSpec extends Specification {
         result.contains NAME
         result.contains DESCRIPTION
         result.contains carousel
+        result.contains smartForm
     }
 
     void "Test /item/editItemPage with id"() {
