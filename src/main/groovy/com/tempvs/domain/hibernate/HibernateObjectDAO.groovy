@@ -21,7 +21,10 @@ class HibernateObjectDAO implements ObjectDAO {
     }
 
     public <T> T find(Class clazz, Map restrictions) {
-        createCriteria(clazz, restrictions).uniqueResult() as T
+        try {
+            createCriteria(clazz, restrictions).uniqueResult() as T
+        } catch (Throwable e) {
+        }
     }
 
     public <T> List<T> findAll(Class clazz, Map restrictions) {

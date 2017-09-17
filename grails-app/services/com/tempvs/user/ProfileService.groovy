@@ -48,13 +48,6 @@ class ProfileService {
         profile
     }
 
-    BaseProfile editProfileEmail(Class clazz, Long instanceId, String profileEmail) {
-        BaseProfile profile = objectDAO.get(clazz, instanceId)
-        profile.profileEmail = profileEmail
-        profile.save()
-        profile
-    }
-
     @PreAuthorize('#profile.user.email == authentication.name')
     Boolean deleteProfile(BaseProfile profile) {
         deleteAvatar(profile)

@@ -69,14 +69,19 @@ class VerifyController {
     }
 
     private profileEmail(Class clazz, EmailVerification emailVerification) {
-        BaseProfile profile = profileService.editProfileEmail(clazz, emailVerification.instanceId, emailVerification.email)
+        BaseProfile profile = profileService.getProfile(clazz, emailVerification.instanceId)
 
-        if (profile?.hasErrors()) {
-            error([message: PROFILE_EMAIL_UPDATE_FAILED])
-        } else {
-            profileHolder.profile = profile
-            redirect controller: 'profile'
+        if (profile) {
+            profile.profileEmail = emailVerification.email
+
+            if (profile.validate()) {
+                profileHolder.profile = profile
+                profileService.saveProfile(profile)
+                return redirect(controller: 'profile', action: clazz.simpleName.uncapitalize(), id: profile.id)
+            }
         }
+
+        error([message: PROFILE_EMAIL_UPDATE_FAILED])
     }
 
     private error(Map model) {

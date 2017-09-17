@@ -8,6 +8,7 @@ import com.tempvs.image.ImageUploadBean
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
@@ -16,12 +17,6 @@ import spock.lang.Specification
 class ProfileServiceSpec extends Specification {
 
     private static final String ONE = '1'
-    private static final String EMAIL = 'test@email.com'
-    private static final Long LONG_ID = 1L
-    private static final String FIRST_NAME = 'firstName'
-    private static final String LAST_NAME = 'lastName'
-    private static final String NICK_NAME = 'nickName'
-    private static final String CLUB_NAME = 'clubName'
     private static final String AVATAR_COLLECTION = 'avatar'
 
     def user = Mock(User)
@@ -106,20 +101,6 @@ class ProfileServiceSpec extends Specification {
         def result = service.saveProfile(clubProfile)
 
         then:
-        1 * clubProfile.save()
-        0 * _
-
-        and:
-        result == clubProfile
-    }
-
-    void "Test editProfileEmail()"() {
-        when:
-        def result = service.editProfileEmail(ClubProfile, LONG_ID, EMAIL)
-
-        then:
-        1 * objectDAO.get(ClubProfile, LONG_ID) >> clubProfile
-        1 * clubProfile.setProfileEmail(EMAIL)
         1 * clubProfile.save()
         0 * _
 

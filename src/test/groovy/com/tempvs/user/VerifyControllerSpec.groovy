@@ -11,17 +11,17 @@ import spock.lang.Specification
 @Mock([UserProfile, ClubProfile])
 class VerifyControllerSpec extends Specification {
 
-    private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
-    private static final String REGISTRATION_PAGE_URI = '/verify/registration'
-    private static final String ERROR_PAGE_URI = '/verify/error'
-    private static final String USER_EDIT_PAGE_URI = '/user/edit'
-    private static final String PROFILE_PAGE_URI = '/profile'
-    private static final String REGISTRATION = 'registration'
     private static final String USERPROFILE = 'userprofile'
     private static final String CLUBPROFILE = 'clubprofile'
+    private static final String PROFILE_PAGE_URI = '/profile'
+    private static final String REGISTRATION = 'registration'
+    private static final String ERROR_PAGE_URI = '/verify/error'
+    private static final String USER_EDIT_PAGE_URI = '/user/edit'
+    private static final String REGISTRATION_PAGE_URI = '/verify/registration'
+    private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
 
     def userService = Mock(UserService)
     def profileService = Mock(ProfileService)
@@ -123,14 +123,17 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getAction() >> USERPROFILE
         1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.getInstanceId() >> LONG_ID
-        1 * profileService.editProfileEmail(UserProfile.class, LONG_ID, EMAIL) >> userProfile
-        1 * userProfile.hasErrors() >> Boolean.FALSE
+        1 * profileService.getProfile(UserProfile, LONG_ID) >> userProfile
+        1 * userProfile.setProfileEmail(EMAIL)
+        1 * userProfile.validate() >> Boolean.TRUE
+        1 * profileService.saveProfile(userProfile) >> userProfile
         1 * profileHolder.setProfile(userProfile)
+        1 * userProfile.id >> LONG_ID
         1 * emailVerification.delete(['flush':true])
         0 * _
 
         and:
-        response.redirectedUrl == PROFILE_PAGE_URI
+        response.redirectedUrl.contains PROFILE_PAGE_URI
     }
 
     void "Check clubprofile email update verification"() {
@@ -150,13 +153,16 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getAction() >> CLUBPROFILE
         1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.getInstanceId() >> LONG_ID
-        1 * profileService.editProfileEmail(ClubProfile.class, LONG_ID, EMAIL) >> clubProfile
-        1 * clubProfile.hasErrors() >> Boolean.FALSE
+        1 * profileService.getProfile(ClubProfile, LONG_ID) >> clubProfile
+        1 * clubProfile.setProfileEmail(EMAIL)
+        1 * clubProfile.validate() >> Boolean.TRUE
+        1 * profileService.saveProfile(clubProfile) >> clubProfile
         1 * profileHolder.setProfile(clubProfile)
+        1 * clubProfile.id >> LONG_ID
         1 * emailVerification.delete(['flush':true])
         0 * _
 
         and:
-        response.redirectedUrl == PROFILE_PAGE_URI
+        response.redirectedUrl.contains PROFILE_PAGE_URI
     }
 }
