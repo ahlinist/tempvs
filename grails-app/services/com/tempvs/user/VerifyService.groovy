@@ -15,20 +15,18 @@ class VerifyService {
     }
 
     EmailVerification createEmailVerification(Map properties) {
-        String email = properties.email
-        String verificationCode = email + new Date().time
-        Map verificationProperties = properties + [verificationCode: verificationCode.encodeAsMD5()]
-        EmailVerification emailVerification = verificationProperties as EmailVerification
-
-        if (emailVerification.save(flush: true)) {
-            mailService.sendMail {
-                to email
-                from 'no-reply@tempvs.com'
-                subject 'Tempvs'
-                body(view: "/verify/emailTemplates/${properties.action}", model: emailVerification.properties)
-            }
-        }
-
+        properties += [verificationCode: (properties.email.toString() + new Date().time).encodeAsMD5()]
+        EmailVerification emailVerification = properties as EmailVerification
+        emailVerification.save()
         emailVerification
+    }
+
+    Boolean sendEmailVerification(EmailVerification emailVerification) {
+        mailService.sendMail {
+            to emailVerification.email
+            from 'no-reply@tempvs.com'
+            subject 'Tempvs'
+            body(view: "/verify/emailTemplates/${emailVerification.action}", model: emailVerification.properties)
+        }
     }
 }

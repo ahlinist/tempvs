@@ -8,17 +8,17 @@ import grails.compiler.GrailsCompileStatic
 @GrailsCompileStatic
 class VerifyController {
 
+    private static final String EMAIL = 'email'
     private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'profileEmail.update.failed.message'
-    private static final String EMAIL = 'email'
 
     static allowedMethods = [byEmail: 'GET']
 
-    VerifyService verifyService
     UserService userService
-    ProfileService profileService
+    VerifyService verifyService
     ProfileHolder profileHolder
+    ProfileService profileService
 
     static defaultAction = 'byEmail'
 
@@ -35,11 +35,11 @@ class VerifyController {
                     case 'email':
                         email(emailVerification)
                         break
-                    case 'userprofile':
-                        profileEmail(UserProfile.class, emailVerification)
+                    case UserProfile.simpleName.uncapitalize():
+                        profileEmail(UserProfile, emailVerification)
                         break
-                    case 'clubprofile':
-                        profileEmail(ClubProfile.class, emailVerification)
+                    case ClubProfile.simpleName.uncapitalize():
+                        profileEmail(ClubProfile, emailVerification)
                         break
                 }
 

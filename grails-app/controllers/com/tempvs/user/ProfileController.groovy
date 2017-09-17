@@ -40,13 +40,13 @@ class ProfileController {
 
     def userProfile(String id) {
         profile(id) {
-            profileService.getProfile(UserProfile.class, id)
+            profileService.getProfile(UserProfile, id)
         }
     }
 
     def clubProfile(String id) {
         profile(id) {
-            profileService.getProfile(ClubProfile.class, id)
+            profileService.getProfile(ClubProfile, id)
         }
     }
 
@@ -104,10 +104,19 @@ class ProfileController {
                 if (!userService.isEmailUnique(email)) {
                     render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
                 } else {
-                    Map props = [instanceId: profile.id,
-                                 email: email,
-                                 action: profile.class.simpleName.toLowerCase()]
-                    render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), EDIT_PROFILE_EMAIL_MESSAGE_SENT)
+                    Map properties = [
+                            instanceId: profile.id,
+                            email: email,
+                            action: profile.class.simpleName.uncapitalize(),
+                    ]
+
+                    EmailVerification emailVerification = verifyService.createEmailVerification(properties)
+
+                    if (!emailVerification.hasErrors()) {
+                        verifyService.sendEmailVerification(emailVerification)
+                    }
+
+                    render ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
                 }
             }
         } else {

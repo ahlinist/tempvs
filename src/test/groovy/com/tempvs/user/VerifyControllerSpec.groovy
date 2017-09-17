@@ -14,8 +14,8 @@ class VerifyControllerSpec extends Specification {
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
-    private static final String USERPROFILE = 'userprofile'
-    private static final String CLUBPROFILE = 'clubprofile'
+    private static final String USERPROFILE = 'userProfile'
+    private static final String CLUBPROFILE = 'clubProfile'
     private static final String PROFILE_PAGE_URI = '/profile'
     private static final String REGISTRATION = 'registration'
     private static final String ERROR_PAGE_URI = '/verify/error'
@@ -23,20 +23,20 @@ class VerifyControllerSpec extends Specification {
     private static final String REGISTRATION_PAGE_URI = '/verify/registration'
     private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
 
-    def userService = Mock(UserService)
-    def profileService = Mock(ProfileService)
-    def verifyService = Mock(VerifyService)
-    def emailVerification = Mock(EmailVerification)
-    def user = Mock(User)
-    def userProfile = Mock(UserProfile)
-    def clubProfile = Mock(ClubProfile)
-    def profileHolder = Mock(ProfileHolder)
+    def user = Mock User
+    def userService = Mock UserService
+    def userProfile = Mock UserProfile
+    def clubProfile = Mock ClubProfile
+    def verifyService = Mock VerifyService
+    def profileHolder = Mock ProfileHolder
+    def profileService = Mock ProfileService
+    def emailVerification = Mock EmailVerification
 
     def setup() {
         controller.userService = userService
-        controller.profileService = profileService
         controller.verifyService = verifyService
         controller.profileHolder = profileHolder
+        controller.profileService = profileService
     }
 
     def cleanup() {

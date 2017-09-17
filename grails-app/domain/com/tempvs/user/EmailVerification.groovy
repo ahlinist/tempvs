@@ -19,7 +19,7 @@ class EmailVerification extends BasePersistent {
             }
         }
         email email: true, unique: ['action']
-        action inList: ['registration', 'email', 'userprofile', 'clubprofile']
+        action inList: ['registration', 'email', 'userProfile', 'clubProfile']
         verificationCode unique: true
     }
 }

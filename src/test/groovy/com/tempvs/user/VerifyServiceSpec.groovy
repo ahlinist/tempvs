@@ -12,11 +12,11 @@ import spock.lang.Specification
 @Mock([EmailVerification])
 class VerifyServiceSpec extends Specification {
 
-    private static final String VERIFICATION_CODE = 'verificationCode'
     private static final String EMAIL = 'email'
+    private static final String VERIFICATION_CODE = 'verificationCode'
 
-    def mailService = Mock(MailService)
-    def emailVerification = Mock(EmailVerification)
+    def mailService = Mock MailService
+    def emailVerification = Mock EmailVerification
 
     def setup() {
         GroovySpy(EmailVerification, global: true)
@@ -27,7 +27,7 @@ class VerifyServiceSpec extends Specification {
     def cleanup() {
     }
 
-    void "Check getVerification()"() {
+    void "Test getVerification()"() {
         when:
         def result = service.getVerification(VERIFICATION_CODE)
 
@@ -39,30 +39,38 @@ class VerifyServiceSpec extends Specification {
         result == emailVerification
     }
 
-    void "Check successful creation of email verification"() {
+    void "Test successful creation of email verification"() {
         when:
         def result = service.createEmailVerification([email: EMAIL])
 
         then: 'Verification created and mail sent'
         1 * new EmailVerification(_) >> emailVerification
-        1 * emailVerification.save([flush: true]) >> emailVerification
-        1 * mailService.sendMail(_)
+        1 * emailVerification.save() >> emailVerification
         0 * _
 
         and:
         result == emailVerification
     }
 
-    void "Check failed creation of email verification"() {
+    void "Test failed creation of email verification"() {
         when:
         def result = service.createEmailVerification([email: EMAIL])
 
         then: 'Verification created, not saved and not sent'
         1 * new EmailVerification(_) >> emailVerification
-        1 * emailVerification.save([flush: true]) >> null
+        1 * emailVerification.save() >> null
         0 * _
 
         and:
         result == emailVerification
+    }
+
+    void "Test sendEmailVerification()"() {
+        when:
+        service.sendEmailVerification(emailVerification)
+
+        then:
+        1 * mailService.sendMail(_)
+        0 * _
     }
 }

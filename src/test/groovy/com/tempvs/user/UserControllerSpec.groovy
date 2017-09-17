@@ -5,7 +5,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
-import org.springframework.context.MessageSource
 import spock.lang.Specification
 
 /**
@@ -27,30 +26,28 @@ class UserControllerSpec extends Specification {
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
 
-    def ajaxResponseService = Mock(AjaxResponseService)
-    def userService = Mock(UserService)
-    def verifyService = Mock(VerifyService)
-    def springSecurityService = Mock(SpringSecurityService)
-    def user = Mock(User)
-    def userProfile = Mock(UserProfile)
-    def emailVerification = Mock(EmailVerification)
-    def json = Mock(JSON)
-    def userPasswordCommand = Mock(UserPasswordCommand)
-    def registerCommand = Mock(RegisterCommand)
-    def messageSource = Mock(MessageSource)
+    def user = Mock User
+    def json = Mock JSON
+    def userProfile = Mock UserProfile
+    def userService = Mock UserService
+    def verifyService = Mock VerifyService
+    def registerCommand = Mock RegisterCommand
+    def emailVerification = Mock EmailVerification
+    def ajaxResponseService = Mock AjaxResponseService
+    def userPasswordCommand = Mock UserPasswordCommand
+    def springSecurityService = Mock SpringSecurityService
 
     def setup() {
+        controller.userService = userService
         controller.verifyService = verifyService
         controller.ajaxResponseService = ajaxResponseService
-        controller.userService = userService
         controller.springSecurityService = springSecurityService
-        controller.messageSource = messageSource
     }
 
     def cleanup() {
     }
 
-    void "Render edit page"() {
+    void "Test edit()"() {
         when:
         Map model = controller.edit()
 
@@ -62,7 +59,7 @@ class UserControllerSpec extends Specification {
         model == [user: user]
     }
 
-    void "Test index() action"() {
+    void "Test index()"() {
         when:
         controller.index()
 
@@ -70,7 +67,7 @@ class UserControllerSpec extends Specification {
         response.redirectedUrl == PROFILE_PAGE_URI
     }
 
-    void "Check updateEmail() for duplicate"() {
+    void "Test updateEmail() for current email"() {
         given:
         params.email = EMAIL
         request.method = POST_METHOD
@@ -85,7 +82,7 @@ class UserControllerSpec extends Specification {
         0 * _
     }
 
-    void "Check updateEmail action for used email"() {
+    void "Test updateEmail() against non-unique email"() {
         given:
         params.email = EMAIL
         request.method = POST_METHOD
@@ -101,7 +98,7 @@ class UserControllerSpec extends Specification {
         0 * _
     }
 
-    void "Check updateEmail action"() {
+    void "Test updateEmail()"() {
         given:
         params.email = EMAIL
         request.method = POST_METHOD
@@ -115,12 +112,14 @@ class UserControllerSpec extends Specification {
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userService.currentUserId >> LONG_ID
         1 * verifyService.createEmailVerification([instanceId: LONG_ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
+        1 * emailVerification.hasErrors() >> Boolean.FALSE
+        1 * verifyService.sendEmailVerification(emailVerification)
         1 * ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Check updatePassword action for invalid params"() {
+    void "Test updatePassword() against invalid params"() {
         given:
         request.method = POST_METHOD
 
@@ -134,7 +133,7 @@ class UserControllerSpec extends Specification {
         0 * _
     }
 
-    void "Check updatePassword action for valid params"() {
+    void "Test updatePassword()"() {
         given:
         request.method = POST_METHOD
 
@@ -150,7 +149,7 @@ class UserControllerSpec extends Specification {
         0 * _
     }
 
-    void "Check register action against invalid command"() {
+    void "Test register() against invalid command"() {
         given:
         request.method = POST_METHOD
 
@@ -164,7 +163,7 @@ class UserControllerSpec extends Specification {
         0 * _
     }
 
-    void "Check register action against valid command and invalid user data"() {
+    void "Test register() against valid command but invalid user"() {
         given:
         request.method = POST_METHOD
 
@@ -181,7 +180,7 @@ class UserControllerSpec extends Specification {
         0 * _
     }
 
-    void "Check register action against valid command and valid user data"() {
+    void "Test register()"() {
         given:
         request.method = POST_METHOD
         

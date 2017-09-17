@@ -4,7 +4,6 @@ import com.tempvs.ajax.AjaxResponseService
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
 
 /**
  * Controller for managing {@link com.tempvs.user.User}-related instances.
@@ -12,22 +11,21 @@ import org.springframework.context.MessageSource
 @GrailsCompileStatic
 class UserController {
 
+    private static final String EMAIL = 'email'
+    private static final String UPDATE_EMAIL_ACTION = 'email'
+    private static final String EMAIL_USED = 'user.email.used'
+    private static final String EMAIL_EMPTY = 'user.email.empty'
+    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
-    private static final String EMAIL_USED = 'user.email.used'
-    private static final String EMAIL = 'email'
-    private static final String EMAIL_EMPTY = 'user.email.empty'
-    private static final String UPDATE_EMAIL_ACTION = 'email'
-    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
 
     static allowedMethods = [index: 'GET', edit: 'GET', updateEmail: 'POST', updatePassword: 'POST', register: 'POST']
 
     UserService userService
     VerifyService verifyService
-    SpringSecurityService springSecurityService
-    AjaxResponseService ajaxResponseService
-    MessageSource messageSource
     LinkGenerator grailsLinkGenerator
+    AjaxResponseService ajaxResponseService
+    SpringSecurityService springSecurityService
 
     def index() {
         redirect controller: 'profile'
@@ -45,8 +43,19 @@ class UserController {
                 if (!userService.isEmailUnique(email)) {
                     render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
                 } else {
-                    Map props = [instanceId: userService.currentUserId, email: email, action: UPDATE_EMAIL_ACTION]
-                    render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), UPDATE_EMAIL_MESSAGE_SENT)
+                    Map properties = [
+                            instanceId: userService.currentUserId,
+                            email: email,
+                            action: UPDATE_EMAIL_ACTION,
+                    ]
+
+                    EmailVerification emailVerification = verifyService.createEmailVerification(properties)
+
+                    if (!emailVerification.hasErrors()) {
+                        verifyService.sendEmailVerification(emailVerification)
+                    }
+
+                    render ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT)
                 }
             }
         } else {

@@ -10,7 +10,6 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
-import org.springframework.context.MessageSource
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
 
@@ -31,26 +30,24 @@ class AuthControllerSpec extends Specification {
     private static final String REGISTER_ACTION = 'registration'
     private static final String NO_SUCH_USER_CODE = 'auth.login.noSuchUser.message'
 
-    def emailVerification = Mock(EmailVerification)
-    def requestRegistrationCommand = Mock(RequestRegistrationCommand)
-    def ajaxResponseService = Mock(AjaxResponseService)
-    def userService = Mock(UserService)
-    def verifyService = Mock(VerifyService)
-    def json = Mock(JSON)
-    def passwordEncoder = Mock(PasswordEncoder)
-    def springSecurityService = Mock(SpringSecurityService)
-    def loginCommand = Mock(LoginCommand)
-    def user = Mock(User)
-    def grailsLinkGenerator = Mock(LinkGenerator)
-    def messageSource = Mock(MessageSource)
+    def user = Mock User
+    def json = Mock JSON
+    def userService = Mock UserService
+    def loginCommand = Mock LoginCommand
+    def verifyService = Mock VerifyService
+    def passwordEncoder = Mock PasswordEncoder
+    def grailsLinkGenerator = Mock LinkGenerator
+    def emailVerification = Mock EmailVerification
+    def ajaxResponseService = Mock AjaxResponseService
+    def springSecurityService = Mock SpringSecurityService
+    def requestRegistrationCommand = Mock RequestRegistrationCommand
 
     def setup() {
-        controller.ajaxResponseService = ajaxResponseService
         controller.userService = userService
-        controller.passwordEncoder = passwordEncoder
-        controller.springSecurityService = springSecurityService
         controller.verifyService = verifyService
-        controller.messageSource = messageSource
+        controller.passwordEncoder = passwordEncoder
+        controller.ajaxResponseService = ajaxResponseService
+        controller.springSecurityService = springSecurityService
     }
 
     def cleanup() {
@@ -87,6 +84,8 @@ class AuthControllerSpec extends Specification {
         1 * requestRegistrationCommand.validate() >> Boolean.TRUE
         1 * requestRegistrationCommand.email >> EMAIL
         1 * verifyService.createEmailVerification(['action': REGISTER_ACTION, 'email': EMAIL]) >> emailVerification
+        1 * emailVerification.hasErrors() >> Boolean.FALSE
+        1 * verifyService.sendEmailVerification(emailVerification)
         1 * ajaxResponseService.renderValidationResponse(emailVerification, _ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

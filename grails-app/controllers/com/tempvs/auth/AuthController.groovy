@@ -1,13 +1,13 @@
 package com.tempvs.auth
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.user.EmailVerification
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import com.tempvs.user.VerifyService
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
-import org.springframework.context.MessageSource
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
 /**
@@ -29,7 +29,6 @@ class AuthController {
     AjaxResponseService ajaxResponseService
     PasswordEncoder passwordEncoder
     LinkGenerator grailsLinkGenerator
-    MessageSource messageSource
 
     def index() {
     }
@@ -61,8 +60,14 @@ class AuthController {
 
     def register(RequestRegistrationCommand command) {
         if (command.validate()) {
-            Map props = [action: REGISTRATION_ACTION, email: command.email]
-            render ajaxResponseService.renderValidationResponse(verifyService.createEmailVerification(props), REGISTER_MESSAGE_SENT)
+            Map properties = [action: REGISTRATION_ACTION, email: command.email]
+            EmailVerification emailVerification = verifyService.createEmailVerification(properties)
+
+            if (!emailVerification.hasErrors()) {
+                verifyService.sendEmailVerification(emailVerification)
+            }
+
+            render ajaxResponseService.renderValidationResponse(emailVerification, REGISTER_MESSAGE_SENT)
         } else {
             render ajaxResponseService.renderValidationResponse(command)
         }
