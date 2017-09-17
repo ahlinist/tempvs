@@ -1,6 +1,5 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectFactory
 import grails.plugins.mail.MailService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -18,13 +17,11 @@ class VerifyServiceSpec extends Specification {
 
     def mailService = Mock(MailService)
     def emailVerification = Mock(EmailVerification)
-    def objectFactory = Mock(ObjectFactory)
 
     def setup() {
         GroovySpy(EmailVerification, global: true)
 
         service.mailService = mailService
-        service.objectFactory = objectFactory
     }
 
     def cleanup() {
@@ -36,6 +33,7 @@ class VerifyServiceSpec extends Specification {
 
         then:
         1 * EmailVerification.findByVerificationCode(VERIFICATION_CODE) >> emailVerification
+        0 * _
 
         and:
         result == emailVerification
@@ -46,9 +44,10 @@ class VerifyServiceSpec extends Specification {
         def result = service.createEmailVerification([email: EMAIL])
 
         then: 'Verification created and mail sent'
-        1 * objectFactory.create(EmailVerification.class) >> emailVerification
+        1 * new EmailVerification(_) >> emailVerification
         1 * emailVerification.save([flush: true]) >> emailVerification
         1 * mailService.sendMail(_)
+        0 * _
 
         and:
         result == emailVerification
@@ -59,8 +58,9 @@ class VerifyServiceSpec extends Specification {
         def result = service.createEmailVerification([email: EMAIL])
 
         then: 'Verification created, not saved and not sent'
-        1 * objectFactory.create(EmailVerification.class) >> emailVerification
-        1 * emailVerification.save([flush: true])
+        1 * new EmailVerification(_) >> emailVerification
+        1 * emailVerification.save([flush: true]) >> null
+        0 * _
 
         and:
         result == emailVerification
