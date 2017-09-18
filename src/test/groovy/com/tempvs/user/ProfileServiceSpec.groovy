@@ -19,15 +19,15 @@ class ProfileServiceSpec extends Specification {
     private static final String ONE = '1'
     private static final String AVATAR_COLLECTION = 'avatar'
 
-    def user = Mock(User)
-    def image = Mock(Image)
-    def objectDAO = Mock(ObjectDAO)
-    def userService = Mock(UserService)
-    def clubProfile = Mock(ClubProfile)
-    def userProfile = Mock(UserProfile)
-    def imageService = Mock(ImageService)
-    def objectFactory = Mock(ObjectFactory)
-    def imageUploadBean = Mock(ImageUploadBean)
+    def user = Mock User
+    def image = Mock Image
+    def objectDAO = Mock ObjectDAO
+    def userService = Mock UserService
+    def clubProfile = Mock ClubProfile
+    def userProfile = Mock UserProfile
+    def imageService = Mock ImageService
+    def objectFactory = Mock ObjectFactory
+    def imageUploadBean = Mock ImageUploadBean
 
     def setup() {
         service.userService = userService
@@ -63,37 +63,6 @@ class ProfileServiceSpec extends Specification {
 
         and:
         result == userProfile
-    }
-
-    void "Test editProfile()"() {
-        given:
-        Map params = [avatarBean: imageUploadBean]
-
-        when:
-        def result = service.editProfile(userProfile, params)
-
-        then:
-        1 * userProfile.avatar >> image
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
-        1 * userProfile.setAvatar(image)
-        1 * userProfile.save() >> userProfile
-        0 * _
-
-        and:
-        result == userProfile
-
-        when:
-        result = service.editProfile(clubProfile, params)
-
-        then:
-        1 * clubProfile.avatar >> image
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
-        1 * clubProfile.setAvatar(image)
-        1 * clubProfile.save() >> clubProfile
-        0 * _
-
-        and:
-        result == clubProfile
     }
 
     void "Test saveProfile()"() {

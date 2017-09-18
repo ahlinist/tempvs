@@ -1,7 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.ImageBean
+import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
@@ -39,7 +39,7 @@ class ProfileControllerSpec extends Specification {
 
     def json = Mock JSON
     def user = Mock User
-    def image = Mock ImageBean
+    def image = Mock Image
     def period = Period.valueOf 'XIX'
     def userService = Mock UserService
     def userProfile = Mock UserProfile
@@ -251,18 +251,14 @@ class ProfileControllerSpec extends Specification {
         controller.editClubProfile(clubProfileCommand)
 
         then:
-        1 * clubProfileCommand.lastName
-        1 * clubProfileCommand.period
-        1 * clubProfileCommand.profileId
-        1 * clubProfileCommand.location
-        1 * clubProfileCommand.nickName
-        1 * clubProfileCommand.firstName
-        1 * clubProfileCommand.clubName
-        1 * clubProfileCommand.avatarBean
-        1 * clubProfileCommand.errors
         1 * profileHolder.getProfile() >> clubProfile
-        1 * profileService.editProfile(clubProfile, _) >> clubProfile
+        1 * clubProfileCommand.avatarBean >> imageUploadBean
+        1 * clubProfile.avatar >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * clubProfile.setAvatar(image)
+        1 * clubProfileCommand.getProperty(PROPERTIES) >> [:]
         1 * clubProfile.validate() >> Boolean.TRUE
+        1 * profileService.saveProfile(clubProfile) >> clubProfile
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -276,14 +272,12 @@ class ProfileControllerSpec extends Specification {
         controller.editUserProfile(userProfileCommand)
 
         then:
-        1 * userProfileCommand.errors
-        1 * userProfileCommand.lastName
-        1 * userProfileCommand.profileId
-        1 * userProfileCommand.location
-        1 * userProfileCommand.firstName
-        1 * userProfileCommand.avatarBean
         1 * profileHolder.getProfile() >> userProfile
-        1 * profileService.editProfile(userProfile, _) >> userProfile
+        1 * userProfileCommand.avatarBean >> imageUploadBean
+        1 * userProfile.avatar >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * userProfile.setAvatar(image)
+        1 * userProfileCommand.getProperty(PROPERTIES) >> [:]
         1 * userProfile.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(userProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

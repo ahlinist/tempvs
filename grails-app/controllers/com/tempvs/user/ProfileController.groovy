@@ -6,6 +6,7 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.web.mapping.LinkGenerator
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.AccessDeniedException
 
 /**
@@ -167,10 +168,13 @@ class ProfileController {
         }
     }
 
-    private editProfile(command) {
-        BaseProfile profile = profileService.editProfile(profileHolder.profile, command.properties)
+    private editProfile(ProfileCommand command) {
+        BaseProfile profile = profileHolder.profile
+        profile.avatar = imageService.updateImage(command.avatarBean, AVATAR_COLLECTION, profile.avatar)
+        InvokerHelper.setProperties(profile, command.properties)
 
         if (profile.validate()) {
+            profileService.saveProfile(profile)
             render ajaxResponseService.renderRedirect(request.getHeader('referer'))
         } else {
             render ajaxResponseService.renderValidationResponse(profile)

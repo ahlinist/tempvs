@@ -7,7 +7,6 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
@@ -27,19 +26,6 @@ class ProfileService {
 
     public <T> T getProfile(Class<T> clazz, Object id) {
         objectDAO.find(clazz, [profileId: id]) ?: objectDAO.get(clazz, id)
-    }
-
-    @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile editProfile(BaseProfile profile, Map properties) {
-        InvokerHelper.setProperties(profile, properties)
-        Image avatar = imageService.updateImage(properties.avatarBean as ImageUploadBean, AVATAR_COLLECTION, profile.avatar)
-
-        if (avatar) {
-            profile.avatar = avatar
-        }
-
-        profile.save()
-        profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
