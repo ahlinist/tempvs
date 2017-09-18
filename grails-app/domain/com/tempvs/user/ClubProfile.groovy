@@ -13,14 +13,22 @@ class ClubProfile extends BaseProfile {
     String clubName
     Period period
 
-    static belongsTo = [user: User]
-
     static constraints = {
         lastName nullable: true
         nickName nullable: true
         clubName nullable: true
-    }
+        profileId shared: "profileId"
+        location nullable: true
+        avatar nullable: true
 
+        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
+            if (profileEmail) {
+                baseProfile.userService?.isEmailUnique(profileEmail)
+            } else {
+                Boolean.TRUE
+            }
+        }
+    }
 
     static mapping = {
         avatar cascade: 'all-delete-orphan'

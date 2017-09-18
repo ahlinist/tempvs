@@ -37,19 +37,6 @@ abstract class BaseProfile extends BasePersistent {
 
     }
 
+    static belongsTo = [user: User]
     static transients = ['userService']
-
-    static constraints = {
-        profileId shared: "profileId"
-        location nullable: true
-        avatar nullable: true
-
-        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
-            if (profileEmail) {
-                baseProfile.userService?.isEmailUnique(profileEmail)
-            } else {
-                Boolean.TRUE
-            }
-        }
-    }
 }

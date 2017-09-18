@@ -27,7 +27,7 @@ class ProfileCommandSpec extends Specification {
         defineBeans {
             "${ConstraintsEvaluator.BEAN_NAME}"(ConstraintsEvaluatorFactoryBean) {
                 def constraintsClosure = {
-                    profileId nullable: true, unique: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
+                    profileId nullable: true, matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
                 }
 
                 defaultConstraints = new ClosureToMapPopulator().populate(constraintsClosure)
