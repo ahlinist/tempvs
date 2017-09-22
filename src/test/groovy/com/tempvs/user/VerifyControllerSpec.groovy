@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -31,12 +32,14 @@ class VerifyControllerSpec extends Specification {
     def profileHolder = Mock ProfileHolder
     def profileService = Mock ProfileService
     def emailVerification = Mock EmailVerification
+    def springSecurityService = Mock SpringSecurityService
 
     def setup() {
         controller.userService = userService
         controller.verifyService = verifyService
         controller.profileHolder = profileHolder
         controller.profileService = profileService
+        controller.springSecurityService = springSecurityService
     }
 
     def cleanup() {
@@ -94,11 +97,15 @@ class VerifyControllerSpec extends Specification {
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getAction() >> EMAIL
-        1 * emailVerification.getInstanceId() >> LONG_ID
-        1 * emailVerification.getEmail() >> EMAIL
-        1 * userService.updateEmail(LONG_ID, EMAIL) >> user
-        1 * user.hasErrors() >> Boolean.FALSE
+        1 * emailVerification.action >> EMAIL
+        1 * emailVerification.instanceId >> LONG_ID
+        1 * userService.getUser(LONG_ID) >> user
+        1 * emailVerification.email >> EMAIL
+        1 * user.setEmail(EMAIL)
+        1 * user.validate() >> Boolean.TRUE
+        1 * user.email >> EMAIL
+        1 * springSecurityService.reauthenticate(EMAIL)
+        1 * userService.saveUser(user) >> user
         1 * emailVerification.delete(['flush':true])
         0 * _
 

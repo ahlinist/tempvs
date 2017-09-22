@@ -64,19 +64,37 @@ class UserController {
     }
 
     def updatePassword(UserPasswordCommand command) {
-        render ajaxResponseService.renderValidationResponse(command.validate() ? userService.updatePassword(command.newPassword) : command, PASSWORD_UPDATED_MESSAGE)
+        if (command.validate()) {
+            User user = userService.currentUser
+            user.password = springSecurityService.encodePassword(command.newPassword)
+
+            if (user.validate()) {
+                userService.saveUser(user)
+                render ajaxResponseService.renderRedirect(request.getHeader('referer'))
+            } else {
+                render ajaxResponseService.renderValidationResponse(user, PASSWORD_UPDATED_MESSAGE)
+            }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
+        }
     }
 
     def register(RegisterCommand command) {
         if (command.validate()) {
-            User user = userService.createUser(command.properties + [email: session.getAttribute(EMAIL) as String])
+            String email = session.getAttribute(EMAIL)
+            Map properties = command.properties
+            properties.userProfile = properties as UserProfile
+            properties.password = springSecurityService.encodePassword command.password
+            properties.email = email
+            User user = properties as User
 
-            if (user?.hasErrors()) {
-                render ajaxResponseService.renderValidationResponse(user)
-            } else {
-                springSecurityService.reauthenticate(session.getAttribute(EMAIL) as String, command.password)
+            if (user.validate()) {
+                userService.saveUser(user)
+                springSecurityService.reauthenticate(email, command.password)
                 session.setAttribute(EMAIL, null)
                 render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
+            } else {
+                render ajaxResponseService.renderValidationResponse(user)
             }
         } else {
             render ajaxResponseService.renderValidationResponse(command)

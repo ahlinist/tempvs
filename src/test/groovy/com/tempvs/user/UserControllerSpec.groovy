@@ -1,8 +1,10 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.tests.utils.TestingUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -10,20 +12,22 @@ import spock.lang.Specification
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
+@Mock([User, UserService])
 @TestFor(UserController)
 class UserControllerSpec extends Specification {
 
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String POST_METHOD = 'POST'
+    private static final String PASSWORD = 'password'
     private static final String PROPERTIES = 'properties'
     private static final String NEW_PASSWORD = 'newPassword'
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String PROFILE_PAGE_URI = '/profile'
     private static final String EMAIL_USED = 'user.email.used'
+    private static final String EDIT_USER_PAGE_URI = '/user/edit'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
 
     def user = Mock User
@@ -128,7 +132,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userPasswordCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(userPasswordCommand, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * ajaxResponseService.renderValidationResponse(userPasswordCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -136,15 +140,20 @@ class UserControllerSpec extends Specification {
     void "Test updatePassword()"() {
         given:
         request.method = POST_METHOD
+        controller.request.addHeader('referer', EDIT_USER_PAGE_URI)
 
         when:
         controller.updatePassword(userPasswordCommand)
 
         then:
         1 * userPasswordCommand.validate() >> Boolean.TRUE
-        1 * userPasswordCommand.getNewPassword() >> NEW_PASSWORD
-        1 * userService.updatePassword(NEW_PASSWORD) >> user
-        1 * ajaxResponseService.renderValidationResponse(user, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * userService.currentUser >> user
+        1 * userPasswordCommand.newPassword >> NEW_PASSWORD
+        1 * springSecurityService.encodePassword(NEW_PASSWORD) >> NEW_PASSWORD
+        1 * user.setPassword(NEW_PASSWORD)
+        1 * user.validate() >> Boolean.TRUE
+        1 * userService.saveUser(user) >> user
+        1 * ajaxResponseService.renderRedirect(EDIT_USER_PAGE_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -166,35 +175,25 @@ class UserControllerSpec extends Specification {
     void "Test register() against valid command but invalid user"() {
         given:
         request.method = POST_METHOD
+        Map properties = [
+                email: TestingUtils.EMAIL,
+                firstName: TestingUtils.FIRST_NAME,
+                lastName: TestingUtils.LAST_NAME,
+                password: TestingUtils.PASSWORD,
+                user: user,
+                userProfile: userProfile,
+                userService: userService,
+        ]
 
         when:
         controller.register(registerCommand)
 
         then:
         1 * registerCommand.validate() >> Boolean.TRUE
-        1 * registerCommand.getProperty(PROPERTIES) >> [:]
-        1 * userService.createUser(_ as Map) >> user
-        1 * user.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.renderValidationResponse(user) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test register()"() {
-        given:
-        request.method = POST_METHOD
-        
-        when:
-        controller.register(registerCommand)
-
-        then:
-        1 * registerCommand.validate() >> Boolean.TRUE
-        1 * registerCommand.getProperty(PROPERTIES) >> [:]
-        1 * registerCommand.getPassword()
-        1 * userService.createUser(_ as Map) >> user
-        1 * user.hasErrors() >> Boolean.FALSE
-        1 * springSecurityService.reauthenticate(*_)
-        1 * ajaxResponseService.renderRedirect(PROFILE_PAGE_URI) >> json
+        1 * registerCommand.getProperty(PROPERTIES) >> properties
+        1 * registerCommand.password >> PASSWORD
+        1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
+        1 * ajaxResponseService.renderValidationResponse(_ as User) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

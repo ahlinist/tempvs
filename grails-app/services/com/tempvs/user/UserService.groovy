@@ -6,6 +6,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.transaction.Transactional
+import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service that manages operations with {@link com.tempvs.user.User} entitites.
@@ -18,7 +19,7 @@ class UserService {
     ObjectDAO objectDAO
     ObjectFactory objectFactory
 
-    User getUser(String id) {
+    User getUser(Object id) {
         objectDAO.get(User, id)
     }
 
@@ -46,39 +47,10 @@ class UserService {
         User.findByEmail(email)
     }
 
-    User createUser(Map properties) {
-        User user = objectFactory.create(User.class)
-        UserProfile userProfile = objectFactory.create(UserProfile.class)
-        user.email = properties.email
-        user.password = springSecurityService.encodePassword(properties.password as String)
-	    userProfile.firstName = properties.firstName
-	    userProfile.lastName =  properties.lastName
-        user.userProfile = userProfile
+    @PreAuthorize('!isAuthenticated() or #user.email == authentication.name')
+    User saveUser(User user) {
         user.save()
         user
-    }
-
-    User updateEmail(Long id, String email) {
-        User user = objectDAO.get(User, id)
-        user.email = email
-        user.save()
-        user
-    }
-
-    User updatePassword(String newPassword) {
-        User user = currentUser
-        user.password = springSecurityService.encodePassword(newPassword)
-        user.save()
-        user
-    }
-
-    void updateLastActive(){
-        User user = currentUser
-
-        if (user) {
-            user.lastActive = new Date()
-            user.save()
-        }
     }
 
     Boolean isEmailUnique(String email) {

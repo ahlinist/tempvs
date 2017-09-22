@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -17,10 +18,13 @@ class ActivityInterceptorSpec extends Specification {
     private static final String VERIFY = 'verify'
     private static final String PROFILE = 'profile'
 
-    def userService = Mock(UserService)
+    def user = Mock User
+    def userService = Mock UserService
+    def springSecurityService = Mock SpringSecurityService
 
     def setup() {
         interceptor.userService = userService
+        interceptor.springSecurityService = springSecurityService
     }
 
     def cleanup() {
@@ -78,12 +82,15 @@ class ActivityInterceptorSpec extends Specification {
         IMAGE       | 'get'
     }
 
-    void "Test before()"() {
+    void "Test after()"() {
         when:
-        Boolean result = interceptor.before()
+        Boolean result = interceptor.after()
 
         then:
-        1 * userService.updateLastActive()
+        1 * springSecurityService.loggedIn >> Boolean.TRUE
+        1 * userService.currentUser >> user
+        1 * user.setLastActive(_ as Date)
+        1 * userService.saveUser(user) >> user
         0 * _
 
         and:

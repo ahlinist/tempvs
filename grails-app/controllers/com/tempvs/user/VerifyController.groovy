@@ -1,6 +1,7 @@
 package com.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
+import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * Controller for managing {@link com.tempvs.user.EmailVerification} instances.
@@ -19,6 +20,7 @@ class VerifyController {
     VerifyService verifyService
     ProfileHolder profileHolder
     ProfileService profileService
+    SpringSecurityService springSecurityService
 
     static defaultAction = 'byEmail'
 
@@ -27,7 +29,6 @@ class VerifyController {
             EmailVerification emailVerification = verifyService.getVerification(id)
 
             if (emailVerification) {
-
                 switch (emailVerification.action) {
                     case 'registration':
                         registration(emailVerification)
@@ -59,12 +60,18 @@ class VerifyController {
     }
 
     private email(EmailVerification emailVerification) {
-        User user = userService.updateEmail(emailVerification.instanceId, emailVerification.email)
+        User user = userService.getUser(emailVerification.instanceId)
 
-        if (user?.hasErrors()) {
-            error([message: EMAIL_UPDATE_FAILED])
+        if (user) {
+            user.email = emailVerification.email
+
+            if (user.validate()) {
+                springSecurityService.reauthenticate(user.email)
+                userService.saveUser(user)
+                redirect controller: 'user', action: 'edit'
+            }
         } else {
-            redirect controller: 'user', action: 'edit'
+            error([message: EMAIL_UPDATE_FAILED])
         }
     }
 

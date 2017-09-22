@@ -4,18 +4,22 @@ import grails.test.mixin.TestFor
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
 
+/**
+ * A test-suite for command object handles a password value for {@link com.tempvs.user.User} entity.
+ */
 @TestFor(UserController)
 class UserPasswordCommandSpec extends Specification {
-    private static final String CURRENT_PASSWORD = 'currentPassword'
-    private static final String NEW_PASSWORD = 'newPassword'
-    private static final String PASSWORD = 'password'
 
-    def userService = Mock(UserService)
-    def passwordEncoder = Mock(PasswordEncoder)
-    def user = Mock(User)
+    private static final String PASSWORD = 'password'
+    private static final String NEW_PASSWORD = 'newPassword'
+    private static final String CURRENT_PASSWORD = 'currentPassword'
+
+    def user = Mock User
+    def userService = Mock UserService
+    def passwordEncoder = Mock PasswordEncoder
 
     def setup() {
-        userService.currentUser >> Mock(User)
+        userService.currentUser >> user
     }
 
     def cleanup() {

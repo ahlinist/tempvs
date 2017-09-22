@@ -1,13 +1,16 @@
 package com.tempvs.user
 
-import groovy.transform.CompileStatic
+import grails.compiler.GrailsCompileStatic
+import grails.plugin.springsecurity.SpringSecurityService
 
 /**
  * Interceptor that records the date of {@link com.tempvs.user.User} last activity.
  */
-@CompileStatic
+@GrailsCompileStatic
 class ActivityInterceptor {
+
     UserService userService
+    SpringSecurityService springSecurityService
 
     ActivityInterceptor() {
         matchAll().
@@ -16,9 +19,16 @@ class ActivityInterceptor {
                 excludes(controller: 'image')
     }
 
-    boolean before() {
-        userService.updateLastActive()
+    boolean after() {
+        if (springSecurityService.loggedIn) {
+            User user = userService.currentUser
+
+            if (user) {
+                user.lastActive = new Date()
+                userService.saveUser(user)
+            }
+        }
+
         Boolean.TRUE
     }
 }
-
