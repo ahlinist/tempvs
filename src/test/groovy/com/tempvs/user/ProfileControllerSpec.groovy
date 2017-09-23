@@ -388,8 +388,11 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(UserProfile, ONE) >> userProfile
-        1 * profileService.editAvatar(userProfile, imageUploadBean) >> userProfile
+        1 * userProfile.avatar >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * userProfile.setAvatar(image)
         1 * userProfile.validate() >> Boolean.TRUE
+        1 * profileService.saveProfile(userProfile) >> userProfile
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

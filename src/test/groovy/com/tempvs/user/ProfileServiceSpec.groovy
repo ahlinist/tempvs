@@ -101,18 +101,4 @@ class ProfileServiceSpec extends Specification {
         1 * userProfile.save() >> userProfile
         0 * _
     }
-
-    void "Test editAvatar()"() {
-        when:
-        def result = service.editAvatar(clubProfile, imageUploadBean)
-
-        then:
-        1 * clubProfile.avatar >> image
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
-        1 * clubProfile.setAvatar(image)
-        1 * clubProfile.save() >> clubProfile
-        0 * _
-
-        result == clubProfile
-    }
 }

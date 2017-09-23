@@ -52,16 +52,4 @@ class ProfileService {
         profile.avatar = null
         profile.save()
     }
-
-    @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile editAvatar(BaseProfile profile, ImageUploadBean imageUploadBean) {
-        Image avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
-
-        if (avatar) {
-            profile.avatar = avatar
-            profile.save()
-        }
-
-        profile
-    }
 }

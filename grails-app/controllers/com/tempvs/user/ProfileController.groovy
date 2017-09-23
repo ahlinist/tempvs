@@ -148,12 +148,13 @@ class ProfileController {
         BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
 
         if (profile) {
-            BaseProfile editedProfile = profileService.editAvatar(profile, imageUploadBean)
+            profile.avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
 
-            if (editedProfile.validate()) {
+            if (profile.validate()) {
+                profileService.saveProfile(profile)
                 render ajaxResponseService.renderRedirect(request.getHeader('referer'))
             } else {
-                render ajaxResponseService.renderValidationResponse(editedProfile)
+                render ajaxResponseService.renderValidationResponse(profile)
             }
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_PROFILE)
