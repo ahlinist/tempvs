@@ -35,9 +35,6 @@
                      <g:link class="btn btn-default col-sm-4" action="show" id="${item.id}"  data-toggle="tooltip" data-placement="bottom" title="${item.description}">${item.name}</g:link>
                      <g:if test="${editAllowed}">
                        <div class="pull-left">
-                         <g:link action="editItemPage" id="${item.id}" class="btn btn-default glyphicon glyphicon-pencil"/>
-                       </div>
-                       <div class="pull-left">
                          <g:render template="/item/templates/deleteItemButton" model="${[item: item]}"/>
                        </div>
                      </g:if>

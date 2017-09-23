@@ -28,9 +28,6 @@
                       </g:link>
                       <g:if test="${editAllowed}">
                         <div class="pull-left">
-                          <g:render template="/item/templates/editGroupButton" model="${[itemGroup: itemGroup]}"/>
-                        </div>
-                        <div class="pull-left">
                           <g:render template="/item/templates/deleteGroupButton" model="${[itemGroup: itemGroup]}"/>
                         </div>
                       </g:if>
