@@ -4,14 +4,12 @@ import com.tempvs.ajax.AjaxResponseService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
-import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.validation.Validateable
 import grails.web.mapping.LinkGenerator
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.AccessDeniedException
 
 /**
@@ -21,7 +19,6 @@ import org.springframework.security.access.AccessDeniedException
 class ItemController {
 
     private static final String REFERER = 'referer'
-    private static final String ITEM_COLLECTION = 'item'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String ITEM_IMAGE_EDIT_FAILED_MESSAGE = 'item.image.edit.failed.message'
@@ -61,13 +58,10 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
-        Closure successAction = { Validateable entity ->
-            itemService.saveGroup(entity as ItemGroup)
-        }
+        Map properties = command.properties + [user: userService.currentUser]
 
-        processEntity(command, successAction) {
-            Map properties = command.properties + [user: userService.currentUser]
-            properties as ItemGroup
+        processEntity(command, properties as ItemGroup) { Validateable object ->
+            itemService.saveGroup(object as ItemGroup)
         }
     }
 
@@ -89,31 +83,22 @@ class ItemController {
     }
 
     def createItem(ItemCommand command) {
-        Closure successAction = { Validateable entity ->
-            List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
-            itemService.saveItem(entity as Item, images)
-        }
+        Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
 
-        processEntity(command, successAction) {
-            Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
-            properties as Item
+        processEntity(command, properties as Item) { Validateable object ->
+            itemService.updateItem(object as Item, command.imageUploadBeans)
         }
     }
 
     def addItemImages(ItemImageUploadCommand command) {
-        Closure successAction = { Validateable entity ->
-            List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
-            itemService.saveItem(entity as Item, images)
-        }
-
-        processEntity(command, successAction) {
-            itemService.getItem(params.itemId)
+        processEntity(command, itemService.getItem(params.itemId)) { Validateable object ->
+            itemService.updateItem(object as Item, command.imageUploadBeans)
         }
     }
 
     def deleteItemImage(String itemId, String imageId) {
-        Item item = itemService.getItem(itemId)
-        Image image = imageService.getImage(imageId)
+        Item item = itemService.getItem itemId
+        Image image = imageService.getImage imageId
         itemService.deleteItemImage(item, image)
         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
     }
@@ -141,21 +126,23 @@ class ItemController {
     def deleteItem(String id) {
         Item item = itemService.getItem id
 
-        if (item && itemService.deleteItem(item)) {
-            return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: item.itemGroup.id)))
+        if (item) {
+            itemService.deleteItem item
+            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: item.itemGroup.id))
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
         }
-
-        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
     }
 
     def deleteGroup(String id) {
         ItemGroup itemGroup = itemService.getGroup id
 
-        if (itemGroup && itemService.deleteGroup(itemGroup)) {
-            return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash')))
+        if (itemGroup) {
+            itemService.deleteGroup itemGroup
+            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash'))
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
         }
-
-        render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
     }
 
     def editItemPage(String id) {
@@ -171,11 +158,12 @@ class ItemController {
     }
 
     def editItemImage(ImageUploadBean imageUploadBean) {
-        Item item = itemService.getItem(params.itemId)
-        Image image = imageService.getImage(params.imageId)
-        imageService.updateImage(imageUploadBean, image.collection, image)
+        Item item = itemService.getItem params.itemId
+        Image image = imageService.getImage params.imageId
 
-        if (itemService.saveItem(item)) {
+        itemService.editItemImage(item, image, imageUploadBean)
+
+        if (item.validate()) {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, ITEM_IMAGE_EDIT_FAILED_MESSAGE)
@@ -183,31 +171,14 @@ class ItemController {
     }
 
     def editItemField() {
-        Item item = itemService.getItem(params.objectId)
+        Item item = itemService.getItem params.objectId
 
         if (item) {
             String fieldName = params.fieldName
             String fieldValue = params.fieldValue
-            Map properties
-
-            if (fieldName == 'source') {
-                properties = [source: sourceService.getSource(fieldValue)]
-            } else if (fieldName == 'period') {
-                try {
-                    properties = [period: Period.valueOf(fieldValue), source: null]
-                } catch (IllegalArgumentException exception) {
-                    item.period = null
-                    item.validate()
-                    return render(ajaxResponseService.renderValidationResponse(item))
-                }
-            } else {
-                properties = ["${fieldName}": fieldValue]
-            }
-
-            InvokerHelper.setProperties(item, properties)
+            itemService.editItemField(item, fieldName, fieldValue)
 
             if (item.validate()) {
-                itemService.saveItem(item)
                 render([success: Boolean.TRUE] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(item)
@@ -218,16 +189,14 @@ class ItemController {
     }
 
     def editItemGroupField() {
-        ItemGroup itemGroup = itemService.getGroup(params.objectId)
+        ItemGroup itemGroup = itemService.getGroup params.objectId
 
         if (itemGroup) {
             String fieldName = params.fieldName
             String fieldValue = params.fieldValue
-            Map properties = ["${fieldName}": fieldValue]
-            InvokerHelper.setProperties(itemGroup, properties)
+            itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
 
             if (itemGroup.validate()) {
-                itemService.saveGroup(itemGroup)
                 render([success: Boolean.TRUE] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(itemGroup)
@@ -245,16 +214,14 @@ class ItemController {
         }
     }
 
-    private processEntity(Validateable command, Closure successAction, Closure generateEntity) {
+    private processEntity(Validateable command, Validateable object, Closure action) {
         if (command.validate()) {
-            Validateable entity = generateEntity() as Validateable
-
-            if (entity) {
-                if (entity.validate()) {
-                    successAction(entity)
+            if (object) {
+                if (object.validate()) {
+                    action object
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
                 } else {
-                    render ajaxResponseService.renderValidationResponse(entity)
+                    render ajaxResponseService.renderValidationResponse(object)
                 }
             } else {
                 render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)

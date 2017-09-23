@@ -11,11 +11,9 @@ import com.tempvs.user.UserService
 import grails.converters.JSON
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.validation.Validateable
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
-
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -48,9 +46,9 @@ class ItemControllerSpec extends Specification {
     def json = Mock JSON
     def item = Mock Item
     def image = Mock Image
+    def period = Period.XIX
     def source = Mock Source
     def itemGroup = Mock ItemGroup
-    def period = Period.valueOf'XIX'
     def userService = Mock UserService
     def userProfile = Mock UserProfile
     def itemService = Mock ItemService
@@ -128,7 +126,7 @@ class ItemControllerSpec extends Specification {
         result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: true]
     }
 
-    void "Test group creation against invalid command"() {
+    void "Test createGroup() against invalid command"() {
         given:
         request.method = POST_METHOD
 
@@ -136,13 +134,15 @@ class ItemControllerSpec extends Specification {
         controller.createGroup(itemGroupCommand)
 
         then:
+        1 * itemGroupCommand.getProperty(PROPERTIES) >> [:]
+        1 * userService.currentUser >> user
         1 * itemGroupCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Test group creation against invalid group"() {
+    void "Test createGroup() against invalid group"() {
         given:
         request.method = POST_METHOD
 
@@ -158,7 +158,7 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test successful group creation"() {
+    void "Test createGroup()"() {
         given:
         request.method = POST_METHOD
         Map properties = [name: NAME]
@@ -205,7 +205,7 @@ class ItemControllerSpec extends Specification {
         !response.redirectedUrl
     }
 
-    void "Test group() for existing id"() {
+    void "Test group()"() {
         given:
         params.id = ONE
 
@@ -231,12 +231,15 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem() against invalid command"() {
         given:
+        params.groupId = ONE
         request.method = POST_METHOD
 
         when:
         controller.createItem(itemCommand)
 
         then:
+        1 * itemCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemService.getGroup(ONE)
         1 * itemCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -261,11 +264,10 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test successful createItem()"() {
+    void "Test createItem()"() {
         given:
         params.groupId = ONE
         request.method = POST_METHOD
-        List<Image> images = [image]
         controller.grailsLinkGenerator = grailsLinkGenerator
         Map linkGeneratorMap = [uri: "${ITEM_GROUP_URI}/${LONG_ONE}"]
         controller.request.addHeader(REFERER, "${ITEM_GROUP_URI}/${LONG_ONE}")
@@ -275,14 +277,51 @@ class ItemControllerSpec extends Specification {
         controller.createItem(itemCommand)
 
         then:
-        1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.getProperty(PROPERTIES) >> properties
+        1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], ITEM_IMAGE_COLLECTION) >> images
-        1 * itemService.saveItem(_ as Item, images) >> item
+        1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ONE}"
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test addItemImages()"() {
+        given:
+        params.itemId = ONE
+        request.method = POST_METHOD
+        controller.request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
+
+        when:
+        controller.addItemImages(itemImageUploadCommand)
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * itemImageUploadCommand.validate() >> Boolean.TRUE
+        1 * item.validate() >> Boolean.TRUE
+        1 * item.asType(Item) >> item
+        1 * itemImageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * itemService.updateItem(item,  [imageUploadBean]) >> item
+        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test deleteItemImage()"() {
+        given:
+        request.method = DELETE_METHOD
+        request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
+
+        when:
+        controller.deleteItemImage(ONE, TWO)
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * imageService.getImage(TWO) >> image
+        1 * itemService.deleteItemImage(item, image)
+        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -299,7 +338,7 @@ class ItemControllerSpec extends Specification {
         !response.redirectedUrl
     }
 
-    void "Test show() with id"() {
+    void "Test show()"() {
         given:
         params.id = ONE
 
@@ -353,8 +392,8 @@ class ItemControllerSpec extends Specification {
 
         then: 'Successfully deleted'
         1 * itemService.getItem(ONE) >> item
+        1 * itemService.deleteItem(item)
         1 * item.itemGroup >> itemGroup
-        1 * itemService.deleteItem(item) >> Boolean.TRUE
         1 * itemGroup.id >> LONG_ONE
         1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -386,7 +425,7 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
-        1 * itemService.deleteGroup(itemGroup) >> Boolean.TRUE
+        1 * itemService.deleteGroup(itemGroup)
         1 * ajaxResponseService.renderRedirect(ITEM_STASH_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -432,46 +471,6 @@ class ItemControllerSpec extends Specification {
         !result
     }
 
-    void "Test addImagesToItem()"() {
-        given:
-        params.itemId = ONE
-        request.method = POST_METHOD
-        controller.request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
-
-        when:
-        controller.addItemImages(itemImageUploadCommand)
-
-        then:
-        1 * itemImageUploadCommand.validate() >> Boolean.TRUE
-        1 * itemService.getItem(ONE) >> item
-        1 * item.asType(Validateable) >> item
-        1 * item.validate() >> Boolean.TRUE
-        1 * itemImageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], ITEM_IMAGE_COLLECTION) >> [image]
-        1 * item.asType(Item) >> item
-        1 * itemService.saveItem(item, [image]) >> item
-        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test deleteItemImage()"() {
-        given:
-        request.method = DELETE_METHOD
-        request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
-
-        when:
-        controller.deleteItemImage(ONE, TWO)
-
-        then:
-        1 * itemService.getItem(ONE) >> item
-        1 * imageService.getImage(TWO) >> image
-        1 * itemService.deleteItemImage(item, image)
-        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
     void "Test editItemImage()"() {
         given:
         params.itemId = ONE
@@ -485,9 +484,8 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * imageService.getImage(TWO) >> image
-        1 * image.collection >> ITEM_IMAGE_COLLECTION
-        1 * imageService.updateImage(imageUploadBean, ITEM_IMAGE_COLLECTION, image) >> image
-        1 * itemService.saveItem(item) >> item
+        1 * itemService.editItemImage(item, image, imageUploadBean)
+        1 * item.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -505,8 +503,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getItem(ONE) >> item
+        1 * itemService.editItemField(item, FIELD_NAME, FIELD_VALUE) >> item
         1 * item.validate() >> Boolean.TRUE
-        1 * itemService.saveItem(item) >> item
         0 * _
     }
 
@@ -523,8 +521,8 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemService.editItemGroupField(itemGroup, FIELD_NAME, FIELD_VALUE) >> itemGroup
         1 * itemGroup.validate() >> Boolean.TRUE
-        1 * itemService.saveGroup(itemGroup) >> itemGroup
         0 * _
     }
 }

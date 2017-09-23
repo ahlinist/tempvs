@@ -1,8 +1,9 @@
 package com.tempvs.item
 
-import com.tempvs.domain.ObjectDAO
+import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserService
@@ -16,38 +17,29 @@ import spock.lang.Specification
 class ItemServiceSpec extends Specification {
 
     private static final String ID = 'id'
-    private static final String NAME = 'name'
     private static final String IMAGES = 'images'
-    private static final String DESCRIPTION = 'description'
+    private static final String ITEM_COLLECTION = 'item'
+    private static final String FIELD_NAME = 'fieldName'
+    private static final String COLLECTION = 'collection'
+    private static final String FIELD_VALUE = 'fieldValue'
 
-    def user = Mock(User)
-    def item = Mock(Item)
-    def image = Mock(Image)
-    def objectDAO = Mock(ObjectDAO)
-    def itemGroup = Mock(ItemGroup)
-    def period = GroovyMock(Period)
-    def userService = Mock(UserService)
-    def imageService = Mock(ImageService)
+    def user = Mock User
+    def item = Mock Item
+    def image = Mock Image
+    def period = Period.XIX
+    def itemGroup = Mock ItemGroup
+    def userService = Mock UserService
+    def imageService = Mock ImageService
+    def imageUploadBean = Mock ImageUploadBean
+    def objectDAOService = Mock ObjectDAOService
 
     def setup() {
-        service.objectDAO = objectDAO
         service.userService = userService
         service.imageService = imageService
+        service.objectDAOService = objectDAOService
     }
 
     def cleanup() {
-    }
-
-    void "Test saveGroup()"() {
-        when:
-        def result = service.saveGroup(itemGroup)
-
-        then:
-        1 * itemGroup.save() >> itemGroup
-        0 * _
-
-        and:
-        result == itemGroup
     }
 
     void "Test getGroup()"() {
@@ -55,27 +47,11 @@ class ItemServiceSpec extends Specification {
         def result = service.getGroup(ID)
 
         then:
-        1 * objectDAO.get(ItemGroup, ID) >> itemGroup
+        1 * objectDAOService.get(ItemGroup, ID) >> itemGroup
         0 * _
 
         and:
         result == itemGroup
-    }
-
-    void "Test saveItem()"() {
-        given:
-        List<Image> images = [image, image]
-
-        when:
-        def result = service.saveItem(item, images)
-
-        then:
-        2 * item.addToImages(image)
-        1 * item.save() >> item
-        0 * _
-
-        and:
-        result == item
     }
 
     void "Test getItem()"() {
@@ -83,8 +59,95 @@ class ItemServiceSpec extends Specification {
         def result = service.getItem(ID)
 
         then:
-        1 * objectDAO.get(Item, ID) >> item
+        1 * objectDAOService.get(Item, ID) >> item
         0 * _
+
+        and:
+        result == item
+    }
+
+    void "Test saveGroup()"() {
+        when:
+        def result = service.saveGroup(itemGroup)
+
+        then:
+        1 * objectDAOService.save(itemGroup) >> itemGroup
+        0 * _
+
+        and:
+        result == itemGroup
+    }
+
+    void "Test editItemGroupField()"() {
+        when:
+        def result = service.editItemGroupField(itemGroup, FIELD_NAME, FIELD_VALUE)
+
+        then:
+        1 * objectDAOService.save(itemGroup) >> itemGroup
+        0 * _
+
+        and:
+        result == itemGroup
+    }
+
+    void "Test deleteGroup()"() {
+        given:
+        Set<Item> items = [item]
+        Set<Image> images = [image]
+
+        when:
+        service.deleteGroup(itemGroup)
+
+        then:
+        1 * itemGroup.items >> items
+        1 * item.getProperty(IMAGES) >> images
+        1 * imageService.deleteImages(images)
+        1 * objectDAOService.delete(itemGroup)
+        0 * _
+    }
+
+    void "Test updateItem()"() {
+        given:
+        List<Image> images = [image, image]
+        List<ImageUploadBean> imageUploadBeans = [imageUploadBean, imageUploadBean]
+
+        when:
+        def result = service.updateItem(item, imageUploadBeans)
+
+        then:
+        1 * imageService.uploadImages(imageUploadBeans, ITEM_COLLECTION) >> images
+        2 * item.addToImages(image)
+        1 * objectDAOService.save(item) >> item
+        0 * _
+
+        and:
+        result == item
+    }
+
+    void "Test editItemImage()"() {
+        given:
+        List<Image> images = [image, image]
+
+        when:
+        def result = service.editItemImage(item, image, imageUploadBean)
+
+        then:
+        1 * item.images >> images
+        1 * image.collection >> COLLECTION
+        1 * imageService.updateImage(imageUploadBean, COLLECTION, image) >> image
+        1 * objectDAOService.save(item) >> item
+        0 * _
+
+        and:
+        result == item
+    }
+
+    void "Test editItemField()"() {
+        when:
+        def result = service.editItemField(item, FIELD_NAME, FIELD_VALUE)
+
+        then:
+        1 * objectDAOService.save(item) >> item
 
         and:
         result == item
@@ -95,77 +158,27 @@ class ItemServiceSpec extends Specification {
         Set<Image> images = [image]
 
         when:
-        def result = service.deleteItem(item)
+        service.deleteItem(item)
 
         then:
         1 * item.images >> images
         1 * imageService.deleteImages(images)
-        1 * item.delete([failOnError: true])
+        1 * objectDAOService.delete(item)
         0 * _
-
-        result == Boolean.TRUE
-    }
-
-    void "Test failed deleteItem()"() {
-        given:
-        Set<Image> images = [image]
-
-        when:
-        def result = service.deleteItem(item)
-
-        then:
-        1 * item.images >> images
-        1 * imageService.deleteImages(images)
-        1 * item.delete([failOnError: true]) >> {throw new Exception()}
-        0 * _
-
-        result == Boolean.FALSE
-    }
-
-    void "Test deleteGroup()"() {
-        given:
-        Set<Item> items = [item]
-        Set<Image> images = [image]
-
-        when:
-        def result = service.deleteGroup(itemGroup)
-
-        then:
-        1 * itemGroup.items >> items
-        1 * item.getProperty(IMAGES) >> images
-        1 * imageService.deleteImages(images)
-        1 * itemGroup.delete([failOnError: true])
-        0 * _
-
-        result == Boolean.TRUE
-    }
-
-    void "Test failed deleteGroup()"() {
-        given:
-        Set<Item> items = [item]
-        Set<Image> images = [image]
-
-        when:
-        def result = service.deleteGroup(itemGroup)
-
-        then:
-        1 * itemGroup.items >> items
-        1 * item.getProperty(IMAGES) >> images
-        1 * imageService.deleteImages(images)
-        1 * itemGroup.delete([failOnError: true]) >> {throw new Exception()}
-        0 * _
-
-        result == Boolean.FALSE
     }
 
     void "Test deleteItemImage()"() {
+        given:
+        List<Image> images = [image]
+
         when:
         service.deleteItemImage(item, image)
 
         then:
+        1 * item.images >> images
         1 * item.removeFromImages(image)
         1 * imageService.deleteImage(image)
-        1 * item.save(['failOnError':true]) >> item
+        1 * objectDAOService.save(item)
         0 * _
     }
 }
