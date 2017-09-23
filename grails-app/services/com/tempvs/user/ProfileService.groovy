@@ -1,10 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
-import com.tempvs.domain.ObjectFactory
-import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
 import org.springframework.security.access.prepost.PreAuthorize
@@ -19,9 +16,7 @@ class ProfileService {
 
     private static final String AVATAR_COLLECTION = 'avatar'
 
-    UserService userService
     ObjectDAO objectDAO
-    ObjectFactory objectFactory
     ImageService imageService
 
     public <T> T getProfile(Class<T> clazz, Object id) {
@@ -36,7 +31,7 @@ class ProfileService {
 
     @PreAuthorize('#profile.user.email == authentication.name')
     Boolean deleteProfile(BaseProfile profile) {
-        deleteAvatar(profile)
+        imageService.deleteImage(profile.avatar)
 
         try {
             profile.delete(failOnError: true)
@@ -44,12 +39,5 @@ class ProfileService {
         } catch (Throwable e) {
             Boolean.FALSE
         }
-    }
-
-    @PreAuthorize('#profile.user.email == authentication.name')
-    void deleteAvatar(BaseProfile profile) {
-        imageService.deleteImage(profile.avatar)
-        profile.avatar = null
-        profile.save()
     }
 }

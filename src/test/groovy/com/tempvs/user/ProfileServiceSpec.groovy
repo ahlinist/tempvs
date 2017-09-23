@@ -1,10 +1,8 @@
 package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAO
-import com.tempvs.domain.ObjectFactory
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -17,22 +15,16 @@ import spock.lang.Specification
 class ProfileServiceSpec extends Specification {
 
     private static final String ONE = '1'
-    private static final String AVATAR_COLLECTION = 'avatar'
 
     def user = Mock User
     def image = Mock Image
     def objectDAO = Mock ObjectDAO
-    def userService = Mock UserService
     def clubProfile = Mock ClubProfile
     def userProfile = Mock UserProfile
     def imageService = Mock ImageService
-    def objectFactory = Mock ObjectFactory
-    def imageUploadBean = Mock ImageUploadBean
 
     def setup() {
-        service.userService = userService
         service.objectDAO = objectDAO
-        service.objectFactory = objectFactory
         service.imageService = imageService
     }
 
@@ -88,17 +80,5 @@ class ProfileServiceSpec extends Specification {
 
         and:
         result == Boolean.TRUE
-    }
-
-    void "Test deleteAvatar()"() {
-        when:
-        service.deleteAvatar(userProfile)
-
-        then:
-        1 * userProfile.avatar >> image
-        1 * imageService.deleteImage(image)
-        1 * userProfile.setAvatar(null)
-        1 * userProfile.save() >> userProfile
-        0 * _
     }
 }

@@ -140,7 +140,10 @@ class ProfileController {
 
     def deleteAvatar() {
         BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
-        profileService.deleteAvatar(profile)
+        Image avatar = profile.avatar
+        profile.avatar = null
+        profileService.saveProfile(profile)
+        imageService.deleteImage(avatar)
         render ajaxResponseService.renderRedirect(request.getHeader('referer'))
     }
 
