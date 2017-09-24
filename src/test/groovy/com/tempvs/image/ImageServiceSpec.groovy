@@ -68,7 +68,6 @@ class ImageServiceSpec extends Specification {
         1 * image.collection >> COLLECTION
         1 * image.objectId >> ID
         1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
-        1 * image.delete()
         0 * _
     }
 
@@ -83,7 +82,6 @@ class ImageServiceSpec extends Specification {
         2 * image.collection >> COLLECTION
         2 * image.objectId >> ID
         2 * imageDAO.delete(COLLECTION, ID)
-        2 * image.delete()
         0 * _
     }
 

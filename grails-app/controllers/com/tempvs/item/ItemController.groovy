@@ -1,6 +1,7 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.domain.BasePersistent
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -11,7 +12,6 @@ import grails.converters.JSON
 import grails.validation.Validateable
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
-
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
@@ -58,10 +58,13 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
-        Map properties = command.properties + [user: userService.currentUser]
+        Closure itemGroupClosure = {
+            Map properties = command.properties + [user: userService.currentUser]
+            properties as ItemGroup
+        }
 
-        processEntity(command, properties as ItemGroup) { Validateable object ->
-            itemService.saveGroup(object as ItemGroup)
+        processRequest(command, itemGroupClosure) { object ->
+            itemService.createGroup(object as ItemGroup)
         }
     }
 
@@ -83,15 +86,22 @@ class ItemController {
     }
 
     def createItem(ItemCommand command) {
-        Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
+        Closure itemClosure = {
+            Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
+            properties as Item
+        }
 
-        processEntity(command, properties as Item) { Validateable object ->
+        processRequest(command, itemClosure) { object ->
             itemService.updateItem(object as Item, command.imageUploadBeans)
         }
     }
 
     def addItemImages(ItemImageUploadCommand command) {
-        processEntity(command, itemService.getItem(params.itemId)) { Validateable object ->
+        Closure itemClosure = {
+            itemService.getItem(params.itemId)
+        }
+
+        processRequest(command, itemClosure) { object ->
             itemService.updateItem(object as Item, command.imageUploadBeans)
         }
     }
@@ -214,11 +224,12 @@ class ItemController {
         }
     }
 
-    private processEntity(Validateable command, Validateable object, Closure action) {
+    private processRequest(Validateable command, Closure<? extends BasePersistent> objectClosure, Closure<? extends BasePersistent> action) {
         if (command.validate()) {
+            BasePersistent object = objectClosure()
+
             if (object) {
-                if (object.validate()) {
-                    action object
+                if (action(object).validate()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
                 } else {
                     render ajaxResponseService.renderValidationResponse(object)

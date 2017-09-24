@@ -85,9 +85,9 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/stash', model: model
 
         then:
-        3 * itemGroup.getProperty(NAME) >> NAME
-        2 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        3 * itemGroup.getProperty(ID) >> ONE
+        2 * itemGroup.getProperty(NAME) >> NAME
+        1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
+        2 * itemGroup.getProperty(ID) >> ONE
         0 * _
 
         and:
@@ -136,7 +136,7 @@ class ItemViewSpec extends Specification {
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * itemGroup.getProperty(ID) >> ONE
         1 * itemGroup.getProperty(ITEMS) >> items
-        3 * item.getProperty(ID) >> ONE
+        2 * item.getProperty(ID) >> ONE
         2 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         0 * _

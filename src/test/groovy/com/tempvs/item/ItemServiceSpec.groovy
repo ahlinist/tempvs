@@ -66,9 +66,9 @@ class ItemServiceSpec extends Specification {
         result == item
     }
 
-    void "Test saveGroup()"() {
+    void "Test createGroup()"() {
         when:
-        def result = service.saveGroup(itemGroup)
+        def result = service.createGroup(itemGroup)
 
         then:
         1 * objectDAOService.save(itemGroup) >> itemGroup

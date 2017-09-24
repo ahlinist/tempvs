@@ -1,14 +1,10 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.Image
-import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
-import org.codehaus.groovy.runtime.InvokerHelper
 
 /**
  * Controller for {@link com.tempvs.item.Source} entities managing.
@@ -17,12 +13,10 @@ import org.codehaus.groovy.runtime.InvokerHelper
 class SourceController {
 
     private static final String REFERER = 'referer'
-    private static final String SOURCE_COLLECTION = 'source'
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
     static allowedMethods = [index: 'GET', period: 'GET', getSourcesByPeriod: 'GET', show: 'GET', createSource: 'POST', editSource: 'POST']
 
-    ImageService imageService
     SourceService sourceService
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
@@ -55,30 +49,31 @@ class SourceController {
     }
 
     def createSource(SourceCommand command) {
-        processSource(command) {
+        Closure sourceClosure = {
             command.properties as Source
+        }
+
+        processRequest(command, sourceClosure) { Source source ->
+            sourceService.createSource(source, command.imageUploadBeans)
         }
     }
 
     def editSource(SourceCommand command) {
-        processSource(command) {
-            Source source = sourceService.getSource params.sourceId
+        Closure sourceClosure = {
+            sourceService.getSource params.sourceId
+        }
 
-            if (source) {
-                InvokerHelper.setProperties(source, command.properties)
-                source
-            }
+        processRequest(command, sourceClosure) { Source source ->
+            sourceService.editSource(source, command.properties)
         }
     }
 
-    private processSource(SourceCommand command, Closure generateSource) {
+    private processRequest(SourceCommand command, Closure<Source> sourceClosure, Closure<Source> action) {
         if (command.validate()) {
-            Source source = generateSource() as Source
+            Source source = sourceClosure()
 
             if (source) {
-                if (source.validate()) {
-                    List<Image> images = imageService.uploadImages(command.imageUploadBeans as List<ImageUploadBean>, SOURCE_COLLECTION)
-                    sourceService.saveSource(source, images)
+                if (action(source).validate()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
                 } else {
                     render ajaxResponseService.renderValidationResponse(source)

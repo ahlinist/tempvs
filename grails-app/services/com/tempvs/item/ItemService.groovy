@@ -33,7 +33,7 @@ class ItemService {
     }
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')
-    ItemGroup saveGroup(ItemGroup itemGroup) {
+    ItemGroup createGroup(ItemGroup itemGroup) {
         objectDAOService.save(itemGroup)
     }
 

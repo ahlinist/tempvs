@@ -134,8 +134,6 @@ class ItemControllerSpec extends Specification {
         controller.createGroup(itemGroupCommand)
 
         then:
-        1 * itemGroupCommand.getProperty(PROPERTIES) >> [:]
-        1 * userService.currentUser >> user
         1 * itemGroupCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -145,14 +143,17 @@ class ItemControllerSpec extends Specification {
     void "Test createGroup() against invalid group"() {
         given:
         request.method = POST_METHOD
+        Map parameters = [name: null]
 
         when:
         controller.createGroup(itemGroupCommand)
 
         then:
         1 * itemGroupCommand.validate() >> Boolean.TRUE
-        1 * itemGroupCommand.getProperty(PROPERTIES) >> [:]
+        1 * itemGroupCommand.getProperty(PROPERTIES) >> parameters
         1 * userService.currentUser >> user
+        1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
+        1 * itemGroup.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(_ as ItemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -171,7 +172,8 @@ class ItemControllerSpec extends Specification {
         1 * itemGroupCommand.validate() >> Boolean.TRUE
         1 * itemGroupCommand.getProperty(PROPERTIES) >> properties
         1 * userService.currentUser >> user
-        1 * itemService.saveGroup(_ as ItemGroup) >> itemGroup
+        1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
+        1 * itemGroup.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${ITEM_STASH_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -238,8 +240,6 @@ class ItemControllerSpec extends Specification {
         controller.createItem(itemCommand)
 
         then:
-        1 * itemCommand.getProperty(PROPERTIES) >> [:]
-        1 * itemService.getGroup(ONE)
         1 * itemCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -259,6 +259,9 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.getProperty(PROPERTIES) >> properties
         1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemCommand.imageUploadBeans >> [imageUploadBean]
+        1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
+        1 * item.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(_ as Item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -282,6 +285,7 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
         1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
+        1 * item.validate() >> Boolean.TRUE
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ONE}"
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

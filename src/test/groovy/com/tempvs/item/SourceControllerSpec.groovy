@@ -1,8 +1,6 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.Image
-import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.converters.JSON
@@ -32,17 +30,14 @@ class SourceControllerSpec extends Specification {
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
     def json = Mock JSON
-    def image = Mock Image
     def period = Period.XIX
     def source = Mock Source
-    def imageService = Mock ImageService
     def sourceService = Mock SourceService
     def sourceCommand = Mock SourceCommand
     def imageUploadBean = Mock ImageUploadBean
     def ajaxResponseService = Mock AjaxResponseService
 
     def setup() {
-        controller.imageService = imageService
         controller.sourceService = sourceService
         controller.ajaxResponseService = ajaxResponseService
     }
@@ -75,7 +70,6 @@ class SourceControllerSpec extends Specification {
     void "Test createSource()"() {
         given:
         request.method = POST_METHOD
-        List<Image> images = [image]
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
         Map properties = [name: NAME, description: DESCRIPTION, period: period, imageUploadBeans: [imageUploadBean]]
 
@@ -86,8 +80,8 @@ class SourceControllerSpec extends Specification {
         1 * sourceCommand.validate() >> Boolean.TRUE
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
         1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> images
-        1 * sourceService.saveSource(_ as Source, images) >> source
+        1 * sourceService.createSource(_ as Source, [imageUploadBean]) >> source
+        1 * source.validate() >> Boolean.TRUE
         1 * ajaxResponseService.renderRedirect("${PERIOD_URI}/${period.id}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -97,7 +91,7 @@ class SourceControllerSpec extends Specification {
         given:
         params.sourceId = ONE
         request.method = POST_METHOD
-        Map properties = [imageBeans: [imageUploadBean]]
+        Map properties = [imageUploadBeans: [imageUploadBean]]
 
         when:
         controller.createSource(sourceCommand)
@@ -105,6 +99,9 @@ class SourceControllerSpec extends Specification {
         then:
         1 * sourceCommand.validate() >> Boolean.TRUE
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
+        1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
+        1 * sourceService.createSource(_ as Source, [imageUploadBean]) >> source
+        1 * source.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(_ as Source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -168,14 +165,8 @@ class SourceControllerSpec extends Specification {
         1 * sourceCommand.validate() >> Boolean.TRUE
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
         1 * sourceService.getSource(ONE) >> source
-        1 * source.setName(NAME)
-        1 * source.setDescription(DESCRIPTION)
-        1 * source.setPeriod(period)
-        1 * source.asType(Source) >> source
         1 * source.validate() >> Boolean.TRUE
-        1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
-        1 * sourceService.saveSource(source, [image]) >> source
+        1 * sourceService.editSource(source, properties) >> source
         1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -194,9 +185,7 @@ class SourceControllerSpec extends Specification {
         1 * sourceCommand.validate() >> Boolean.TRUE
         1 * sourceService.getSource(ONE) >> source
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
-        1 * source.setName(NAME)
-        1 * source.setDescription(DESCRIPTION)
-        1 * source.asType(Source) >> source
+        1 * sourceService.editSource(source, properties) >> source
         1 * source.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(_ as Source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
