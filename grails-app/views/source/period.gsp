@@ -23,8 +23,15 @@
             <g:if test="${editAllowed}">
               <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.createSource.tooltip')}">
                 <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-plus">
-                  <g:render template="/source/templates/sourceForm"
-                      model="${[action: 'createSource', button: 'source.createSource.button', period: period]}"/>
+                  <tempvs:ajaxForm action="createSource">
+                    <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="source.sourceImage.label" infoLabel="source.imageInfo.label"/>
+                    <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
+                    <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" />
+                    <tempvs:formField type="text" name="description" value="${source?.description}" label="source.description.label" />
+                    <input type="hidden" name="period" value="${period?.key}"/>
+                    <input type="hidden" name="sourceId" value="${source?.id}"/>
+                    <tempvs:ajaxSubmitButton value="source.createSource.button" />
+                  </tempvs:ajaxForm>
                 </tempvs:modalButton>
               </div>
             </g:if>

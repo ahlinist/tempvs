@@ -27,8 +27,8 @@ class SourceService {
         Source.findAllByPeriod(period)
     }
 
-    Source editSource(Source source, Map properties) {
-        InvokerHelper.setProperties(source, properties)
+    Source editSourceField(Source source, String fieldName, String fieldValue) {
+        InvokerHelper.setProperties(source, ["${fieldName}": fieldValue])
         objectDAOService.save(source)
     }
 

@@ -14,8 +14,16 @@ class SourceController {
 
     private static final String REFERER = 'referer'
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
+    private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
 
-    static allowedMethods = [index: 'GET', period: 'GET', getSourcesByPeriod: 'GET', show: 'GET', createSource: 'POST', editSource: 'POST']
+    static allowedMethods = [
+            index: 'GET',
+            period: 'GET',
+            getSourcesByPeriod: 'GET',
+            show: 'GET',
+            createSource: 'POST',
+            editSourceField: 'POST'
+    ]
 
     SourceService sourceService
     LinkGenerator grailsLinkGenerator
@@ -58,13 +66,21 @@ class SourceController {
         }
     }
 
-    def editSource(SourceCommand command) {
-        Closure sourceClosure = {
-            sourceService.getSource params.sourceId
-        }
+    def editSourceField() {
+        Source source = sourceService.getSource params.objectId
 
-        processRequest(command, sourceClosure) { Source source ->
-            sourceService.editSource(source, command.properties)
+        if (source) {
+            String fieldName = params.fieldName
+            String fieldValue = params.fieldValue
+            sourceService.editSourceField(source, fieldName, fieldValue)
+
+            if (source.validate()) {
+                render([success: Boolean.TRUE] as JSON)
+            } else {
+                render ajaxResponseService.renderValidationResponse(source)
+            }
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
         }
     }
 

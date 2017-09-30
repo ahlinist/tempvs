@@ -36,22 +36,20 @@ class SourceViewSpec extends Specification {
         given:
         Set<Image> images = [image] as Set
         String title = "<title>Tempvs - ${NAME}</title>"
-        String editForm = '<tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-pencil">'
         Map model = [source: source, period: period, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/source/show', model: model
 
         then:
-        4 * source.getProperty(NAME) >> NAME
-        2 * source.getProperty(DESCRIPTION) >> DESCRIPTION
+        3 * source.getProperty(NAME) >> NAME
+        1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * source.getProperty(ID) >> ID
         1 * source.getProperty(IMAGES) >> images
         1 * source.getProperty(PERIOD) >> period
         0 * _
 
         and:
-        result.contains editForm
         result.contains title
     }
 

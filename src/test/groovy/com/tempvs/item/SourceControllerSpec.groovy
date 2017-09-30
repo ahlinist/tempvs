@@ -22,10 +22,13 @@ class SourceControllerSpec extends Specification {
     private static final String NAME = 'name'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
+    private static final String OBJECT_ID = 'objectId'
+    private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
     private static final String SHOW_URI = '/source/show'
+    private static final String FIELD_VALUE = 'fieldValue'
     private static final String DESCRIPTION = 'description'
-    private static final String SOURCE_COLLECTION = 'source'
+
     private static final String PERIOD_URI = '/source/period'
     private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
@@ -151,75 +154,23 @@ class SourceControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test editSource()"() {
+    void "Test editSourceField()"() {
         given:
-        params.sourceId = ONE
         request.method = POST_METHOD
-        controller.request.addHeader(REFERER, "${SHOW_URI}/${ONE}")
-        Map properties = [name: NAME, description: DESCRIPTION, period: period, imageUploadBeans: [imageUploadBean]]
+        params.objectId = OBJECT_ID
+        params.fieldName = FIELD_NAME
+        params.fieldValue = FIELD_VALUE
 
         when:
-        controller.editSource(sourceCommand)
+        controller.editSourceField()
 
         then:
-        1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceCommand.getProperty(PROPERTIES) >> properties
-        1 * sourceService.getSource(ONE) >> source
+        1 * sourceService.getSource(OBJECT_ID) >> source
+        1 * sourceService.editSourceField(source, FIELD_NAME, FIELD_VALUE) >> source
         1 * source.validate() >> Boolean.TRUE
-        1 * sourceService.editSource(source, properties) >> source
-        1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-    }
 
-    void "Test editSource() against invalid source"() {
-        given:
-        params.sourceId = ONE
-        request.method = POST_METHOD
-        Map properties = [name: NAME, description: DESCRIPTION]
-
-        when:
-        controller.editSource(sourceCommand)
-
-        then:
-        1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceService.getSource(ONE) >> source
-        1 * sourceCommand.getProperty(PROPERTIES) >> properties
-        1 * sourceService.editSource(source, properties) >> source
-        1 * source.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(_ as Source) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test editSource() against unexisting source"() {
-        given:
-        params.sourceId = ID
-        request.method = POST_METHOD
-
-        when:
-        controller.editSource(sourceCommand)
-
-        then:
-        1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceService.getSource(ID)
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SOURCE_FOUND) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test editSource() against invalid command"() {
-        given:
-        request.method = POST_METHOD
-        controller.request.addHeader(REFERER, "${SHOW_URI}/${ID}")
-
-        when:
-        controller.editSource(sourceCommand)
-
-        then:
-        1 * sourceCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(sourceCommand) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
+        and:
+        response.json.success == Boolean.TRUE
     }
 }

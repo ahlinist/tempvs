@@ -1,4 +1,3 @@
-<%@ page import="com.tempvs.periodization.Period"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -7,6 +6,7 @@
     </head>
     <body>
       <g:if test="${source}">
+        <g:set var="sourceId" value="${source.id}"/>
         <div class="row">
           <div class="col-sm-8">
             <g:render template="/source/templates/navBar" model="${[period, source]}"/>
@@ -14,14 +14,6 @@
           <div class="col-sm-4">
             <b><g:message code="actions.label"/></b>:
             <br/>
-            <g:if test="${editAllowed}">
-              <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.editSource.button')}">
-                <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-pencil">
-                  <g:render template="/source/templates/sourceForm"
-                      model="${[action: 'editSource', source: source, button: 'source.editSource.button', period: period]}"/>
-                </tempvs:modalButton>
-              </div>
-            </g:if>
           </div>
         </div>
         <div class="row">

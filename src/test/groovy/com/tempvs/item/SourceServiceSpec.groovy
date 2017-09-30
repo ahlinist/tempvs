@@ -17,7 +17,8 @@ import spock.lang.Specification
 class SourceServiceSpec extends Specification {
 
     private static final String ID = 'id'
-    private static final String NAME = 'name'
+    private static final String FIELD_NAME = 'fieldName'
+    private static final String FIELD_VALUE = 'fieldValue'
     private static final String SOURCE_COLLECTION = 'source'
 
     def image = Mock Image
@@ -64,15 +65,11 @@ class SourceServiceSpec extends Specification {
         result == sources
     }
 
-    void "Test editSource()"() {
-        given:
-        Map properties = [name: NAME]
-
+    void "Test editSourceField()"() {
         when:
-        def result = service.editSource(source, properties)
+        def result = service.editSourceField(source, FIELD_NAME, FIELD_VALUE)
 
         then:
-        1 * source.setName(NAME)
         1 * objectDAOService.save(source) >> source
         0 * _
 
