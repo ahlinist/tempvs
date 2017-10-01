@@ -6,7 +6,6 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
-import grails.transaction.Transactional
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -14,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize
  * Service for managing {@link com.tempvs.user.UserProfile} and
  * {@link com.tempvs.user.ClubProfile}.
  */
-@Transactional
 @GrailsCompileStatic
 class ProfileService {
 
