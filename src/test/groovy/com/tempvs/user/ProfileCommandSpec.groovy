@@ -21,7 +21,7 @@ class ProfileCommandSpec extends Specification {
     private static final String NUMERIC_PROFILE_ID = '1234'
 
     def period = Period.valueOf 'XIX'
-    def avatarBean = Mock(ImageUploadBean)
+    def imageUploadBean = Mock(ImageUploadBean)
 
     def setupSpec(){
         defineBeans {
@@ -55,16 +55,16 @@ class ProfileCommandSpec extends Specification {
 
     void "Test minimal valid profile commands creation"() {
         expect:
-        new UserProfileCommand(firstName: FIRST_NAME, lastName: LAST_NAME, avatarBean: avatarBean).validate()
+        new UserProfileCommand(firstName: FIRST_NAME, lastName: LAST_NAME, imageUploadBean: imageUploadBean).validate()
 
         and:
-        new ClubProfileCommand(firstName: FIRST_NAME, period: period, avatarBean: avatarBean).validate()
+        new ClubProfileCommand(firstName: FIRST_NAME, period: period, imageUploadBean: imageUploadBean).validate()
     }
 
     void "Create full UserProfileCommand"() {
         given:
-        Map userProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID, avatarBean: avatarBean]
-        Map clubProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, lastName: NICK_NAME, location: LOCATION, profileId: PROFILE_ID, period: period, avatarBean: avatarBean]
+        Map userProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, location: LOCATION, profileId: PROFILE_ID, imageUploadBean: imageUploadBean]
+        Map clubProfileProps = [firstName: FIRST_NAME, lastName: LAST_NAME, lastName: NICK_NAME, location: LOCATION, profileId: PROFILE_ID, period: period, imageUploadBean: imageUploadBean]
 
         expect:
         new UserProfileCommand(userProfileProps).validate()
@@ -75,7 +75,7 @@ class ProfileCommandSpec extends Specification {
 
     void "Create UserProfileCommand with numeric profileId"() {
         given:
-        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, profileId: NUMERIC_PROFILE_ID, avatarBean: avatarBean]
+        Map props = [firstName: FIRST_NAME, lastName: LAST_NAME, profileId: NUMERIC_PROFILE_ID, imageUploadBean: imageUploadBean]
 
         expect:
         !new UserProfileCommand(props).validate()

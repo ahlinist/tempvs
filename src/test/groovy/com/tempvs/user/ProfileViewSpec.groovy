@@ -63,19 +63,17 @@ class ProfileViewSpec extends Specification {
         given:
         String avatar = '<tempvs:modalImage image="'
         String lastActive = "<tempvs:dateFromNow date=\"${lastActiveDate}\"/>"
-        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">'
         String clubProfileLink = '<a href="/profile/clubProfile/id" class="list-group-item">'
-        Map model = [profile: userProfile, id: 1, editAllowed: Boolean.TRUE]
+        Map model = [profile: userProfile, user:user, id: 1, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/profile/userProfile', model: model
 
         then:
-        1 * userProfile.getProperty(USER) >> user
         1 * userProfile.getProperty(AVATAR) >> image
         2 * userProfile.getProperty(CLASS) >> UserProfile
-        2 * userProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
-        2 * userProfile.getProperty(LOCATION) >> LOCATION
+        1 * userProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
+        1 * userProfile.getProperty(LOCATION) >> LOCATION
         1 * userProfile.getProperty(PROFILE_ID) >> PROFILE_ID
         1 * user.getProperty(LAST_ACTIVE) >> lastActiveDate
         1 * userProfile.getProperty(FIRST_NAME) >> FIRST_NAME
@@ -89,39 +87,36 @@ class ProfileViewSpec extends Specification {
         result.contains avatar
         result.contains lastActive
         result.contains clubProfileLink
-        result.contains updateProfileButton
     }
 
     void "Test /profile/clubProfile view"() {
         given:
         String avatar = '<tempvs:modalImage image="'
-        String updateProfileButton = '<tempvs:modalButton id="updateProfile" classes="glyphicon glyphicon-pencil">'
         String deleteProfileButton = '<tempvs:modalButton id="deleteProfile" size="modal-sm" classes="glyphicon glyphicon-trash">'
-        Map model = [profile: clubProfile, id: 1, editAllowed: Boolean.TRUE]
+        Map model = [profile: clubProfile, user:user, id: 1, editAllowed: Boolean.TRUE]
 
         when:
         String result = render view: '/profile/clubProfile', model: model
 
         then:
-        1 * clubProfile.getProperty(USER) >> user
         1 * clubProfile.getProperty(AVATAR) >> image
         2 * clubProfile.getProperty(CLASS) >> ClubProfile
-        2 * clubProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
-        2 * clubProfile.getProperty(LOCATION) >> LOCATION
-        2 * clubProfile.getProperty(CLUB_NAME) >> CLUB_NAME
+        1 * clubProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
+        1 * clubProfile.getProperty(LOCATION) >> LOCATION
+        1 * clubProfile.getProperty(CLUB_NAME) >> CLUB_NAME
         1 * clubProfile.getProperty(PROFILE_ID) >> PROFILE_ID
         1 * clubProfile.getProperty(FIRST_NAME) >> FIRST_NAME
         1 * clubProfile.getProperty(LAST_NAME) >> LAST_NAME
         1 * clubProfile.getProperty(NICK_NAME) >> NICK_NAME
-        2 * clubProfile.getProperty(PERIOD) >> period
+        1 * clubProfile.getProperty(PERIOD) >> period
         3 * clubProfile.getProperty(ID) >> ID
         1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * user.getProperty(LAST_ACTIVE)
         1 * userProfile.getProperty(ID) >> ID
         0 * _
 
         and:
         result.contains avatar
-        result.contains updateProfileButton
         result.contains deleteProfileButton
     }
 
@@ -129,7 +124,7 @@ class ProfileViewSpec extends Specification {
         given:
         String createButton = '<tempvs:modalButton id="createProfile" message="clubProfile.create.link">'
         String clubProfileLink = '<a href="/profile/clubProfile" class="list-group-item">'
-        Map model = [userProfile: userProfile, clubProfiles: [clubProfile]]
+        Map model = [userProfile: userProfile, user: user, clubProfiles: [clubProfile]]
 
         when:
         String result = render view: '/profile/list', model: model

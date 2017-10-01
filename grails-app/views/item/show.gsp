@@ -37,8 +37,8 @@
           </div>
           <div class="row">
             <div class="col-sm-8 ajax-form">
-              <tempvs:ajaxSmartForm type="text" action="editItemField" name="name" value="${item?.name}" objectId="${itemId}" label="item.name.label" editAllowed="${editAllowed}"/>
-              <tempvs:ajaxSmartForm type="text" action="editItemField" name="description" value="${item?.description}" objectId="${itemId}" label="item.description.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="text" action="editItemField" name="name" value="${item.name}" objectId="${itemId}" label="item.name.label" editAllowed="${editAllowed}"/>
+              <tempvs:ajaxSmartForm type="text" action="editItemField" name="description" value="${item.description}" objectId="${itemId}" label="item.description.label" editAllowed="${editAllowed}"/>
               <tempvs:ajaxSmartForm type="select" action="editItemField" name="period" value="${period}" optionKey="key" optionValue="value" from="${Period.values()}" objectId="${itemId}" label="periodization.period.dropdown.label" editAllowed="${editAllowed}"/>
               <tempvs:ajaxSmartForm type="select" action="editItemField" name="source" value="${source?.name}" optionKey="id" optionValue="name" from="${sources}" objectId="${itemId}" label="item.source.dropdown.label" editAllowed="${editAllowed}"/>
             </div>

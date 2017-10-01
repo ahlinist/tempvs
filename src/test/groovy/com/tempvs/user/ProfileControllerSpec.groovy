@@ -25,8 +25,10 @@ class ProfileControllerSpec extends Specification {
     private static final String FIRST_NAME = 'firstName'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String AUTH_URL = '/auth/index'
+    private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
     private static final String IDENTIFIER = 'identifier'
+    private static final String FIELD_VALUE = 'fieldValue'
     private static final String AVATAR_COLLECTION = 'avatar'
     private static final String PROFILE_URL = '/profile/index'
     private static final String EMAIL_USED = 'user.email.used'
@@ -98,13 +100,13 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
-        1 * userProfile.asType(BaseProfile) >> userProfile
+        1 * userProfile.user >> user
         1 * userProfile.getIdentifier() >> IDENTIFIER
         1 * profileHolder.profile >> userProfile
         0 * _
 
         and:
-        result == [profile: userProfile, id: IDENTIFIER, editAllowed: Boolean.TRUE]
+        result == [profile: userProfile, user: user, id: IDENTIFIER, editAllowed: Boolean.TRUE]
     }
 
     void "Test clubProfile() for non-existent profile"() {
@@ -211,10 +213,11 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.avatarBean >> imageUploadBean
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION)
+        1 * clubProfileCommand.imageUploadBean >> imageUploadBean
         1 * userService.currentUser >> user
         1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
+        1 * profileService.createProfile(_ as ClubProfile, imageUploadBean) >> clubProfile
+        1 * clubProfile.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(_ as ClubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -230,11 +233,11 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.avatarBean >> imageUploadBean
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION)
+        1 * clubProfileCommand.imageUploadBean >> imageUploadBean
         1 * userService.currentUser >> user
         1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
-        1 * profileService.saveProfile(_ as ClubProfile) >> clubProfile
+        1 * profileService.createProfile(_ as ClubProfile, imageUploadBean) >> clubProfile
+        1 * clubProfile.validate() >> Boolean.TRUE
         1 * profileHolder.setProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID
         1 * ajaxResponseService.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
@@ -242,51 +245,28 @@ class ProfileControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test editClubProfile()"() {
+    void "Test editProfileField()"() {
         given:
-        request.method = POST_METHOD
-        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
-
-        when:
-        controller.editClubProfile(clubProfileCommand)
-
-        then:
-        1 * profileHolder.getProfile() >> clubProfile
-        1 * clubProfileCommand.avatarBean >> imageUploadBean
-        1 * clubProfile.avatar >> image
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
-        1 * clubProfile.setAvatar(image)
-        1 * clubProfileCommand.getProperty(PROPERTIES) >> [:]
-        1 * clubProfile.validate() >> Boolean.TRUE
-        1 * profileService.saveProfile(clubProfile) >> clubProfile
-        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test editUserProfile()"() {
-        given:
+        params.fieldName = FIELD_NAME
+        params.fieldValue = FIELD_VALUE
         request.method = POST_METHOD
 
         when:
-        controller.editUserProfile(userProfileCommand)
+        controller.editProfileField()
 
         then:
         1 * profileHolder.getProfile() >> userProfile
-        1 * userProfileCommand.avatarBean >> imageUploadBean
-        1 * userProfile.avatar >> image
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
-        1 * userProfile.setAvatar(image)
-        1 * userProfileCommand.getProperty(PROPERTIES) >> [:]
-        1 * userProfile.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(userProfile) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
+        1 * profileService.editProfileField(userProfile, FIELD_NAME, FIELD_VALUE) >> userProfile
+        1 * userProfile.validate() >> Boolean.TRUE
         0 * _
+
+        and:
+        response.json.success == Boolean.TRUE
     }
 
     void "Test editProfileEmail() for duplicate"() {
         given:
-        params.email = EMAIL
+        params.fieldValue = EMAIL
         request.method = POST_METHOD
 
         when: 'Email duplicate'
@@ -302,7 +282,7 @@ class ProfileControllerSpec extends Specification {
 
     void "Test editProfileEmail() for non-unique entry"() {
         given:
-        params.email = EMAIL
+        params.fieldValue = EMAIL
         request.method = POST_METHOD
 
         when:
@@ -319,7 +299,7 @@ class ProfileControllerSpec extends Specification {
 
     void "Test editProfileEmail()"() {
         given:
-        params.email = EMAIL
+        params.fieldValue = EMAIL
         request.method = POST_METHOD
 
         when:
@@ -347,11 +327,8 @@ class ProfileControllerSpec extends Specification {
         controller.deleteProfile()
 
         then:
-        1 * userService.currentUserId >> LONG_ID
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
-        1 * clubProfile.user >> user
-        1 * user.id >> LONG_ID
-        1 * profileService.deleteProfile(clubProfile) >> Boolean.TRUE
+        1 * profileService.deleteProfile(clubProfile)
         1 * profileHolder.setProfile(null)
         1 * ajaxResponseService.renderRedirect(PROFILE_URL) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -370,16 +347,13 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(UserProfile, ONE) >> userProfile
-        1 * userProfile.avatar >> image
-        1 * userProfile.setAvatar(null)
-        1 * imageService.deleteImage(image)
-        1 * profileService.saveProfile(userProfile) >> userProfile
+        1 * profileService.deleteAvatar(userProfile)
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
 
-    void "Test editAvatar()"() {
+    void "Test uploadAvatar()"() {
         given:
         params.profileId = ONE
         request.method = POST_METHOD
@@ -391,11 +365,8 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(UserProfile, ONE) >> userProfile
-        1 * userProfile.avatar >> image
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
-        1 * userProfile.setAvatar(image)
+        1 * profileService.uploadAvatar(userProfile, imageUploadBean) >> userProfile
         1 * userProfile.validate() >> Boolean.TRUE
-        1 * profileService.saveProfile(userProfile) >> userProfile
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

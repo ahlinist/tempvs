@@ -1,4 +1,5 @@
 ${profile}
+<g:set var="avatar" value="${profile.avatar}"/>
 <tempvs:modalImage image="${avatar}">
   <sec:ifLoggedIn>
     <g:if test="${editAllowed}">

@@ -80,7 +80,7 @@ class ItemService {
             try {
                 properties = [period: Period.valueOf(fieldValue), source: null]
             } catch (IllegalArgumentException exception) {
-                item.period = null
+                properties = [period: null]
             }
         } else {
             properties = ["${fieldName}": fieldValue]

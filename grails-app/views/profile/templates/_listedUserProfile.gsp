@@ -1,3 +1,4 @@
+<g:set var="userProfile" value="${user.userProfile}"/>
 <label>
   <g:message code="userProfile.list.message"/>
 </label>

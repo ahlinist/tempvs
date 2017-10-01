@@ -14,5 +14,5 @@ abstract class ProfileCommand implements Validateable {
     String lastName
     String location
     String profileId
-    ImageUploadBean avatarBean
+    ImageUploadBean imageUploadBean
 }

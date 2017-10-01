@@ -1,3 +1,4 @@
+<g:set var="clubProfiles" value="${user.clubProfiles}"/>
 <g:if test="${clubProfiles}">
   <label>
     <g:message code="clubProfile.list.message"/>

@@ -19,6 +19,7 @@ class VerifyControllerSpec extends Specification {
     private static final String CLUBPROFILE = 'clubProfile'
     private static final String PROFILE_PAGE_URI = '/profile'
     private static final String REGISTRATION = 'registration'
+    private static final String PROFILE_EMAIL = 'profileEmail'
     private static final String ERROR_PAGE_URI = '/verify/error'
     private static final String USER_EDIT_PAGE_URI = '/user/edit'
     private static final String REGISTRATION_PAGE_URI = '/verify/registration'
@@ -131,9 +132,8 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.getInstanceId() >> LONG_ID
         1 * profileService.getProfile(UserProfile, LONG_ID) >> userProfile
-        1 * userProfile.setProfileEmail(EMAIL)
         1 * userProfile.validate() >> Boolean.TRUE
-        1 * profileService.saveProfile(userProfile) >> userProfile
+        1 * profileService.editProfileField(userProfile, PROFILE_EMAIL, EMAIL) >> userProfile
         1 * profileHolder.setProfile(userProfile)
         1 * userProfile.id >> LONG_ID
         1 * emailVerification.delete(['flush':true])
@@ -161,9 +161,8 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.getInstanceId() >> LONG_ID
         1 * profileService.getProfile(ClubProfile, LONG_ID) >> clubProfile
-        1 * clubProfile.setProfileEmail(EMAIL)
         1 * clubProfile.validate() >> Boolean.TRUE
-        1 * profileService.saveProfile(clubProfile) >> clubProfile
+        1 * profileService.editProfileField(clubProfile, PROFILE_EMAIL, EMAIL) >> clubProfile
         1 * profileHolder.setProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID
         1 * emailVerification.delete(['flush':true])

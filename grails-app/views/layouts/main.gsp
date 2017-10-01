@@ -24,10 +24,10 @@
             <ul class="dropdown-menu list-group">
               <li>
                 <g:link class="list-group-item disableable" controller="profile" action="switchProfile">
-                  ${user.userProfile}
+                  ${currentUser.userProfile}
                 </g:link>
               </li>
-              <g:each var="clubProfile" in="${user.clubProfiles}">
+              <g:each var="clubProfile" in="${currentUser.clubProfiles}">
                 <li>
                   <g:link class="list-group-item disableable" controller="profile" action="switchProfile" id="${clubProfile.id}">
                     ${clubProfile}

@@ -1,12 +1,11 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
+import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
-import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.security.access.AccessDeniedException
 
 /**
@@ -16,15 +15,26 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class ProfileController {
 
-    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String EMAIL_EMPTY = 'profile.email.empty'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String EDIT_EMAIL_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String PROFILE_DELETION_FAILED = 'profile.delete.failed.message'
+    private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
-    
-    static allowedMethods = [index: 'GET', userProfile: 'GET', clubProfile: 'GET', switchProfile: 'GET', list: 'GET', createClubProfile: 'POST', editUserProfile: 'POST', editClubProfile: 'POST', editProfileEmail: 'POST', deleteProfile: 'DELETE', deleteAvatar: 'DELETE', uploadAvatar: 'POST']
+
+    static allowedMethods = [
+            index: 'GET',
+            userProfile: 'GET',
+            clubProfile: 'GET',
+            switchProfile: 'GET',
+            list: 'GET',
+            createClubProfile: 'POST',
+            editProfileField: 'POST',
+            editProfileEmail: 'POST',
+            deleteProfile: 'DELETE',
+            deleteAvatar: 'DELETE',
+            uploadAvatar: 'POST'
+    ]
 
     UserService userService
     ImageService imageService
@@ -40,15 +50,11 @@ class ProfileController {
     }
 
     def userProfile(String id) {
-        profile(id) {
-            profileService.getProfile(UserProfile, id)
-        }
+        profile(id, UserProfile)
     }
 
     def clubProfile(String id) {
-        profile(id) {
-            profileService.getProfile(ClubProfile, id)
-        }
+        profile(id, ClubProfile)
     }
 
     def switchProfile(String id) {
@@ -72,14 +78,12 @@ class ProfileController {
 
     def createClubProfile(ClubProfileCommand command) {
         if (command.validate()) {
-            Image avatar = imageService.updateImage(command.avatarBean, AVATAR_COLLECTION)
-            Map properties = command.properties + [avatar: avatar, user: userService.currentUser]
-            BaseProfile profile = properties as ClubProfile
+            Map properties = command.properties + [user: userService.currentUser]
+            BaseProfile profile = profileService.createProfile(properties as ClubProfile, command.imageUploadBean)
 
             if (profile.validate()) {
-                BaseProfile persistedProfile = profileService.saveProfile(profile)
-                profileHolder.profile = persistedProfile
-                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: persistedProfile.id))
+                profileHolder.profile = profile
+                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
             } else {
                 render ajaxResponseService.renderValidationResponse(profile)                }
         } else {
@@ -87,15 +91,25 @@ class ProfileController {
         }
     }
 
-    def editUserProfile(UserProfileCommand command) {
-        editProfile(command)
+    def editProfileField() {
+        BaseProfile profile = profileHolder.profile
+
+        if (profile) {
+            profile = profileService.editProfileField(profile, params.fieldName as String, params.fieldValue as String)
+
+            if (profile.validate()) {
+                render([success: Boolean.TRUE] as JSON)
+            } else {
+                render ajaxResponseService.renderValidationResponse(profile)
+            }
+        } else {
+            render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
+        }
     }
 
-    def editClubProfile(ClubProfileCommand command) {
-        editProfile(command)
-    }
+    def editProfileEmail() {
+        String email = params.fieldValue
 
-    def editProfileEmail(String email) {
         if (email) {
             BaseProfile profile = profileHolder.profile
 
@@ -126,24 +140,14 @@ class ProfileController {
     }
 
     def deleteProfile(String id) {
-        BaseProfile profile = profileService.getProfile(ClubProfile.class, id)
-
-        if (profile && (profile.user.id == userService.currentUserId)) {
-            if (profileService.deleteProfile(profile)) {
-                profileHolder.profile = null
-                return render(ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile')))
-            }
-        }
-
-        render ajaxResponseService.renderFormMessage(Boolean.FALSE, PROFILE_DELETION_FAILED)
+        profileService.deleteProfile(profileService.getProfile(ClubProfile.class, id))
+        profileHolder.profile = null
+        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
     }
 
     def deleteAvatar() {
         BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
-        Image avatar = profile.avatar
-        profile.avatar = null
-        profileService.saveProfile(profile)
-        imageService.deleteImage(avatar)
+        profileService.deleteAvatar(profile)
         render ajaxResponseService.renderRedirect(request.getHeader('referer'))
     }
 
@@ -151,10 +155,9 @@ class ProfileController {
         BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
 
         if (profile) {
-            profile.avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
+            profile = profileService.uploadAvatar(profile, imageUploadBean)
 
             if (profile.validate()) {
-                profileService.saveProfile(profile)
                 render ajaxResponseService.renderRedirect(request.getHeader('referer'))
             } else {
                 render ajaxResponseService.renderValidationResponse(profile)
@@ -172,23 +175,15 @@ class ProfileController {
         }
     }
 
-    private editProfile(ProfileCommand command) {
-        BaseProfile profile = profileHolder.profile
-        profile.avatar = imageService.updateImage(command.avatarBean, AVATAR_COLLECTION, profile.avatar)
-        InvokerHelper.setProperties(profile, command.properties)
-
-        if (profile.validate()) {
-            profileService.saveProfile(profile)
-            render ajaxResponseService.renderRedirect(request.getHeader('referer'))
-        } else {
-            render ajaxResponseService.renderValidationResponse(profile)
-        }
-    }
-
-    private profile(String id, Closure renderProfile) {
+    private profile(String id, Class clazz) {
         if (id) {
-            BaseProfile profile = renderProfile() as BaseProfile
-            profile ? [profile: profile, id: profile.identifier, editAllowed: profileHolder.profile == profile] : [id: id, notFoundMessage: NO_SUCH_PROFILE, args: [id]]
+            BaseProfile profile = profileService.getProfile(clazz, id)
+
+            if (profile) {
+                [profile: profile, user: profile.user, id: profile.identifier, editAllowed: profileHolder.profile == profile]
+            } else {
+                [id: id, notFoundMessage: NO_SUCH_PROFILE, args: [id]]
+            }
         } else {
             User user = userService.currentUser
             UserProfile profile = user?.userProfile

@@ -1,8 +1,9 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAO
+import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -15,17 +16,23 @@ import spock.lang.Specification
 class ProfileServiceSpec extends Specification {
 
     private static final String ONE = '1'
+    private static final String FIELD_NAME = 'fieldName'
+    private static final String FIELD_VALUE = 'fieldValue'
+    private static final String AVATAR_COLLECTION = 'avatar'
 
     def user = Mock User
     def image = Mock Image
-    def objectDAO = Mock ObjectDAO
+    def userService = Mock UserService
     def clubProfile = Mock ClubProfile
     def userProfile = Mock UserProfile
     def imageService = Mock ImageService
+    def imageUploadBean = Mock ImageUploadBean
+    def objectDAOService = Mock ObjectDAOService
 
     def setup() {
-        service.objectDAO = objectDAO
+        service.userService = userService
         service.imageService = imageService
+        service.objectDAOService = objectDAOService
     }
 
     def cleanup() {
@@ -39,7 +46,7 @@ class ProfileServiceSpec extends Specification {
         def result = service.getProfile(ClubProfile, ONE)
 
         then:
-        1 * objectDAO.find(ClubProfile, clubProfileProps) >> clubProfile
+        1 * objectDAOService.find(ClubProfile, clubProfileProps) >> clubProfile
         0 * _
 
         and:
@@ -49,20 +56,24 @@ class ProfileServiceSpec extends Specification {
         result = service.getProfile(UserProfile, ONE)
 
         then:
-        1 * objectDAO.find(UserProfile, clubProfileProps) >> null
-        1 * objectDAO.get(UserProfile, ONE) >> userProfile
+        1 * objectDAOService.find(UserProfile, clubProfileProps) >> null
+        1 * objectDAOService.get(UserProfile, ONE) >> userProfile
         0 * _
 
         and:
         result == userProfile
     }
 
-    void "Test saveProfile()"() {
+    void "Test createProfile()"() {
         when:
-        def result = service.saveProfile(clubProfile)
+        def result = service.createProfile(clubProfile, imageUploadBean)
 
         then:
-        1 * clubProfile.save()
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION) >> image
+        1 * clubProfile.setAvatar(image)
+        1 * userService.currentUser >> user
+        1 * clubProfile.setUser(user)
+        1 * objectDAOService.save(clubProfile) >> clubProfile
         0 * _
 
         and:
@@ -71,14 +82,51 @@ class ProfileServiceSpec extends Specification {
 
     void "Test deleteProfile()"() {
         when:
-        def result = service.deleteProfile(clubProfile)
+        service.deleteProfile(clubProfile)
 
         then:
         1 * clubProfile.avatar >> image
         1 * imageService.deleteImage(image)
-        1 * clubProfile.delete([failOnError: Boolean.TRUE])
+        1 * clubProfile.delete()
+        0 * _
+    }
+
+    void "Test editProfileField()"() {
+        when:
+        def result = service.editProfileField(userProfile, FIELD_NAME, FIELD_VALUE)
+
+        then:
+        1 * objectDAOService.save(userProfile) >> userProfile
+        0 * _
 
         and:
-        result == Boolean.TRUE
+        result == userProfile
+    }
+
+    void "Test uploadAvatar()"() {
+        when:
+        def result = service.uploadAvatar(userProfile, imageUploadBean)
+
+        then:
+        1 * userProfile.avatar >> image
+        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * userProfile.setAvatar(image)
+        1 * objectDAOService.save(userProfile) >> userProfile
+        0 * _
+
+        and:
+        result == userProfile
+    }
+
+    void "Test deleteAvatar()"() {
+        when:
+        service.deleteAvatar(userProfile)
+
+        then:
+        1 * userProfile.avatar >> image
+        1 * imageService.deleteImage(image)
+        1 * userProfile.setAvatar(null)
+        1 * objectDAOService.save(userProfile) >> userProfile
+        0 * _
     }
 }

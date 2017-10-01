@@ -79,11 +79,10 @@ class VerifyController {
         BaseProfile profile = profileService.getProfile(clazz, emailVerification.instanceId)
 
         if (profile) {
-            profile.profileEmail = emailVerification.email
+            profile = profileService.editProfileField(profile, 'profileEmail', emailVerification.email)
 
             if (profile.validate()) {
                 profileHolder.profile = profile
-                profileService.saveProfile(profile)
                 return redirect(controller: 'profile', action: clazz.simpleName.uncapitalize(), id: profile.id)
             }
         }
