@@ -39,7 +39,8 @@ class UserController {
     }
 
     def edit() {
-        [user: userService.currentUser]
+        User user = userService.currentUser
+        [user: user, userProfile: user.userProfile, clubProfiles: user.clubProfiles]
     }
 
     def updateEmail() {

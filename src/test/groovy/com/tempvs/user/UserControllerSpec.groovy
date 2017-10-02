@@ -32,6 +32,7 @@ class UserControllerSpec extends Specification {
     def user = Mock User
     def json = Mock JSON
     def userProfile = Mock UserProfile
+    def clubProfile = Mock ClubProfile
     def userService = Mock UserService
     def verifyService = Mock VerifyService
     def registerCommand = Mock RegisterCommand
@@ -56,10 +57,12 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
+        1 * user.userProfile >> userProfile
+        1 * user.clubProfiles >> [clubProfile]
         0 * _
 
         and:
-        model == [user: user]
+        model == [user: user, userProfile: userProfile, clubProfiles: [clubProfile] as Set]
     }
 
     void "Test index()"() {

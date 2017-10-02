@@ -14,7 +14,6 @@
           <div class="col-sm-3">
             <g:render template="/profile/templates/identity"/>
             <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>
-            <g:render template="/profile/templates/listedClubProfiles"/>
           </div>
           <div class="col-sm-6 ajax-form">
             <tempvs:ajaxSmartForm type="text" action="editProfileField" name="firstName" value="${profile.firstName}" label="profile.firstName.label"/>
@@ -26,7 +25,7 @@
         </div>
       </g:if>
       <g:elseif test="${notFoundMessage}">
-        <g:message code="${notFoundMessage}" args="${id}" />
+        <g:message code="${notFoundMessage}" args="${[id]}" />
       </g:elseif>
     </body>
 </html>

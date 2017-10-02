@@ -15,7 +15,10 @@
     <div class="row">
       <header>
         <sec:ifLoggedIn>
-          <span class="dropdown">
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.button')}">
+             <g:link class="btn btn-secondary disableable glyphicon glyphicon-user" controller="profile"/>
+          </span>
+          <span class="dropdown pull-left">
             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
               ${applicationContext.profileHolder.profile}
               <span class="caret"></span>
@@ -35,20 +38,14 @@
               </g:each>
             </ul>
           </span>
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.button')}">
-            <g:link class="btn btn-secondary disableable pull-right glyphicon glyphicon-log-out" controller="auth" action="logout"/>
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.button')}">
+             <g:link class="btn btn-secondary disableable glyphicon glyphicon-tent" controller="item" action="stash"/>
           </span>
-          <span class="dropdown pull-right">
-            <button class="btn btn-default dropdown-toggle glyphicon glyphicon-cog" type="button" data-toggle="dropdown">
-              <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu list-group">
-              <li>
-                <g:link class="list-group-item disableable" controller="user" action="edit">
-                  <g:message code="user.edit.button" />
-                </g:link>
-              </li>
-            </ul>
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.button')}">
+             <g:link class="btn btn-secondary disableable glyphicon glyphicon-log-out" controller="auth" action="logout"/>
+          </span>
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
+            <g:link class="btn btn-default disableable glyphicon glyphicon-cog" controller="user" action="edit"/>
           </span>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.library.tooltip')}">
             <g:link class="btn btn-default disableable pull-right glyphicon glyphicon-book" controller="source"/>
@@ -65,30 +62,7 @@
     </div>
     <hr/>
     <div class="row">
-      <div class="col-sm-2">
-        <sec:ifLoggedIn>
-          <ul class="list-group col-sm-12">
-            <li>
-              <g:link class="list-group-item disableable" controller="profile">
-                <g:message code="profile.show.button" />
-              </g:link>
-            </li>
-            <li>
-              <g:link class="list-group-item disableable" controller="profile" action="list">
-                <g:message code="clubProfile.list.button" />
-              </g:link>
-            </li>
-            <li>
-              <g:link class="list-group-item disableable" controller="item" action="stash">
-                <g:message code="item.stash.button" />
-              </g:link>
-            </li>
-         </ul>
-        </sec:ifLoggedIn>
-      </div>
-      <div class="col-sm-10">
-        <g:layoutBody/>
-      </div>
+      <g:layoutBody/>
     </div>
   </body>
 </html>

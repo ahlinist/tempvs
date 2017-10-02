@@ -129,7 +129,7 @@ class ProfileControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [id: ONE, notFoundMessage: NO_SUCH_PROFILE, args: [ONE]]
+        result == [id: ONE, notFoundMessage: NO_SUCH_PROFILE]
     }
 
     void "Test switchProfile() being not logged in"() {
@@ -170,23 +170,6 @@ class ProfileControllerSpec extends Specification {
 
         and:
         response.redirectedUrl == PROFILE_URL
-    }
-
-    void "Test list()"() {
-        given:
-        Set<ClubProfile> clubProfiles = [clubProfile]
-
-        when:
-        def result = controller.list()
-
-        then:
-        1 * userService.currentUser >> user
-        1 * user.userProfile >> userProfile
-        1 * user.clubProfiles >> clubProfiles
-        0 * _
-
-        and:
-        result == [userProfile: userProfile, clubProfiles: clubProfiles]
     }
 
     void "Test createClubProfile() against invalid command"() {

@@ -71,11 +71,6 @@ class ProfileController {
         redirect destination
     }
 
-    def list() {
-        User user = userService.currentUser
-        [userProfile: user.userProfile, clubProfiles: user.clubProfiles]
-    }
-
     def createClubProfile(ClubProfileCommand command) {
         if (command.validate()) {
             Map properties = command.properties + [user: userService.currentUser]
@@ -182,7 +177,7 @@ class ProfileController {
             if (profile) {
                 [profile: profile, user: profile.user, id: profile.identifier, editAllowed: profileHolder.profile == profile]
             } else {
-                [id: id, notFoundMessage: NO_SUCH_PROFILE, args: [id]]
+                [id: id, notFoundMessage: NO_SUCH_PROFILE]
             }
         } else {
             User user = userService.currentUser
