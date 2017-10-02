@@ -102,11 +102,10 @@ class VerifyControllerSpec extends Specification {
         1 * emailVerification.instanceId >> LONG_ID
         1 * userService.getUser(LONG_ID) >> user
         1 * emailVerification.email >> EMAIL
-        1 * user.setEmail(EMAIL)
-        1 * user.validate() >> Boolean.TRUE
+        1 * user.hasErrors() >> Boolean.FALSE
         1 * user.email >> EMAIL
         1 * springSecurityService.reauthenticate(EMAIL)
-        1 * userService.saveUser(user) >> user
+        1 * userService.editUserField(user, EMAIL, EMAIL) >> user
         1 * emailVerification.delete(['flush':true])
         0 * _
 

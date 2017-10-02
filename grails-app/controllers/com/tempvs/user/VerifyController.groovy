@@ -63,11 +63,10 @@ class VerifyController {
         User user = userService.getUser(emailVerification.instanceId)
 
         if (user) {
-            user.email = emailVerification.email
+            user = userService.editUserField(user, EMAIL, emailVerification.email)
 
-            if (user.validate()) {
+            if (!user.hasErrors()) {
                 springSecurityService.reauthenticate(user.email)
-                userService.saveUser(user)
                 redirect controller: 'user', action: 'edit'
             }
         } else {

@@ -14,6 +14,7 @@ class ClubProfile extends BaseProfile {
     Period period
 
     static constraints = {
+        firstName nullable: false, blank: false
         lastName nullable: true
         nickName nullable: true
         clubName nullable: true

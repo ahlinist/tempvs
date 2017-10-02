@@ -23,7 +23,7 @@ class UserViewSpec extends Specification {
     void "Test /user/edit view"() {
         given:
         String title = "<title>Tempvs - Edit ${EMAIL_ADDRESS}</title>"
-        String updateEmail = '<tempvs:ajaxForm action="updateEmail">'
+        String updateEmail = '<tempvs:ajaxSmartForm type="text" action="updateEmail"'
         String updatePassword = '<tempvs:ajaxForm action="updatePassword">'
         Map model = [user: user]
 

@@ -153,7 +153,7 @@ class ItemControllerSpec extends Specification {
         1 * itemGroupCommand.getProperty(PROPERTIES) >> parameters
         1 * userService.currentUser >> user
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
-        1 * itemGroup.validate() >> Boolean.FALSE
+        1 * itemGroup.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(_ as ItemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -173,7 +173,7 @@ class ItemControllerSpec extends Specification {
         1 * itemGroupCommand.getProperty(PROPERTIES) >> properties
         1 * userService.currentUser >> user
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
-        1 * itemGroup.validate() >> Boolean.TRUE
+        1 * itemGroup.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseService.renderRedirect("${ITEM_STASH_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -261,7 +261,7 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
         1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
-        1 * item.validate() >> Boolean.FALSE
+        1 * item.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(_ as Item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -285,7 +285,7 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
         1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
-        1 * item.validate() >> Boolean.TRUE
+        1 * item.hasErrors() >> Boolean.FALSE
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ONE}"
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -304,7 +304,7 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * itemImageUploadCommand.validate() >> Boolean.TRUE
-        1 * item.validate() >> Boolean.TRUE
+        1 * item.hasErrors() >> Boolean.FALSE
         1 * item.asType(Item) >> item
         1 * itemImageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * itemService.updateItem(item,  [imageUploadBean]) >> item
@@ -488,8 +488,8 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * imageService.getImage(TWO) >> image
-        1 * itemService.editItemImage(item, image, imageUploadBean)
-        1 * item.validate() >> Boolean.TRUE
+        1 * itemService.editItemImage(item, image, imageUploadBean) >> item
+        1 * item.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -508,8 +508,11 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * itemService.editItemField(item, FIELD_NAME, FIELD_VALUE) >> item
-        1 * item.validate() >> Boolean.TRUE
+        1 * item.hasErrors() >> Boolean.FALSE
         0 * _
+
+        and:
+        response.json.success == Boolean.TRUE
     }
 
     void "Test editItemGroupField()"() {
@@ -526,7 +529,10 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemService.editItemGroupField(itemGroup, FIELD_NAME, FIELD_VALUE) >> itemGroup
-        1 * itemGroup.validate() >> Boolean.TRUE
+        1 * itemGroup.hasErrors() >> Boolean.FALSE
         0 * _
+
+        and:
+        response.json.success == Boolean.TRUE
     }
 }

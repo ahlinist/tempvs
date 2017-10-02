@@ -72,9 +72,9 @@ class SourceController {
         if (source) {
             String fieldName = params.fieldName
             String fieldValue = params.fieldValue
-            sourceService.editSourceField(source, fieldName, fieldValue)
+            source = sourceService.editSourceField(source, fieldName, fieldValue)
 
-            if (source.validate()) {
+            if (!source.hasErrors()) {
                 render([success: Boolean.TRUE] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(source)
@@ -89,7 +89,7 @@ class SourceController {
             Source source = sourceClosure()
 
             if (source) {
-                if (action(source).validate()) {
+                if (!action(source).hasErrors()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
                 } else {
                     render ajaxResponseService.renderValidationResponse(source)

@@ -81,7 +81,7 @@ class ProfileController {
             Map properties = command.properties + [user: userService.currentUser]
             BaseProfile profile = profileService.createProfile(properties as ClubProfile, command.imageUploadBean)
 
-            if (profile.validate()) {
+            if (!profile.hasErrors()) {
                 profileHolder.profile = profile
                 render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
             } else {
@@ -97,7 +97,7 @@ class ProfileController {
         if (profile) {
             profile = profileService.editProfileField(profile, params.fieldName as String, params.fieldValue as String)
 
-            if (profile.validate()) {
+            if (!profile.hasErrors()) {
                 render([success: Boolean.TRUE] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(profile)
@@ -157,7 +157,7 @@ class ProfileController {
         if (profile) {
             profile = profileService.uploadAvatar(profile, imageUploadBean)
 
-            if (profile.validate()) {
+            if (!profile.hasErrors()) {
                 render ajaxResponseService.renderRedirect(request.getHeader('referer'))
             } else {
                 render ajaxResponseService.renderValidationResponse(profile)

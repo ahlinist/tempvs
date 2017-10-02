@@ -13,6 +13,8 @@ class UserProfile extends BaseProfile {
     }
 
     static constraints = {
+        firstName nullable: false, blank: false
+        lastName nullable: false, blank: false
         profileId shared: "profileId"
         location nullable: true
         avatar nullable: true

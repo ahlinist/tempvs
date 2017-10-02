@@ -9,6 +9,8 @@ import grails.plugin.springsecurity.SpringSecurityService
 @GrailsCompileStatic
 class ActivityInterceptor {
 
+    private static String LAST_ACTIVE = 'lastActive'
+
     UserService userService
     SpringSecurityService springSecurityService
 
@@ -24,8 +26,7 @@ class ActivityInterceptor {
             User user = userService.currentUser
 
             if (user) {
-                user.lastActive = new Date()
-                userService.saveUser(user)
+                userService.editUserField(user, LAST_ACTIVE, new Date())
             }
         }
 

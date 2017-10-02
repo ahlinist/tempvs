@@ -12,6 +12,7 @@ import grails.web.mapping.LinkGenerator
 class UserController {
 
     private static final String EMAIL = 'email'
+    private static final String PASSWORD = 'password'
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String EMAIL_EMPTY = 'user.email.empty'
@@ -19,7 +20,13 @@ class UserController {
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
 
-    static allowedMethods = [index: 'GET', edit: 'GET', updateEmail: 'POST', updatePassword: 'POST', register: 'POST']
+    static allowedMethods = [
+            index: 'GET',
+            edit: 'GET',
+            updateEmail: 'POST',
+            updatePassword: 'POST',
+            register: 'POST',
+    ]
 
     UserService userService
     VerifyService verifyService
@@ -35,7 +42,9 @@ class UserController {
         [user: userService.currentUser]
     }
 
-    def updateEmail(String email) {
+    def updateEmail() {
+        String email = params.fieldValue
+
         if (email) {
             if (email == userService.currentUserEmail) {
                 render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
@@ -65,14 +74,13 @@ class UserController {
 
     def updatePassword(UserPasswordCommand command) {
         if (command.validate()) {
-            User user = userService.currentUser
-            user.password = springSecurityService.encodePassword(command.newPassword)
+            String password = springSecurityService.encodePassword(command.newPassword)
+            User user = userService.editUserField(userService.currentUser, PASSWORD, password)
 
-            if (user.validate()) {
-                userService.saveUser(user)
-                render ajaxResponseService.renderRedirect(request.getHeader('referer'))
+            if (!user.hasErrors()) {
+                render ajaxResponseService.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE)
             } else {
-                render ajaxResponseService.renderValidationResponse(user, PASSWORD_UPDATED_MESSAGE)
+                render ajaxResponseService.renderValidationResponse(user)
             }
         } else {
             render ajaxResponseService.renderValidationResponse(command)
@@ -82,15 +90,10 @@ class UserController {
     def register(RegisterCommand command) {
         if (command.validate()) {
             String email = session.getAttribute(EMAIL)
-            Map properties = command.properties
-            properties.userProfile = properties as UserProfile
-            properties.password = springSecurityService.encodePassword command.password
-            properties.email = email
-            User user = properties as User
+            User user = userService.register(command.properties + [email: email])
 
-            if (user.validate()) {
-                userService.saveUser(user)
-                springSecurityService.reauthenticate(email, command.password)
+            if (!user.hasErrors()) {
+                springSecurityService.reauthenticate(email)
                 session.setAttribute(EMAIL, null)
                 render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
             } else {

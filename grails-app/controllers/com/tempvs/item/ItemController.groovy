@@ -170,10 +170,9 @@ class ItemController {
     def editItemImage(ImageUploadBean imageUploadBean) {
         Item item = itemService.getItem params.itemId
         Image image = imageService.getImage params.imageId
+        item = itemService.editItemImage(item, image, imageUploadBean)
 
-        itemService.editItemImage(item, image, imageUploadBean)
-
-        if (item.validate()) {
+        if (!item.hasErrors()) {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, ITEM_IMAGE_EDIT_FAILED_MESSAGE)
@@ -186,9 +185,9 @@ class ItemController {
         if (item) {
             String fieldName = params.fieldName
             String fieldValue = params.fieldValue
-            itemService.editItemField(item, fieldName, fieldValue)
+            item = itemService.editItemField(item, fieldName, fieldValue)
 
-            if (item.validate()) {
+            if (!item.hasErrors()) {
                 render([success: Boolean.TRUE] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(item)
@@ -204,9 +203,9 @@ class ItemController {
         if (itemGroup) {
             String fieldName = params.fieldName
             String fieldValue = params.fieldValue
-            itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
+            itemGroup = itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
 
-            if (itemGroup.validate()) {
+            if (!itemGroup.hasErrors()) {
                 render([success: Boolean.TRUE] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(itemGroup)
@@ -229,7 +228,7 @@ class ItemController {
             BasePersistent object = objectClosure()
 
             if (object) {
-                if (action(object).validate()) {
+                if (!action(object).hasErrors()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
                 } else {
                     render ajaxResponseService.renderValidationResponse(object)

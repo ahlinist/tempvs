@@ -76,10 +76,6 @@ select:disabled {
     border: 1px #DDD solid;
 }
 
-p:empty:after {
-    content: "\200b";
-}
-
 .hovering > .glyphicon-pencil {
     display: none;
 }

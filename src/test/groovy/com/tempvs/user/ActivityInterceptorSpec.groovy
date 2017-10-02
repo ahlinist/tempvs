@@ -17,6 +17,7 @@ class ActivityInterceptorSpec extends Specification {
     private static final String SOURCE = 'source'
     private static final String VERIFY = 'verify'
     private static final String PROFILE = 'profile'
+    private static final String LAST_ACTIVE = 'lastActive'
 
     def user = Mock User
     def userService = Mock UserService
@@ -89,8 +90,7 @@ class ActivityInterceptorSpec extends Specification {
         then:
         1 * springSecurityService.loggedIn >> Boolean.TRUE
         1 * userService.currentUser >> user
-        1 * user.setLastActive(_ as Date)
-        1 * userService.saveUser(user) >> user
+        1 * userService.editUserField(user, LAST_ACTIVE, _ as Date) >> user
         0 * _
 
         and:

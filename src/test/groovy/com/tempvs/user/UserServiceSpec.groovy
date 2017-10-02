@@ -1,7 +1,7 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAO
-import com.tempvs.domain.ObjectFactory
+import com.tempvs.domain.ObjectDAOService
+import com.tempvs.tests.utils.TestingUtils
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.test.mixin.TestFor
@@ -17,21 +17,21 @@ class UserServiceSpec extends Specification {
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
+    private static final String FIELD_NAME = 'fieldName'
+    private static final String FIELD_VALUE = 'fieldValue'
 
     def user = Mock User
-    def objectDAO = Mock ObjectDAO
     def grailsUser = Mock GrailsUser
     def userProfile = Mock UserProfile
-    def objectFactory = Mock ObjectFactory
+    def objectDAOService = Mock ObjectDAOService
     def springSecurityService = Mock SpringSecurityService
 
     def setup() {
         GroovySpy(User, global: true)
         GroovySpy(UserProfile, global: true)
 
+        service.objectDAOService = objectDAOService
         service.springSecurityService = springSecurityService
-        service.objectFactory = objectFactory
-        service.objectDAO = objectDAO
     }
 
     def cleanup() {
@@ -42,7 +42,7 @@ class UserServiceSpec extends Specification {
         def result = service.getUser(ID)
 
         then:
-        1 * objectDAO.get(User.class, ID) >> user
+        1 * objectDAOService.get(User.class, ID) >> user
         0 * _
 
         and:
@@ -104,17 +104,43 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * User.findByEmail(EMAIL) >> user
+        0 * _
 
         and:
         result == user
     }
 
-    void "Test saveUser()"() {
+    void "Test editUserField()"() {
         when:
-        def result = service.saveUser(user)
+        def result = service.editUserField(user, FIELD_NAME, FIELD_VALUE)
 
         then:
-        1 * user.save()
+        1 * objectDAOService.save(user) >> user
+        0 * _
+
+        and:
+        result == user
+    }
+
+    void "Test register()"() {
+        given:
+        Map properties = [
+                email: TestingUtils.EMAIL,
+                firstName: TestingUtils.FIRST_NAME,
+                lastName: TestingUtils.LAST_NAME,
+                password: TestingUtils.PASSWORD,
+                user: user,
+                userProfile: userProfile,
+        ]
+
+        when:
+        def result = service.register(properties)
+
+        then:
+        1 * springSecurityService.encodePassword(TestingUtils.PASSWORD) >> PASSWORD
+        1 * new UserProfile(_) >> userProfile
+        1 * new User(_) >> user
+        1 * objectDAOService.save(user) >> user
         0 * _
 
         and:

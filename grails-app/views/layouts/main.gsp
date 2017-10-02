@@ -1,5 +1,4 @@
-<g:set var="user" value="${applicationContext.userService.currentUser}"/>
-<g:set var="currentProfile" value="${applicationContext.profileHolder.profile}"/>
+<g:set var="currentUser" value="${applicationContext.userService.currentUser}"/>
 
 <!DOCTYPE html>
 <html>
@@ -18,7 +17,7 @@
         <sec:ifLoggedIn>
           <span class="dropdown">
             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-              ${currentProfile}
+              ${applicationContext.profileHolder.profile}
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu list-group">

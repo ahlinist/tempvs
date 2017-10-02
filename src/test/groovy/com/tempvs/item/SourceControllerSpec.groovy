@@ -84,7 +84,7 @@ class SourceControllerSpec extends Specification {
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
         1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
         1 * sourceService.createSource(_ as Source, [imageUploadBean]) >> source
-        1 * source.validate() >> Boolean.TRUE
+        1 * source.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseService.renderRedirect("${PERIOD_URI}/${period.id}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -104,7 +104,7 @@ class SourceControllerSpec extends Specification {
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
         1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
         1 * sourceService.createSource(_ as Source, [imageUploadBean]) >> source
-        1 * source.validate() >> Boolean.FALSE
+        1 * source.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(_ as Source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -167,7 +167,7 @@ class SourceControllerSpec extends Specification {
         then:
         1 * sourceService.getSource(OBJECT_ID) >> source
         1 * sourceService.editSourceField(source, FIELD_NAME, FIELD_VALUE) >> source
-        1 * source.validate() >> Boolean.TRUE
+        1 * source.hasErrors() >> Boolean.FALSE
         0 * _
 
         and:
