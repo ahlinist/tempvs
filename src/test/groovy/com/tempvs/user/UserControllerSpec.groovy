@@ -117,7 +117,7 @@ class UserControllerSpec extends Specification {
         1 * userService.currentUserEmail >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userService.currentUserId >> LONG_ID
-        1 * verifyService.createEmailVerification([instanceId: LONG_ID, email: EMAIL, action: UPDATE_EMAIL_ACTION]) >> emailVerification
+        1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
         1 * ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json

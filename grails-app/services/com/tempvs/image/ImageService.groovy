@@ -1,23 +1,19 @@
 package com.tempvs.image
 
-import com.tempvs.domain.ObjectDAO
-import com.tempvs.domain.ObjectFactory
+import com.tempvs.domain.ObjectDAOService
 import grails.compiler.GrailsCompileStatic
-import grails.transaction.Transactional
 
 /**
  * A service that manages {@link com.tempvs.image.ImageBean}-related operations.
  */
-@Transactional
 @GrailsCompileStatic
 class ImageService {
 
     ImageDAO imageDAO
-    ObjectDAO objectDAO
-    ObjectFactory objectFactory
+    ObjectDAOService objectDAOService
 
     Image getImage(Object id) {
-        objectDAO.get(Image, id)
+        objectDAOService.get(Image, id)
     }
 
     byte[] getImageBytes(String collection, String objectId) {
@@ -37,7 +33,7 @@ class ImageService {
             if (image) {
                 imageDAO.delete(collection, image.objectId)
             } else {
-                image = objectFactory.create(Image)
+                image = this.objectDAOService.create(Image)
             }
 
             InputStream inputStream = imageUploadBean.image.inputStream

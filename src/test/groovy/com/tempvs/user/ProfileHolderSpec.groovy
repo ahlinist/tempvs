@@ -1,27 +1,27 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAO
+import com.tempvs.domain.ObjectDAOService
 import spock.lang.Specification
 
 /**
- * {@link com.tempvs.user.ProfileHolder} unit-test suite.
+ * {@link com.tempvs.user.ProfileHolder}-related unit-test suite.
  */
 class ProfileHolderSpec extends Specification {
 
-    Class clazz = Object.class
     Long id = 1L
-    def userService = Mock(UserService)
-    def objectDAO = Mock(ObjectDAO)
-    def user = Mock(User)
-    def baseProfile = Mock(BaseProfile)
-    def userProfile = Mock(UserProfile)
-    def clubProfile = Mock(ClubProfile)
+    def user = Mock User
+    Class clazz = Object.class
+    def userService = Mock UserService
+    def baseProfile = Mock BaseProfile
+    def userProfile = Mock UserProfile
+    def clubProfile = Mock ClubProfile
+    def objectDAOService = Mock ObjectDAOService
 
     ProfileHolder profileHolder = new ProfileHolder()
 
     def setup() {
         profileHolder.userService = userService
-        profileHolder.objectDAO = objectDAO
+        profileHolder.objectDAOService = objectDAOService
     }
 
     def cleanup() {
@@ -69,7 +69,7 @@ class ProfileHolderSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
-        1 * objectDAO.get(clazz, id) >> null
+        1 * objectDAOService.get(clazz, id) >> null
         0 * _
 
         and:
@@ -86,7 +86,7 @@ class ProfileHolderSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * objectDAO.get(clazz, id) >> baseProfile
+        1 * objectDAOService.get(clazz, id) >> baseProfile
         1 * user.userProfile >> userProfile
         1 * baseProfile.equals(userProfile)  >> Boolean.TRUE
         0 * _
@@ -105,7 +105,7 @@ class ProfileHolderSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * objectDAO.get(clazz, id) >> baseProfile
+        1 * objectDAOService.get(clazz, id) >> baseProfile
         _ * user.clubProfiles >> [clubProfile]
         1 * user.userProfile >> userProfile
         1 * baseProfile.equals(userProfile)  >> Boolean.FALSE

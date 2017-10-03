@@ -1,7 +1,6 @@
 package com.tempvs.ajax
 
 import grails.converters.JSON
-import grails.transaction.Transactional
 import grails.validation.Validateable
 import groovy.transform.CompileStatic
 import org.grails.plugins.web.taglib.ValidationTagLib
@@ -11,7 +10,6 @@ import org.springframework.validation.ObjectError
 /**
  * A service for composing responses for ajax requests.
  */
-@Transactional
 @CompileStatic
 class AjaxResponseService {
 

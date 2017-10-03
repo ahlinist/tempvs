@@ -12,7 +12,16 @@ import org.hibernate.criterion.Restrictions
 @Transactional
 @CompileStatic
 class ObjectDAOService {
+
     SessionFactory sessionFactory
+
+    public <T> T create(Class<T> clazz) {
+        clazz.newInstance()
+    }
+
+    public <T> T create(Class<T> clazz, Object[] args) {
+        clazz.newInstance(args)
+    }
 
     public <T> T get(Class clazz, Object id) {
         try {

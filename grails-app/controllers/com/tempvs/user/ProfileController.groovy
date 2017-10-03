@@ -120,7 +120,7 @@ class ProfileController {
                             action: profile.class.simpleName.uncapitalize(),
                     ]
 
-                    EmailVerification emailVerification = verifyService.createEmailVerification(properties)
+                    EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
 
                     if (!emailVerification.hasErrors()) {
                         verifyService.sendEmailVerification(emailVerification)

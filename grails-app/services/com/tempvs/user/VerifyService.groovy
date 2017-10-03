@@ -1,27 +1,29 @@
 package com.tempvs.user
 
+import com.tempvs.domain.ObjectDAOService
 import grails.compiler.GrailsCompileStatic
 import grails.plugins.mail.MailService
-import grails.transaction.Transactional
 
-@Transactional
+/**
+ *
+ */
 @GrailsCompileStatic
 class VerifyService {
 
     MailService mailService
+    ObjectDAOService objectDAOService
 
     EmailVerification getVerification(String id) {
         EmailVerification.findByVerificationCode(id)
     }
 
-    EmailVerification createEmailVerification(Map properties) {
-        properties += [verificationCode: (properties.email.toString() + new Date().time).encodeAsMD5()]
-        EmailVerification emailVerification = properties as EmailVerification
-        emailVerification.save()
-        emailVerification
+    EmailVerification createEmailVerification(EmailVerification emailVerification) {
+        String verificationCode = (emailVerification.email + new Date().time).encodeAsMD5()
+        emailVerification.verificationCode = verificationCode
+        objectDAOService.save(emailVerification)
     }
 
-    Boolean sendEmailVerification(EmailVerification emailVerification) {
+    void sendEmailVerification(EmailVerification emailVerification) {
         mailService.sendMail {
             to emailVerification.email
             from 'no-reply@tempvs.com'

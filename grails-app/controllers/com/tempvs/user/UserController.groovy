@@ -59,7 +59,7 @@ class UserController {
                             action: UPDATE_EMAIL_ACTION,
                     ]
 
-                    EmailVerification emailVerification = verifyService.createEmailVerification(properties)
+                    EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
 
                     if (!emailVerification.hasErrors()) {
                         verifyService.sendEmailVerification(emailVerification)

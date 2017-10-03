@@ -83,7 +83,7 @@ class AuthControllerSpec extends Specification {
         then:
         1 * requestRegistrationCommand.validate() >> Boolean.TRUE
         1 * requestRegistrationCommand.email >> EMAIL
-        1 * verifyService.createEmailVerification(['action': REGISTER_ACTION, 'email': EMAIL]) >> emailVerification
+        1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
         1 * ajaxResponseService.renderValidationResponse(emailVerification, _ as String) >> json

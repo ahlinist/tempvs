@@ -6,9 +6,9 @@ import org.hibernate.Criteria
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import spock.lang.Specification
+
 /**
- * Test suite for hibernate implementation of
- * {@link com.tempvs.domain.ObjectDAO} interface.
+ * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 @TestFor(ObjectDAOService)
 class ObjectDAOServiceSpec extends Specification {

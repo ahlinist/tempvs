@@ -61,7 +61,7 @@ class AuthController {
     def register(RequestRegistrationCommand command) {
         if (command.validate()) {
             Map properties = [action: REGISTRATION_ACTION, email: command.email]
-            EmailVerification emailVerification = verifyService.createEmailVerification(properties)
+            EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
 
             if (!emailVerification.hasErrors()) {
                 verifyService.sendEmailVerification(emailVerification)

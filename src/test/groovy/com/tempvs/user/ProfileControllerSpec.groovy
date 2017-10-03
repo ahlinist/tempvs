@@ -293,7 +293,7 @@ class ProfileControllerSpec extends Specification {
         1 * userProfile.getProfileEmail() >> DIFFERENT_EMAIL
         1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userProfile.getId() >> LONG_ID
-        1 * verifyService.createEmailVerification(_) >> emailVerification
+        1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
         1 * ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT) >> json
