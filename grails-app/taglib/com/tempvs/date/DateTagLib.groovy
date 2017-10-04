@@ -6,23 +6,23 @@ import groovy.time.TimeCategory
  * Date taglib.
  */
 class DateTagLib {
+
     static defaultEncodeAs = [taglib:'raw']
     static namespace = 'tempvs'
+
     private static final String DATE_FORMAT = 'dd-MM-yyyy'
     private static final String RIGHT_NOW = 'date.rightNow'
-    private static final String MINUTES_AGO = 'date.minutesAgo'
-    private static final String HALF_HOUR_AGO = 'date.halfHourAgo'
     private static final String HOURS_AGO = 'date.hoursAgo'
     private static final String YESTERDAY = 'date.yesterday'
+    private static final String MINUTES_AGO = 'date.minutesAgo'
+    private static final String HALF_HOUR_AGO = 'date.halfHourAgo'
 
     String dateFromNow = { Map attrs ->
         Map model = [:]
         Date currentDate = new Date()
         Date targetDate = attrs.date
 
-        if (currentDate < targetDate) {
-
-        } else {
+        if (currentDate > targetDate) {
             use (TimeCategory) {
                 if (targetDate > 1.minute.ago) {
                     model = [classes:'incrementMinutes', minutes: 0, value: g.message(code: RIGHT_NOW)]
@@ -41,6 +41,6 @@ class DateTagLib {
             }
         }
 
-        out << render(template: '/templates/date/dateHolder', model:model)
+        out << render(template: '/date/templates/dateHolder', model:model)
     }
 }

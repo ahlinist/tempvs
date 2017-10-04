@@ -5,18 +5,20 @@ import grails.test.mixin.TestMixin
 import grails.test.mixin.web.GroovyPageUnitTestMixin
 import groovy.time.TimeCategory
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
  */
 @TestFor(DateTagLib)
 @TestMixin(GroovyPageUnitTestMixin)
 class DateTagLibSpec extends Specification {
+
     private static final String DATE_FORMAT = 'dd-MM-yyyy'
     private static final String RIGHT_NOW = 'date.rightNow'
-    private static final String MINUTES_AGO = 'date.minutesAgo'
-    private static final String HALF_HOUR_AGO = 'date.halfHourAgo'
     private static final String HOURS_AGO = 'date.hoursAgo'
     private static final String YESTERDAY = 'date.yesterday'
+    private static final String MINUTES_AGO = 'date.minutesAgo'
+    private static final String HALF_HOUR_AGO = 'date.halfHourAgo'
 
     def setup() {
     }
