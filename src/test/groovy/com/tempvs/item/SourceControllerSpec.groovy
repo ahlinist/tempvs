@@ -25,12 +25,10 @@ class SourceControllerSpec extends Specification {
     private static final String OBJECT_ID = 'objectId'
     private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
-    private static final String SHOW_URI = '/source/show'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String DESCRIPTION = 'description'
 
     private static final String PERIOD_URI = '/source/period'
-    private static final String NO_SOURCE_FOUND = 'source.notFound.message'
 
     def json = Mock JSON
     def period = Period.XIX

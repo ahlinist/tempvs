@@ -13,7 +13,6 @@ import grails.web.mapping.LinkGenerator
 class SourceController {
 
     private static final String REFERER = 'referer'
-    private static final String NO_SOURCE_FOUND = 'source.notFound.message'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
 
     static allowedMethods = [
@@ -42,11 +41,9 @@ class SourceController {
     }
 
     def getSourcesByPeriod(String id) {
-        if (id) {
-            Period period = Period.valueOf(id.toUpperCase())
-            List<Source> sources = sourceService.getSourcesByPeriod(period)
-            render((sources?.collect { Source source -> [id: source.id, name: source.name]} ?: []) as JSON)
-        }
+        Period period = id ? Period.valueOf(id.toUpperCase()) : null
+        List<Source> sources = sourceService.getSourcesByPeriod(period)
+        render(sources.collect { Source source -> [id: source.id, name: source.name]} as JSON)
     }
 
     def show(String id) {
@@ -57,17 +54,17 @@ class SourceController {
     }
 
     def createSource(SourceCommand command) {
-        if (command.validate()) {
-            Source source = sourceService.createSource(command.properties as Source, command.imageUploadBeans)
-
-            if (!source.hasErrors()) {
-                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
-            } else {
-                render ajaxResponseService.renderValidationResponse(source)
-            }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
+        if (!command.validate()) {
+            return render(ajaxResponseService.renderValidationResponse(command))
         }
+
+        Source source = sourceService.createSource(command.properties as Source, command.imageUploadBeans)
+
+        if (source.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(source))
+        }
+
+        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
     }
 
     def editSourceField() {
@@ -85,22 +82,6 @@ class SourceController {
             }
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
-        }
-    }
-
-    private processRequest(SourceCommand command, Source source, Closure<Source> action) {
-        if (command.validate()) {
-            if (source) {
-                if (!action(source).hasErrors()) {
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
-                } else {
-                    render ajaxResponseService.renderValidationResponse(source)
-                }
-            } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SOURCE_FOUND)
-            }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 }
