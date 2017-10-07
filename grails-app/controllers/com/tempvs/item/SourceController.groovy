@@ -57,12 +57,16 @@ class SourceController {
     }
 
     def createSource(SourceCommand command) {
-        Closure sourceClosure = {
-            command.properties as Source
-        }
+        if (command.validate()) {
+            Source source = sourceService.createSource(command.properties as Source, command.imageUploadBeans)
 
-        processRequest(command, sourceClosure) { Source source ->
-            sourceService.createSource(source, command.imageUploadBeans)
+            if (!source.hasErrors()) {
+                render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
+            } else {
+                render ajaxResponseService.renderValidationResponse(source)
+            }
+        } else {
+            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 
@@ -84,10 +88,8 @@ class SourceController {
         }
     }
 
-    private processRequest(SourceCommand command, Closure<Source> sourceClosure, Closure<Source> action) {
+    private processRequest(SourceCommand command, Source source, Closure<Source> action) {
         if (command.validate()) {
-            Source source = sourceClosure()
-
             if (source) {
                 if (!action(source).hasErrors()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
