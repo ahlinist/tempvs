@@ -52,7 +52,7 @@
       <div class="row">
         <tempvs:ajaxForm action="addItemImages">
           <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="item.image.label" infoLabel="item.imageInfo.label"/>
-          <input type="hidden" name="itemId" value="${itemId}"/>
+          <input type="hidden" name="item" value="${itemId}"/>
           <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
         </tempvs:ajaxForm>
       </div>

@@ -134,6 +134,7 @@ class ItemControllerSpec extends Specification {
         controller.createGroup(itemGroupCommand)
 
         then:
+        1 * itemGroupCommand.getProperty(PROPERTIES) >> [:]
         1 * itemGroupCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -151,7 +152,6 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemGroupCommand.validate() >> Boolean.TRUE
         1 * itemGroupCommand.getProperty(PROPERTIES) >> parameters
-        1 * userService.currentUser >> user
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(_ as ItemGroup) >> json
@@ -171,7 +171,6 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemGroupCommand.validate() >> Boolean.TRUE
         1 * itemGroupCommand.getProperty(PROPERTIES) >> properties
-        1 * userService.currentUser >> user
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseService.renderRedirect("${ITEM_STASH_URI}/${ONE}") >> json
@@ -240,6 +239,7 @@ class ItemControllerSpec extends Specification {
         controller.createItem(itemCommand)
 
         then:
+        1 * itemCommand.getProperty(PROPERTIES) >> [:]
         1 * itemCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseService.renderValidationResponse(itemCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -258,7 +258,6 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.getProperty(PROPERTIES) >> properties
-        1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
         1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
         1 * item.hasErrors() >> Boolean.TRUE
@@ -282,7 +281,6 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemCommand.getProperty(PROPERTIES) >> properties
         1 * itemCommand.validate() >> Boolean.TRUE
-        1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
         1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
         1 * item.hasErrors() >> Boolean.FALSE
@@ -302,10 +300,9 @@ class ItemControllerSpec extends Specification {
         controller.addItemImages(itemImageUploadCommand)
 
         then:
-        1 * itemService.getItem(ONE) >> item
+        1 * itemImageUploadCommand.item >> item
         1 * itemImageUploadCommand.validate() >> Boolean.TRUE
         1 * item.hasErrors() >> Boolean.FALSE
-        1 * item.asType(Item) >> item
         1 * itemImageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * itemService.updateItem(item,  [imageUploadBean]) >> item
         1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json

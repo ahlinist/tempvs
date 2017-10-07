@@ -58,13 +58,10 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
-        Closure itemGroupClosure = {
-            Map properties = command.properties + [user: userService.currentUser]
-            properties as ItemGroup
-        }
+        ItemGroup itemGroup = command.properties as ItemGroup
 
-        processRequest(command, itemGroupClosure) { object ->
-            itemService.createGroup(object as ItemGroup)
+        processRequest(command, itemGroup) { object ->
+            itemService.createGroup(itemGroup)
         }
     }
 
@@ -86,23 +83,18 @@ class ItemController {
     }
 
     def createItem(ItemCommand command) {
-        Closure itemClosure = {
-            Map properties = command.properties + [itemGroup: itemService.getGroup(params.groupId)]
-            properties as Item
-        }
+        Item item = command.properties as Item
 
-        processRequest(command, itemClosure) { object ->
-            itemService.updateItem(object as Item, command.imageUploadBeans)
+        processRequest(command, item) { object ->
+            itemService.updateItem(item, command.imageUploadBeans)
         }
     }
 
     def addItemImages(ItemImageUploadCommand command) {
-        Closure itemClosure = {
-            itemService.getItem(params.itemId)
-        }
+        Item item = command.item
 
-        processRequest(command, itemClosure) { object ->
-            itemService.updateItem(object as Item, command.imageUploadBeans)
+        processRequest(command, item) { object ->
+            itemService.updateItem(item, command.imageUploadBeans)
         }
     }
 
@@ -223,10 +215,8 @@ class ItemController {
         }
     }
 
-    private processRequest(Validateable command, Closure<? extends BasePersistent> objectClosure, Closure<? extends BasePersistent> action) {
+    private processRequest(Validateable command, BasePersistent object, Closure<? extends BasePersistent> action) {
         if (command.validate()) {
-            BasePersistent object = objectClosure()
-
             if (object) {
                 if (!action(object).hasErrors()) {
                     render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
