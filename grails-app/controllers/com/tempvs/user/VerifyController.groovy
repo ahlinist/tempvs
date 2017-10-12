@@ -46,10 +46,10 @@ class VerifyController {
 
                 emailVerification.delete(flush: true)
             } else {
-                error([message: NO_VERIFICATION_CODE])
+                error([notFoundMessage: NO_VERIFICATION_CODE])
             }
         } else {
-            error([message: NO_VERIFICATION_CODE])
+            error([notFoundMessage: NO_VERIFICATION_CODE])
         }
     }
 
@@ -70,7 +70,7 @@ class VerifyController {
                 redirect controller: 'user', action: 'edit'
             }
         } else {
-            error([message: EMAIL_UPDATE_FAILED])
+            error([notFoundMessage: EMAIL_UPDATE_FAILED])
         }
     }
 
@@ -86,7 +86,7 @@ class VerifyController {
             }
         }
 
-        error([message: PROFILE_EMAIL_UPDATE_FAILED])
+        error([notFoundMessage: PROFILE_EMAIL_UPDATE_FAILED])
     }
 
     private error(Map model) {

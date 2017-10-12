@@ -33,7 +33,7 @@ class VerifyViewSpec extends Specification {
     void "Test /verify/error"() {
         given:
         String title = '<title>Tempvs - Email verification error</title>'
-        Map model = [message: MESSAGE]
+        Map model = [notFoundMessage: MESSAGE]
 
         when:
         String result = render view: '/verify/error', model: model

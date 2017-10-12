@@ -4,7 +4,7 @@ import com.tempvs.domain.ObjectDAOService
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
-import org.codehaus.groovy.runtime.InvokerHelper
+import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
@@ -44,16 +44,20 @@ class UserService {
         User.findByEmail(email)
     }
 
-    User register(Map properties) {
-        properties.userProfile = properties as UserProfile
-        properties.password = springSecurityService.encodePassword(properties.password as String)
-        User user = properties as User
+    User register(User user) {
+        String password = user.password
+
+        if (password) {
+            user.password = springSecurityService.encodePassword(password)
+        }
+
         objectDAOService.save(user)
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#user.email == authentication.name')
     User editUserField(User user, String fieldName, Object fieldValue) {
-        InvokerHelper.setProperties(user, ["${fieldName}": fieldValue])
+        user."${fieldName}" = fieldValue
         objectDAOService.save(user)
     }
 

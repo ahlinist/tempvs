@@ -17,6 +17,7 @@ import spock.lang.Specification
 class ItemServiceSpec extends Specification {
 
     private static final String ID = 'id'
+    private static final String NAME = 'name'
     private static final String IMAGES = 'images'
     private static final String ITEM_COLLECTION = 'item'
     private static final String FIELD_NAME = 'fieldName'
@@ -80,9 +81,10 @@ class ItemServiceSpec extends Specification {
 
     void "Test editItemGroupField()"() {
         when:
-        def result = service.editItemGroupField(itemGroup, FIELD_NAME, FIELD_VALUE)
+        def result = service.editItemGroupField(itemGroup, NAME, FIELD_VALUE)
 
         then:
+        1 * itemGroup.setName(FIELD_VALUE)
         1 * objectDAOService.save(itemGroup) >> itemGroup
         0 * _
 
@@ -144,10 +146,12 @@ class ItemServiceSpec extends Specification {
 
     void "Test editItemField()"() {
         when:
-        def result = service.editItemField(item, FIELD_NAME, FIELD_VALUE)
+        def result = service.editItemField(item, NAME, FIELD_VALUE)
 
         then:
+        1 * item.setName(FIELD_VALUE)
         1 * objectDAOService.save(item) >> item
+        0 * _
 
         and:
         result == item

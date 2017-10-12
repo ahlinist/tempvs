@@ -1,7 +1,6 @@
 package com.tempvs.user
 
 import com.tempvs.domain.ObjectDAOService
-import com.tempvs.tests.utils.TestingUtils
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.test.mixin.TestFor
@@ -17,7 +16,6 @@ class UserServiceSpec extends Specification {
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
-    private static final String FIELD_NAME = 'fieldName'
     private static final String FIELD_VALUE = 'fieldValue'
 
     def user = Mock User
@@ -112,9 +110,10 @@ class UserServiceSpec extends Specification {
 
     void "Test editUserField()"() {
         when:
-        def result = service.editUserField(user, FIELD_NAME, FIELD_VALUE)
+        def result = service.editUserField(user, EMAIL, FIELD_VALUE)
 
         then:
+        1 * user.setEmail(FIELD_VALUE)
         1 * objectDAOService.save(user) >> user
         0 * _
 
@@ -124,22 +123,14 @@ class UserServiceSpec extends Specification {
 
     void "Test register()"() {
         given:
-        Map properties = [
-                email: TestingUtils.EMAIL,
-                firstName: TestingUtils.FIRST_NAME,
-                lastName: TestingUtils.LAST_NAME,
-                password: TestingUtils.PASSWORD,
-                user: user,
-                userProfile: userProfile,
-        ]
 
         when:
-        def result = service.register(properties)
+        def result = service.register(user)
 
         then:
-        1 * springSecurityService.encodePassword(TestingUtils.PASSWORD) >> PASSWORD
-        1 * new UserProfile(_) >> userProfile
-        1 * new User(_) >> user
+        1 * user.password >> PASSWORD
+        1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
+        1 * user.setPassword(PASSWORD)
         1 * objectDAOService.save(user) >> user
         0 * _
 

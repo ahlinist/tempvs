@@ -9,8 +9,8 @@
         <div class="col-sm-1">
         </div>
         <div class="col-sm-8">
-          <g:if test="${message}">
-            <div class="alert alert-danger"><g:message code="${message}"/></div>
+          <g:if test="${notFoundMessage}">
+            <div class="alert alert-danger"><g:message code="${notFoundMessage}"/></div>
           </g:if>
         </div>
         <div class="col-sm-3">

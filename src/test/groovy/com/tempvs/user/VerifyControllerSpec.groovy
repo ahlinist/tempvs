@@ -52,7 +52,7 @@ class VerifyControllerSpec extends Specification {
 
         then:
         controller.modelAndView.viewName == ERROR_PAGE_URI
-        controller.modelAndView.model == [message: NO_VERIFICATION_CODE]
+        controller.modelAndView.model == [notFoundMessage: NO_VERIFICATION_CODE]
 
         when:
         params.id = ID
@@ -64,7 +64,7 @@ class VerifyControllerSpec extends Specification {
 
         and:
         controller.modelAndView.viewName == ERROR_PAGE_URI
-        controller.modelAndView.model == [message: NO_VERIFICATION_CODE]
+        controller.modelAndView.model == [notFoundMessage: NO_VERIFICATION_CODE]
     }
 
     void "Check successful registration verification"() {
@@ -90,7 +90,7 @@ class VerifyControllerSpec extends Specification {
 
         then:
         controller.modelAndView.viewName == ERROR_PAGE_URI
-        controller.modelAndView.model == [message: NO_VERIFICATION_CODE]
+        controller.modelAndView.model == [notFoundMessage: NO_VERIFICATION_CODE]
 
         when:
         params.id = ID
@@ -119,7 +119,7 @@ class VerifyControllerSpec extends Specification {
 
         then:
         controller.modelAndView.viewName == ERROR_PAGE_URI
-        controller.modelAndView.model == [message: NO_VERIFICATION_CODE]
+        controller.modelAndView.model == [notFoundMessage: NO_VERIFICATION_CODE]
 
         when:
         params.id = ID
@@ -148,7 +148,7 @@ class VerifyControllerSpec extends Specification {
 
         then:
         controller.modelAndView.viewName == ERROR_PAGE_URI
-        controller.modelAndView.model == [message: NO_VERIFICATION_CODE]
+        controller.modelAndView.model == [notFoundMessage: NO_VERIFICATION_CODE]
 
         when:
         params.id = ID

@@ -6,7 +6,7 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
-import org.codehaus.groovy.runtime.InvokerHelper
+import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
@@ -39,21 +39,19 @@ class ProfileService {
         profile.delete()
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#profile.user.email == authentication.name')
     BaseProfile editProfileField(BaseProfile profile, String fieldName, String fieldValue) {
-        Map properties
-
         if (fieldName == 'period') {
             try {
-                properties = [period: Period.valueOf(fieldValue), source: null]
+                profile.period = Period.valueOf(fieldValue)
             } catch (IllegalArgumentException exception) {
-                properties = [period: null]
+                profile.period = null
             }
         } else {
-            properties = ["${fieldName}": fieldValue]
+            profile."${fieldName}" = fieldValue
         }
 
-        InvokerHelper.setProperties(profile, properties)
         objectDAOService.save(profile)
     }
 

@@ -7,7 +7,7 @@ import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
-import org.codehaus.groovy.runtime.InvokerHelper
+import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -37,9 +37,10 @@ class ItemService {
         objectDAOService.save(itemGroup)
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#itemGroup.user.email == authentication.name')
     ItemGroup editItemGroupField(ItemGroup itemGroup, String fieldName, String fieldValue) {
-        InvokerHelper.setProperties(itemGroup, ["${fieldName}": fieldValue])
+        itemGroup."${fieldName}" = fieldValue
         objectDAOService.save(itemGroup)
     }
 
@@ -70,23 +71,23 @@ class ItemService {
         objectDAOService.save(item)
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item editItemField(Item item, String fieldName, String fieldValue) {
-        Map properties
-
         if (fieldName == 'source') {
-            properties = [source: sourceService.getSource(fieldValue)]
+            item.source = sourceService.getSource(fieldValue)
         } else if (fieldName == 'period') {
             try {
-                properties = [period: Period.valueOf(fieldValue), source: null]
+                item.period = Period.valueOf(fieldValue)
+                item.source = null
             } catch (IllegalArgumentException exception) {
-                properties = [period: null]
+                item.period = null
+                item.source = null
             }
         } else {
-            properties = ["${fieldName}": fieldValue]
+            item."${fieldName}" = fieldValue
         }
 
-        InvokerHelper.setProperties(item, properties)
         objectDAOService.save(item)
     }
 

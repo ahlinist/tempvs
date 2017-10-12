@@ -17,7 +17,7 @@ import spock.lang.Specification
 class SourceServiceSpec extends Specification {
 
     private static final String ID = 'id'
-    private static final String FIELD_NAME = 'fieldName'
+    private static final String NAME = 'name'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SOURCE_COLLECTION = 'source'
 
@@ -67,9 +67,10 @@ class SourceServiceSpec extends Specification {
 
     void "Test editSourceField()"() {
         when:
-        def result = service.editSourceField(source, FIELD_NAME, FIELD_VALUE)
+        def result = service.editSourceField(source, NAME, FIELD_VALUE)
 
         then:
+        1 * source.setName(FIELD_VALUE)
         1 * objectDAOService.save(source) >> source
         0 * _
 

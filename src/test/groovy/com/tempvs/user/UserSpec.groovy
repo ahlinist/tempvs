@@ -4,13 +4,12 @@ import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 import static com.tempvs.tests.utils.TestingUtils.DEFAULT_USER_PROPS
+
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
 @TestFor(User)
 class UserSpec extends Specification {
-
-    private static final String INVALID_EMAIL = 'test-email.com'
 
     def userProfile = Mock(UserProfile)
 
@@ -22,7 +21,9 @@ class UserSpec extends Specification {
 
     def setup() {
         Map params = DEFAULT_USER_PROPS.clone()
-        user = new User(params + [userService: userService, userProfile: userProfile])
+        user = new User(params)
+        user.userService = userService
+        user.userProfile = userProfile
     }
 
     def cleanup() {

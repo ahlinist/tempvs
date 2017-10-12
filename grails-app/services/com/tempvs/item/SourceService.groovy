@@ -6,7 +6,7 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
-import org.codehaus.groovy.runtime.InvokerHelper
+import groovy.transform.TypeCheckingMode
 
 /**
  * Service that manages operations with {@link com.tempvs.item.Source}
@@ -27,8 +27,9 @@ class SourceService {
         Source.findAllByPeriod(period)
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Source editSourceField(Source source, String fieldName, String fieldValue) {
-        InvokerHelper.setProperties(source, ["${fieldName}": fieldValue])
+        source."${fieldName}" = fieldValue
         objectDAOService.save(source)
     }
 

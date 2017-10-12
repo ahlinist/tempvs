@@ -19,9 +19,7 @@ class UserControllerSpec extends Specification {
     private static final String EMAIL = 'email'
     private static final String POST_METHOD = 'POST'
     private static final String PASSWORD = 'password'
-    private static final String PROPERTIES = 'properties'
     private static final String NEW_PASSWORD = 'newPassword'
-    private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String PROFILE_PAGE_URI = '/profile'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
@@ -35,7 +33,6 @@ class UserControllerSpec extends Specification {
     def clubProfile = Mock ClubProfile
     def userService = Mock UserService
     def verifyService = Mock VerifyService
-    def registerCommand = Mock RegisterCommand
     def emailVerification = Mock EmailVerification
     def ajaxResponseService = Mock AjaxResponseService
     def userPasswordCommand = Mock UserPasswordCommand
@@ -158,33 +155,21 @@ class UserControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test register() against invalid command"() {
+    void "Test register() against invalid user"() {
         given:
         request.method = POST_METHOD
+        params.password = PASSWORD
+        params.repeatedPassword = PASSWORD
+        controller.session.email = EMAIL
 
         when:
-        controller.register(registerCommand)
+        controller.register(user)
 
         then:
-        1 * registerCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(registerCommand) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test register() against valid command but invalid user"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.register(registerCommand)
-
-        then:
-        1 * registerCommand.validate() >> Boolean.TRUE
-        1 * registerCommand.getProperty(PROPERTIES) >> [:]
-        1 * userService.register(_ as Map) >> user
+        1 * user.setEmail(EMAIL)
+        1 * userService.register(user) >> user
         1 * user.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.renderValidationResponse(_ as User) >> json
+        1 * ajaxResponseService.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -192,15 +177,16 @@ class UserControllerSpec extends Specification {
     void "Test register()"() {
         given:
         request.method = POST_METHOD
+        params.password = PASSWORD
+        params.repeatedPassword = PASSWORD
         controller.session.email = EMAIL
 
         when:
-        controller.register(registerCommand)
+        controller.register(user)
 
         then:
-        1 * registerCommand.validate() >> Boolean.TRUE
-        1 * registerCommand.getProperty(PROPERTIES) >> [:]
-        1 * userService.register(_ as Map) >> user
+        1 * user.setEmail(EMAIL)
+        1 * userService.register(user) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(EMAIL)
         1 * ajaxResponseService.renderRedirect(PROFILE_PAGE_URI) >> json

@@ -16,7 +16,7 @@ import spock.lang.Specification
 class ProfileServiceSpec extends Specification {
 
     private static final String ONE = '1'
-    private static final String FIELD_NAME = 'fieldName'
+    private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String AVATAR_COLLECTION = 'avatar'
 
@@ -93,9 +93,10 @@ class ProfileServiceSpec extends Specification {
 
     void "Test editProfileField()"() {
         when:
-        def result = service.editProfileField(userProfile, FIELD_NAME, FIELD_VALUE)
+        def result = service.editProfileField(userProfile, FIRST_NAME, FIELD_VALUE)
 
         then:
+        1 * userProfile.setFirstName(FIELD_VALUE)
         1 * objectDAOService.save(userProfile) >> userProfile
         0 * _
 
