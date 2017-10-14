@@ -167,7 +167,12 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * user.setEmail(EMAIL)
-        1 * userService.register(user) >> user
+        1 * user.userProfile >> userProfile
+        1 * userProfile.setUser(user)
+        1 * user.password >> PASSWORD
+        1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
+        1 * user.setPassword(PASSWORD)
+        1 * user.validate() >> Boolean.FALSE
         1 * user.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -186,6 +191,12 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * user.setEmail(EMAIL)
+        1 * user.userProfile >> userProfile
+        1 * userProfile.setUser(user)
+        1 * user.password >> PASSWORD
+        1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
+        1 * user.setPassword(PASSWORD)
+        1 * user.validate() >> Boolean.FALSE
         1 * userService.register(user) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(EMAIL)

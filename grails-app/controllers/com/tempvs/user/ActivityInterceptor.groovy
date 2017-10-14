@@ -21,7 +21,7 @@ class ActivityInterceptor {
                 excludes(controller: 'image')
     }
 
-    boolean after() {
+    boolean before() {
         if (springSecurityService.loggedIn) {
             User user = userService.currentUser
 

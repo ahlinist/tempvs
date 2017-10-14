@@ -128,9 +128,6 @@ class UserServiceSpec extends Specification {
         def result = service.register(user)
 
         then:
-        1 * user.password >> PASSWORD
-        1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
-        1 * user.setPassword(PASSWORD)
         1 * objectDAOService.save(user) >> user
         0 * _
 

@@ -83,9 +83,9 @@ class ActivityInterceptorSpec extends Specification {
         IMAGE       | 'get'
     }
 
-    void "Test after()"() {
+    void "Test before()"() {
         when:
-        Boolean result = interceptor.after()
+        Boolean result = interceptor.before()
 
         then:
         1 * springSecurityService.loggedIn >> Boolean.TRUE

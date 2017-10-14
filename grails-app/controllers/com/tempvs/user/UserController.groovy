@@ -95,20 +95,26 @@ class UserController {
 
         String email = session.getAttribute(EMAIL)
         user.email = email
+        user.userProfile.user = user
+        String password = user.password
 
-        user = userService.register(user)
+        if (password) {
+            user.password = springSecurityService.encodePassword(password)
+        }
+
+        user.validate()
 
         if (!params.repeatedPassword) {
             user.errors.rejectValue(PASSWORD, REPEATED_PASSWORD_BLANK)
-        }
-
-        if (params.password != params.repeatedPassword) {
+        } else if (params.password != params.repeatedPassword) {
             user.errors.rejectValue(PASSWORD, PASSWORD_DOESNOT_MATCH)
         }
 
         if (user.hasErrors()) {
             return render(ajaxResponseService.renderValidationResponse(user))
         }
+
+        userService.register(user)
 
         springSecurityService.reauthenticate(email)
         session.setAttribute(EMAIL, null)

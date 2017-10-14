@@ -45,12 +45,6 @@ class UserService {
     }
 
     User register(User user) {
-        String password = user.password
-
-        if (password) {
-            user.password = springSecurityService.encodePassword(password)
-        }
-
         objectDAOService.save(user)
     }
 
