@@ -8,8 +8,11 @@ function waitForClickOut(fieldName, fieldType) {
     var inputSelector = '#' + fieldName + '-input';
     var textField = document.querySelector(textSelector);
     var inputField = document.querySelector(inputSelector);
+    var spinner = createSpinner();
 
     function successFieldUpdate(element, response) {
+        textField.getElementsByClassName('ajaxSpinner')[0].remove();
+
         if (!response.success) {
             var field = document.querySelector(textSelector);
             field.classList.add('popped-over', 'bg-danger');
@@ -48,8 +51,10 @@ function waitForClickOut(fieldName, fieldType) {
                     var select = document.querySelector(inputSelector + ' > select');
                     textField.innerHTML = select.options[select.selectedIndex].innerHTML + ' ';
                 } else {
-                    textField.innerHTML = document.querySelector(inputSelector + ' > input').value + '&#8203;';
+                    textField.innerHTML = document.querySelector(inputSelector + ' > input').value + '&#8203; ';
                 }
+
+                textField.appendChild(spinner);
             }
         } 
     }
@@ -62,4 +67,11 @@ function createGlyph(type, color) {
     span.classList.add('glyphicon', 'glyphicon-' + type);
     span.style.color = color;
     return span;
+}
+
+function createSpinner() {
+    var img = document.createElement('img');
+    img.classList.add('ajaxSpinner');
+    img.src = '/assets/spinner.gif'
+    return img;
 }
