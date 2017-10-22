@@ -19,6 +19,7 @@ class UserControllerSpec extends Specification {
     private static final String EMAIL = 'email'
     private static final String POST_METHOD = 'POST'
     private static final String PASSWORD = 'password'
+    private static final String PROPERTIES = 'properties'
     private static final String NEW_PASSWORD = 'newPassword'
     private static final String PROFILE_PAGE_URI = '/profile'
     private static final String EMAIL_USED = 'user.email.used'
@@ -36,6 +37,7 @@ class UserControllerSpec extends Specification {
     def emailVerification = Mock EmailVerification
     def ajaxResponseService = Mock AjaxResponseService
     def userPasswordCommand = Mock UserPasswordCommand
+    def registrationCommand = Mock RegistrationCommand
     def springSecurityService = Mock SpringSecurityService
 
     def setup() {
@@ -163,16 +165,16 @@ class UserControllerSpec extends Specification {
         controller.session.email = EMAIL
 
         when:
-        controller.register(user)
+        controller.register(registrationCommand)
 
         then:
-        1 * user.setEmail(EMAIL)
-        1 * user.userProfile >> userProfile
-        1 * userProfile.setUser(user)
-        1 * user.password >> PASSWORD
+        1 * registrationCommand.validate() >> Boolean.TRUE
+        1 * registrationCommand.getProperty(PROPERTIES) >> [:]
+        1 * registrationCommand.emailVerification >> emailVerification
+        1 * emailVerification.email >> EMAIL
+        1 * registrationCommand.password >> PASSWORD
         1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
-        1 * user.setPassword(PASSWORD)
-        1 * user.validate() >> Boolean.FALSE
+        1 * userService.register(_ as User, _ as UserProfile) >> user
         1 * user.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -187,19 +189,19 @@ class UserControllerSpec extends Specification {
         controller.session.email = EMAIL
 
         when:
-        controller.register(user)
+        controller.register(registrationCommand)
 
         then:
-        1 * user.setEmail(EMAIL)
-        1 * user.userProfile >> userProfile
-        1 * userProfile.setUser(user)
-        1 * user.password >> PASSWORD
+        1 * registrationCommand.validate() >> Boolean.TRUE
+        1 * registrationCommand.getProperty(PROPERTIES) >> [:]
+        1 * registrationCommand.emailVerification >> emailVerification
+        1 * emailVerification.email >> EMAIL
+        1 * registrationCommand.password >> PASSWORD
         1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
-        1 * user.setPassword(PASSWORD)
-        1 * user.validate() >> Boolean.FALSE
-        1 * userService.register(user) >> user
+        1 * userService.register(_ as User, _ as UserProfile) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(EMAIL)
+        1 * emailVerification.delete([flush: Boolean.TRUE])
         1 * ajaxResponseService.renderRedirect(PROFILE_PAGE_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

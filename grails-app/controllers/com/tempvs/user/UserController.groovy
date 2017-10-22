@@ -11,15 +11,11 @@ import grails.web.mapping.LinkGenerator
 @GrailsCompileStatic
 class UserController {
 
-    private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String EMAIL_EMPTY = 'user.email.empty'
-    private static final String REPEATED_PASSWORD = 'repeatedPassword'
     private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
-    private static final String PASSWORD_DOESNOT_MATCH = 'user.password.doesnotmatch.message'
-    private static final String REPEATED_PASSWORD_BLANK = 'user.repeatedPassword.blank.message'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
 
@@ -91,33 +87,24 @@ class UserController {
         }
     }
 
-    def register(User user) {
-
-        String email = session.getAttribute(EMAIL)
-        user.email = email
-        user.userProfile.user = user
-        String password = user.password
-
-        if (password) {
-            user.password = springSecurityService.encodePassword(password)
+    def register(RegistrationCommand command) {
+        if (!command.validate()) {
+            return render(ajaxResponseService.renderValidationResponse(command))
         }
 
-        user.validate()
-
-        if (!params.repeatedPassword) {
-            user.errors.rejectValue(PASSWORD, REPEATED_PASSWORD_BLANK)
-        } else if (params.password != params.repeatedPassword) {
-            user.errors.rejectValue(PASSWORD, PASSWORD_DOESNOT_MATCH)
-        }
+        EmailVerification emailVerification = command.emailVerification
+        String email = emailVerification.email
+        Map properties = command.properties
+        properties.email = email
+        properties.password = springSecurityService.encodePassword(command.password)
+        User user = userService.register(properties as User, properties as UserProfile)
 
         if (user.hasErrors()) {
             return render(ajaxResponseService.renderValidationResponse(user))
         }
 
-        userService.register(user)
-
         springSecurityService.reauthenticate(email)
-        session.setAttribute(EMAIL, null)
+        emailVerification.delete(flush: true)
         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
     }
 }

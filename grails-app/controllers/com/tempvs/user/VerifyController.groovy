@@ -35,16 +35,17 @@ class VerifyController {
                         break
                     case 'email':
                         email(emailVerification)
+                        emailVerification.delete(flush: true)
                         break
                     case UserProfile.simpleName.uncapitalize():
                         profileEmail(UserProfile, emailVerification)
+                        emailVerification.delete(flush: true)
                         break
                     case ClubProfile.simpleName.uncapitalize():
                         profileEmail(ClubProfile, emailVerification)
+                        emailVerification.delete(flush: true)
                         break
                 }
-
-                emailVerification.delete(flush: true)
             } else {
                 error([notFoundMessage: NO_VERIFICATION_CODE])
             }
@@ -54,9 +55,7 @@ class VerifyController {
     }
 
     private registration(EmailVerification emailVerification) {
-        String email = emailVerification.email
-        session.setAttribute(EMAIL, email)
-        render view: 'registration', model: [email: email]
+        render view: 'registration', model: [emailVerification: emailVerification]
     }
 
     private email(EmailVerification emailVerification) {

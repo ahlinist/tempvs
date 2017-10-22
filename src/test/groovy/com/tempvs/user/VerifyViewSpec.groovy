@@ -7,7 +7,12 @@ import spock.lang.Specification
 @TestMixin(GroovyPageUnitTestMixin)
 class VerifyViewSpec extends Specification {
 
+    private static final String ID = 'id'
+    private static final Long LONG_ID = 1L
+    private static final String EMAIL = 'email'
     private static final String MESSAGE = 'message'
+
+    def emailVerification = Mock EmailVerification
 
     def setup() {
 
@@ -23,9 +28,14 @@ class VerifyViewSpec extends Specification {
         String registerForm = '<tempvs:ajaxForm controller="user" action="register">'
 
         when:
-        String result = render view: '/verify/registration'
+        String result = render view: '/verify/registration', model: [emailVerification: emailVerification]
 
         then:
+        1 * emailVerification.getProperty(EMAIL) >> EMAIL
+        1 * emailVerification.getProperty(ID) >> LONG_ID
+        0 * _
+
+        and:
         result.contains title
         result.contains registerForm
     }

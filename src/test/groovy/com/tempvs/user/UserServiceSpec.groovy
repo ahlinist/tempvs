@@ -122,12 +122,11 @@ class UserServiceSpec extends Specification {
     }
 
     void "Test register()"() {
-        given:
-
         when:
-        def result = service.register(user)
+        def result = service.register(user, userProfile)
 
         then:
+        1 * user.setUserProfile(userProfile)
         1 * objectDAOService.save(user) >> user
         0 * _
 

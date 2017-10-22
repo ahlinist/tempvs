@@ -75,13 +75,11 @@ class VerifyControllerSpec extends Specification {
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
         1 * emailVerification.getAction() >> REGISTRATION
-        1 * emailVerification.getEmail() >> EMAIL
-        1 * emailVerification.delete([flush: Boolean.TRUE])
         0 * _
 
         and:
         controller.modelAndView.viewName == REGISTRATION_PAGE_URI
-        controller.modelAndView.model == [email: EMAIL]
+        controller.modelAndView.model == [emailVerification: emailVerification]
     }
 
     void "Check email update verification"() {

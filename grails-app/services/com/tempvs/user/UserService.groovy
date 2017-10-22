@@ -44,7 +44,8 @@ class UserService {
         User.findByEmail(email)
     }
 
-    User register(User user) {
+    User register(User user, UserProfile userProfile) {
+        user.userProfile = userProfile
         objectDAOService.save(user)
     }
 
