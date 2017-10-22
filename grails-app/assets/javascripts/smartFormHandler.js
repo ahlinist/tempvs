@@ -72,6 +72,6 @@ function createGlyph(type, color) {
 function createSpinner() {
     var img = document.createElement('img');
     img.classList.add('ajaxSpinner');
-    img.src = '/assets/spinner.gif'
+    img.src = '/assets/spinner.gif';
     return img;
 }
