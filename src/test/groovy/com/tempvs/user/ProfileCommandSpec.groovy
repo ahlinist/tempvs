@@ -13,6 +13,7 @@ import spock.lang.Specification
  */
 @TestFor(UserController)
 class ProfileCommandSpec extends Specification {
+
     private static final String FIRST_NAME = 'firstName'
     private static final String LAST_NAME = 'lastName'
     private static final String NICK_NAME = 'nickName'

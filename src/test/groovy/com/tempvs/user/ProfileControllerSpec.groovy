@@ -29,7 +29,6 @@ class ProfileControllerSpec extends Specification {
     private static final String PROPERTIES = 'properties'
     private static final String IDENTIFIER = 'identifier'
     private static final String FIELD_VALUE = 'fieldValue'
-    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String PROFILE_URL = '/profile/index'
     private static final String EMAIL_USED = 'user.email.used'
     private static final String DIFFERENT_EMAIL = 'differentEmail'
@@ -53,7 +52,6 @@ class ProfileControllerSpec extends Specification {
     def imageUploadBean = Mock ImageUploadBean
     def emailVerification = Mock EmailVerification
     def clubProfileCommand = Mock ClubProfileCommand
-    def userProfileCommand = Mock UserProfileCommand
     def ajaxResponseService = Mock AjaxResponseService
 
     def setup() {
