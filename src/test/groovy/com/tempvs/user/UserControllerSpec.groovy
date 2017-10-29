@@ -56,12 +56,10 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * user.userProfile >> userProfile
-        1 * user.clubProfiles >> [clubProfile]
         0 * _
 
         and:
-        model == [user: user, userProfile: userProfile, clubProfiles: [clubProfile] as Set]
+        model == [user: user]
     }
 
     void "Test index()"() {

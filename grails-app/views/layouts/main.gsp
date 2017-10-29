@@ -19,7 +19,7 @@
     <div class="row">
       <header>
         <sec:ifLoggedIn>
-          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.button')}">
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.tooltip')}">
             <g:link class="btn btn-secondary disableable" controller="profile">
               <span class="glyphicon glyphicon-user"></span>
             </g:link>
@@ -44,12 +44,17 @@
               </g:each>
             </ul>
           </span>
-          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.button')}">
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.list.tooltip')}">
+            <g:link class="btn btn-secondary disableable" controller="profile" action="list">
+              <span class="fa fa-users"></span>
+            </g:link>
+          </span>
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">
             <g:link class="btn btn-secondary disableable" controller="item" action="stash">
               <span class="glyphicon glyphicon-tent"></span>
             </g:link>
           </span>
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.button')}">
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.tooltip')}">
             <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
               <span class="glyphicon glyphicon-log-out"></span>
             </g:link>

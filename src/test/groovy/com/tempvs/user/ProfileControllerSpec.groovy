@@ -21,9 +21,10 @@ class ProfileControllerSpec extends Specification {
     private static final String ONE = '1'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
+    private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
-    private static final String FIRST_NAME = 'firstName'
     private static final String DELETE_METHOD = 'DELETE'
+    private static final String FIRST_NAME = 'firstName'
     private static final String AUTH_URL = '/auth/index'
     private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
@@ -313,5 +314,22 @@ class ProfileControllerSpec extends Specification {
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+    }
+
+    void "Test list()"() {
+        given:
+        request.method = GET_METHOD
+        Set clubProfiles = [clubProfile]
+
+        when:
+        def result = controller.list()
+
+        then:
+        1 * userService.currentUser >> user
+        1 * user.userProfile >> userProfile
+        1 * user.clubProfiles >> clubProfiles
+        0 * _
+
+        result == [userProfile: userProfile, clubProfiles: clubProfiles]
     }
 }

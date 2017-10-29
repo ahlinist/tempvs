@@ -108,4 +108,20 @@ class ProfileViewSpec extends Specification {
         and:
         result.contains avatar
     }
+
+    void "Test /profile/list view"() {
+        given:
+        Map model = [userProfile: userProfile, clubProfiles: [clubProfile]]
+        String createProfileButton = '<tempvs:modalButton id="createProfile"'
+
+        when:
+        String result = render view: '/profile/list', model: model
+
+        then:
+        1 * userProfile.getProperty(ID) >> ID
+        2 * clubProfile.getProperty(ID) >> ID
+
+        and:
+        result.contains createProfileButton
+    }
 }

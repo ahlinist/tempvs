@@ -157,6 +157,11 @@ class ProfileController {
         }
     }
 
+    def list() {
+        User user = userService.currentUser
+        [userProfile: user.userProfile, clubProfiles: user.clubProfiles]
+    }
+
     def accessDeniedThrown(AccessDeniedException exception) {
         if (request.xhr) {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
