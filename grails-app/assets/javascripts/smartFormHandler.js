@@ -55,7 +55,8 @@ function waitForClickOut(fieldName, fieldType) {
                     var select = document.querySelector(inputSelector + ' > select');
                     textField.innerHTML = select.options[select.selectedIndex].innerHTML + ' ';
                 } else {
-                    textField.innerHTML = document.querySelector(inputSelector + ' > input').value + '&#8203; ';
+                    var fieldValue = document.querySelector(inputSelector + ' > input').value
+                    textField.innerHTML = fieldValue ? fieldValue : '- ';
                 }
 
                 textField.appendChild(spinner);
