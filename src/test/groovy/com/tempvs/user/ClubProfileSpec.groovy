@@ -16,15 +16,15 @@ class ClubProfileSpec extends Specification {
 
     def user = Mock(User)
 
-    def userService = Mock(UserService) {
-        isEmailUnique(_ as String) >> Boolean.TRUE
+    def profileService = Mock(ProfileService) {
+        isProfileEmailUnique(_ as BaseProfile, _ as String) >> Boolean.TRUE
     }
 
     ClubProfile clubProfile
 
     def setup() {
         Map params = DEFAULT_CLUB_PROFILE_PROPS.clone()
-        clubProfile = new ClubProfile(params + [user: user, userService: userService])
+        clubProfile = new ClubProfile(params + [user: user, profileService: profileService])
     }
 
     def cleanup() {

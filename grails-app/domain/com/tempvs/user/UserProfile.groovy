@@ -19,9 +19,9 @@ class UserProfile extends BaseProfile {
         location nullable: true
         avatar nullable: true
 
-        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, BaseProfile baseProfile ->
+        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, UserProfile profile ->
             if (profileEmail) {
-                baseProfile.userService?.isEmailUnique(profileEmail)
+                profile.profileService?.isProfileEmailUnique(profile, profileEmail)
             } else {
                 Boolean.TRUE
             }

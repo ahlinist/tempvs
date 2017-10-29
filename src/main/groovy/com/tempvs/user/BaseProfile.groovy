@@ -19,7 +19,7 @@ abstract class BaseProfile extends BasePersistent {
     String profileId
     Image avatar
     User user
-    protected UserService userService
+    protected ProfileService profileService
 
     String getIdentifier() {
         profileId ?: id as String
@@ -38,5 +38,5 @@ abstract class BaseProfile extends BasePersistent {
     }
 
     static belongsTo = [user: User]
-    static transients = ['userService']
+    static transients = ['profileService']
 }

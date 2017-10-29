@@ -16,15 +16,15 @@ class UserProfileSpec extends Specification {
 
     def user = Mock(User)
 
-    def userService = Mock(UserService) {
-        isEmailUnique(_ as String) >> Boolean.TRUE
+    def profileService = Mock(ProfileService) {
+        isProfileEmailUnique(_ as BaseProfile, _ as String) >> Boolean.TRUE
     }
 
     UserProfile userProfile
 
     def setup() {
         Map params = DEFAULT_USER_PROFILE_PROPS.clone()
-        userProfile = new UserProfile(params + [user: user, userService: userService])
+        userProfile = new UserProfile(params + [user: user, profileService: profileService])
     }
 
     def cleanup() {
@@ -64,12 +64,12 @@ class UserProfileSpec extends Specification {
 
     void "Test profileEmail uniqueness"() {
         given:
-        def userService = Mock(UserService) {
-            isEmailUnique(_ as String) >> Boolean.FALSE
+        def profileService = Mock(ProfileService) {
+            isProfileEmailUnique(_ as BaseProfile, _ as String) >> Boolean.FALSE
         }
 
         and:
-        userProfile.userService = userService
+        userProfile.profileService = profileService
 
         expect:
         !userProfile.validate()

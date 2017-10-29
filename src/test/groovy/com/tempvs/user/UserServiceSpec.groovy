@@ -21,13 +21,15 @@ class UserServiceSpec extends Specification {
     def user = Mock User
     def grailsUser = Mock GrailsUser
     def userProfile = Mock UserProfile
+    def clubProfile = Mock ClubProfile
+    def profileService = Mock ProfileService
     def objectDAOService = Mock ObjectDAOService
     def springSecurityService = Mock SpringSecurityService
 
     def setup() {
         GroovySpy(User, global: true)
-        GroovySpy(UserProfile, global: true)
 
+        service.profileService = profileService
         service.objectDAOService = objectDAOService
         service.springSecurityService = springSecurityService
     }
@@ -132,5 +134,20 @@ class UserServiceSpec extends Specification {
 
         and:
         result == user
+    }
+
+    void "Test isEmailUnique()"() {
+        when:
+        def result = service.isEmailUnique(EMAIL)
+
+        then:
+        1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
+        1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL) >> clubProfile
+        1 * clubProfile.user >> user
+        1 * user.email >> EMAIL
+        0 * _
+
+        and:
+        result == Boolean.TRUE
     }
 }

@@ -71,4 +71,20 @@ class ProfileService {
         profile.avatar = null
         objectDAOService.save(profile)
     }
+
+    Boolean isProfileEmailUnique(BaseProfile profile, String email) {
+        User user = userService.getUserByEmail(email)
+        Class persistedProfileClass = (profile instanceof UserProfile) ? ClubProfile : UserProfile
+        BaseProfile persistedProfile = getProfileByProfileEmail(persistedProfileClass, email)
+
+        if (user && profile.user != user) {
+            return Boolean.FALSE
+        }
+
+        if (persistedProfile && profile.user != persistedProfile.user) {
+            return Boolean.FALSE
+        }
+
+        return Boolean.TRUE
+    }
 }

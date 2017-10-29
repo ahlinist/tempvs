@@ -16,6 +16,7 @@ import spock.lang.Specification
 class ProfileServiceSpec extends Specification {
 
     private static final String ONE = '1'
+    private static final String EMAIL = 'email'
     private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String AVATAR_COLLECTION = 'avatar'
@@ -144,5 +145,34 @@ class ProfileServiceSpec extends Specification {
         1 * userProfile.setAvatar(null)
         1 * objectDAOService.save(userProfile) >> userProfile
         0 * _
+    }
+
+    void "Test isProfileEmailUnique() for userProfile"() {
+        when:
+        def result = service.isProfileEmailUnique(userProfile, EMAIL)
+
+        then:
+        1 * userService.getUserByEmail(EMAIL) >> user
+        1 * objectDAOService.find(ClubProfile, [profileEmail: EMAIL])
+        1 * userProfile.user >> user
+        0 * _
+
+        and:
+        result == Boolean.TRUE
+    }
+
+    void "Test isProfileEmailUnique() for clubProfile"() {
+        when:
+        def result = service.isProfileEmailUnique(clubProfile, EMAIL)
+
+        then:
+        1 * userService.getUserByEmail(EMAIL)
+        1 * objectDAOService.find(UserProfile, [profileEmail: EMAIL]) >> userProfile
+        1 * userProfile.user >> user
+        1 * clubProfile.user >> user
+        0 * _
+
+        and:
+        result == Boolean.TRUE
     }
 }

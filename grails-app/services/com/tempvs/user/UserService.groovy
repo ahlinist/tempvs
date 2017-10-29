@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class UserService {
 
+    ProfileService profileService
     ObjectDAOService objectDAOService
     SpringSecurityService springSecurityService
 
@@ -57,14 +58,17 @@ class UserService {
     }
 
     Boolean isEmailUnique(String email) {
-        if (!email || currentUserEmail == email) {
-            Boolean.TRUE
-        } else {
-            UserProfile userProfile = UserProfile.findByProfileEmail(email)
-            ClubProfile clubProfile = ClubProfile.findByProfileEmail(email)
+        UserProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
+        ClubProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
 
-            (!userProfile || userProfile.user.email == currentUserEmail) &&
-                    (!clubProfile || clubProfile.user.email == currentUserEmail)
+        if (userProfile && userProfile.user.email != email) {
+            return Boolean.FALSE
         }
+
+        if (clubProfile && clubProfile.user.email != email) {
+            return Boolean.FALSE
+        }
+
+        return Boolean.TRUE
     }
 }
