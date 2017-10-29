@@ -40,7 +40,7 @@ class ProfileService {
     @PreAuthorize('#profile.user.email == authentication.name')
     void deleteProfile(BaseProfile profile) {
         imageService.deleteImage(profile.avatar)
-        profile.delete()
+        objectDAOService.delete(profile)
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)

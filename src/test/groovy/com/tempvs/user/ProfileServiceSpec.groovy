@@ -103,7 +103,7 @@ class ProfileServiceSpec extends Specification {
         then:
         1 * clubProfile.avatar >> image
         1 * imageService.deleteImage(image)
-        1 * clubProfile.delete()
+        1 * objectDAOService.delete(clubProfile)
         0 * _
     }
 
