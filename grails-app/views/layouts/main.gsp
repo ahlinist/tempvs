@@ -6,6 +6,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="location" content="/${controllerName}/${actionName}" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <asset:stylesheet src="application.css"/>
     <asset:javascript src="application.js"/>
     <title><g:layoutTitle default="Tempvs" /></title>
@@ -16,7 +20,9 @@
       <header>
         <sec:ifLoggedIn>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.button')}">
-             <g:link class="btn btn-secondary disableable glyphicon glyphicon-user" controller="profile"/>
+            <g:link class="btn btn-secondary disableable" controller="profile">
+              <span class="glyphicon glyphicon-user"></span>
+            </g:link>
           </span>
           <span class="dropdown pull-left">
             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
@@ -39,16 +45,24 @@
             </ul>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.button')}">
-             <g:link class="btn btn-secondary disableable glyphicon glyphicon-tent" controller="item" action="stash"/>
+            <g:link class="btn btn-secondary disableable" controller="item" action="stash">
+              <span class="glyphicon glyphicon-tent"></span>
+            </g:link>
           </span>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.button')}">
-             <g:link class="btn btn-secondary disableable glyphicon glyphicon-log-out" controller="auth" action="logout"/>
+            <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
+              <span class="glyphicon glyphicon-log-out"></span>
+            </g:link>
           </span>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
-            <g:link class="btn btn-default disableable glyphicon glyphicon-cog" controller="user" action="edit"/>
+            <g:link class="btn btn-default disableable" controller="user" action="edit">
+              <span class="glyphicon glyphicon-cog"></span>
+            </g:link>
           </span>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.library.tooltip')}">
-            <g:link class="btn btn-default disableable pull-right glyphicon glyphicon-book" controller="source"/>
+            <g:link class="btn btn-default disableable pull-right" controller="source">
+              <span class="glyphicon glyphicon-book"></span>
+            </g:link>
           </span>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
