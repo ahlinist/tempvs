@@ -19,6 +19,7 @@ class ProfileServiceSpec extends Specification {
     private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String AVATAR_COLLECTION = 'avatar'
+    private static final String PROFILE_EMAIL = 'profileEmail'
 
     def user = Mock User
     def image = Mock Image
@@ -61,6 +62,20 @@ class ProfileServiceSpec extends Specification {
         0 * _
 
         and:
+        result == userProfile
+    }
+
+    void "Test getProfileByProfileEmail()"() {
+        given:
+        Map restrictions = [profileEmail: PROFILE_EMAIL]
+
+        when:
+        def result = service.getProfileByProfileEmail(UserProfile, PROFILE_EMAIL)
+
+        then:
+        1 * objectDAOService.find(UserProfile, restrictions) >> userProfile
+        0 * _
+
         result == userProfile
     }
 

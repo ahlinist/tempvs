@@ -26,6 +26,10 @@ class ProfileService {
         objectDAOService.find(clazz, [profileId: id]) ?: objectDAOService.get(clazz, id)
     }
 
+    public <T> T getProfileByProfileEmail(Class<T> clazz, String email) {
+        objectDAOService.find(clazz, [profileEmail: email])
+    }
+
     BaseProfile createProfile(BaseProfile profile, ImageUploadBean imageUploadBean) {
         Image avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION)
         profile.avatar = avatar
