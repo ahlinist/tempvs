@@ -75,6 +75,7 @@ class ItemController {
                 [
                         user: user,
                         itemGroup: itemGroup,
+                        items: itemGroup.items.sort { it.id },
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                 ]

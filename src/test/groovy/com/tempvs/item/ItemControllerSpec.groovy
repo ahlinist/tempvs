@@ -209,6 +209,7 @@ class ItemControllerSpec extends Specification {
     void "Test group()"() {
         given:
         params.id = ONE
+        Collection items = [item]
 
         when:
         def result = controller.group()
@@ -216,6 +217,7 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemGroup.user >> user
+        1 * itemGroup.items >> items
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
@@ -225,6 +227,7 @@ class ItemControllerSpec extends Specification {
         result == [
                 itemGroup: itemGroup,
                 user: user,
+                items: items,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
         ]

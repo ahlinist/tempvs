@@ -7,7 +7,6 @@
     <body>
       <g:if test="${itemGroup}">
         <g:set var="itemGroupId" value="${itemGroup.id}"/>
-        <g:set var="items" value="${itemGroup.items}"/>      
         <div class="row">
           <div class="row">
             <div class="col-sm-8 ajax-form">
@@ -30,7 +29,7 @@
             <g:if test="${items}">
               <b><g:message code="item.items.message"/></b>:
               <ul>
-                <g:each var="item" in="${items.sort { it.id }}">
+                <g:each var="item" in="${items}">
                    <li class="row">
                      <g:link class="btn btn-default col-sm-4" action="show" id="${item.id}"  data-toggle="tooltip" data-placement="bottom" title="${item.description}">${item.name}</g:link>
                      <g:if test="${editAllowed}">

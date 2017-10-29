@@ -115,11 +115,13 @@ class ItemViewSpec extends Specification {
         given:
         String title = "<title>Tempvs - ${ITEM_GROUP_TITLE}</title>"
         String createItemButton = '<tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">'
-        List items = [item]
+        Set items = [item]
         String smartForm = '<tempvs:ajaxSmartForm type="text" action="editItemGroupField"'
+
         Map model = [
                 itemGroup: itemGroup,
                 user: user,
+                items: items,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
                 applicationContext: applicationContext,
@@ -135,7 +137,6 @@ class ItemViewSpec extends Specification {
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * itemGroup.getProperty(ID) >> ONE
-        1 * itemGroup.getProperty(ITEMS) >> items
         2 * item.getProperty(ID) >> ONE
         2 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
