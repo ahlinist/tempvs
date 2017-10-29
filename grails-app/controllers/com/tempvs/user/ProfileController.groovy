@@ -15,10 +15,7 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class ProfileController {
 
-    private static final String EMAIL_USED = 'user.email.used'
-    private static final String EMAIL_EMPTY = 'profile.email.empty'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String EDIT_EMAIL_DUPLICATE = 'user.edit.email.duplicate'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
 
@@ -104,34 +101,21 @@ class ProfileController {
 
     def editProfileEmail() {
         String email = params.fieldValue
+        BaseProfile profile = profileHolder.profile
 
-        if (email) {
-            BaseProfile profile = profileHolder.profile
+        Map properties = [
+                instanceId: profile.id,
+                email: email,
+                action: profile.class.simpleName.uncapitalize(),
+        ]
 
-            if (email == profile.profileEmail) {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EDIT_EMAIL_DUPLICATE)
-            } else {
-                if (!userService.isEmailUnique(email)) {
-                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
-                } else {
-                    Map properties = [
-                            instanceId: profile.id,
-                            email: email,
-                            action: profile.class.simpleName.uncapitalize(),
-                    ]
+        EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
 
-                    EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
-
-                    if (!emailVerification.hasErrors()) {
-                        verifyService.sendEmailVerification(emailVerification)
-                    }
-
-                    render ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
-                }
-            }
-        } else {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_EMPTY)
+        if (!emailVerification.hasErrors()) {
+            verifyService.sendEmailVerification(emailVerification)
         }
+
+        render ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
     }
 
     def deleteProfile(String id) {

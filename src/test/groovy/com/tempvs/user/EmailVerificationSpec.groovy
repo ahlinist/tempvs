@@ -19,6 +19,10 @@ class EmailVerificationSpec extends Specification {
     private static final String INVALID_EMAIL = 'verification-email.com'
     private static final String UPD_PROFILE_EMAIL_ACTION = 'userProfile'
 
+    def verifyService = Mock(VerifyService) {
+        isEmailUnique(_, _, _) >> Boolean.TRUE
+    }
+
     def setup() {
     }
 
@@ -27,12 +31,13 @@ class EmailVerificationSpec extends Specification {
 
     void "Verification with no properties fails"() {
         expect:
-        !new EmailVerification().validate()
+        !new EmailVerification(verifyService: verifyService).validate()
     }
 
     void "Verification with valid properties passes"() {
         given:
         Map properties = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: REGISTER_ACTION,
                 email: VALID_EMAIL,
@@ -45,6 +50,7 @@ class EmailVerificationSpec extends Specification {
     void "Verification for email update without instanceId fails"() {
         given:
         Map properties = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: UPD_EMAIL_ACTION,
                 email: VALID_EMAIL,
@@ -57,12 +63,14 @@ class EmailVerificationSpec extends Specification {
     void "Verifications for different actions are created for the same mail"() {
         given:
         Map registrationProperties = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: REGISTER_ACTION,
                 email: VALID_EMAIL,
         ]
 
         Map emailUpdateProperties = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE + 1,
                 action: UPD_EMAIL_ACTION,
                 email: VALID_EMAIL,
@@ -70,6 +78,7 @@ class EmailVerificationSpec extends Specification {
         ]
 
         Map profileEmailUpdateProperties = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE + 2,
                 action: UPD_PROFILE_EMAIL_ACTION,
                 email: VALID_EMAIL,
@@ -85,6 +94,7 @@ class EmailVerificationSpec extends Specification {
     void "Verifications for non-listed action not saved"() {
         given:
         Map properties = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: INVALID_ACTION,
                 email: VALID_EMAIL,
@@ -97,6 +107,7 @@ class EmailVerificationSpec extends Specification {
     void "Verifications for invalid email not saved"() {
         given:
         Map properties = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: REGISTER_ACTION,
                 email: INVALID_EMAIL,
@@ -109,12 +120,14 @@ class EmailVerificationSpec extends Specification {
     void "Verification code should be unique"() {
         given:
         Map properties1 = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: REGISTER_ACTION,
                 email: VALID_EMAIL,
         ]
 
         Map properties2 = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: UPD_EMAIL_ACTION,
                 email: 'suffix' + VALID_EMAIL,
@@ -128,12 +141,14 @@ class EmailVerificationSpec extends Specification {
     void "Email should be unique within 1 action" () {
         given:
         Map properties1 = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE,
                 action: REGISTER_ACTION,
                 email: VALID_EMAIL,
         ]
 
         Map properties2 = [
+                verifyService: verifyService,
                 verificationCode: VERIFICATION_CODE + 1,
                 action: REGISTER_ACTION,
                 email: VALID_EMAIL,

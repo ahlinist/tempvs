@@ -13,10 +13,17 @@ import spock.lang.Specification
 @Mock([EmailVerification])
 class VerifyServiceSpec extends Specification {
 
+    private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
+    private static String REGISTRATION_ACTION = 'registration'
     private static final String VERIFICATION_CODE = 'verificationCode'
 
+    def user = Mock User
+    def userProfile = Mock UserProfile
+    def clubProfile = Mock ClubProfile
     def mailService = Mock MailService
+    def userService = Mock UserService
+    def profileService = Mock ProfileService
     def emailVerification = Mock EmailVerification
     def objectDAOService = Mock ObjectDAOService
 
@@ -24,6 +31,8 @@ class VerifyServiceSpec extends Specification {
         GroovySpy(EmailVerification, global: true)
 
         service.mailService = mailService
+        service.userService = userService
+        service.profileService = profileService
         service.objectDAOService = objectDAOService
     }
 
@@ -63,5 +72,19 @@ class VerifyServiceSpec extends Specification {
         then:
         1 * mailService.sendMail(_)
         0 * _
+    }
+
+    void "Test isEmailUnique()"() {
+        when:
+        def result = service.isEmailUnique(EMAIL, REGISTRATION_ACTION, LONG_ID)
+
+        then:
+        1 * userService.getUserByEmail(EMAIL) >> user
+        1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
+        1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL)
+        0 * _
+
+        and:
+        result == Boolean.FALSE
     }
 }

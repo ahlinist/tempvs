@@ -30,12 +30,9 @@ class ProfileControllerSpec extends Specification {
     private static final String IDENTIFIER = 'identifier'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String PROFILE_URL = '/profile/index'
-    private static final String EMAIL_USED = 'user.email.used'
-    private static final String DIFFERENT_EMAIL = 'differentEmail'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String EDIT_EMAIL_DUPLICATE = 'user.edit.email.duplicate'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
 
     def json = Mock JSON
@@ -245,39 +242,6 @@ class ProfileControllerSpec extends Specification {
         response.json.success == Boolean.TRUE
     }
 
-    void "Test editProfileEmail() for duplicate"() {
-        given:
-        params.fieldValue = EMAIL
-        request.method = POST_METHOD
-
-        when: 'Email duplicate'
-        controller.editProfileEmail()
-
-        then:
-        1 * profileHolder.getProfile() >> userProfile
-        1 * userProfile.getProfileEmail() >> EMAIL
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EDIT_EMAIL_DUPLICATE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test editProfileEmail() for non-unique entry"() {
-        given:
-        params.fieldValue = EMAIL
-        request.method = POST_METHOD
-
-        when:
-        controller.editProfileEmail()
-
-        then:
-        1 * profileHolder.getProfile() >> clubProfile
-        1 * clubProfile.getProfileEmail() >> DIFFERENT_EMAIL
-        1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
     void "Test editProfileEmail()"() {
         given:
         params.fieldValue = EMAIL
@@ -288,8 +252,6 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileHolder.getProfile() >> userProfile
-        1 * userProfile.getProfileEmail() >> DIFFERENT_EMAIL
-        1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userProfile.getId() >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE

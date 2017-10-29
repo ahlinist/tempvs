@@ -1,7 +1,5 @@
 package com.tempvs.auth
 
-import com.tempvs.user.EmailVerification
-import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
 
@@ -14,15 +12,8 @@ import grails.validation.Validateable
 class RequestRegistrationCommand implements Validateable {
 
     String email
-    UserService userService
 
     static constraints = {
-        email email: true, blank: false, validator: { String email, RequestRegistrationCommand command ->
-            if (email) {
-                command.userService.isEmailUnique(email) && !EmailVerification.findByEmail(email)
-            } else {
-                Boolean.TRUE
-            }
-        }
+        email email: true, blank: false
     }
 }

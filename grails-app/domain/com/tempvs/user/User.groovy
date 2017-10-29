@@ -34,7 +34,7 @@ class User extends BasePersistent implements Serializable {
 	static constraints = {
 		password blank: false, password: true
 		email email: true, unique: true, blank: false, validator: { String email, User user ->
-			email ? user.userService.isEmailUnique(email) : Boolean.FALSE
+			email ? user.userService.isEmailUnique(email) : Boolean.TRUE
 		}
 	}
 

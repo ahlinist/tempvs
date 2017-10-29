@@ -72,37 +72,6 @@ class UserControllerSpec extends Specification {
         response.redirectedUrl == PROFILE_PAGE_URI
     }
 
-    void "Test updateEmail() for current email"() {
-        given:
-        params.fieldValue = EMAIL
-        request.method = POST_METHOD
-
-        when:
-        controller.updateEmail()
-
-        then:
-        1 * userService.currentUserEmail >> EMAIL
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test updateEmail() against non-unique email"() {
-        given:
-        params.fieldValue = EMAIL
-        request.method = POST_METHOD
-
-        when:
-        controller.updateEmail()
-
-        then:
-        1 * userService.currentUserEmail >> DIFFERENT_EMAIL
-        1 * userService.isEmailUnique(EMAIL) >> Boolean.FALSE
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
     void "Test updateEmail()"() {
         given:
         params.fieldValue = EMAIL
@@ -113,8 +82,6 @@ class UserControllerSpec extends Specification {
         controller.updateEmail()
 
         then:
-        1 * userService.currentUserEmail >> DIFFERENT_EMAIL
-        1 * userService.isEmailUnique(EMAIL) >> Boolean.TRUE
         1 * userService.currentUserId >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE

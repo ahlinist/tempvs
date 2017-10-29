@@ -45,31 +45,19 @@ class UserController {
     def updateEmail() {
         String email = params.fieldValue
 
-        if (email) {
-            if (email == userService.currentUserEmail) {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_UPDATE_DUPLICATE)
-            } else {
-                if (!userService.isEmailUnique(email)) {
-                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_USED)
-                } else {
-                    Map properties = [
-                            instanceId: userService.currentUserId,
-                            email: email,
-                            action: UPDATE_EMAIL_ACTION,
-                    ]
+        Map properties = [
+                instanceId: userService.currentUserId,
+                email: email,
+                action: UPDATE_EMAIL_ACTION,
+        ]
 
-                    EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
+        EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
 
-                    if (!emailVerification.hasErrors()) {
-                        verifyService.sendEmailVerification(emailVerification)
-                    }
-
-                    render ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT)
-                }
-            }
-        } else {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, EMAIL_EMPTY)
+        if (!emailVerification.hasErrors()) {
+            verifyService.sendEmailVerification(emailVerification)
         }
+
+        render ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT)
     }
 
     def updatePassword(UserPasswordCommand command) {

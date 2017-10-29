@@ -16,14 +16,14 @@ class RequestRegistrationCommandSpec extends Specification {
     private static final String REGISTER_ACTION = 'registration'
     private static final String VERIFICATION_CODE = 'verificationCode'
 
-    def userService = Mock(UserService) {
-        isEmailUnique(_ as String) >> Boolean.TRUE
+    def verifyService = Mock(VerifyService) {
+        isEmailUnique(_, _, _) >> Boolean.TRUE
     }
 
     RequestRegistrationCommand requestRegistrationCommand
 
     def setup() {
-        requestRegistrationCommand = new RequestRegistrationCommand(userService: userService)
+        requestRegistrationCommand = new RequestRegistrationCommand()
     }
 
     def cleanup() {
@@ -45,30 +45,6 @@ class RequestRegistrationCommandSpec extends Specification {
     void "RequestRegistrationCommand should contain valid email"() {
         given:
         requestRegistrationCommand.email = INVALID_EMAIL
-
-        expect:
-        !requestRegistrationCommand.validate()
-    }
-
-    void "RequestRegistrationCommand should contain unique email"() {
-        given:
-        def userService = Mock(UserService) {
-            isEmailUnique(_ as String) >> Boolean.FALSE
-        }
-
-        and:
-        requestRegistrationCommand.userService = userService
-        requestRegistrationCommand.email = VALID_EMAIL
-
-        expect:
-        !requestRegistrationCommand.validate()
-    }
-
-    void "RequestRegistrationCommand should contain email that is not owned by one of the verifications"() {
-        given:
-        Map properties = [verificationCode: VERIFICATION_CODE, action: REGISTER_ACTION, email: VALID_EMAIL]
-        new EmailVerification(properties).save(flush: true)
-        requestRegistrationCommand.email = VALID_EMAIL
 
         expect:
         !requestRegistrationCommand.validate()
