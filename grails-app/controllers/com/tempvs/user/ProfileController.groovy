@@ -15,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class ProfileController {
 
+    private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
@@ -103,19 +104,29 @@ class ProfileController {
         String email = params.fieldValue
         BaseProfile profile = profileHolder.profile
 
-        Map properties = [
-                instanceId: profile.id,
-                email: email,
-                action: profile.class.simpleName.uncapitalize(),
-        ]
+        if (email) {
+            Map properties = [
+                    instanceId: profile.id,
+                    email: email,
+                    action: profile.class.simpleName.uncapitalize(),
+            ]
 
-        EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
+            EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
 
-        if (!emailVerification.hasErrors()) {
-            verifyService.sendEmailVerification(emailVerification)
+            if (!emailVerification.hasErrors()) {
+                verifyService.sendEmailVerification(emailVerification)
+            }
+
+            render ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
+        } else {
+            BaseProfile persistedProfile = profileService.editProfileField(profile, PROFILE_EMAIL_FIELD, null)
+
+            if (!persistedProfile.hasErrors()) {
+                render([success: Boolean.TRUE] as JSON)
+            } else {
+                render ajaxResponseService.renderValidationResponse(persistedProfile)
+            }
         }
-
-        render ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
     }
 
     def deleteProfile(String id) {
