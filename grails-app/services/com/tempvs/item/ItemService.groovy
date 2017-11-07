@@ -29,7 +29,9 @@ class ItemService {
     }
 
     Item getItem(Object id) {
-        objectDAOService.get(Item, id)
+        if (id) {
+            objectDAOService.get(Item, id)
+        }
     }
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')
@@ -79,10 +81,10 @@ class ItemService {
         } else if (fieldName == 'period') {
             try {
                 item.period = Period.valueOf(fieldValue)
-                item.source = null
+                item.sources.clear()
             } catch (IllegalArgumentException exception) {
                 item.period = null
-                item.source = null
+                item.sources.clear()
             }
         } else {
             item."${fieldName}" = fieldValue
@@ -105,6 +107,18 @@ class ItemService {
 
         item.removeFromImages(image)
         imageService.deleteImage(image)
+        objectDAOService.save(item)
+    }
+
+    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
+    Item linkSource(Item item, Source source) {
+        item.addToSources(source)
+        objectDAOService.save(item)
+    }
+
+    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
+    Item unlinkSource(Item item, Source source) {
+        item.removeFromSources(source)
         objectDAOService.save(item)
     }
 }

@@ -124,16 +124,12 @@ class ItemViewSpec extends Specification {
                 items: items,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
-                applicationContext: applicationContext,
         ]
 
         when:
         String result = render view: '/item/group', model: model
 
         then:
-        1 * applicationContext.containsBean(SOURCE_SERVICE) >> Boolean.TRUE
-        1 * applicationContext.getBean(SOURCE_SERVICE) >> sourceService
-        1 * sourceService.getSourcesByPeriod(null)
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * itemGroup.getProperty(ID) >> ONE
@@ -170,6 +166,8 @@ class ItemViewSpec extends Specification {
         Map model = [
                 item: item,
                 itemGroup: itemGroup,
+                sources: [source],
+                images: [image],
                 user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
@@ -183,13 +181,9 @@ class ItemViewSpec extends Specification {
         2 * item.getProperty(ID) >> ID
         3 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * item.getProperty(IMAGES) >> [image]
         1 * item.getProperty(PERIOD) >> period
-        1 * item.getProperty(SOURCE) >> source
-        1 * source.getProperty(IMAGES) >> [image]
+        2 * source.getProperty(ID) >> ID
         2 * source.getProperty(NAME) >> NAME
-        1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * source.getProperty(PERIOD) >> period
         0 * _
 
         and:
@@ -207,6 +201,7 @@ class ItemViewSpec extends Specification {
         Map model = [
                 item: item,
                 itemGroup: itemGroup,
+                images: [image],
                 user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
@@ -219,8 +214,6 @@ class ItemViewSpec extends Specification {
         then:
         1 * item.getProperty(ID) >> ID
         1 * item.getProperty(NAME) >> NAME
-        1 * item.getProperty(IMAGES) >> [image]
-        1 * item.getProperty(SOURCE) >> source
         2 * image.getProperty(ID) >> ID
         3 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
         0 * _

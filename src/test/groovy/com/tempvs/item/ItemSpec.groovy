@@ -14,9 +14,9 @@ class ItemSpec extends Specification {
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
 
-    def image = Mock(Image)
-    def itemGroup = Mock(ItemGroup)
-    def period = GroovyMock(Period)
+    def image = Mock Image
+    def itemGroup = Mock ItemGroup
+    def period = Period.XIX
 
     def setup() {
     }
@@ -59,12 +59,14 @@ class ItemSpec extends Specification {
 
     void "Test correct item creation with maximum data"() {
         given:
+        def source = new Source(name: NAME, period: period)
         Item item = new Item()
         item.name = NAME
         item.description = DESCRIPTION
         item.images = [image] as Set
         item.itemGroup = itemGroup
         item.period = period
+        item.sources = [source] as Set
 
         expect:
         item.validate()

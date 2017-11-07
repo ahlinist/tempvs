@@ -14,6 +14,7 @@ import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
+
 /**
  * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
  */
@@ -35,9 +36,9 @@ class ItemControllerSpec extends Specification {
     private static final String PROPERTIES = 'properties'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String DESCRIPTION = 'description'
-    private static final String ITEM_IMAGE_COLLECTION = 'item'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
+    private static final String SHOW_ITEM_PAGE_URI = '/item/show'
     private static final String EDIT_ITEM_PAGE_URI = '/item/editItemPage'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
@@ -353,6 +354,8 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * item.period >> period
+        1 * item.sources >> [source]
+        1 * item.images >> [image]
         1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
@@ -367,7 +370,9 @@ class ItemControllerSpec extends Specification {
                 user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
-                sources: [source]
+                images: [image] as Set,
+                sources: [source] as Set,
+                availableSources: [source],
         ]
     }
 
@@ -438,6 +443,7 @@ class ItemControllerSpec extends Specification {
     void "Test editItemPage()"() {
         given:
         params.id = ONE
+        Set<Image> images = [image]
 
         when:
         def result = controller.editItemPage()
@@ -446,13 +452,14 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.user >> user
+        1 * item.images >> images
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * user.userProfile >> userProfile
         0 * _
 
         and:
-        result == [item: item, itemGroup: itemGroup, user: user, userProfile: userProfile, editAllowed: Boolean.TRUE]
+        result == [item: item, itemGroup: itemGroup, user: user, userProfile: userProfile, images: images, editAllowed: Boolean.TRUE]
     }
 
     void "Test unauthorized editItemPage()"() {
@@ -522,7 +529,6 @@ class ItemControllerSpec extends Specification {
         params.fieldValue = FIELD_VALUE
         request.method = POST_METHOD
 
-
         when:
         controller.editItemGroupField()
 
@@ -534,5 +540,45 @@ class ItemControllerSpec extends Specification {
 
         and:
         response.json.success == Boolean.TRUE
+    }
+
+    void "Test linkSource()"() {
+        given:
+        params.itemId = ONE
+        params.sourceId = ONE
+        request.method = POST_METHOD
+        request.addHeader(REFERER, "${SHOW_ITEM_PAGE_URI}/${ONE}")
+
+        when:
+        controller.linkSource()
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * sourceService.getSource(ONE) >> source
+        1 * itemService.linkSource(item, source) >> item
+        1 * item.validate() >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${SHOW_ITEM_PAGE_URI}/${ONE}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test unlinkSource()"() {
+        given:
+        params.itemId = ONE
+        params.sourceId = ONE
+        request.method = DELETE_METHOD
+        request.addHeader(REFERER, "${SHOW_ITEM_PAGE_URI}/${ONE}")
+
+        when:
+        controller.unlinkSource()
+
+        then:
+        1 * itemService.getItem(ONE) >> item
+        1 * sourceService.getSource(ONE) >> source
+        1 * itemService.unlinkSource(item, source) >> item
+        1 * item.validate() >> Boolean.TRUE
+        1 * ajaxResponseService.renderRedirect("${SHOW_ITEM_PAGE_URI}/${ONE}") >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
     }
 }

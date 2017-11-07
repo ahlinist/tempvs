@@ -40,6 +40,8 @@ class ItemController {
             editItemPage: 'GET',
             addItemImages: 'POST',
             deleteItemImage: 'DELETE',
+            addSource: 'POST',
+            deleteSource: 'DELETE',
     ]
 
     ItemService itemService
@@ -120,7 +122,9 @@ class ItemController {
                         itemGroup: itemGroup,
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
-                        sources: sourceService.getSourcesByPeriod(item.period)
+                        images: item.images,
+                        sources: item.sources,
+                        availableSources: sourceService.getSourcesByPeriod(item.period)
                 ]
             }
         }
@@ -154,7 +158,14 @@ class ItemController {
         User user = itemGroup.user
 
         if (user.id == userService.currentUserId) {
-            [item: item, itemGroup: itemGroup, user: user, userProfile: user.userProfile, editAllowed: Boolean.TRUE]
+            [
+                    item: item,
+                    itemGroup: itemGroup,
+                    user: user,
+                    userProfile: user.userProfile,
+                    images: item.images,
+                    editAllowed: Boolean.TRUE,
+            ]
         } else {
             throw new AccessDeniedException('')
         }
@@ -205,6 +216,40 @@ class ItemController {
             }
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
+        }
+    }
+
+    def linkSource() {
+        Item item = itemService.getItem(params.itemId)
+        Source source = sourceService.getSource(params.sourceId)
+
+        if (item && source) {
+            Item persistedItem = itemService.linkSource(item, source)
+
+            if (persistedItem.validate()) {
+                render ajaxResponseService.renderRedirect(request.getHeader(REFERER))
+            } else {
+                render ajaxResponseService.renderValidationResponse(persistedItem)
+            }
+        } else {
+            render([success: Boolean.FALSE] as JSON)
+        }
+    }
+
+    def unlinkSource() {
+        Item item = itemService.getItem(params.itemId)
+        Source source = sourceService.getSource(params.sourceId)
+
+        if (item && source) {
+            Item persistedItem = itemService.unlinkSource(item, source)
+
+            if (persistedItem.validate()) {
+                render ajaxResponseService.renderRedirect(request.getHeader(REFERER))
+            } else {
+                render ajaxResponseService.renderValidationResponse(persistedItem)
+            }
+        } else {
+            render([success: Boolean.FALSE] as JSON)
         }
     }
 

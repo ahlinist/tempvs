@@ -5,8 +5,6 @@
     <title>Tempvs - Edit ${item?.name ?: g.message(code: 'item.show.title')}</title>
   </head>
   <body>
-    <g:set var="images" value="${item.images}"/>
-    <g:set var="source" value="${item.source}"/>
     <g:set var="itemId" value="${item.id}"/>
     <div class="row">
       <div class="row">

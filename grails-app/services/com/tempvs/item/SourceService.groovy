@@ -20,7 +20,9 @@ class SourceService {
     ObjectDAOService objectDAOService
 
     Source getSource(Object id) {
-        objectDAOService.get(Source, id)
+        if (id) {
+            objectDAOService.get(Source, id)
+        }
     }
 
     List<Source> getSourcesByPeriod(Period period) {

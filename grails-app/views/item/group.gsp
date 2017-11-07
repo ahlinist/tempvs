@@ -18,7 +18,7 @@
                 <div class="row">
                   <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createItem.tooltip')}">
                     <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">
-                      <g:render template="/item/templates/itemForm" model="${[action: 'createItem', button: 'item.createItem.button', itemGroup: itemGroup]}"/>
+                      <g:render template="/item/templates/itemForm"/>
                     </tempvs:modalButton>
                   </div>
                 </div>

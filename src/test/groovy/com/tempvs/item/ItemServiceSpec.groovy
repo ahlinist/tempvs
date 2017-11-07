@@ -20,7 +20,6 @@ class ItemServiceSpec extends Specification {
     private static final String NAME = 'name'
     private static final String IMAGES = 'images'
     private static final String ITEM_COLLECTION = 'item'
-    private static final String FIELD_NAME = 'fieldName'
     private static final String COLLECTION = 'collection'
     private static final String FIELD_VALUE = 'fieldValue'
 
@@ -28,6 +27,7 @@ class ItemServiceSpec extends Specification {
     def item = Mock Item
     def image = Mock Image
     def period = Period.XIX
+    def source = Mock Source
     def itemGroup = Mock ItemGroup
     def userService = Mock UserService
     def imageService = Mock ImageService
@@ -184,5 +184,31 @@ class ItemServiceSpec extends Specification {
         1 * imageService.deleteImage(image)
         1 * objectDAOService.save(item)
         0 * _
+    }
+
+    void "Test linkSource()"() {
+        when:
+        def result = service.linkSource(item, source)
+
+        then:
+        1 * item.addToSources(source)
+        1 * objectDAOService.save(item) >> item
+        0 * _
+
+        and:
+        result == item
+    }
+
+    void "Test unlinkSource()"() {
+        when:
+        def result = service.unlinkSource(item, source)
+
+        then:
+        1 * item.removeFromSources(source)
+        1 * objectDAOService.save(item) >> item
+        0 * _
+
+        and:
+        result == item
     }
 }
