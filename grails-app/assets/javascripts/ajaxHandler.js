@@ -25,13 +25,12 @@ function processAjaxRequest(element, url, data, method, success) {
         beforeSend: function() {
             beforeSend(element, submitButton, spinner);
         },
-        complete: function() {
-            complete(submitButton, spinner);
-        },
         success: function(response) {
+            complete(submitButton, spinner);
             success(element, response);
         },
         error: function() {
+            complete(submitButton, spinner);
             createFormMessage(element, false, "Something went wrong :(");
         }
     });
@@ -53,6 +52,15 @@ function defaultSuccess(element, response) {
         window.location.href = response.redirect;
     } else if (response.formMessage) {
         createFormMessage(element, response.success, response.message);
+    } else if (response.append) {
+        var appendTo = document.querySelector(response.selector);
+        appendTo.innerHTML = response.template + appendTo.innerHTML;
+    } else if (response.delete) {
+        $(element).modal('hide');
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+        var toDelete = document.querySelector(response.selector);
+        toDelete.parentNode.removeChild(toDelete);
     } else {
         $.each(response, function(index, fieldEntry) {
             createPopover(element, fieldEntry);

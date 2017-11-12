@@ -9,6 +9,7 @@ import com.tempvs.user.User
 import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import grails.web.mapping.LinkGenerator
@@ -38,7 +39,6 @@ class ItemControllerSpec extends Specification {
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
-    private static final String SHOW_ITEM_PAGE_URI = '/item/show'
     private static final String EDIT_ITEM_PAGE_URI = '/item/editItemPage'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
@@ -56,6 +56,7 @@ class ItemControllerSpec extends Specification {
     def itemCommand = Mock ItemCommand
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
+    def groovyPageRenderer = Mock PageRenderer
     def imageUploadBean = Mock ImageUploadBean
     def itemGroupCommand = Mock ItemGroupCommand
     def grailsLinkGenerator = Mock LinkGenerator
@@ -67,6 +68,7 @@ class ItemControllerSpec extends Specification {
         controller.itemService = itemService
         controller.imageService = imageService
         controller.sourceService = sourceService
+        controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseService = ajaxResponseService
     }
 
@@ -547,7 +549,6 @@ class ItemControllerSpec extends Specification {
         params.itemId = ONE
         params.sourceId = ONE
         request.method = POST_METHOD
-        request.addHeader(REFERER, "${SHOW_ITEM_PAGE_URI}/${ONE}")
 
         when:
         controller.linkSource()
@@ -555,11 +556,15 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * sourceService.getSource(ONE) >> source
+        1 * item.sources >> []
         1 * itemService.linkSource(item, source) >> item
         1 * item.validate() >> Boolean.TRUE
-        1 * ajaxResponseService.renderRedirect("${SHOW_ITEM_PAGE_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
+
+        and:
+        response.json.append == Boolean.TRUE
+        response.json.selector == '#linkedSources'
     }
 
     void "Test unlinkSource()"() {
@@ -567,7 +572,6 @@ class ItemControllerSpec extends Specification {
         params.itemId = ONE
         params.sourceId = ONE
         request.method = DELETE_METHOD
-        request.addHeader(REFERER, "${SHOW_ITEM_PAGE_URI}/${ONE}")
 
         when:
         controller.unlinkSource()
@@ -577,8 +581,10 @@ class ItemControllerSpec extends Specification {
         1 * sourceService.getSource(ONE) >> source
         1 * itemService.unlinkSource(item, source) >> item
         1 * item.validate() >> Boolean.TRUE
-        1 * ajaxResponseService.renderRedirect("${SHOW_ITEM_PAGE_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+
+        and:
+        response.json.delete == Boolean.TRUE
+        response.json.selector == "#source-${ONE}"
     }
 }

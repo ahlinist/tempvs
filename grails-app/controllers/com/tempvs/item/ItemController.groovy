@@ -12,6 +12,8 @@ import grails.converters.JSON
 import grails.validation.Validateable
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
+import grails.gsp.PageRenderer
+
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
@@ -48,6 +50,7 @@ class ItemController {
     UserService userService
     ImageService imageService
     SourceService sourceService
+    PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
 
@@ -223,11 +226,13 @@ class ItemController {
         Item item = itemService.getItem(params.itemId)
         Source source = sourceService.getSource(params.sourceId)
 
-        if (item && source) {
+        if (item && source && (!item.sources.any{it == source})) {
             Item persistedItem = itemService.linkSource(item, source)
 
             if (persistedItem.validate()) {
-                render ajaxResponseService.renderRedirect(request.getHeader(REFERER))
+                Map model = [editAllowed: Boolean.TRUE, source: source, itemId: params.itemId]
+                String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
+                render([append: Boolean.TRUE, template: template, selector: '#linkedSources'] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(persistedItem)
             }
@@ -244,7 +249,7 @@ class ItemController {
             Item persistedItem = itemService.unlinkSource(item, source)
 
             if (persistedItem.validate()) {
-                render ajaxResponseService.renderRedirect(request.getHeader(REFERER))
+                render([delete: Boolean.TRUE, selector: '#source-' + params.sourceId] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(persistedItem)
             }
