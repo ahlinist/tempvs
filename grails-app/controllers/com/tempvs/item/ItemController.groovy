@@ -125,9 +125,9 @@ class ItemController {
                         itemGroup: itemGroup,
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
-                        images: item.images,
-                        sources: item.sources,
-                        availableSources: sourceService.getSourcesByPeriod(item.period)
+                        images: item.images.sort {it.id},
+                        sources: item.sources.sort {it.id},
+                        availableSources: sourceService.getSourcesByPeriod(item.period),
                 ]
             }
         }
@@ -152,25 +152,6 @@ class ItemController {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash'))
         } else {
             render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
-        }
-    }
-
-    def editItemPage(String id) {
-        Item item = itemService.getItem id
-        ItemGroup itemGroup = item.itemGroup
-        User user = itemGroup.user
-
-        if (user.id == userService.currentUserId) {
-            [
-                    item: item,
-                    itemGroup: itemGroup,
-                    user: user,
-                    userProfile: user.userProfile,
-                    images: item.images,
-                    editAllowed: Boolean.TRUE,
-            ]
-        } else {
-            throw new AccessDeniedException('')
         }
     }
 

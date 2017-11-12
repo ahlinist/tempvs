@@ -1,3 +1,4 @@
+<%@ page import="com.tempvs.periodization.Period"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -18,7 +19,14 @@
                 <div class="row">
                   <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createItem.tooltip')}">
                     <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">
-                      <g:render template="/item/templates/itemForm"/>
+                      <tempvs:ajaxForm action="createItem">
+                        <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="item.image.label" infoLabel="item.imageInfo.label"/>
+                        <tempvs:formField type="text" name="name" label="item.name.label" />
+                        <tempvs:formField type="text" name="description" label="item.description.label" />
+                        <tempvs:formField type="select" name="period" from="${Period.values()}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
+                        <input type="hidden" name="itemGroup" value="${itemGroupId}"/>
+                        <tempvs:ajaxSubmitButton value="item.createItem.button"/>
+                      </tempvs:ajaxForm>
                     </tempvs:modalButton>
                   </div>
                 </div>

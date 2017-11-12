@@ -372,8 +372,8 @@ class ItemControllerSpec extends Specification {
                 user: user,
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
-                images: [image] as Set,
-                sources: [source] as Set,
+                images: [image],
+                sources: [source],
                 availableSources: [source],
         ]
     }
@@ -440,48 +440,6 @@ class ItemControllerSpec extends Specification {
         1 * ajaxResponseService.renderRedirect(ITEM_STASH_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-    }
-
-    void "Test editItemPage()"() {
-        given:
-        params.id = ONE
-        Set<Image> images = [image]
-
-        when:
-        def result = controller.editItemPage()
-
-        then:
-        1 * itemService.getItem(ONE) >> item
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.user >> user
-        1 * item.images >> images
-        1 * user.id >> LONG_ONE
-        1 * userService.currentUserId >> LONG_ONE
-        1 * user.userProfile >> userProfile
-        0 * _
-
-        and:
-        result == [item: item, itemGroup: itemGroup, user: user, userProfile: userProfile, images: images, editAllowed: Boolean.TRUE]
-    }
-
-    void "Test unauthorized editItemPage()"() {
-        given:
-        params.id = ONE
-
-        when:
-        def result = controller.editItemPage()
-
-        then:
-        1 * itemService.getItem(ONE) >> item
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_ONE
-        1 * userService.currentUserId >> LONG_TWO
-        0 * _
-
-        and:
-        response.redirectedUrl == AUTH_URI
-        !result
     }
 
     void "Test editItemImage()"() {

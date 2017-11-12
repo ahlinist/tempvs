@@ -20,14 +20,10 @@ class ItemViewSpec extends Specification {
     private static final String ID = 'id'
     private static final String ONE = '1'
     private static final String NAME = 'name'
-    private static final String ITEMS = 'items'
     private static final String PERIOD = 'period'
-    private static final String SOURCE = 'source'
-    private static final String IMAGES = 'images'
     private static final String IMAGE_INFO = 'imageInfo'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_TITLE = 'item.show.title'
-    private static final String SOURCE_SERVICE = 'sourceService'
     private static final String ITEM_STASH_TITLE = 'item.stash.title'
     private static final String ITEM_GROUP_TITLE = 'item.group.title'
     private static final String ITEM_NOT_FOUND = 'item.notFound.message'
@@ -40,14 +36,13 @@ class ItemViewSpec extends Specification {
     def image = Mock Image
     def source = Mock Source
     def userProfile = Mock UserProfile
-    def sourceService = Mock SourceService
     def period = Period.valueOf 'ANCIENT'
     def applicationContext = Mock ApplicationContext
 
     def setup() {
         user = Mock User
-        itemGroup = Mock ItemGroup
         item = Mock Item
+        itemGroup = Mock ItemGroup
     }
 
     def cleanup() {
@@ -85,9 +80,9 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/stash', model: model
 
         then:
-        2 * itemGroup.getProperty(NAME) >> NAME
+        1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        2 * itemGroup.getProperty(ID) >> ONE
+        1 * itemGroup.getProperty(ID) >> ONE
         0 * _
 
         and:
@@ -132,7 +127,7 @@ class ItemViewSpec extends Specification {
         then:
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        2 * itemGroup.getProperty(ID) >> ONE
+        1 * itemGroup.getProperty(ID) >> ONE
         2 * item.getProperty(ID) >> ONE
         2 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
@@ -184,6 +179,8 @@ class ItemViewSpec extends Specification {
         1 * item.getProperty(PERIOD) >> period
         2 * source.getProperty(ID) >> ID
         2 * source.getProperty(NAME) >> NAME
+        1 * image.getProperty(ID) >> ID
+        1 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
         0 * _
 
         and:
@@ -192,34 +189,5 @@ class ItemViewSpec extends Specification {
         result.contains DESCRIPTION
         result.contains carousel
         result.contains smartForm
-    }
-
-    void "Test /item/editItemPage with id"() {
-        given:
-        String title = '<title>Tempvs - Edit'
-
-        Map model = [
-                item: item,
-                itemGroup: itemGroup,
-                images: [image],
-                user: user,
-                userProfile: userProfile,
-                editAllowed: Boolean.TRUE,
-                applicationContext: applicationContext,
-        ]
-
-        when:
-        String result = render view: '/item/editItemPage', model: model
-
-        then:
-        1 * item.getProperty(ID) >> ID
-        1 * item.getProperty(NAME) >> NAME
-        2 * image.getProperty(ID) >> ID
-        3 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
-        0 * _
-
-        and:
-        result.contains title
-        result.contains NAME
     }
 }

@@ -10,7 +10,12 @@
           <div class="row">
             <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.createGroup.tooltip')}">
               <tempvs:modalButton id="createGroup" classes="glyphicon glyphicon-plus">
-                <g:render template="/item/templates/groupForm" model="${[action: 'createGroup']}"/>
+                <tempvs:ajaxForm action="createGroup">
+                  <tempvs:formField type="text" name="name" label="item.group.name.label" />
+                  <tempvs:formField type="text" name="description" label="item.group.description.label" />
+                  <input type="hidden" name="groupId"/>
+                  <tempvs:ajaxSubmitButton value="item.createGroup.button" />
+                </tempvs:ajaxForm>
               </tempvs:modalButton>
             </div>
           </div>
@@ -21,14 +26,23 @@
             <div class="row">
               <ul>
                 <g:each var="itemGroup" in="${itemGroups.sort { it.id }}">
+                  <g:set var="itemGroupId" value="${itemGroup.id}"/>
+                  <g:set var="itemGroupName" value="${itemGroup.name}"/>
                   <li>
                     <div class="row">
-                      <g:link class="btn btn-default col-sm-3" controller="item" action="group" id="${itemGroup.id}" data-toggle="tooltip" data-placement="bottom" title="${itemGroup.description}">
-                          ${itemGroup.name}
+                      <g:link class="btn btn-default col-sm-3" controller="item" action="group" id="${itemGroupId}" data-toggle="tooltip" data-placement="bottom" title="${itemGroup.description}">
+                          ${itemGroupName}
                       </g:link>
                       <g:if test="${editAllowed}">
                         <div class="pull-left">
-                          <g:render template="/item/templates/deleteGroupButton" model="${[itemGroup: itemGroup]}"/>
+                          <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.group.delete.tooltip')}">
+                            <tempvs:modalButton id="deleteGroup-${itemGroup.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                              <g:message code='item.group.deleteConfirmation.text' args="${[itemGroupName]}"/>
+                              <br/>
+                              <tempvs:ajaxLink message="yes" controller="item" action="deleteGroup" id="${itemGroupId}" method="DELETE"/>
+                              <button class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                            </tempvs:modalButton>
+                          </span>
                         </div>
                       </g:if>
                     </div>

@@ -12,8 +12,8 @@ function sendAjaxRequest(element, url, method, success) {
 }
 
 function processAjaxRequest(element, url, data, method, success) {
-    var spinner = $(element).find('.ajaxSpinner');
-    var submitButton = $(element).find('.submit-button');
+    var spinner = element.querySelector('.ajaxSpinner');
+    var submitButton = element.querySelector('.submit-button');
 
     $.ajax({
         url: url,
@@ -38,13 +38,24 @@ function processAjaxRequest(element, url, data, method, success) {
 
 function beforeSend(element, submitButton, spinner) {
     clearForm(element);
-    submitButton.attr("disabled", true);
-    spinner.fadeIn();
+    
+    if (submitButton) {
+        submitButton.setAttribute("disabled", true);
+    } 
+
+    if (spinner) {
+        spinner.style.display = 'inline';
+    }
 }
 
 function complete(submitButton, spinner) {
-    submitButton.removeAttr("disabled");
-    spinner.fadeOut();
+    if (submitButton) {
+        submitButton.removeAttribute("disabled");
+    }
+
+    if (spinner) {
+        spinner.style.display = 'none';
+    }
 }
 
 function defaultSuccess(element, response) {
