@@ -31,7 +31,7 @@ class ProfileService {
     }
 
     BaseProfile createProfile(BaseProfile profile, ImageUploadBean imageUploadBean) {
-        Image avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION)
+        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
         profile.avatar = avatar
         profile.user = userService.currentUser
         objectDAOService.save(profile)
@@ -61,7 +61,7 @@ class ProfileService {
 
     @PreAuthorize('#profile.user.email == authentication.name')
     BaseProfile uploadAvatar(BaseProfile profile, ImageUploadBean imageUploadBean) {
-        profile.avatar = imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
+        profile.avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
         objectDAOService.save(profile)
     }
 

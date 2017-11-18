@@ -2,6 +2,7 @@ package com.tempvs.image
 
 import com.tempvs.domain.ObjectDAOService
 import grails.compiler.GrailsCompileStatic
+import org.springframework.web.multipart.MultipartFile
 
 /**
  * A service that manages {@link com.tempvs.image.ImageBean}-related operations.
@@ -28,15 +29,17 @@ class ImageService {
         images.each { deleteImage(it) }
     }
 
-    Image updateImage(ImageUploadBean imageUploadBean, String collection, Image image = null) {
-        if (!imageUploadBean.image.empty) {
+    Image uploadImage(ImageUploadBean imageUploadBean, String collection, Image image = null) {
+        MultipartFile multipartFile = imageUploadBean.image
+
+        if (!multipartFile.empty) {
             if (image) {
                 imageDAO.delete(collection, image.objectId)
             } else {
                 image = this.objectDAOService.create(Image)
             }
 
-            InputStream inputStream = imageUploadBean.image.inputStream
+            InputStream inputStream = multipartFile.inputStream
 
             try {
                 image.objectId = imageDAO.create(inputStream, collection).id
@@ -52,10 +55,8 @@ class ImageService {
     }
 
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
-        List<ImageUploadBean> validBeans = imageUploadBeans?.findAll { ImageUploadBean bean -> !bean.image.empty }
-
-        validBeans?.collect { ImageUploadBean validBean ->
-            updateImage(validBean, collection)
+        imageUploadBeans?.collect { ImageUploadBean imageUploadBean ->
+            uploadImage(imageUploadBean, collection)
         }
     }
 }

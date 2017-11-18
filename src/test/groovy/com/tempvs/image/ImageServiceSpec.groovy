@@ -82,12 +82,12 @@ class ImageServiceSpec extends Specification {
         0 * _
     }
 
-    void "Test updateImage()"() {
+    void "Test uploadImage() with image"() {
         when:
-        def result = service.updateImage(imageUploadBean, COLLECTION, image)
+        def result = service.uploadImage(imageUploadBean, COLLECTION, image)
 
         then:
-        2 * imageUploadBean.image >> multipartFile
+        1 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
         1 * image.objectId >> ID
         1 * imageDAO.delete(COLLECTION, ID)
@@ -102,17 +102,32 @@ class ImageServiceSpec extends Specification {
         result == image
     }
 
-    void "Test updateImages()"() {
-        given:
-        List<ImageUploadBean> imageUploadBeans = [imageUploadBean]
-
+    void "Test uploadImage()"() {
         when:
-        def result = service.uploadImages(imageUploadBeans, COLLECTION)
+        def result = service.uploadImage(imageUploadBean, COLLECTION)
 
         then:
         1 * imageUploadBean.image >> multipartFile
-        2 * imageUploadBean.image >> multipartFile
-        1 * this.objectDAOService.create(Image) >> image
+        1 * objectDAOService.create(Image) >> image
+        1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
+        1 * imageBean.id >> ID
+        1 * image.setObjectId(ID)
+        1 * imageUploadBean.imageInfo >> IMAGE_INFO
+        1 * image.setCollection(COLLECTION)
+        1 * image.setImageInfo(IMAGE_INFO)
+        0 * _
+
+        and:
+        result == image
+    }
+
+    void "Test uploadImages()"() {
+        when:
+        def result = service.uploadImages([imageUploadBean], COLLECTION)
+
+        then:
+        1 * imageUploadBean.image >> multipartFile
+        1 * objectDAOService.create(Image) >> image
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * image.setObjectId(ID)

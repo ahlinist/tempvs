@@ -85,7 +85,7 @@ class ProfileServiceSpec extends Specification {
         def result = service.createProfile(clubProfile, imageUploadBean)
 
         then:
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION) >> image
+        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * clubProfile.setAvatar(image)
         1 * userService.currentUser >> user
         1 * clubProfile.setUser(user)
@@ -126,7 +126,7 @@ class ProfileServiceSpec extends Specification {
 
         then:
         1 * userProfile.avatar >> image
-        1 * imageService.updateImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * userProfile.setAvatar(image)
         1 * objectDAOService.save(userProfile) >> userProfile
         0 * _

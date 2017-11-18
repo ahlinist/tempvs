@@ -111,32 +111,12 @@ class ItemServiceSpec extends Specification {
     void "Test updateItem()"() {
         given:
         List<Image> images = [image, image]
-        List<ImageUploadBean> imageUploadBeans = [imageUploadBean, imageUploadBean]
 
         when:
-        def result = service.updateItem(item, imageUploadBeans)
+        def result = service.updateItem(item, images)
 
         then:
-        1 * imageService.uploadImages(imageUploadBeans, ITEM_COLLECTION) >> images
         2 * item.addToImages(image)
-        1 * objectDAOService.save(item) >> item
-        0 * _
-
-        and:
-        result == item
-    }
-
-    void "Test editItemImage()"() {
-        given:
-        List<Image> images = [image, image]
-
-        when:
-        def result = service.editItemImage(item, image, imageUploadBean)
-
-        then:
-        1 * item.images >> images
-        1 * image.collection >> COLLECTION
-        1 * imageService.updateImage(imageUploadBean, COLLECTION, image) >> image
         1 * objectDAOService.save(item) >> item
         0 * _
 
@@ -171,19 +151,22 @@ class ItemServiceSpec extends Specification {
         0 * _
     }
 
-    void "Test deleteItemImage()"() {
+    void "Test deleteImage()"() {
         given:
         List<Image> images = [image]
 
         when:
-        service.deleteItemImage(item, image)
+        def result = service.deleteImage(item, image)
 
         then:
         1 * item.images >> images
         1 * item.removeFromImages(image)
         1 * imageService.deleteImage(image)
-        1 * objectDAOService.save(item)
+        1 * objectDAOService.save(item) >> item
         0 * _
+
+        and:
+        result == item
     }
 
     void "Test linkSource()"() {

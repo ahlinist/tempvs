@@ -21,9 +21,9 @@ import grails.gsp.PageRenderer
 class ItemController {
 
     private static final String REFERER = 'referer'
+    private static final String ITEM_COLLECTION = 'item'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
-    private static final String ITEM_IMAGE_EDIT_FAILED_MESSAGE = 'item.image.edit.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
     static defaultAction = 'stash'
@@ -38,10 +38,8 @@ class ItemController {
             deleteItem: 'DELETE',
             deleteGroup: 'DELETE',
             editItemField: 'POST',
-            editItemImage: 'POST',
-            editItemPage: 'GET',
-            addItemImages: 'POST',
-            deleteItemImage: 'DELETE',
+            addImage: 'POST',
+            deleteImage: 'DELETE',
             addSource: 'POST',
             deleteSource: 'DELETE',
     ]
@@ -92,23 +90,26 @@ class ItemController {
         Item item = command.properties as Item
 
         processRequest(command, item) { object ->
-            itemService.updateItem(item, command.imageUploadBeans)
+            List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
+            itemService.updateItem(item, images)
         }
     }
 
-    def addItemImages(ItemImageUploadCommand command) {
-        Item item = command.item
+    def deleteImage() {
+        Item item = itemService.getItem params.itemId
+        Image image = imageService.getImage params.imageId
 
-        processRequest(command, item) { object ->
-            itemService.updateItem(item, command.imageUploadBeans)
+        if (item && image) {
+            Item persistedItem = itemService.deleteImage(item, image)
+
+            if (!persistedItem.hasErrors()) {
+                render([delete: Boolean.TRUE, selector: params.selector] as JSON)
+            } else {
+                render ajaxResponseService.renderValidationResponse(persistedItem)
+            }
+        } else {
+            render([success: Boolean.FALSE] as JSON)
         }
-    }
-
-    def deleteItemImage(String itemId, String imageId) {
-        Item item = itemService.getItem itemId
-        Image image = imageService.getImage imageId
-        itemService.deleteItemImage(item, image)
-        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
     }
 
     def show(String id) {
@@ -155,15 +156,23 @@ class ItemController {
         }
     }
 
-    def editItemImage(ImageUploadBean imageUploadBean) {
+    def addImage(ImageUploadBean imageUploadBean) {
         Item item = itemService.getItem params.itemId
-        Image image = imageService.getImage params.imageId
-        item = itemService.editItemImage(item, image, imageUploadBean)
+        Image image = imageService.uploadImage(imageUploadBean, ITEM_COLLECTION)
 
-        if (!item.hasErrors()) {
-            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
+        if (item && image) {
+            item = itemService.updateItem(item, [image])
+
+            if (!item.hasErrors()) {
+                Map model = [image: image, itemId: params.itemId]
+                String template = groovyPageRenderer.render(template: '/item/templates/addImageForm', model: model)
+                render([append: Boolean.TRUE, template: template, selector: params.selector] as JSON)
+            } else {
+                render ajaxResponseService.renderValidationResponse(item)
+            }
+
         } else {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, ITEM_IMAGE_EDIT_FAILED_MESSAGE)
+            render([success: Boolean.FALSE] as JSON)
         }
     }
 
@@ -210,7 +219,7 @@ class ItemController {
         if (item && source && (!item.sources.any{it == source})) {
             Item persistedItem = itemService.linkSource(item, source)
 
-            if (persistedItem.validate()) {
+            if (!persistedItem.hasErrors()) {
                 Map model = [editAllowed: Boolean.TRUE, source: source, itemId: params.itemId]
                 String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
                 render([append: Boolean.TRUE, template: template, selector: params.selector] as JSON)
@@ -229,7 +238,7 @@ class ItemController {
         if (item && source) {
             Item persistedItem = itemService.unlinkSource(item, source)
 
-            if (persistedItem.validate()) {
+            if (!persistedItem.hasErrors()) {
                 render([delete: Boolean.TRUE, selector: params.selector] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(persistedItem)

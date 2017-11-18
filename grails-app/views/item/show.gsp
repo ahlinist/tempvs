@@ -34,7 +34,7 @@
                   <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${availableSources}" noSelection="${['':'-']}"
                             optionKey="id" optionValue="name"/>
                   <input type="hidden" name="itemId" value="${itemId}" />
-                  <input type="hidden" name="selector" value="#linkedSources" />
+                  <input type="hidden" name="selector" value="ul#linkedSources" />
                   <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
                 </tempvs:ajaxForm>
               </li>
@@ -57,48 +57,17 @@
               </h4>
             </div>
             <div id="collapse" class="panel-collapse collapse">
-              <ul class="list-group">
+              <ul class="list-group" id="itemImages">
                 <g:each var="image" in="${images}">
-                  <g:set var="imageId" value="${image.id}"/>
-                  <g:set var="imageInfo" value="${image.imageInfo}"/>
-                  <li class="list-group-item row">
-                    <div class="col-sm-4">
-                      <tempvs:modalImage image="${image}" classes="item-image" orientation="horizontal" styles="min-height: 20vw; max-height: 20vw;"/>
-                    </div>
-                    <div class="col-sm-4">
-                    </div>
-                    <div class="col-sm-4">
-                      <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.deleteImage.button')}">
-                        <tempvs:modalButton id="deleteItemImage-${image.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
-                          <g:message code='item.imageDeleteConfirmation.text'/>
-                          <br/>
-                          <tempvs:ajaxLink message="yes" controller="item" action="deleteItemImage" params="${[itemId: itemId, imageId: imageId]}" method="DELETE"/>
-                          <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-                        </tempvs:modalButton>
-                      </span>
-                      <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.editImage.tooltip')}">
-                        <tempvs:modalButton id="editItemImage-${image.hashCode()}" classes="glyphicon glyphicon-picture">
-                          <tempvs:ajaxForm action="editItemImage">
-                            <tempvs:formField classes="image" type="file" name="image" label="item.image.label" />
-                            <tempvs:formField classes="imageInfo" type="text" name="imageInfo" value="${imageInfo}" label="item.imageInfo.label" />
-                            <input type="hidden" name="itemId" value="${itemId}"/>
-                            <input type="hidden" name="imageId" value="${imageId}"/>
-                            <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk" />
-                          </tempvs:ajaxForm>
-                        </tempvs:modalButton>
-                      </span>
-                      <g:if test="${imageInfo}">
-                        <b><g:message code="item.imageInfo.label"/></b>:
-                        <p>${imageInfo}</p>
-                      </g:if>
-                    </div>
-                  </li>
+                  <g:render template="/item/templates/addImageForm" model="${[image: image, itemId: itemId]}"/>
                 </g:each>
                 <li class="list-group-item row">
                   <div class="row">
-                    <tempvs:ajaxForm action="addItemImages">
-                      <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="item.image.label" infoLabel="item.imageInfo.label"/>
-                      <input type="hidden" name="item" value="${itemId}"/>
+                    <tempvs:ajaxForm controller="item" action="addImage">
+                      <tempvs:formField type="file" name="imageUploadBean.image" label="item.image.label" />
+                      <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="item.imageInfo.label" />
+                      <input type="hidden" name="itemId" value="${itemId}"/>
+                      <input type="hidden" name="selector" value="ul#itemImages"/>
                       <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
                     </tempvs:ajaxForm>
                   </div>

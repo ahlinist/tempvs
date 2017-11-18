@@ -26,12 +26,11 @@ class ItemControllerSpec extends Specification {
     private static final String ONE = '1'
     private static final String TWO = '2'
     private static final Long LONG_ONE = 1L
-    private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
-    private static final String AUTH_URI = '/auth'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String ITEM_URI = '/item/show'
+    private static final String ITEM_COLLECTION = 'item'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
@@ -39,7 +38,6 @@ class ItemControllerSpec extends Specification {
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String ITEM_STASH_URI = '/item/stash'
-    private static final String EDIT_ITEM_PAGE_URI = '/item/editItemPage'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
@@ -265,7 +263,8 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.getProperty(PROPERTIES) >> properties
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
-        1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
+        1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
+        1 * itemService.updateItem(_ as Item, [image]) >> item
         1 * item.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(_ as Item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -288,7 +287,8 @@ class ItemControllerSpec extends Specification {
         1 * itemCommand.getProperty(PROPERTIES) >> properties
         1 * itemCommand.validate() >> Boolean.TRUE
         1 * itemCommand.imageUploadBeans >> [imageUploadBean]
-        1 * itemService.updateItem(_ as Item, [imageUploadBean]) >> item
+        1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
+        1 * itemService.updateItem(_ as Item, [image]) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> "${ITEM_URI}/${LONG_ONE}"
         1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
@@ -296,41 +296,26 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test addItemImages()"() {
+    void "Test deleteImage()"() {
         given:
         params.itemId = ONE
-        request.method = POST_METHOD
-        controller.request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
-
-        when:
-        controller.addItemImages(itemImageUploadCommand)
-
-        then:
-        1 * itemImageUploadCommand.item >> item
-        1 * itemImageUploadCommand.validate() >> Boolean.TRUE
-        1 * item.hasErrors() >> Boolean.FALSE
-        1 * itemImageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * itemService.updateItem(item,  [imageUploadBean]) >> item
-        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test deleteItemImage()"() {
-        given:
+        params.imageId = TWO
+        params.selector = "li#itemImage-${TWO}"
         request.method = DELETE_METHOD
-        request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
 
         when:
-        controller.deleteItemImage(ONE, TWO)
+        controller.deleteImage()
 
         then:
         1 * itemService.getItem(ONE) >> item
         1 * imageService.getImage(TWO) >> image
-        1 * itemService.deleteItemImage(item, image)
-        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
+        1 * itemService.deleteImage(item, image) >> item
+        1 * item.hasErrors() >> Boolean.FALSE
         0 * _
+
+        and:
+        response.json.delete == Boolean.TRUE
+        response.json.selector == params.selector
     }
 
     void "Test show() without id"() {
@@ -442,24 +427,27 @@ class ItemControllerSpec extends Specification {
         0 * _
     }
 
-    void "Test editItemImage()"() {
+    void "Test addImage()"() {
         given:
         params.itemId = ONE
         params.imageId = TWO
+        params.selector = 'ul#itemImages'
         request.method = POST_METHOD
-        request.addHeader(REFERER, "${EDIT_ITEM_PAGE_URI}/${ONE}")
 
         when:
-        controller.editItemImage(imageUploadBean)
+        controller.addImage(imageUploadBean)
 
         then:
         1 * itemService.getItem(ONE) >> item
-        1 * imageService.getImage(TWO) >> image
-        1 * itemService.editItemImage(item, image, imageUploadBean) >> item
+        1 * imageService.uploadImage(imageUploadBean, ITEM_COLLECTION) >> image
+        1 * itemService.updateItem(item, [image]) >> item
         1 * item.hasErrors() >> Boolean.FALSE
-        1 * ajaxResponseService.renderRedirect("${EDIT_ITEM_PAGE_URI}/${ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
+
+        and:
+        response.json.append == Boolean.TRUE
+        response.json.selector == 'ul#itemImages'
     }
 
     void "Test editItemField()"() {
@@ -517,7 +505,7 @@ class ItemControllerSpec extends Specification {
         1 * sourceService.getSource(ONE) >> source
         1 * item.sources >> []
         1 * itemService.linkSource(item, source) >> item
-        1 * item.validate() >> Boolean.TRUE
+        1 * item.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -540,7 +528,7 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * sourceService.getSource(ONE) >> source
         1 * itemService.unlinkSource(item, source) >> item
-        1 * item.validate() >> Boolean.TRUE
+        1 * item.hasErrors() >> Boolean.FALSE
         0 * _
 
         and:

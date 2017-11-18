@@ -3,7 +3,6 @@ package com.tempvs.item
 import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -16,8 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize
  */
 @GrailsCompileStatic
 class ItemService {
-
-    private static final String ITEM_COLLECTION = 'item'
 
     UserService userService
     ImageService imageService
@@ -53,23 +50,11 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item updateItem(Item item, List<ImageUploadBean> imageUploadBeans) {
-        List<Image> images = imageService.uploadImages(imageUploadBeans, ITEM_COLLECTION)
-
+    Item updateItem(Item item, List<Image> images) {
         images?.each { Image image ->
             item.addToImages(image)
         }
 
-        objectDAOService.save(item)
-    }
-
-    @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item editItemImage(Item item, Image image, ImageUploadBean imageUploadBean) {
-        if (!item.images.contains(image)) {
-            throw new AccessDeniedException('Item does not contain the given image.')
-        }
-
-        imageService.updateImage(imageUploadBean, image.collection, image)
         objectDAOService.save(item)
     }
 
@@ -100,7 +85,7 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    void deleteItemImage(Item item, Image image) {
+    Item deleteImage(Item item, Image image) {
         if (!item.images.contains(image)) {
             throw new AccessDeniedException('Item does not contain the given image.')
         }
