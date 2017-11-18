@@ -506,6 +506,7 @@ class ItemControllerSpec extends Specification {
         given:
         params.itemId = ONE
         params.sourceId = ONE
+        params.selector = '#linkedSources'
         request.method = POST_METHOD
 
         when:
@@ -529,6 +530,7 @@ class ItemControllerSpec extends Specification {
         given:
         params.itemId = ONE
         params.sourceId = ONE
+        params.selector = "#source-${ONE}"
         request.method = DELETE_METHOD
 
         when:

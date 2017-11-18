@@ -213,7 +213,7 @@ class ItemController {
             if (persistedItem.validate()) {
                 Map model = [editAllowed: Boolean.TRUE, source: source, itemId: params.itemId]
                 String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
-                render([append: Boolean.TRUE, template: template, selector: '#linkedSources'] as JSON)
+                render([append: Boolean.TRUE, template: template, selector: params.selector] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(persistedItem)
             }
@@ -230,7 +230,7 @@ class ItemController {
             Item persistedItem = itemService.unlinkSource(item, source)
 
             if (persistedItem.validate()) {
-                render([delete: Boolean.TRUE, selector: '#source-' + params.sourceId] as JSON)
+                render([delete: Boolean.TRUE, selector: params.selector] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(persistedItem)
             }

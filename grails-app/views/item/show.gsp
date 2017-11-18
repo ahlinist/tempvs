@@ -34,6 +34,7 @@
                   <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${availableSources}" noSelection="${['':'-']}"
                             optionKey="id" optionValue="name"/>
                   <input type="hidden" name="itemId" value="${itemId}" />
+                  <input type="hidden" name="selector" value="#linkedSources" />
                   <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
                 </tempvs:ajaxForm>
               </li>
