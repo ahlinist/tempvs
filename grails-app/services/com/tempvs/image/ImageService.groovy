@@ -36,7 +36,7 @@ class ImageService {
             if (image) {
                 imageDAO.delete(collection, image.objectId)
             } else {
-                image = this.objectDAOService.create(Image)
+                image = objectDAOService.create(Image)
             }
 
             InputStream inputStream = multipartFile.inputStream

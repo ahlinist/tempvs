@@ -12,7 +12,6 @@ import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
@@ -27,8 +26,8 @@ class ItemControllerSpec extends Specification {
     private static final String TWO = '2'
     private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
-    private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
+    private static final String SELECTOR = 'selector'
     private static final String ITEM_URI = '/item/show'
     private static final String ITEM_COLLECTION = 'item'
     private static final String DELETE_METHOD = 'DELETE'
@@ -37,7 +36,6 @@ class ItemControllerSpec extends Specification {
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_GROUP_URI = '/item/group'
-    private static final String ITEM_STASH_URI = '/item/stash'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
@@ -57,8 +55,6 @@ class ItemControllerSpec extends Specification {
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadBean = Mock ImageUploadBean
     def itemGroupCommand = Mock ItemGroupCommand
-    def grailsLinkGenerator = Mock LinkGenerator
-    def itemImageUploadCommand = Mock ItemImageUploadCommand
     def ajaxResponseService = Mock AjaxResponseService
 
     def setup() {
@@ -294,7 +290,7 @@ class ItemControllerSpec extends Specification {
         given:
         params.itemId = ONE
         params.imageId = TWO
-        params.selector = "li#itemImage-${TWO}"
+        params.selector = SELECTOR
         request.method = DELETE_METHOD
 
         when:
@@ -309,7 +305,7 @@ class ItemControllerSpec extends Specification {
 
         and:
         response.json.delete == Boolean.TRUE
-        response.json.selector == params.selector
+        response.json.selector == SELECTOR
     }
 
     void "Test show() without id"() {
@@ -374,8 +370,9 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem()"() {
         given:
-        request.method = DELETE_METHOD
         params.id = ONE
+        params.selector = SELECTOR
+        request.method = DELETE_METHOD
 
         when:
         controller.deleteItem()
@@ -383,11 +380,11 @@ class ItemControllerSpec extends Specification {
         then: 'Successfully deleted'
         1 * itemService.getItem(ONE) >> item
         1 * itemService.deleteItem(item)
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.id >> LONG_ONE
-        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+
+        and:
+        response.json.delete == Boolean.TRUE
+        response.json.selector == SELECTOR
     }
 
     void "Test deleteGroup() against unexisting one"() {
@@ -408,6 +405,7 @@ class ItemControllerSpec extends Specification {
     void "Test deleteGroup()"() {
         given:
         params.id = ONE
+        params.selector = SELECTOR
         request.method = DELETE_METHOD
 
         when:
@@ -416,16 +414,18 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
         1 * itemService.deleteGroup(itemGroup)
-        1 * ajaxResponseService.renderRedirect(ITEM_STASH_URI) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+
+        and:
+        response.json.delete == Boolean.TRUE
+        response.json.selector == SELECTOR
     }
 
     void "Test addImage()"() {
         given:
         params.itemId = ONE
         params.imageId = TWO
-        params.selector = 'ul#itemImages'
+        params.selector = SELECTOR
         request.method = POST_METHOD
 
         when:
@@ -441,7 +441,7 @@ class ItemControllerSpec extends Specification {
 
         and:
         response.json.append == Boolean.TRUE
-        response.json.selector == 'ul#itemImages'
+        response.json.selector == SELECTOR
     }
 
     void "Test editItemField()"() {
@@ -488,7 +488,7 @@ class ItemControllerSpec extends Specification {
         given:
         params.itemId = ONE
         params.sourceId = ONE
-        params.selector = '#linkedSources'
+        params.selector = SELECTOR
         request.method = POST_METHOD
 
         when:
@@ -505,14 +505,14 @@ class ItemControllerSpec extends Specification {
 
         and:
         response.json.append == Boolean.TRUE
-        response.json.selector == '#linkedSources'
+        response.json.selector == SELECTOR
     }
 
     void "Test unlinkSource()"() {
         given:
         params.itemId = ONE
         params.sourceId = ONE
-        params.selector = "#source-${ONE}"
+        params.selector = SELECTOR
         request.method = DELETE_METHOD
 
         when:
@@ -527,6 +527,6 @@ class ItemControllerSpec extends Specification {
 
         and:
         response.json.delete == Boolean.TRUE
-        response.json.selector == "#source-${ONE}"
+        response.json.selector == SELECTOR
     }
 }

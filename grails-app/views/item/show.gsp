@@ -10,13 +10,6 @@
       <g:set var="itemId" value="${item.id}"/>
       <g:set var="period" value="${item.period}"/>
       <div class="row">
-        <g:if test="${editAllowed}">
-          <div class="pull-right">
-            <g:render template="/item/templates/deleteItemButton" model="${[item: item]}"/>
-          </div>
-        </g:if>
-      </div>
-      <div class="row">
         <div class="col-sm-8 ajax-form">
           <tempvs:ajaxSmartForm type="text" action="editItemField" name="name" value="${item.name}" objectId="${itemId}" label="item.name.label" editAllowed="${editAllowed}"/>
           <tempvs:ajaxSmartForm type="text" action="editItemField" name="description" value="${item.description}" objectId="${itemId}" label="item.description.label" editAllowed="${editAllowed}"/>

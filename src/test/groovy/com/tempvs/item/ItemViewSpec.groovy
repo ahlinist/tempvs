@@ -35,8 +35,8 @@ class ItemViewSpec extends Specification {
     def itemGroup
     def image = Mock Image
     def source = Mock Source
+    def period = Period.ANCIENT
     def userProfile = Mock UserProfile
-    def period = Period.valueOf 'ANCIENT'
     def applicationContext = Mock ApplicationContext
 
     def setup() {
@@ -128,8 +128,8 @@ class ItemViewSpec extends Specification {
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * itemGroup.getProperty(ID) >> ONE
-        2 * item.getProperty(ID) >> ONE
-        2 * item.getProperty(NAME) >> NAME
+        1 * item.getProperty(ID) >> ONE
+        1 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         0 * _
 
@@ -173,8 +173,8 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/show', model: model
 
         then:
-        2 * item.getProperty(ID) >> ID
-        3 * item.getProperty(NAME) >> NAME
+        1 * item.getProperty(ID) >> ID
+        2 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(PERIOD) >> period
         2 * source.getProperty(ID) >> ID

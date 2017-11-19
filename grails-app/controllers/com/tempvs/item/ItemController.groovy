@@ -18,7 +18,6 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class ItemController {
 
-    private static final String REFERER = 'referer'
     private static final String ITEM_COLLECTION = 'item'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
@@ -147,23 +146,23 @@ class ItemController {
     def deleteItem(String id) {
         Item item = itemService.getItem id
 
-        if (item) {
-            itemService.deleteItem item
-            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'group', id: item.itemGroup.id))
-        } else {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE)
+        if (!item) {
+            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE))
         }
+
+        itemService.deleteItem item
+        render([delete: Boolean.TRUE, selector: params.selector] as JSON)
     }
 
     def deleteGroup(String id) {
         ItemGroup itemGroup = itemService.getGroup id
 
-        if (itemGroup) {
-            itemService.deleteGroup itemGroup
-            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'stash'))
-        } else {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE)
+        if (!itemGroup) {
+            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE))
         }
+
+        itemService.deleteGroup itemGroup
+        render([delete: Boolean.TRUE, selector: params.selector] as JSON)
     }
 
     def addImage(ImageUploadBean imageUploadBean) {

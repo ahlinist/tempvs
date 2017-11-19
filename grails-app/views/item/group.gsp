@@ -38,14 +38,23 @@
               <b><g:message code="item.items.message"/></b>:
               <ul>
                 <g:each var="item" in="${items}">
-                   <li class="row">
-                     <g:link class="btn btn-default col-sm-4" action="show" id="${item.id}"  data-toggle="tooltip" data-placement="bottom" title="${item.description}">${item.name}</g:link>
-                     <g:if test="${editAllowed}">
-                       <div class="pull-left">
-                         <g:render template="/item/templates/deleteItemButton" model="${[item: item]}"/>
-                       </div>
-                     </g:if>
-                   </li>
+                  <g:set var="itemId" value="${item.id}"/>
+                  <g:set var="itemName" value="${item.name}"/>
+                  <li class="row" id="item-${itemId}">
+                    <g:link class="btn btn-default col-sm-4" action="show" id="${itemId}"  data-toggle="tooltip" data-placement="bottom" title="${item.description}">${itemName}</g:link>
+                    <g:if test="${editAllowed}">
+                      <div class="pull-left">
+                        <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.delete.button')}">
+                          <tempvs:modalButton id="deleteItem-${item.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                            <g:message code='item.deleteConfirmation.text' args="${[itemName]}"/>
+                            <br/>
+                            <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${itemId}" params="${[selector: 'li#item-' + itemId]}" method="DELETE"/>
+                            <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                          </tempvs:modalButton>
+                        </span>
+                      </div>
+                    </g:if>
+                  </li>
                 </g:each>
               </ul> 
             </g:if>
