@@ -1,7 +1,6 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
-import com.tempvs.domain.BasePersistent
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -9,10 +8,9 @@ import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
-import grails.validation.Validateable
+import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
-import grails.gsp.PageRenderer
 
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
@@ -61,11 +59,17 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
-        ItemGroup itemGroup = command.properties as ItemGroup
-
-        processRequest(command, itemGroup) { object ->
-            itemService.createGroup(itemGroup)
+        if (!command.validate()) {
+            return render(ajaxResponseService.renderValidationResponse(command))
         }
+
+        ItemGroup itemGroup = itemService.createGroup(command.properties as ItemGroup)
+
+        if (itemGroup.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(itemGroup))
+        }
+
+        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: itemGroup.id))
     }
 
     def group(String id) {
@@ -87,12 +91,18 @@ class ItemController {
     }
 
     def createItem(ItemCommand command) {
-        Item item = command.properties as Item
-
-        processRequest(command, item) { object ->
-            List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
-            itemService.updateItem(item, images)
+        if (!command.validate()) {
+            return render(ajaxResponseService.renderValidationResponse(command))
         }
+
+        List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
+        Item item = itemService.updateItem(command.properties as Item, images)
+
+        if (item.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(item))
+        }
+
+        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'show', id: item.id))
     }
 
     def deleteImage() {
@@ -179,73 +189,73 @@ class ItemController {
     def editItemField() {
         Item item = itemService.getItem params.objectId
 
-        if (item) {
-            String fieldName = params.fieldName
-            String fieldValue = params.fieldValue
-            item = itemService.editItemField(item, fieldName, fieldValue)
-
-            if (!item.hasErrors()) {
-                render([success: Boolean.TRUE] as JSON)
-            } else {
-                render ajaxResponseService.renderValidationResponse(item)
-            }
-        } else {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
+        if (!item) {
+            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
+
+        String fieldName = params.fieldName
+        String fieldValue = params.fieldValue
+        item = itemService.editItemField(item, fieldName, fieldValue)
+
+        if (item.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(item))
+        }
+
+        render([success: Boolean.TRUE] as JSON)
     }
 
     def editItemGroupField() {
         ItemGroup itemGroup = itemService.getGroup params.objectId
 
-        if (itemGroup) {
-            String fieldName = params.fieldName
-            String fieldValue = params.fieldValue
-            itemGroup = itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
-
-            if (!itemGroup.hasErrors()) {
-                render([success: Boolean.TRUE] as JSON)
-            } else {
-                render ajaxResponseService.renderValidationResponse(itemGroup)
-            }
-        } else {
-            render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
+        if (!itemGroup) {
+            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
+
+        String fieldName = params.fieldName
+        String fieldValue = params.fieldValue
+        itemGroup = itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
+
+        if (itemGroup.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(itemGroup))
+        }
+
+        render([success: Boolean.TRUE] as JSON)
     }
 
     def linkSource() {
-        Item item = itemService.getItem(params.itemId)
-        Source source = sourceService.getSource(params.sourceId)
+        Item item = itemService.getItem params.itemId
+        Source source = sourceService.getSource params.sourceId
 
-        if (item && source && (!item.sources.any{it == source})) {
-            Item persistedItem = itemService.linkSource(item, source)
-
-            if (!persistedItem.hasErrors()) {
-                Map model = [editAllowed: Boolean.TRUE, source: source, itemId: params.itemId]
-                String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
-                render([append: Boolean.TRUE, template: template, selector: params.selector] as JSON)
-            } else {
-                render ajaxResponseService.renderValidationResponse(persistedItem)
-            }
-        } else {
-            render([success: Boolean.FALSE] as JSON)
+        if (!item || !source || (item.sources.contains(source))) {
+            return render([success: Boolean.FALSE] as JSON)
         }
+
+        item = itemService.linkSource(item, source)
+
+        if (item.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(item))
+        }
+
+        Map model = [editAllowed: Boolean.TRUE, source: source, itemId: params.itemId]
+        String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
+        render([append: Boolean.TRUE, template: template, selector: params.selector] as JSON)
     }
 
     def unlinkSource() {
-        Item item = itemService.getItem(params.itemId)
-        Source source = sourceService.getSource(params.sourceId)
+        Item item = itemService.getItem params.itemId
+        Source source = sourceService.getSource params.sourceId
 
-        if (item && source) {
-            Item persistedItem = itemService.unlinkSource(item, source)
-
-            if (!persistedItem.hasErrors()) {
-                render([delete: Boolean.TRUE, selector: params.selector] as JSON)
-            } else {
-                render ajaxResponseService.renderValidationResponse(persistedItem)
-            }
-        } else {
-            render([success: Boolean.FALSE] as JSON)
+        if (!item || !source) {
+            return render([success: Boolean.FALSE] as JSON)
         }
+
+        item = itemService.unlinkSource(item, source)
+
+        if (item.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(item))
+        }
+
+        render([delete: Boolean.TRUE, selector: params.selector] as JSON)
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {
@@ -253,22 +263,6 @@ class ItemController {
             render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect(controller: 'auth')
-        }
-    }
-
-    private processRequest(Validateable command, BasePersistent object, Closure<? extends BasePersistent> action) {
-        if (command.validate()) {
-            if (object) {
-                if (!action(object).hasErrors()) {
-                    render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(uri: request.getHeader(REFERER)))
-                } else {
-                    render ajaxResponseService.renderValidationResponse(object)
-                }
-            } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE)
-            }
-        } else {
-            render ajaxResponseService.renderValidationResponse(command)
         }
     }
 }
