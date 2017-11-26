@@ -15,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class ProfileController {
 
+    private static final String SUCCESS_ACTION = 'success'
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
@@ -91,7 +92,7 @@ class ProfileController {
             profile = profileService.editProfileField(profile, params.fieldName as String, params.fieldValue as String)
 
             if (!profile.hasErrors()) {
-                render([success: Boolean.TRUE] as JSON)
+                render([action: SUCCESS_ACTION] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(profile)
             }
@@ -122,7 +123,7 @@ class ProfileController {
             BaseProfile persistedProfile = profileService.editProfileField(profile, PROFILE_EMAIL_FIELD, null)
 
             if (!persistedProfile.hasErrors()) {
-                render([success: Boolean.TRUE] as JSON)
+                render([action: SUCCESS_ACTION] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(persistedProfile)
             }

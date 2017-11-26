@@ -18,7 +18,11 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class ItemController {
 
+    private static final String NO_ACTION = 'none'
     private static final String ITEM_COLLECTION = 'item'
+    private static final String SUCCESS_ACTION = 'success'
+    private static final String DELETE_ACTION = 'deleteElement'
+    private static final String APPEND_ACTION = 'appendElement'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
@@ -112,12 +116,12 @@ class ItemController {
             Item persistedItem = itemService.deleteImage(item, image)
 
             if (!persistedItem.hasErrors()) {
-                render([delete: Boolean.TRUE, selector: params.selector] as JSON)
+                render([action: DELETE_ACTION] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(persistedItem)
             }
         } else {
-            render([success: Boolean.FALSE] as JSON)
+            render([action: NO_ACTION] as JSON)
         }
     }
 
@@ -151,7 +155,7 @@ class ItemController {
         }
 
         itemService.deleteItem item
-        render([delete: Boolean.TRUE, selector: params.selector] as JSON)
+        render([action: DELETE_ACTION] as JSON)
     }
 
     def deleteGroup(String id) {
@@ -162,7 +166,7 @@ class ItemController {
         }
 
         itemService.deleteGroup itemGroup
-        render([delete: Boolean.TRUE, selector: params.selector] as JSON)
+        render([action: DELETE_ACTION] as JSON)
     }
 
     def addImage(ImageUploadBean imageUploadBean) {
@@ -175,13 +179,13 @@ class ItemController {
             if (!item.hasErrors()) {
                 Map model = [image: image, itemId: params.itemId]
                 String template = groovyPageRenderer.render(template: '/item/templates/addImageForm', model: model)
-                render([append: Boolean.TRUE, template: template, selector: params.selector] as JSON)
+                render([action: APPEND_ACTION, template: template] as JSON)
             } else {
                 render ajaxResponseService.renderValidationResponse(item)
             }
 
         } else {
-            render([success: Boolean.FALSE] as JSON)
+            render([action: NO_ACTION] as JSON)
         }
     }
 
@@ -200,7 +204,7 @@ class ItemController {
             return render(ajaxResponseService.renderValidationResponse(item))
         }
 
-        render([success: Boolean.TRUE] as JSON)
+        render([action: SUCCESS_ACTION] as JSON)
     }
 
     def editItemGroupField() {
@@ -218,7 +222,7 @@ class ItemController {
             return render(ajaxResponseService.renderValidationResponse(itemGroup))
         }
 
-        render([success: Boolean.TRUE] as JSON)
+        render([action: SUCCESS_ACTION] as JSON)
     }
 
     def linkSource() {
@@ -226,7 +230,7 @@ class ItemController {
         Source source = sourceService.getSource params.sourceId
 
         if (!item || !source || (item.sources.contains(source))) {
-            return render([success: Boolean.FALSE] as JSON)
+            return render([action: NO_ACTION] as JSON)
         }
 
         item = itemService.linkSource(item, source)
@@ -237,7 +241,7 @@ class ItemController {
 
         Map model = [editAllowed: Boolean.TRUE, source: source, itemId: params.itemId]
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
-        render([append: Boolean.TRUE, template: template, selector: params.selector] as JSON)
+        render([action: APPEND_ACTION, template: template] as JSON)
     }
 
     def unlinkSource() {
@@ -245,7 +249,7 @@ class ItemController {
         Source source = sourceService.getSource params.sourceId
 
         if (!item || !source) {
-            return render([success: Boolean.FALSE] as JSON)
+            return render([action: NO_ACTION] as JSON)
         }
 
         item = itemService.unlinkSource(item, source)
@@ -254,7 +258,7 @@ class ItemController {
             return render(ajaxResponseService.renderValidationResponse(item))
         }
 
-        render([delete: Boolean.TRUE, selector: params.selector] as JSON)
+        render([action: DELETE_ACTION] as JSON)
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {

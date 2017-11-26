@@ -2,8 +2,6 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
-import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -19,17 +17,13 @@ class SourceServiceSpec extends Specification {
     private static final String ID = 'id'
     private static final String NAME = 'name'
     private static final String FIELD_VALUE = 'fieldValue'
-    private static final String SOURCE_COLLECTION = 'source'
 
     def image = Mock Image
     def source = Mock Source
     def period = Period.MEDIEVAL
-    def imageService = Mock ImageService
-    def imageUploadBean = Mock ImageUploadBean
     def objectDAOService = Mock ObjectDAOService
 
     def setup() {
-        service.imageService = imageService
         service.objectDAOService = objectDAOService
 
         GroovySpy(Source, global: true)
@@ -78,15 +72,14 @@ class SourceServiceSpec extends Specification {
         result == source
     }
 
-    void "Test createSource()"() {
+    void "Test updateSource()"() {
         given:
-        List<ImageUploadBean> imageUploadBeans = [imageUploadBean, imageUploadBean]
+        List<Image> images = [image, image]
 
         when:
-        def result = service.createSource(source, imageUploadBeans)
+        def result = service.updateSource(source, images)
 
         then:
-        1 * imageService.uploadImages(imageUploadBeans, SOURCE_COLLECTION) >> [image, image]
         2 * source.addToImages(image)
         1 * objectDAOService.save(source) >> source
         0 * _

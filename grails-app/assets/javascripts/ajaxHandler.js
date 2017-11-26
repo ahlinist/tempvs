@@ -1,17 +1,24 @@
-function submitAjaxForm(form, success) {
+var actions = {
+           redirect: redirectAction,
+           deleteElement: deleteElementAction,
+           appendElement: appendElementAction,
+           formMessage: formMessageAction,
+           validationResponse: validationResponseAction,
+           none: function() {},
+};
+
+function submitAjaxForm(form, actions, selector) {
     var method = 'POST'
     var url = form.action;
     var data = new FormData(form);
-    var successAction = (typeof success === "function") ? success : defaultSuccess;
-    processAjaxRequest(form, url, data, method, successAction);
+    processAjaxRequest(form, url, data, method, actions, selector);
 }
 
-function sendAjaxRequest(element, url, method, success) {
-    var successAction = (typeof success === "function") ? success : defaultSuccess;
-    processAjaxRequest(element, url, '', method, successAction);
+function sendAjaxRequest(element, url, method, actions, selector) {
+    processAjaxRequest(element, url, '', method, actions, selector);
 }
 
-function processAjaxRequest(element, url, data, method, success) {
+function processAjaxRequest(element, url, data, method, actions, selector) {
     var spinner = element.querySelector('.ajaxSpinner');
     var submitButton = element.querySelector('.submit-button');
 
@@ -27,7 +34,7 @@ function processAjaxRequest(element, url, data, method, success) {
         },
         success: function(response) {
             complete(submitButton, spinner);
-            success(element, response);
+            success(element, response, actions, selector);
         },
         error: function() {
             complete(submitButton, spinner);
@@ -49,52 +56,65 @@ function beforeSend(element, submitButton, spinner) {
 }
 
 function complete(submitButton, spinner) {
-    if (submitButton) {
-        submitButton.removeAttribute("disabled");
-    }
-
     if (spinner) {
         spinner.style.display = 'none';
     }
-}
 
-function defaultSuccess(element, response) {
-    if (response.redirect) {
-        window.location.href = response.redirect;
-    } else if (response.formMessage) {
-        createFormMessage(element, response.success, response.message);
-    } else if (response.append) {
-        var appendTo = document.querySelector(response.selector);
-        appendTo.innerHTML = response.template + appendTo.innerHTML;
-    } else if (response.delete) {
-        $(element).modal('hide');
-        $('body').removeClass('modal-open');
-        $('.modal-backdrop').remove();
-        var toDelete = document.querySelector(response.selector);
-        toDelete.parentNode.removeChild(toDelete);
-    } else {
-        $.each(response, function(index, fieldEntry) {
-            createPopover(element, fieldEntry);
-        });
-
-        $('.popped-over').popover('show');
+    if (submitButton) {
+        submitButton.removeAttribute("disabled");
     }
 }
 
+function success(element, response, actions, selector) {
+    actions[response.action](element, response, selector);
+}
+
+function redirectAction(element, response){
+    window.location.href = response.location;
+}
+
+function deleteElementAction(element, response, selector) {
+    var backdrop = document.querySelector('.modal-backdrop');
+    var toDelete = document.querySelector(selector);
+    document.querySelector('body').classList.remove('modal-open');
+    backdrop.parentNode.removeChild(backdrop);
+    toDelete.parentNode.removeChild(toDelete);
+    $(element).modal('hide');
+}
+
+function appendElementAction(element, response, selector) {
+    var appendTo = document.querySelector(selector);
+    appendTo.innerHTML = response.template + appendTo.innerHTML;
+}
+
+function formMessageAction(element, response) {
+    var messageContainer = document.createElement('span');
+    messageContainer.classList.add('text-center');
+    messageContainer.classList.add('form-message');
+    messageContainer.classList.add(response.success ? 'text-success' : 'text-danger');
+    messageContainer.innerHTML += response.message;
+    element.querySelector('[name="submit-button"]').parentNode.appendChild(messageContainer);
+}
+
+function validationResponseAction(element, response) {
+    for (entry in response.messages) {
+        createPopover(element, response.messages[entry]);
+    }
+
+    $('.popped-over').popover('show');
+}
+
 function createPopover(element, fieldEntry) {
-    var field = $(element).find('[name="' + fieldEntry.name + '"]')
-    field.addClass('popped-over').addClass('bg-danger').attr('data-placement','right').attr('data-content', fieldEntry.message).attr('data-html', true);
+    var field = element.querySelector('[name="' + fieldEntry.name + '"]')
+    field.classList.add('popped-over');
+    field.classList.add('bg-danger');
+    field.setAttribute('data-placement','right');
+    field.setAttribute('data-content', fieldEntry.message);
+    field.setAttribute('data-html', true);
 }
 
 function clearForm(element) {
     $(element).find('.popped-over').removeClass('popped-over').removeAttr('data-placement').removeAttr('data-content').popover('hide');
     $(element).find('.form-message').remove();
     $(element).find('.bg-danger').removeClass('bg-danger');
-}
-
-function createFormMessage(element, success, message) {
-    var messageContainer = document.createElement('span');
-    $(messageContainer).addClass('text-center').addClass(success ? 'text-success' : 'text-danger').addClass('form-message');
-    messageContainer.innerHTML += message;
-    $(element).find('[name="submit-button"]').parent().append(messageContainer);
 }

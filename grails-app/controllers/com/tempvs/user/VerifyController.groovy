@@ -10,6 +10,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 class VerifyController {
 
     private static final String EMAIL = 'email'
+    private static final String PROFILE_EMAIL = 'profileEmail'
     private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'profileEmail.update.failed.message'
@@ -77,7 +78,7 @@ class VerifyController {
         BaseProfile profile = profileService.getProfile(clazz, emailVerification.instanceId)
 
         if (profile) {
-            profile = profileService.editProfileField(profile, 'profileEmail', emailVerification.email)
+            profile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)
 
             if (profile.validate()) {
                 profileHolder.profile = profile

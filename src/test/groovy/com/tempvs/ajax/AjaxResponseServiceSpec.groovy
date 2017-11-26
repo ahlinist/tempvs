@@ -1,7 +1,6 @@
 package com.tempvs.ajax
 
 import com.tempvs.user.User
-import grails.converters.JSON
 import grails.test.mixin.TestFor
 import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.validation.Errors
@@ -16,6 +15,8 @@ class AjaxResponseServiceSpec extends Specification {
 
     private static final String FIELD = 'field'
     private static final String TEST_URI = '/test/uri'
+    private static final String REDIRECT_ACTION = 'redirect'
+    private static final String FORM_MESSAGE = 'formMessage'
     private static final String FAIL_MESSAGE = 'Fail Message'
     private static final String SUCCESS_MESSAGE = 'Success Message'
 
@@ -44,8 +45,7 @@ class AjaxResponseServiceSpec extends Specification {
         0 * _
 
         and:
-        result.target == [formMessage: Boolean.TRUE, message: SUCCESS_MESSAGE, success: Boolean.TRUE]
-        result instanceof JSON
+        result.target == [action: FORM_MESSAGE, message: SUCCESS_MESSAGE, success: Boolean.TRUE]
     }
 
     void "Check failed renderValidationResponse() for 1 arg"() {
@@ -65,7 +65,6 @@ class AjaxResponseServiceSpec extends Specification {
 
         and:
         result.target.size() == 2
-        result instanceof JSON
     }
 
     void "Check renderFormMessage() method"() {
@@ -80,8 +79,7 @@ class AjaxResponseServiceSpec extends Specification {
         0 * _
 
         and:
-        result.target == [formMessage: Boolean.TRUE, success: Boolean.TRUE, message: SUCCESS_MESSAGE]
-        result instanceof JSON
+        result.target == [action: FORM_MESSAGE, success: Boolean.TRUE, message: SUCCESS_MESSAGE]
     }
 
     void "Test renderRedirect()"() {
@@ -89,9 +87,7 @@ class AjaxResponseServiceSpec extends Specification {
         def result = service.renderRedirect(TEST_URI)
 
         then:
-        result.target.redirect == TEST_URI
-
-        and:
-        result instanceof JSON
+        result.target.action == REDIRECT_ACTION
+        result.target.location == TEST_URI
     }
 }

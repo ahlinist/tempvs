@@ -23,11 +23,10 @@
             </g:each>
             <g:if test="${editAllowed}">
               <li class="row">
-                <tempvs:ajaxForm controller="item" action="linkSource">
+                <tempvs:ajaxForm controller="item" action="linkSource" selector="ul#linkedSources">
                   <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${availableSources}" noSelection="${['':'-']}"
                             optionKey="id" optionValue="name"/>
                   <input type="hidden" name="itemId" value="${itemId}" />
-                  <input type="hidden" name="selector" value="ul#linkedSources" />
                   <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
                 </tempvs:ajaxForm>
               </li>
@@ -56,11 +55,10 @@
                 </g:each>
                 <li class="list-group-item row">
                   <div class="row">
-                    <tempvs:ajaxForm controller="item" action="addImage">
+                    <tempvs:ajaxForm controller="item" action="addImage" selector="ul#itemImages">
                       <tempvs:formField type="file" name="imageUploadBean.image" label="item.image.label" />
                       <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="item.imageInfo.label" />
                       <input type="hidden" name="itemId" value="${itemId}"/>
-                      <input type="hidden" name="selector" value="ul#itemImages"/>
                       <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
                     </tempvs:ajaxForm>
                   </div>

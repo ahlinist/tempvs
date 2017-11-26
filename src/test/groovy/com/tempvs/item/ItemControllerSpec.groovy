@@ -27,14 +27,16 @@ class ItemControllerSpec extends Specification {
     private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
     private static final String POST_METHOD = 'POST'
-    private static final String SELECTOR = 'selector'
     private static final String ITEM_URI = '/item/show'
     private static final String ITEM_COLLECTION = 'item'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
     private static final String FIELD_VALUE = 'fieldValue'
+    private static final String SUCCESS_ACTION = 'success'
     private static final String DESCRIPTION = 'description'
+    private static final String DELETE_ACTION = 'deleteElement'
+    private static final String APPEND_ACTION = 'appendElement'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
@@ -290,7 +292,6 @@ class ItemControllerSpec extends Specification {
         given:
         params.itemId = ONE
         params.imageId = TWO
-        params.selector = SELECTOR
         request.method = DELETE_METHOD
 
         when:
@@ -304,8 +305,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.delete == Boolean.TRUE
-        response.json.selector == SELECTOR
+        response.json.action == DELETE_ACTION
     }
 
     void "Test show() without id"() {
@@ -371,7 +371,6 @@ class ItemControllerSpec extends Specification {
     void "Test deleteItem()"() {
         given:
         params.id = ONE
-        params.selector = SELECTOR
         request.method = DELETE_METHOD
 
         when:
@@ -383,8 +382,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.delete == Boolean.TRUE
-        response.json.selector == SELECTOR
+        response.json.action == DELETE_ACTION
     }
 
     void "Test deleteGroup() against unexisting one"() {
@@ -405,7 +403,6 @@ class ItemControllerSpec extends Specification {
     void "Test deleteGroup()"() {
         given:
         params.id = ONE
-        params.selector = SELECTOR
         request.method = DELETE_METHOD
 
         when:
@@ -417,15 +414,13 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.delete == Boolean.TRUE
-        response.json.selector == SELECTOR
+        response.json.action == DELETE_ACTION
     }
 
     void "Test addImage()"() {
         given:
         params.itemId = ONE
         params.imageId = TWO
-        params.selector = SELECTOR
         request.method = POST_METHOD
 
         when:
@@ -440,8 +435,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.append == Boolean.TRUE
-        response.json.selector == SELECTOR
+        response.json.action == APPEND_ACTION
     }
 
     void "Test editItemField()"() {
@@ -461,7 +455,7 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.success == Boolean.TRUE
+        response.json.action == SUCCESS_ACTION
     }
 
     void "Test editItemGroupField()"() {
@@ -481,14 +475,13 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.success == Boolean.TRUE
+        response.json.action == SUCCESS_ACTION
     }
 
     void "Test linkSource()"() {
         given:
         params.itemId = ONE
         params.sourceId = ONE
-        params.selector = SELECTOR
         request.method = POST_METHOD
 
         when:
@@ -504,15 +497,13 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.append == Boolean.TRUE
-        response.json.selector == SELECTOR
+        response.json.action == APPEND_ACTION
     }
 
     void "Test unlinkSource()"() {
         given:
         params.itemId = ONE
         params.sourceId = ONE
-        params.selector = SELECTOR
         request.method = DELETE_METHOD
 
         when:
@@ -526,7 +517,6 @@ class ItemControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.delete == Boolean.TRUE
-        response.json.selector == SELECTOR
+        response.json.action == DELETE_ACTION
     }
 }

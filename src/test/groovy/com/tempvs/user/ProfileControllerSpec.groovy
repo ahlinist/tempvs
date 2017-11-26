@@ -30,6 +30,7 @@ class ProfileControllerSpec extends Specification {
     private static final String PROPERTIES = 'properties'
     private static final String IDENTIFIER = 'identifier'
     private static final String FIELD_VALUE = 'fieldValue'
+    private static final String SUCCESS_ACTION = 'success'
     private static final String PROFILE_URL = '/profile/index'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
@@ -240,7 +241,7 @@ class ProfileControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.success == Boolean.TRUE
+        response.json.action == SUCCESS_ACTION
     }
 
     void "Test editProfileEmail()"() {

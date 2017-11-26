@@ -1,7 +1,6 @@
 <g:set var="imageId" value="${image.id}"/>
 <g:set var="imageInfo" value="${image.imageInfo}"/>
-<g:set var="selector" value="itemImage-${imageId}"/>
-<li class="list-group-item row" id="${selector}">
+<li class="list-group-item row" id="itemImage-${imageId}">
   <div class="col-sm-4">
     <tempvs:modalImage image="${image}" classes="item-image" orientation="horizontal" styles="min-height: 20vw; max-height: 20vw;"/>
   </div>
@@ -12,7 +11,7 @@
       <tempvs:modalButton id="deleteItemImage-${image.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
         <g:message code='item.imageDeleteConfirmation.text'/>
         <br/>
-        <tempvs:ajaxLink message="yes" controller="item" action="deleteImage" params="${[itemId: itemId, imageId: imageId, selector: 'li#' + selector]}" method="DELETE"/>
+        <tempvs:ajaxLink message="yes" controller="item" action="deleteImage" params="${[itemId: itemId, imageId: imageId]}" method="DELETE" selector="li#itemImage-${imageId}"/>
         <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
       </tempvs:modalButton>
     </span>
@@ -22,3 +21,4 @@
     </g:if>
   </div>
 </li>
+

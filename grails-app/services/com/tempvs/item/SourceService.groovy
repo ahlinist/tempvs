@@ -2,8 +2,6 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
-import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import groovy.transform.TypeCheckingMode
@@ -14,9 +12,6 @@ import groovy.transform.TypeCheckingMode
 @GrailsCompileStatic
 class SourceService {
 
-    private static final String SOURCE_COLLECTION = 'source'
-
-    ImageService imageService
     ObjectDAOService objectDAOService
 
     Source getSource(Object id) {
@@ -35,11 +30,11 @@ class SourceService {
         objectDAOService.save(source)
     }
 
-    Source createSource(Source source, List<ImageUploadBean> imageUploadBeans) {
-        List<Image> images = imageService.uploadImages(imageUploadBeans, SOURCE_COLLECTION)
-
-        images?.each { Image image ->
-            source.addToImages(image)
+    Source updateSource(Source source, List<Image> images = []) {
+        images.each { Image image ->
+            if (image) {
+                source.addToImages(image)
+            }
         }
 
         objectDAOService.save(source)

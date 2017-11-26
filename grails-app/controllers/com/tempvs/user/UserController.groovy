@@ -13,9 +13,6 @@ class UserController {
 
     private static final String PASSWORD = 'password'
     private static final String UPDATE_EMAIL_ACTION = 'email'
-    private static final String EMAIL_USED = 'user.email.used'
-    private static final String EMAIL_EMPTY = 'user.email.empty'
-    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
 

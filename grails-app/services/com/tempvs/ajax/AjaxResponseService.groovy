@@ -13,6 +13,10 @@ import org.springframework.validation.ObjectError
 @CompileStatic
 class AjaxResponseService {
 
+    private static final String REDIRECT = 'redirect'
+    private static final String FORM_MESSAGE = 'formMessage'
+    private static final String VALIDATION_RESPONSE = 'validationResponse'
+
     ValidationTagLib validationTagLib
 
     JSON renderValidationResponse(Validateable instance, String successMessage = null) {
@@ -21,17 +25,17 @@ class AjaxResponseService {
                 [message: validationTagLib.message(error: error), name: ((FieldError) error).field]
             }
 
-            result as JSON
+            [action: VALIDATION_RESPONSE, messages: result] as JSON
         } else {
             renderFormMessage(Boolean.TRUE, successMessage)
         }
     }
 
     JSON renderFormMessage(Boolean success, String code) {
-        [formMessage: Boolean.TRUE, success: success, message: validationTagLib.message(code: code)] as JSON
+        [action: FORM_MESSAGE, success: success, message: validationTagLib.message(code: code)] as JSON
     }
 
     JSON renderRedirect(String uri) {
-        [redirect: uri] as JSON
+        [action: REDIRECT, location: uri] as JSON
     }
 }

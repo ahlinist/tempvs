@@ -48,7 +48,7 @@
                           <tempvs:modalButton id="deleteItem-${item.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
                             <g:message code='item.deleteConfirmation.text' args="${[itemName]}"/>
                             <br/>
-                            <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${itemId}" params="${[selector: 'li#item-' + itemId]}" method="DELETE"/>
+                            <tempvs:ajaxLink message="yes" controller="item" action="deleteItem" id="${itemId}" method="DELETE" selector="li#item-${itemId}"/>
                             <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                           </tempvs:modalButton>
                         </span>

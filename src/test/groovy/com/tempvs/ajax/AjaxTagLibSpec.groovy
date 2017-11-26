@@ -12,6 +12,7 @@ class AjaxTagLibSpec extends Specification {
     private static final String ID = 'id'
     private static final String ITEM = 'item'
     private static final String MESSAGE = 'message'
+    private static final String SELECTOR = 'selector'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String DELETE_ITEM = 'deleteItem'
     private static final String DELETE_ITEM_URL = '/item/deleteItem/id'
@@ -38,11 +39,11 @@ class AjaxTagLibSpec extends Specification {
 
     void "Test tempvs:ajaxLink"() {
         given:
-        String event = "<span onclick=\"sendAjaxRequest(this, '${DELETE_ITEM_URL}', '${DELETE_METHOD}');\">"
+        String event = "<span onclick=\"sendAjaxRequest(this, '${DELETE_ITEM_URL}', '${DELETE_METHOD}', actions, '${SELECTOR}');\">"
         String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
-        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\" method=\"${DELETE_METHOD}\"/>")
+        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\" method=\"${DELETE_METHOD}\" selector=\"${SELECTOR}\"/>")
 
         then:
         template.contains spinner
@@ -53,10 +54,10 @@ class AjaxTagLibSpec extends Specification {
         given:
         String controller = 'testController'
         String action = 'testAction'
-        String ajaxForm = '<form action="/testController/testAction" method="post" onsubmit="submitAjaxForm(this); return false;" class="ajax-form" >'
+        String ajaxForm = "<form action=\"/testController/testAction\" method=\"post\" onsubmit=\"submitAjaxForm"
 
         when:
-        def template = applyTemplate("<tempvs:ajaxForm controller=\"${controller}\" action=\"${action}\"/>")
+        def template = applyTemplate("<tempvs:ajaxForm controller=\"${controller}\" action=\"${action}\" selector=\"${SELECTOR}\"/>")
 
         then:
         template.contains ajaxForm

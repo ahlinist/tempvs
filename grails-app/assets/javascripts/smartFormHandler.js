@@ -4,6 +4,12 @@ function activateInput(fieldName) {
 }
 
 function waitForClickOut(fieldName, fieldType) {
+    var actions = {
+               success: successAction,
+               formMessage: formMessageAction, 
+               validationResponse: validationResponseAction, 
+    };
+
     var textSelector = '#' + fieldName + '-text';
     var inputSelector = '#' + fieldName + '-input';
     var textField = document.querySelector(textSelector);
@@ -12,31 +18,37 @@ function waitForClickOut(fieldName, fieldType) {
     var pencil = createGlyph('pencil', '#AAA');
     pencil.addEventListener('click', function() { activateInput(fieldName); });
 
-    function successFieldUpdate(element, response) {
-        textField.getElementsByClassName('ajaxSpinner')[0].remove();
-
-        if (!response.success) {
-            var field = document.querySelector(textSelector);
-            field.classList.add('popped-over', 'bg-danger');
-            field.setAttribute('data-placement','right');
+    function successAction() {
+        removeSpinner(spinner);
+        var okGlyph = createGlyph('ok', 'green');
+        textField.appendChild(okGlyph);
         
-            if (response.formMessage) {
-                field.setAttribute('data-content', response.message);   
-            } else {
-                field.setAttribute('data-content', response[0].message);   
-            }
-
-            field.setAttribute('data-html', true);   
-            $('.popped-over').popover('show');
+        setTimeout(function() {
+            okGlyph.remove();
             textField.appendChild(pencil);
-        } else {
-            var okGlyph = createGlyph('ok', 'green');
-            textField.appendChild(okGlyph);
-            setTimeout(function() {
-                okGlyph.remove();
-                textField.appendChild(pencil);
-            }, 1000);
-        }
+        }, 1000);
+    }
+
+    function formMessageAction(element, response) {
+        removeSpinner(spinner);
+        var field = document.querySelector(textSelector);
+        field.classList.add('popped-over', response.success ? 'bg-success' : 'bg-danger');
+        field.setAttribute('data-placement','right');
+        field.setAttribute('data-content', response.message);
+        field.setAttribute('data-html', true);
+        $('.popped-over').popover('show');
+        textField.appendChild(pencil);
+    }
+
+    function validationResponseAction(element, response) {
+        removeSpinner(spinner);
+        var field = document.querySelector(textSelector);
+        field.classList.add('popped-over', 'bg-danger');
+        field.setAttribute('data-placement','right');
+        field.setAttribute('data-content', response.messages[0].message);
+        field.setAttribute('data-html', true);
+        $('.popped-over').popover('show');
+        textField.appendChild(pencil);
     }
 
     function removeListener() {
@@ -46,7 +58,7 @@ function waitForClickOut(fieldName, fieldType) {
     var eventListener =  function(event) {
         if(!event.target.closest(inputSelector)) {
             if(!!(inputField.offsetWidth || inputField.offsetHeight || inputField.getClientRects().length)) {
-                submitAjaxForm(document.forms[fieldName + '-form'], successFieldUpdate);
+                submitAjaxForm(document.forms[fieldName + '-form'], actions);
                 removeListener();
                 inputField.classList.add('hidden');
                 textField.classList.remove('hidden');
@@ -79,4 +91,8 @@ function createSpinner() {
     img.classList.add('ajaxSpinner');
     img.src = '/assets/spinner.gif';
     return img;
+}
+
+function removeSpinner(spinner) {
+    spinner.parentNode.removeChild(spinner);
 }

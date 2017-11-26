@@ -1,6 +1,8 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.converters.JSON
@@ -26,13 +28,16 @@ class SourceControllerSpec extends Specification {
     private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
     private static final String FIELD_VALUE = 'fieldValue'
+    private static final String SUCCESS_ACTION = 'success'
     private static final String DESCRIPTION = 'description'
-
+    private static final String SOURCE_COLLECTION = 'source'
     private static final String PERIOD_URI = '/source/period'
 
     def json = Mock JSON
+    def image = Mock Image
     def period = Period.XIX
     def source = Mock Source
+    def imageService = Mock ImageService
     def sourceService = Mock SourceService
     def sourceCommand = Mock SourceCommand
     def imageUploadBean = Mock ImageUploadBean
@@ -40,6 +45,7 @@ class SourceControllerSpec extends Specification {
 
     def setup() {
         controller.sourceService = sourceService
+        controller.imageService = imageService
         controller.ajaxResponseService = ajaxResponseService
     }
 
@@ -81,7 +87,8 @@ class SourceControllerSpec extends Specification {
         1 * sourceCommand.validate() >> Boolean.TRUE
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
         1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
-        1 * sourceService.createSource(_ as Source, [imageUploadBean]) >> source
+        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
+        1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseService.renderRedirect("${PERIOD_URI}/${period.id}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -101,7 +108,8 @@ class SourceControllerSpec extends Specification {
         1 * sourceCommand.validate() >> Boolean.TRUE
         1 * sourceCommand.getProperty(PROPERTIES) >> properties
         1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
-        1 * sourceService.createSource(_ as Source, [imageUploadBean]) >> source
+        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
+        1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseService.renderValidationResponse(_ as Source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -169,6 +177,6 @@ class SourceControllerSpec extends Specification {
         0 * _
 
         and:
-        response.json.success == Boolean.TRUE
+        response.json.action == SUCCESS_ACTION
     }
 }
