@@ -67,14 +67,14 @@ class ProfileViewSpec extends Specification {
 
         then:
         1 * userProfile.getProperty(AVATAR) >> image
-        2 * userProfile.getProperty(CLASS) >> UserProfile
+        1 * userProfile.getProperty(CLASS) >> UserProfile
         1 * userProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
         1 * userProfile.getProperty(LOCATION) >> LOCATION
         1 * userProfile.getProperty(PROFILE_ID) >> PROFILE_ID
         1 * user.getProperty(LAST_ACTIVE) >> lastActiveDate
         1 * userProfile.getProperty(FIRST_NAME) >> FIRST_NAME
         1 * userProfile.getProperty(LAST_NAME) >> LAST_NAME
-        2 * userProfile.getProperty(ID) >> ID
+        1 * userProfile.getProperty(ID) >> ID
         0 * _
 
         and:
@@ -92,7 +92,7 @@ class ProfileViewSpec extends Specification {
 
         then:
         1 * clubProfile.getProperty(AVATAR) >> image
-        2 * clubProfile.getProperty(CLASS) >> ClubProfile
+        1 * clubProfile.getProperty(CLASS) >> ClubProfile
         1 * clubProfile.getProperty(PROFILE_EMAIL) >> PROFILE_EMAIL
         1 * clubProfile.getProperty(LOCATION) >> LOCATION
         1 * clubProfile.getProperty(CLUB_NAME) >> CLUB_NAME
@@ -101,7 +101,7 @@ class ProfileViewSpec extends Specification {
         1 * clubProfile.getProperty(LAST_NAME) >> LAST_NAME
         1 * clubProfile.getProperty(NICK_NAME) >> NICK_NAME
         1 * clubProfile.getProperty(PERIOD) >> period
-        2 * clubProfile.getProperty(ID) >> ID
+        1 * clubProfile.getProperty(ID) >> ID
         1 * user.getProperty(LAST_ACTIVE)
         0 * _
 
@@ -119,7 +119,8 @@ class ProfileViewSpec extends Specification {
 
         then:
         1 * userProfile.getProperty(ID) >> ID
-        2 * clubProfile.getProperty(ID) >> ID
+        1 * clubProfile.getProperty(ID) >> ID
+        0 * _
 
         and:
         result.contains createProfileButton

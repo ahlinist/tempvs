@@ -26,15 +26,17 @@
           </label>
           <ul>
             <g:each var="clubProfile" in="${clubProfiles}">
-              <li class="row">
-                <g:link class="btn btn-default col-sm-10" action="clubProfile" id="${clubProfile.id}">
+              <g:set var="clubProfileId" value="${clubProfile.id}"/>
+              <li class="row" id="clubProfile-${clubProfileId}">
+                <g:link class="btn btn-default col-sm-10" action="clubProfile" id="${clubProfileId}">
                   ${clubProfile}
                 </g:link>
                 <span class="pull-left">
-                  <tempvs:modalButton id="deleteProfile" size="modal-sm" classes="glyphicon glyphicon-trash">
+                  <tempvs:modalButton id="deleteProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-trash">
                     <g:message code='profile.deleteConfirmation.text' args="${[clubProfile]}"/>
                     <br/>
-                    <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${clubProfile.id}" method="DELETE"/>
+                    <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${clubProfileId}"
+                            method="DELETE" selector="li#clubProfile-${clubProfileId}"/>
                     <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                   </tempvs:modalButton>
                 </span>

@@ -18,8 +18,6 @@ ${profile}
           <tempvs:ajaxForm action="uploadAvatar">
             <tempvs:formField type="file" name="image" label="profile.avatar.label" />
             <tempvs:formField type="text" name="imageInfo" label="profile.avatarInfo.label" />
-            <input type="hidden" name="profileClass" value="${profile.class.name}"/>
-            <input type="hidden" name="profileId" value="${profile.id}"/>
             <tempvs:ajaxSubmitButton value="profile.updateAvatar.button" />
           </tempvs:ajaxForm>
         </tempvs:modalButton>

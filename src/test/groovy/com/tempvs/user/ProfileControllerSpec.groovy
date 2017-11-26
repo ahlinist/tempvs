@@ -32,6 +32,7 @@ class ProfileControllerSpec extends Specification {
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String PROFILE_URL = '/profile/index'
+    private static final String DELETE_ACTION = 'deleteElement'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -275,9 +276,10 @@ class ProfileControllerSpec extends Specification {
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
         1 * profileService.deleteProfile(clubProfile)
         1 * profileHolder.setProfile(null)
-        1 * ajaxResponseService.renderRedirect(PROFILE_URL) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+
+        and:
+        response.json.action == DELETE_ACTION
     }
 
     void "Test deleteAvatar()"() {
@@ -309,7 +311,7 @@ class ProfileControllerSpec extends Specification {
         controller.uploadAvatar(imageUploadBean)
 
         then:
-        1 * profileService.getProfile(UserProfile, ONE) >> userProfile
+        1 * profileHolder.profile >> userProfile
         1 * profileService.uploadAvatar(userProfile, imageUploadBean) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
