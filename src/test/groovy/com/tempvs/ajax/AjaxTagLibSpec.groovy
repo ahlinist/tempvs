@@ -39,7 +39,7 @@ class AjaxTagLibSpec extends Specification {
 
     void "Test tempvs:ajaxLink"() {
         given:
-        String event = "<span onclick=\"sendAjaxRequest(this, '${DELETE_ITEM_URL}', '${DELETE_METHOD}', actions, '${SELECTOR}');\">"
+        String event = "<span onclick=\"sendAjaxRequest(this, '${DELETE_ITEM_URL}', '${DELETE_METHOD}', '${SELECTOR}');\">"
         String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:

@@ -58,7 +58,7 @@ function waitForClickOut(fieldName, fieldType) {
     var eventListener =  function(event) {
         if(!event.target.closest(inputSelector)) {
             if(!!(inputField.offsetWidth || inputField.offsetHeight || inputField.getClientRects().length)) {
-                submitAjaxForm(document.forms[fieldName + '-form'], actions);
+                submitAjaxForm(document.forms[fieldName + '-form'], null, actions);
                 removeListener();
                 inputField.classList.add('hidden');
                 textField.classList.remove('hidden');

@@ -1,24 +1,28 @@
-var actions = {
-           redirect: redirectAction,
-           deleteElement: deleteElementAction,
-           appendElement: appendElementAction,
-           formMessage: formMessageAction,
-           validationResponse: validationResponseAction,
-           none: function() {},
-};
-
-function submitAjaxForm(form, actions, selector) {
+function submitAjaxForm(form, selector, actions) {
     var method = 'POST'
     var url = form.action;
     var data = new FormData(form);
-    processAjaxRequest(form, url, data, method, actions, selector);
+    processAjaxRequest(form, url, data, method, selector, actions);
 }
 
-function sendAjaxRequest(element, url, method, actions, selector) {
-    processAjaxRequest(element, url, '', method, actions, selector);
+function sendAjaxRequest(element, url, method, selector, actions) {
+    processAjaxRequest(element, url, '', method, selector, actions);
 }
 
-function processAjaxRequest(element, url, data, method, actions, selector) {
+function processAjaxRequest(element, url, data, method, selector, actions) {
+    var defaultActions = {
+               redirect: redirectAction,
+               deleteElement: deleteElementAction,
+               appendElement: appendElementAction,
+               formMessage: formMessageAction,
+               validationResponse: validationResponseAction,
+               none: function() {},
+    };
+
+    if (!(actions instanceof Object)) {
+        actions = defaultActions;
+    }
+
     var spinner = element.querySelector('.ajaxSpinner');
     var submitButton = element.querySelector('.submit-button');
 
