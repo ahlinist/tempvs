@@ -89,11 +89,8 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test stash() with id being not logged in"() {
-        given:
-        params.id = ONE
-
         when:
-        def result = controller.stash()
+        def result = controller.stash(ONE)
 
         then:
         1 * userService.getUser(ONE) >> null
@@ -107,11 +104,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test stash() for success"() {
         given:
-        params.id = ONE
         Set itemGroups = [itemGroup]
 
         when:
-        def result = controller.stash()
+        def result = controller.stash(ONE)
 
         then:
         1 * userService.getUser(ONE) >> user
@@ -188,11 +184,8 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test group() for non-existing id"() {
-        given:
-        params.id = ONE
-
         when:
-        controller.group()
+        controller.group(ONE)
 
         then:
         1 * itemService.getGroup(ONE) >> null
@@ -205,11 +198,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test group()"() {
         given:
-        params.id = ONE
         Collection items = [item]
 
         when:
-        def result = controller.group()
+        def result = controller.group(ONE)
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
@@ -290,12 +282,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteImage()"() {
         given:
-        params.itemId = ONE
-        params.imageId = TWO
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteImage()
+        controller.deleteImage(ONE, TWO)
 
         then:
         1 * itemService.getItem(ONE) >> item
@@ -321,11 +311,8 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test show()"() {
-        given:
-        params.id = ONE
-
         when:
-        def result = controller.show()
+        def result = controller.show(ONE)
 
         then:
         1 * itemService.getItem(ONE) >> item
@@ -356,10 +343,9 @@ class ItemControllerSpec extends Specification {
     void "Test deleteItem() against unexisting item"() {
         given:
         request.method = DELETE_METHOD
-        params.id = ONE
 
         when:
-        controller.deleteItem()
+        controller.deleteItem(ONE)
 
         then:
         1 * itemService.getItem(ONE) >> null
@@ -370,11 +356,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteItem()"() {
         given:
-        params.id = ONE
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteItem()
+        controller.deleteItem(ONE)
 
         then: 'Successfully deleted'
         1 * itemService.getItem(ONE) >> item
@@ -387,11 +372,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteGroup() against unexisting one"() {
         given:
-        params.id = ONE
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteGroup()
+        controller.deleteGroup(ONE)
 
         then:
         1 * itemService.getGroup(ONE) >> null
@@ -402,11 +386,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test deleteGroup()"() {
         given:
-        params.id = ONE
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteGroup()
+        controller.deleteGroup(ONE)
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
@@ -440,13 +423,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test editItemField()"() {
         given:
-        params.objectId = ONE
-        params.fieldName = FIELD_NAME
-        params.fieldValue = FIELD_VALUE
         request.method = POST_METHOD
 
         when:
-        controller.editItemField()
+        controller.editItemField(ONE, FIELD_NAME, FIELD_VALUE)
 
         then:
         1 * itemService.getItem(ONE) >> item
@@ -460,13 +440,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test editItemGroupField()"() {
         given:
-        params.objectId = ONE
-        params.fieldName = FIELD_NAME
-        params.fieldValue = FIELD_VALUE
         request.method = POST_METHOD
 
         when:
-        controller.editItemGroupField()
+        controller.editItemGroupField(ONE, FIELD_NAME, FIELD_VALUE)
 
         then:
         1 * itemService.getGroup(ONE) >> itemGroup
@@ -480,12 +457,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test linkSource()"() {
         given:
-        params.itemId = ONE
-        params.sourceId = ONE
         request.method = POST_METHOD
 
         when:
-        controller.linkSource()
+        controller.linkSource(ONE, ONE)
 
         then:
         1 * itemService.getItem(ONE) >> item
@@ -502,12 +477,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test unlinkSource()"() {
         given:
-        params.itemId = ONE
-        params.sourceId = ONE
         request.method = DELETE_METHOD
 
         when:
-        controller.unlinkSource()
+        controller.unlinkSource(ONE, ONE)
 
         then:
         1 * itemService.getItem(ONE) >> item

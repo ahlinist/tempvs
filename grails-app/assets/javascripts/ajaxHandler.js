@@ -42,7 +42,7 @@ function processAjaxRequest(element, url, data, method, selector, actions) {
         },
         error: function() {
             complete(submitButton, spinner);
-            createFormMessage(element, false, "Something went wrong :(");
+            formMessageAction(element, {success: false, message: "Something went wrong :("});
         }
     });
 };
@@ -97,7 +97,7 @@ function formMessageAction(element, response) {
     messageContainer.classList.add('form-message');
     messageContainer.classList.add(response.success ? 'text-success' : 'text-danger');
     messageContainer.innerHTML += response.message;
-    element.querySelector('[name="submit-button"]').parentNode.appendChild(messageContainer);
+    element.querySelector('.submit-button').parentNode.appendChild(messageContainer);
 }
 
 function validationResponseAction(element, response) {

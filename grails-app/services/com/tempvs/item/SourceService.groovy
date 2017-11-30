@@ -2,9 +2,11 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import groovy.transform.TypeCheckingMode
+import org.springframework.security.access.AccessDeniedException
 
 /**
  * Service that manages operations with {@link com.tempvs.item.Source}
@@ -12,6 +14,7 @@ import groovy.transform.TypeCheckingMode
 @GrailsCompileStatic
 class SourceService {
 
+    ImageService imageService
     ObjectDAOService objectDAOService
 
     Source getSource(Object id) {
@@ -37,6 +40,21 @@ class SourceService {
             }
         }
 
+        objectDAOService.save(source)
+    }
+
+    void deleteItem(Source source) {
+        imageService.deleteImages(source.images)
+        objectDAOService.delete(source)
+    }
+
+    Source deleteImage(Source source, Image image) {
+        if (!source.images.contains(image)) {
+            throw new AccessDeniedException('Source does not contain the given image.')
+        }
+
+        source.removeFromImages(image)
+        imageService.deleteImage(image)
         objectDAOService.save(source)
     }
 }

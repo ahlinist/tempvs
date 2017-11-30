@@ -2,6 +2,7 @@ package com.tempvs.item
 
 import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -21,9 +22,11 @@ class SourceServiceSpec extends Specification {
     def image = Mock Image
     def source = Mock Source
     def period = Period.MEDIEVAL
+    def imageService = Mock ImageService
     def objectDAOService = Mock ObjectDAOService
 
     def setup() {
+        service.imageService = imageService
         service.objectDAOService = objectDAOService
 
         GroovySpy(Source, global: true)
@@ -81,6 +84,38 @@ class SourceServiceSpec extends Specification {
 
         then:
         2 * source.addToImages(image)
+        1 * objectDAOService.save(source) >> source
+        0 * _
+
+        and:
+        result == source
+    }
+
+    void "Test deleteSource()"() {
+        given:
+        Set<Image> images = [image]
+
+        when:
+        service.deleteItem(source)
+
+        then:
+        1 * source.images >> images
+        1 * imageService.deleteImages(images)
+        1 * objectDAOService.delete(source)
+        0 * _
+    }
+
+    void "Test deleteImage()"() {
+        given:
+        List<Image> images = [image]
+
+        when:
+        def result = service.deleteImage(source, image)
+
+        then:
+        1 * source.images >> images
+        1 * source.removeFromImages(image)
+        1 * imageService.deleteImage(image)
         1 * objectDAOService.save(source) >> source
         0 * _
 

@@ -108,21 +108,21 @@ class ItemController {
         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'show', id: item.id))
     }
 
-    def deleteImage() {
-        Item item = itemService.getItem params.itemId
-        Image image = imageService.getImage params.imageId
+    def deleteImage(String itemId, String imageId) {
+        Item item = itemService.getItem itemId
+        Image image = imageService.getImage imageId
 
-        if (item && image) {
-            Item persistedItem = itemService.deleteImage(item, image)
-
-            if (!persistedItem.hasErrors()) {
-                render([action: DELETE_ACTION] as JSON)
-            } else {
-                render ajaxResponseService.renderValidationResponse(persistedItem)
-            }
-        } else {
-            render([action: NO_ACTION] as JSON)
+        if (!item || !image) {
+            return render([action: NO_ACTION] as JSON)
         }
+
+        item = itemService.deleteImage(item, image)
+
+        if (item.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(item))
+        }
+
+        render([action: DELETE_ACTION] as JSON)
     }
 
     def show(String id) {
@@ -173,31 +173,28 @@ class ItemController {
         Item item = itemService.getItem params.itemId
         Image image = imageService.uploadImage(imageUploadBean, ITEM_COLLECTION)
 
-        if (item && image) {
-            item = itemService.updateItem(item, [image])
-
-            if (!item.hasErrors()) {
-                Map model = [image: image, itemId: params.itemId]
-                String template = groovyPageRenderer.render(template: '/item/templates/addImageForm', model: model)
-                render([action: APPEND_ACTION, template: template] as JSON)
-            } else {
-                render ajaxResponseService.renderValidationResponse(item)
-            }
-
-        } else {
-            render([action: NO_ACTION] as JSON)
+        if (!item || !image) {
+            return render([action: NO_ACTION] as JSON)
         }
+
+        item = itemService.updateItem(item, [image])
+
+        if (item.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(item))
+        }
+
+        Map model = [image: image, itemId: params.itemId]
+        String template = groovyPageRenderer.render(template: '/item/templates/addImageForm', model: model)
+        render([action: APPEND_ACTION, template: template] as JSON)
     }
 
-    def editItemField() {
-        Item item = itemService.getItem params.objectId
+    def editItemField(String objectId, String fieldName, String fieldValue) {
+        Item item = itemService.getItem objectId
 
         if (!item) {
             return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
-        String fieldName = params.fieldName
-        String fieldValue = params.fieldValue
         item = itemService.editItemField(item, fieldName, fieldValue)
 
         if (item.hasErrors()) {
@@ -207,15 +204,13 @@ class ItemController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def editItemGroupField() {
-        ItemGroup itemGroup = itemService.getGroup params.objectId
+    def editItemGroupField(String objectId, String fieldName, String fieldValue) {
+        ItemGroup itemGroup = itemService.getGroup objectId
 
         if (!itemGroup) {
             return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
-        String fieldName = params.fieldName
-        String fieldValue = params.fieldValue
         itemGroup = itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
 
         if (itemGroup.hasErrors()) {
@@ -225,9 +220,9 @@ class ItemController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def linkSource() {
-        Item item = itemService.getItem params.itemId
-        Source source = sourceService.getSource params.sourceId
+    def linkSource(String itemId, String sourceId) {
+        Item item = itemService.getItem itemId
+        Source source = sourceService.getSource sourceId
 
         if (!item || !source || (item.sources.contains(source))) {
             return render([action: NO_ACTION] as JSON)
@@ -239,14 +234,14 @@ class ItemController {
             return render(ajaxResponseService.renderValidationResponse(item))
         }
 
-        Map model = [editAllowed: Boolean.TRUE, source: source, itemId: params.itemId]
+        Map model = [editAllowed: Boolean.TRUE, source: source, itemId: itemId]
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
         render([action: APPEND_ACTION, template: template] as JSON)
     }
 
-    def unlinkSource() {
-        Item item = itemService.getItem params.itemId
-        Source source = sourceService.getSource params.sourceId
+    def unlinkSource(String itemId, String sourceId) {
+        Item item = itemService.getItem itemId
+        Source source = sourceService.getSource sourceId
 
         if (!item || !source) {
             return render([action: NO_ACTION] as JSON)

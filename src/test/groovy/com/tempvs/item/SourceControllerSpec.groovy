@@ -6,6 +6,7 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
@@ -20,18 +21,23 @@ class SourceControllerSpec extends Specification {
 
     private static final String ID = 'id'
     private static final String ONE = '1'
+    private static final String TWO = '2'
     private static final Long LONG_ID = 1L
     private static final String NAME = 'name'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String OBJECT_ID = 'objectId'
+    private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
+    private static final String SHOW_URI = '/source/show'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String DESCRIPTION = 'description'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String PERIOD_URI = '/source/period'
+    private static final String DELETE_ACTION = 'deleteElement'
+    private static final String APPEND_ACTION = 'appendElement'
 
     def json = Mock JSON
     def image = Mock Image
@@ -41,11 +47,13 @@ class SourceControllerSpec extends Specification {
     def sourceService = Mock SourceService
     def sourceCommand = Mock SourceCommand
     def imageUploadBean = Mock ImageUploadBean
+    def groovyPageRenderer = Mock PageRenderer
     def ajaxResponseService = Mock AjaxResponseService
 
     def setup() {
         controller.sourceService = sourceService
         controller.imageService = imageService
+        controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseService = ajaxResponseService
     }
 
@@ -62,16 +70,20 @@ class SourceControllerSpec extends Specification {
     }
 
     void "Test show()"() {
+        given:
+        Set<Image> images = [image]
+
         when:
         def result = controller.show(ID)
 
         then:
         1 * sourceService.getSource(ID) >> source
         1 * source.period >> period
+        1 * source.images >> images
         0 * _
 
         and:
-        result == [source: source, period: period, editAllowed: Boolean.TRUE]
+        result == [source: source, period: period, images: images]
     }
 
     void "Test createSource()"() {
@@ -90,7 +102,8 @@ class SourceControllerSpec extends Specification {
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
         1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.FALSE
-        1 * ajaxResponseService.renderRedirect("${PERIOD_URI}/${period.id}") >> json
+        1 * source.id >> LONG_ID
+        1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -143,7 +156,7 @@ class SourceControllerSpec extends Specification {
         0 * _
 
         and:
-        result == [sources: sources, period: period, editAllowed: Boolean.TRUE]
+        result == [sources: sources, period: period]
     }
 
     void "Test getSourcesByPeriod()"() {
@@ -163,12 +176,9 @@ class SourceControllerSpec extends Specification {
     void "Test editSourceField()"() {
         given:
         request.method = POST_METHOD
-        params.objectId = OBJECT_ID
-        params.fieldName = FIELD_NAME
-        params.fieldValue = FIELD_VALUE
 
         when:
-        controller.editSourceField()
+        controller.editSourceField(OBJECT_ID, FIELD_NAME, FIELD_VALUE)
 
         then:
         1 * sourceService.getSource(OBJECT_ID) >> source
@@ -178,5 +188,60 @@ class SourceControllerSpec extends Specification {
 
         and:
         response.json.action == SUCCESS_ACTION
+    }
+
+    void "Test addImage()"() {
+        given:
+        params.sourceId = ONE
+        params.imageId = TWO
+        request.method = POST_METHOD
+
+        when:
+        controller.addImage(imageUploadBean)
+
+        then:
+        1 * sourceService.getSource(ONE) >> source
+        1 * imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION) >> image
+        1 * sourceService.updateSource(source, [image]) >> source
+        1 * source.hasErrors() >> Boolean.FALSE
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == APPEND_ACTION
+    }
+
+    void "Test deleteSource()"() {
+        given:
+        request.method = DELETE_METHOD
+
+        when:
+        controller.deleteSource(ONE)
+
+        then: 'Successfully deleted'
+        1 * sourceService.getSource(ONE) >> source
+        1 * sourceService.deleteItem(source)
+        0 * _
+
+        and:
+        response.json.action == DELETE_ACTION
+    }
+
+    void "Test deleteImage()"() {
+        given:
+        request.method = DELETE_METHOD
+
+        when:
+        controller.deleteImage(ONE, TWO)
+
+        then:
+        1 * sourceService.getSource(ONE) >> source
+        1 * imageService.getImage(TWO) >> image
+        1 * sourceService.deleteImage(source, image) >> source
+        1 * source.hasErrors() >> Boolean.FALSE
+        0 * _
+
+        and:
+        response.json.action == DELETE_ACTION
     }
 }

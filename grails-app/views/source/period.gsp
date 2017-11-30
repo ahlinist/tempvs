@@ -1,4 +1,9 @@
 <%@ page import="com.tempvs.periodization.Period"%>
+
+<sec:ifLoggedIn>
+  <g:set var="editAllowed" value="${true}"/>
+</sec:ifLoggedIn>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -24,7 +29,7 @@
               <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.createSource.tooltip')}">
                 <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-plus">
                   <tempvs:ajaxForm action="createSource">
-                    <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="source.sourceImage.label" infoLabel="source.imageInfo.label"/>
+                    <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="source.image.label" infoLabel="source.imageInfo.label"/>
                     <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
                     <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" />
                     <tempvs:formField type="text" name="description" value="${source?.description}" label="source.description.label" />
@@ -41,10 +46,24 @@
           <b><g:message code="source.list.label"/></b>:
           <ul>
             <g:each in="${sources}" var="source">
-              <li class="row">
-                <g:link controller="source" action="show" id="${source.id}" class="btn btn-default col-sm-3">
-                  ${source.name}
+              <g:set var="sourceId" value="${source.id}"/>
+              <g:set var="sourceName" value="${source.name}"/>
+              <li class="row" id="source-${sourceId}">
+                <g:link controller="source" action="show" id="${sourceId}" class="btn btn-default col-sm-3">
+                  ${sourceName}
                 </g:link>
+                <g:if test="${editAllowed}">
+                  <div class="pull-left">
+                    <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.delete.button')}">
+                      <tempvs:modalButton id="deleteSource-${source.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                        <g:message code='source.deleteConfirmation.text' args="${[sourceName]}"/>
+                        <br/>
+                        <tempvs:ajaxLink message="yes" controller="source" action="deleteSource" id="${sourceId}" method="DELETE" selector="li#source-${sourceId}"/>
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                      </tempvs:modalButton>
+                    </span>
+                  </div>
+                </g:if>
               </li>
             </g:each>
           </ul>
