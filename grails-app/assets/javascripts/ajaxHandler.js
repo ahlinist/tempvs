@@ -1,3 +1,51 @@
+function getActions() {
+    function redirectAction(element, response){
+        window.location.href = response.location;
+    }
+
+    function deleteElementAction(element, response, selector) {
+        var backdrop = document.querySelector('.modal-backdrop');
+        var toDelete = document.querySelector(selector);
+        document.querySelector('body').classList.remove('modal-open');
+        backdrop.parentNode.removeChild(backdrop);
+        toDelete.parentNode.removeChild(toDelete);
+        $(element).modal('hide');
+    }
+
+    function appendElementAction(element, response, selector) {
+        var appendTo = document.querySelector(selector);
+        appendTo.innerHTML = response.template + appendTo.innerHTML;
+    }
+
+    function formMessageAction(element, response) {
+        var messageContainer = document.createElement('span');
+        messageContainer.classList.add('text-center');
+        messageContainer.classList.add('form-message');
+        messageContainer.classList.add(response.success ? 'text-success' : 'text-danger');
+        messageContainer.innerHTML += response.message;
+        element.querySelector('.submit-button').parentNode.appendChild(messageContainer);
+    }
+
+    function validationResponseAction(element, response) {
+        for (entry in response.messages) {
+            createPopover(element, response.messages[entry]);
+        }
+
+        $('.popped-over').popover('show');
+    }
+
+    var actions = {
+               redirect: redirectAction,
+               deleteElement: deleteElementAction,
+               appendElement: appendElementAction,
+               formMessage: formMessageAction,
+               validationResponse: validationResponseAction,
+               none: function() {},
+    };
+
+    return actions;
+}
+
 function submitAjaxForm(form, selector, actions) {
     var method = 'POST'
     var url = form.action;
@@ -10,19 +58,6 @@ function sendAjaxRequest(element, url, method, selector, actions) {
 }
 
 function processAjaxRequest(element, url, data, method, selector, actions) {
-    var defaultActions = {
-               redirect: redirectAction,
-               deleteElement: deleteElementAction,
-               appendElement: appendElementAction,
-               formMessage: formMessageAction,
-               validationResponse: validationResponseAction,
-               none: function() {},
-    };
-
-    if (!(actions instanceof Object)) {
-        actions = defaultActions;
-    }
-
     var spinner = element.querySelector('.ajaxSpinner');
     var submitButton = element.querySelector('.submit-button');
 
@@ -71,41 +106,6 @@ function complete(submitButton, spinner) {
 
 function success(element, response, actions, selector) {
     actions[response.action](element, response, selector);
-}
-
-function redirectAction(element, response){
-    window.location.href = response.location;
-}
-
-function deleteElementAction(element, response, selector) {
-    var backdrop = document.querySelector('.modal-backdrop');
-    var toDelete = document.querySelector(selector);
-    document.querySelector('body').classList.remove('modal-open');
-    backdrop.parentNode.removeChild(backdrop);
-    toDelete.parentNode.removeChild(toDelete);
-    $(element).modal('hide');
-}
-
-function appendElementAction(element, response, selector) {
-    var appendTo = document.querySelector(selector);
-    appendTo.innerHTML = response.template + appendTo.innerHTML;
-}
-
-function formMessageAction(element, response) {
-    var messageContainer = document.createElement('span');
-    messageContainer.classList.add('text-center');
-    messageContainer.classList.add('form-message');
-    messageContainer.classList.add(response.success ? 'text-success' : 'text-danger');
-    messageContainer.innerHTML += response.message;
-    element.querySelector('.submit-button').parentNode.appendChild(messageContainer);
-}
-
-function validationResponseAction(element, response) {
-    for (entry in response.messages) {
-        createPopover(element, response.messages[entry]);
-    }
-
-    $('.popped-over').popover('show');
 }
 
 function createPopover(element, fieldEntry) {
