@@ -14,6 +14,8 @@ import org.springframework.security.access.AccessDeniedException
 @GrailsCompileStatic
 class SourceService {
 
+    private static final String PERIOD_FIELD = 'period'
+
     ImageService imageService
     ObjectDAOService objectDAOService
 
@@ -29,7 +31,12 @@ class SourceService {
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Source editSourceField(Source source, String fieldName, String fieldValue) {
-        source."${fieldName}" = fieldValue
+        if (fieldName == PERIOD_FIELD) {
+            throw new AccessDeniedException('Operation not supported.')
+        } else {
+            source."${fieldName}" = fieldValue
+        }
+
         objectDAOService.save(source)
     }
 

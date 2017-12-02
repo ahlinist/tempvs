@@ -3,7 +3,6 @@ package com.tempvs.item
 import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.periodization.Period
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import groovy.transform.TypeCheckingMode
@@ -16,9 +15,10 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class ItemService {
 
+    private static final String PERIOD_FIELD = 'period'
+
     UserService userService
     ImageService imageService
-    SourceService sourceService
     ObjectDAOService objectDAOService
 
     ItemGroup getGroup(Object id) {
@@ -63,16 +63,8 @@ class ItemService {
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item editItemField(Item item, String fieldName, String fieldValue) {
-        if (fieldName == 'source') {
-            item.source = sourceService.getSource(fieldValue)
-        } else if (fieldName == 'period') {
-            try {
-                item.period = Period.valueOf(fieldValue)
-                item.sources.clear()
-            } catch (IllegalArgumentException exception) {
-                item.period = null
-                item.sources.clear()
-            }
+        if (fieldName == PERIOD_FIELD) {
+            throw new AccessDeniedException('Operation not supported.')
         } else {
             item."${fieldName}" = fieldValue
         }
