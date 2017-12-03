@@ -140,7 +140,7 @@ class ItemController {
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
-                        sources: item.sources.sort {it.id},
+                        sources: itemService.getSourcesByItem(item),
                         availableSources: sourceService.getSourcesByPeriod(item.period),
                 ]
             }
@@ -224,14 +224,14 @@ class ItemController {
         Item item = itemService.getItem itemId
         Source source = sourceService.getSource sourceId
 
-        if (!item || !source || (item.sources.contains(source))) {
+        if (!item || !source) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        item = itemService.linkSource(item, source)
+        Item2Source item2source = itemService.linkSource(item, source)
 
-        if (item.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(item))
+        if (item2source.hasErrors()) {
+            return render(ajaxResponseService.renderValidationResponse(item2source))
         }
 
         Map model = [editAllowed: Boolean.TRUE, source: source, itemId: itemId]
@@ -247,11 +247,7 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        item = itemService.unlinkSource(item, source)
-
-        if (item.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(item))
-        }
+        itemService.unlinkSource(item, source)
 
         render([action: DELETE_ACTION] as JSON)
     }

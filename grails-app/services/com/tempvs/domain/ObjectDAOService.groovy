@@ -24,9 +24,11 @@ class ObjectDAOService {
     }
 
     public <T> T get(Class clazz, Object id) {
-        try {
-            sessionFactory.currentSession.get(clazz, id as Long) as T
-        } catch (NumberFormatException e) {
+        if (id) {
+            try {
+                sessionFactory.currentSession.get(clazz, id as Long) as T
+            } catch (NumberFormatException e) {
+            }
         }
     }
 

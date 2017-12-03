@@ -52,6 +52,7 @@ class ItemControllerSpec extends Specification {
     def userProfile = Mock UserProfile
     def itemService = Mock ItemService
     def itemCommand = Mock ItemCommand
+    def item2source = Mock Item2Source
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
     def groovyPageRenderer = Mock PageRenderer
@@ -318,12 +319,12 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * item.period >> period
-        1 * item.sources >> [source]
         1 * item.images >> [image]
         1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
+        1 * itemService.getSourcesByItem(item) >> [source]
         1 * sourceService.getSourcesByPeriod(period) >> [source]
         0 * _
 
@@ -465,9 +466,8 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * sourceService.getSource(ONE) >> source
-        1 * item.sources >> []
-        1 * itemService.linkSource(item, source) >> item
-        1 * item.hasErrors() >> Boolean.FALSE
+        1 * itemService.linkSource(item, source) >> item2source
+        1 * item2source.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -485,8 +485,7 @@ class ItemControllerSpec extends Specification {
         then:
         1 * itemService.getItem(ONE) >> item
         1 * sourceService.getSource(ONE) >> source
-        1 * itemService.unlinkSource(item, source) >> item
-        1 * item.hasErrors() >> Boolean.FALSE
+        1 * itemService.unlinkSource(item, source)
         0 * _
 
         and:

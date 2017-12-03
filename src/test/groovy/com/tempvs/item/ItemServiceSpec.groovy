@@ -3,24 +3,24 @@ package com.tempvs.item
 import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserService
+import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
 /**
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
+@Mock([Item2Source])
 @TestFor(ItemService)
 class ItemServiceSpec extends Specification {
 
     private static final String ID = 'id'
     private static final String NAME = 'name'
     private static final String IMAGES = 'images'
-    private static final String ITEM_COLLECTION = 'item'
-    private static final String COLLECTION = 'collection'
+    private static final String SOURCE = 'source'
     private static final String FIELD_VALUE = 'fieldValue'
 
     def user = Mock User
@@ -29,12 +29,14 @@ class ItemServiceSpec extends Specification {
     def period = Period.XIX
     def source = Mock Source
     def itemGroup = Mock ItemGroup
+    def item2Source = Mock Item2Source
     def userService = Mock UserService
     def imageService = Mock ImageService
-    def imageUploadBean = Mock ImageUploadBean
     def objectDAOService = Mock ObjectDAOService
 
     def setup() {
+        GroovySpy(Item2Source, global: true)
+
         service.userService = userService
         service.imageService = imageService
         service.objectDAOService = objectDAOService
@@ -65,6 +67,22 @@ class ItemServiceSpec extends Specification {
 
         and:
         result == item
+    }
+
+    void "Test getSourcesByItem"() {
+        given:
+        List<Item2Source> items2sources = [item2Source, item2Source]
+
+        when:
+        def result = service.getSourcesByItem(item)
+
+        then:
+        1 * Item2Source.findAllByItem(item) >> items2sources
+        2 * item2Source.getProperty(SOURCE) >> source
+        0 * _
+
+        and:
+        result == [source, source]
     }
 
     void "Test createGroup()"() {
@@ -174,24 +192,24 @@ class ItemServiceSpec extends Specification {
         def result = service.linkSource(item, source)
 
         then:
-        1 * item.addToSources(source)
-        1 * objectDAOService.save(item) >> item
+        1 * new Item2Source([item: item, source: source]) >> item2Source
+        1 * objectDAOService.save(_ as Item2Source) >> item2Source
         0 * _
 
         and:
-        result == item
+        result == item2Source
     }
 
     void "Test unlinkSource()"() {
+        given:
+        Map restrictions = [item: item, source: source]
+
         when:
-        def result = service.unlinkSource(item, source)
+        service.unlinkSource(item, source)
 
         then:
-        1 * item.removeFromSources(source)
-        1 * objectDAOService.save(item) >> item
+        1 * objectDAOService.find(Item2Source, restrictions) >> item2Source
+        1 * objectDAOService.delete(item2Source)
         0 * _
-
-        and:
-        result == item
     }
 }

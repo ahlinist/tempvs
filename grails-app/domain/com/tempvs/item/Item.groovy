@@ -15,15 +15,12 @@ class Item extends BasePersistent {
     String description
     Period period
 
-    static hasMany = [images: Image, sources: Source]
+    static hasMany = [images: Image]
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
         name blank: false
         description nullable: true
-        sources validator: { Set<Source> sources, Item item ->
-            sources ? sources*.period.every {it == item.period} : Boolean.TRUE
-        }
     }
 
     static mapping = {

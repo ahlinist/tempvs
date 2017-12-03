@@ -66,7 +66,6 @@ class ItemSpec extends Specification {
         item.images = [image] as Set
         item.itemGroup = itemGroup
         item.period = period
-        item.sources = [source] as Set
 
         expect:
         item.validate()

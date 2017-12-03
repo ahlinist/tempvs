@@ -110,6 +110,11 @@ function success(element, response, actions, selector) {
 
 function createPopover(element, fieldEntry) {
     var field = element.querySelector('[name="' + fieldEntry.name + '"]')
+
+    if (!field) {
+        field = element.querySelector('.submit-button');
+    }
+
     field.classList.add('popped-over');
     field.classList.add('bg-danger');
     field.setAttribute('data-placement','right');

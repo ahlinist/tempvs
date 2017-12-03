@@ -26,9 +26,12 @@ class ItemService {
     }
 
     Item getItem(Object id) {
-        if (id) {
-            objectDAOService.get(Item, id)
-        }
+        objectDAOService.get(Item, id)
+    }
+
+    List<Source> getSourcesByItem(Item item) {
+        List<Item2Source> items2Sources = Item2Source.findAllByItem(item)
+        items2Sources*.source
     }
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')
@@ -90,14 +93,13 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item linkSource(Item item, Source source) {
-        item.addToSources(source)
-        objectDAOService.save(item)
+    Item2Source linkSource(Item item, Source source) {
+        objectDAOService.save([item: item, source: source] as Item2Source)
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item unlinkSource(Item item, Source source) {
-        item.removeFromSources(source)
-        objectDAOService.save(item)
+    void unlinkSource(Item item, Source source) {
+        Item2Source item2Source = objectDAOService.find(Item2Source, [item: item, source: source])
+        objectDAOService.delete(item2Source)
     }
 }
