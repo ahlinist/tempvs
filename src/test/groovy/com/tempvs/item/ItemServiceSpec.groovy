@@ -1,6 +1,5 @@
 package com.tempvs.item
 
-import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
@@ -19,6 +18,7 @@ class ItemServiceSpec extends Specification {
 
     private static final String ID = 'id'
     private static final String NAME = 'name'
+    private static final String ITEMS = 'items'
     private static final String IMAGES = 'images'
     private static final String SOURCE = 'source'
     private static final String FIELD_VALUE = 'fieldValue'
@@ -32,14 +32,14 @@ class ItemServiceSpec extends Specification {
     def item2Source = Mock Item2Source
     def userService = Mock UserService
     def imageService = Mock ImageService
-    def objectDAOService = Mock ObjectDAOService
 
     def setup() {
         GroovySpy(Item2Source, global: true)
+        GroovySpy(ItemGroup, global: true)
+        GroovySpy(Item, global: true)
 
         service.userService = userService
         service.imageService = imageService
-        service.objectDAOService = objectDAOService
     }
 
     def cleanup() {
@@ -50,7 +50,7 @@ class ItemServiceSpec extends Specification {
         def result = service.getGroup(ID)
 
         then:
-        1 * objectDAOService.get(ItemGroup, ID) >> itemGroup
+        1 * ItemGroup.get(ID) >> itemGroup
         0 * _
 
         and:
@@ -62,7 +62,7 @@ class ItemServiceSpec extends Specification {
         def result = service.getItem(ID)
 
         then:
-        1 * objectDAOService.get(Item, ID) >> item
+        1 * Item.get(ID) >> item
         0 * _
 
         and:
@@ -90,7 +90,7 @@ class ItemServiceSpec extends Specification {
         def result = service.createGroup(itemGroup)
 
         then:
-        1 * objectDAOService.save(itemGroup) >> itemGroup
+        1 * itemGroup.save() >> itemGroup
         0 * _
 
         and:
@@ -103,7 +103,7 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * itemGroup.setName(FIELD_VALUE)
-        1 * objectDAOService.save(itemGroup) >> itemGroup
+        1 * itemGroup.save() >> itemGroup
         0 * _
 
         and:
@@ -111,18 +111,16 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test deleteGroup()"() {
-        given:
-        Set<Item> items = [item]
-        Set<Image> images = [image]
-
         when:
         service.deleteGroup(itemGroup)
 
         then:
-        1 * itemGroup.items >> items
-        1 * item.getProperty(IMAGES) >> images
-        1 * imageService.deleteImages(images)
-        1 * objectDAOService.delete(itemGroup)
+        1 * itemGroup.getProperty(ITEMS) >> [item]
+        1 * item.getProperty(IMAGES) >> [image]
+        1 * imageService.deleteImages([image])
+        1 * Item2Source.findAllByItemInList([item]) >> [item2Source]
+        1 * item2Source.delete()
+        1 * itemGroup.delete()
         0 * _
     }
 
@@ -135,7 +133,7 @@ class ItemServiceSpec extends Specification {
 
         then:
         2 * item.addToImages(image)
-        1 * objectDAOService.save(item) >> item
+        1 * item.save() >> item
         0 * _
 
         and:
@@ -148,7 +146,7 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * item.setName(FIELD_VALUE)
-        1 * objectDAOService.save(item) >> item
+        1 * item.save() >> item
         0 * _
 
         and:
@@ -156,16 +154,15 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test deleteItem()"() {
-        given:
-        Set<Image> images = [image]
-
         when:
         service.deleteItem(item)
 
         then:
-        1 * item.images >> images
-        1 * imageService.deleteImages(images)
-        1 * objectDAOService.delete(item)
+        1 * item.getProperty(IMAGES) >> [image]
+        1 * imageService.deleteImages([image])
+        1 * Item2Source.findAllByItem(item) >> [item2Source]
+        1 * item2Source.delete()
+        1 * item.delete()
         0 * _
     }
 
@@ -177,10 +174,10 @@ class ItemServiceSpec extends Specification {
         def result = service.deleteImage(item, image)
 
         then:
-        1 * item.images >> images
+        1 * item.getProperty(IMAGES) >> images
         1 * item.removeFromImages(image)
         1 * imageService.deleteImage(image)
-        1 * objectDAOService.save(item) >> item
+        1 * item.save() >> item
         0 * _
 
         and:
@@ -193,7 +190,7 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * new Item2Source([item: item, source: source]) >> item2Source
-        1 * objectDAOService.save(_ as Item2Source) >> item2Source
+        1 * item2Source.save()
         0 * _
 
         and:
@@ -201,15 +198,12 @@ class ItemServiceSpec extends Specification {
     }
 
     void "Test unlinkSource()"() {
-        given:
-        Map restrictions = [item: item, source: source]
-
         when:
         service.unlinkSource(item, source)
 
         then:
-        1 * objectDAOService.find(Item2Source, restrictions) >> item2Source
-        1 * objectDAOService.delete(item2Source)
+        1 * Item2Source.findByItemAndSource(item, source) >> item2Source
+        1 * item2Source.delete()
         0 * _
     }
 }
