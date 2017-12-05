@@ -3,9 +3,7 @@ package com.tempvs.item
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.user.UserService
-import grails.compiler.GrailsCompileStatic
 import grails.transaction.Transactional
-import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -48,7 +46,7 @@ class ItemService {
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')
     void deleteGroup(ItemGroup itemGroup) {
-        List<Item> items = itemGroup.items
+        List<Item> items = itemGroup.items as List
         imageService.deleteImages(items*.images?.flatten())
         List<Item2Source> item2Sources = Item2Source.findAllByItemInList(items)
         item2Sources*.delete()
@@ -67,7 +65,6 @@ class ItemService {
         item
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item editItemField(Item item, String fieldName, String fieldValue) {
         if (fieldName == PERIOD_FIELD) {

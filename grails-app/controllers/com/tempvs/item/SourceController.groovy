@@ -119,7 +119,7 @@ class SourceController {
             return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
-        sourceService.deleteItem source
+        sourceService.deleteSource source
         render([action: DELETE_ACTION] as JSON)
     }
 

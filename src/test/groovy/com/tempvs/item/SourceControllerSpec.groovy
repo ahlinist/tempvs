@@ -220,7 +220,7 @@ class SourceControllerSpec extends Specification {
 
         then: 'Successfully deleted'
         1 * sourceService.getSource(ONE) >> source
-        1 * sourceService.deleteItem(source)
+        1 * sourceService.deleteSource(source)
         0 * _
 
         and:

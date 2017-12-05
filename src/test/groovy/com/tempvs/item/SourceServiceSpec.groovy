@@ -1,6 +1,5 @@
 package com.tempvs.item
 
-import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
@@ -17,19 +16,20 @@ class SourceServiceSpec extends Specification {
 
     private static final String ID = 'id'
     private static final String NAME = 'name'
+    private static final String IMAGES = 'images'
     private static final String FIELD_VALUE = 'fieldValue'
 
     def image = Mock Image
     def source = Mock Source
     def period = Period.MEDIEVAL
+    def item2Source = Mock Item2Source
     def imageService = Mock ImageService
-    def objectDAOService = Mock ObjectDAOService
 
     def setup() {
         service.imageService = imageService
-        service.objectDAOService = objectDAOService
 
         GroovySpy(Source, global: true)
+        GroovySpy(Item2Source, global: true)
     }
 
     def cleanup() {
@@ -40,7 +40,7 @@ class SourceServiceSpec extends Specification {
         def result = service.getSource(ID)
 
         then:
-        1 * objectDAOService.get(Source, ID) >> source
+        1 * Source.get(ID) >> source
         0 * _
 
         and:
@@ -68,7 +68,7 @@ class SourceServiceSpec extends Specification {
 
         then:
         1 * source.setName(FIELD_VALUE)
-        1 * objectDAOService.save(source) >> source
+        1 * source.save() >> source
         0 * _
 
         and:
@@ -84,7 +84,7 @@ class SourceServiceSpec extends Specification {
 
         then:
         2 * source.addToImages(image)
-        1 * objectDAOService.save(source) >> source
+        1 * source.save() >> source
         0 * _
 
         and:
@@ -92,31 +92,27 @@ class SourceServiceSpec extends Specification {
     }
 
     void "Test deleteSource()"() {
-        given:
-        Set<Image> images = [image]
-
         when:
-        service.deleteItem(source)
+        service.deleteSource(source)
 
         then:
-        1 * source.images >> images
-        1 * imageService.deleteImages(images)
-        1 * objectDAOService.delete(source)
+        1 * source.getProperty(IMAGES) >> [image]
+        1 * imageService.deleteImages([image])
+        1 * Item2Source.findAllBySource(source) >> [item2Source]
+        1 * item2Source.delete()
+        1 * source.delete()
         0 * _
     }
 
     void "Test deleteImage()"() {
-        given:
-        List<Image> images = [image]
-
         when:
         def result = service.deleteImage(source, image)
 
         then:
-        1 * source.images >> images
+        1 * source.getProperty(IMAGES) >> [image]
         1 * source.removeFromImages(image)
         1 * imageService.deleteImage(image)
-        1 * objectDAOService.save(source) >> source
+        1 * source.save() >> source
         0 * _
 
         and:
