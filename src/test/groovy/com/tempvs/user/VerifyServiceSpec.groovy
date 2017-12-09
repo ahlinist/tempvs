@@ -1,6 +1,5 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAOService
 import grails.plugins.mail.MailService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
@@ -25,7 +24,6 @@ class VerifyServiceSpec extends Specification {
     def userService = Mock UserService
     def profileService = Mock ProfileService
     def emailVerification = Mock EmailVerification
-    def objectDAOService = Mock ObjectDAOService
 
     def setup() {
         GroovySpy(EmailVerification, global: true)
@@ -33,7 +31,6 @@ class VerifyServiceSpec extends Specification {
         service.mailService = mailService
         service.userService = userService
         service.profileService = profileService
-        service.objectDAOService = objectDAOService
     }
 
     def cleanup() {
@@ -58,7 +55,7 @@ class VerifyServiceSpec extends Specification {
         then:
         1 * emailVerification.email >> EMAIL
         1 * emailVerification.setVerificationCode(_ as String)
-        1 * objectDAOService.save(emailVerification) >> emailVerification
+        1 * emailVerification.save() >> emailVerification
         0 * _
 
         and:

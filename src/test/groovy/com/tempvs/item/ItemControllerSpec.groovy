@@ -22,8 +22,6 @@ import spock.lang.Specification
 @TestFor(ItemController)
 class ItemControllerSpec extends Specification {
 
-    private static final String ONE = '1'
-    private static final String TWO = '2'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
@@ -92,10 +90,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test stash() with id being not logged in"() {
         when:
-        def result = controller.stash(ONE)
+        def result = controller.stash(LONG_ONE)
 
         then:
-        1 * userService.getUser(ONE) >> null
+        1 * userService.getUser(LONG_ONE) >> null
         0 * _
 
         and:
@@ -109,10 +107,10 @@ class ItemControllerSpec extends Specification {
         Set itemGroups = [itemGroup]
 
         when:
-        def result = controller.stash(ONE)
+        def result = controller.stash(LONG_ONE)
 
         then:
-        1 * userService.getUser(ONE) >> user
+        1 * userService.getUser(LONG_ONE) >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
@@ -226,7 +224,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem() against invalid command"() {
         given:
-        params.groupId = ONE
         request.method = POST_METHOD
 
         when:
@@ -241,7 +238,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem() against invalid item"() {
         given:
-        params.groupId = ONE
         request.method = POST_METHOD
         Map properties = [name: NAME, description: DESCRIPTION, imageUploadBeans: [imageUploadBean]]
 
@@ -262,7 +258,6 @@ class ItemControllerSpec extends Specification {
 
     void "Test createItem()"() {
         given:
-        params.groupId = ONE
         request.method = POST_METHOD
         Map properties = [name: NAME, description: DESCRIPTION, period: period, imageUploadBeans: [imageUploadBean]]
 
@@ -404,8 +399,7 @@ class ItemControllerSpec extends Specification {
 
     void "Test addImage()"() {
         given:
-        params.itemId = ONE
-        params.imageId = TWO
+        params.itemId = LONG_ONE
         request.method = POST_METHOD
 
         when:

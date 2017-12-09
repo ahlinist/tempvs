@@ -53,7 +53,7 @@ class ItemController {
     LinkGenerator grailsLinkGenerator
     AjaxResponseService ajaxResponseService
 
-    def stash(String id) {
+    def stash(Long id) {
         User user = id ? userService.getUser(id) : userService.currentUser
 
         if (user) {

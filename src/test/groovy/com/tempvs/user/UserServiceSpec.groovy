@@ -1,6 +1,5 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAOService
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.test.mixin.TestFor
@@ -12,8 +11,8 @@ import spock.lang.Specification
 @TestFor(UserService)
 class UserServiceSpec extends Specification {
 
-    private static final String ID = 'id'
     private static final Long LONG_ID = 1L
+    private static final String USER = 'user'
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
     private static final String FIELD_VALUE = 'fieldValue'
@@ -23,14 +22,12 @@ class UserServiceSpec extends Specification {
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
     def profileService = Mock ProfileService
-    def objectDAOService = Mock ObjectDAOService
     def springSecurityService = Mock SpringSecurityService
 
     def setup() {
         GroovySpy(User, global: true)
 
         service.profileService = profileService
-        service.objectDAOService = objectDAOService
         service.springSecurityService = springSecurityService
     }
 
@@ -39,10 +36,10 @@ class UserServiceSpec extends Specification {
 
     void "Test getUser()"() {
         when:
-        def result = service.getUser(ID)
+        def result = service.getUser(LONG_ID)
 
         then:
-        1 * objectDAOService.get(User.class, ID) >> user
+        1 * User.get(LONG_ID) >> user
         0 * _
 
         and:
@@ -55,7 +52,6 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * springSecurityService.currentUser >> user
-        1 * user.asType(User) >> user
         0 * _
 
         result == user
@@ -116,7 +112,7 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * user.setEmail(FIELD_VALUE)
-        1 * objectDAOService.save(user) >> user
+        1 * user.save() >> user
         0 * _
 
         and:
@@ -129,7 +125,7 @@ class UserServiceSpec extends Specification {
 
         then:
         1 * user.setUserProfile(userProfile)
-        1 * objectDAOService.save(user) >> user
+        1 * user.save() >> user
         0 * _
 
         and:
@@ -143,8 +139,8 @@ class UserServiceSpec extends Specification {
         then:
         1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
         1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL) >> clubProfile
-        1 * clubProfile.user >> user
-        1 * user.email >> EMAIL
+        1 * clubProfile.getProperty(USER) >> user
+        1 * user.getProperty(EMAIL) >> EMAIL
         0 * _
 
         and:
