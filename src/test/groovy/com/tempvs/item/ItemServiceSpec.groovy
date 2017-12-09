@@ -4,7 +4,6 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
-import com.tempvs.user.UserService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -30,7 +29,6 @@ class ItemServiceSpec extends Specification {
     def source = Mock Source
     def itemGroup = Mock ItemGroup
     def item2Source = Mock Item2Source
-    def userService = Mock UserService
     def imageService = Mock ImageService
 
     def setup() {
@@ -38,7 +36,6 @@ class ItemServiceSpec extends Specification {
         GroovySpy(ItemGroup, global: true)
         GroovySpy(Item, global: true)
 
-        service.userService = userService
         service.imageService = imageService
     }
 

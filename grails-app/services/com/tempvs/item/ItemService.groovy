@@ -2,7 +2,6 @@ package com.tempvs.item
 
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.user.UserService
 import grails.transaction.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
@@ -15,7 +14,6 @@ class ItemService {
 
     private static final String PERIOD_FIELD = 'period'
 
-    UserService userService
     ImageService imageService
 
     ItemGroup getGroup(Object id) {
