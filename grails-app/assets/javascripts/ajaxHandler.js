@@ -77,7 +77,7 @@ function processAjaxRequest(element, url, data, method, selector, actions) {
         },
         error: function() {
             complete(submitButton, spinner);
-            formMessageAction(element, {success: false, message: "Something went wrong :("});
+            actions.formMessage(element, {success: false, message: "Something went wrong :("});
         }
     });
 };

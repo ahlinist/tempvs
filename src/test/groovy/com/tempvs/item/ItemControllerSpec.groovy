@@ -320,7 +320,7 @@ class ItemControllerSpec extends Specification {
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
-        1 * itemService.getSourcesByItem(item) >> [source]
+        1 * item.sources >> [source]
         1 * sourceService.getSourcesByPeriod(period) >> [source]
         0 * _
 

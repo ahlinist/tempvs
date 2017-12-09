@@ -6,7 +6,7 @@ import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 
 /**
- * An entity that corresponds the reconstruted item.
+ * An entity that corresponds the reconstructed item.
  */
 @GrailsCompileStatic
 class Item extends BasePersistent {
@@ -25,5 +25,10 @@ class Item extends BasePersistent {
 
     static mapping = {
         images cascade: 'all-delete-orphan'
+    }
+
+    List<Source> getSources() {
+        List<Item2Source> item2Sources = Item2Source.findAllByItem(this, [sort: "id"])
+        item2Sources*.source
     }
 }

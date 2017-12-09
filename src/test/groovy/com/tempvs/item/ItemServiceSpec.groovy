@@ -19,7 +19,6 @@ class ItemServiceSpec extends Specification {
     private static final String NAME = 'name'
     private static final String ITEMS = 'items'
     private static final String IMAGES = 'images'
-    private static final String SOURCE = 'source'
     private static final String FIELD_VALUE = 'fieldValue'
 
     def user = Mock User
@@ -64,22 +63,6 @@ class ItemServiceSpec extends Specification {
 
         and:
         result == item
-    }
-
-    void "Test getSourcesByItem"() {
-        given:
-        List<Item2Source> items2sources = [item2Source, item2Source]
-
-        when:
-        def result = service.getSourcesByItem(item)
-
-        then:
-        1 * Item2Source.findAllByItem(item) >> items2sources
-        2 * item2Source.getProperty(SOURCE) >> source
-        0 * _
-
-        and:
-        result == [source, source]
     }
 
     void "Test createGroup()"() {

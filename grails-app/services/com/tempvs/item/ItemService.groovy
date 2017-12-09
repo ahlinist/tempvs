@@ -24,11 +24,6 @@ class ItemService {
         Item.get id
     }
 
-    List<Source> getSourcesByItem(Item item) {
-        List<Item2Source> items2Sources = Item2Source.findAllByItem(item)
-        items2Sources*.source
-    }
-
     @PreAuthorize('#itemGroup.user.email == authentication.name')
     ItemGroup createGroup(ItemGroup itemGroup) {
         itemGroup.save()
@@ -46,8 +41,7 @@ class ItemService {
     void deleteGroup(ItemGroup itemGroup) {
         List<Item> items = itemGroup.items as List
         imageService.deleteImages(items*.images?.flatten())
-        List<Item2Source> item2Sources = Item2Source.findAllByItemInList(items)
-        item2Sources*.delete()
+        Item2Source.findAllByItemInList(items)*.delete()
         itemGroup.delete()
     }
 

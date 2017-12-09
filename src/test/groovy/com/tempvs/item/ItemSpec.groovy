@@ -12,13 +12,21 @@ import spock.lang.Specification
 class ItemSpec extends Specification {
 
     private static final String NAME = 'name'
+    private static final String SOURCE = 'source'
     private static final String DESCRIPTION = 'description'
 
     def image = Mock Image
-    def itemGroup = Mock ItemGroup
     def period = Period.XIX
+    def source = Mock Source
+    def itemGroup = Mock ItemGroup
+    def item2Source = Mock Item2Source
+
+    Item item
 
     def setup() {
+        GroovySpy(Item2Source, global: true)
+
+        item = new Item()
     }
 
     def cleanup() {
@@ -26,7 +34,6 @@ class ItemSpec extends Specification {
 
     void "Test item creation being not assigned to itemGroup"() {
         given:
-        Item item = new Item()
         item.name = NAME
         item.description = DESCRIPTION
         item.period = period
@@ -37,7 +44,6 @@ class ItemSpec extends Specification {
 
     void "Test item creation having no name"() {
         given:
-        Item item = new Item()
         item.description = DESCRIPTION
         item.itemGroup = itemGroup
         item.period = period
@@ -48,7 +54,6 @@ class ItemSpec extends Specification {
 
     void "Test correct item creation with minimal data"() {
         given:
-        Item item = new Item()
         item.name = NAME
         item.itemGroup = itemGroup
         item.period = period
@@ -59,8 +64,6 @@ class ItemSpec extends Specification {
 
     void "Test correct item creation with maximum data"() {
         given:
-        def source = new Source(name: NAME, period: period)
-        Item item = new Item()
         item.name = NAME
         item.description = DESCRIPTION
         item.images = [image] as Set
@@ -73,11 +76,23 @@ class ItemSpec extends Specification {
 
     void "Test item creation without period assigned"() {
         given:
-        Item item = new Item()
         item.name = NAME
         item.itemGroup = itemGroup
 
         expect:
         !item.validate()
+    }
+
+    void "Test getSources()"() {
+        when:
+        def result = item.getSources()
+
+        then:
+        1 * Item2Source.findAllByItem(_ as Item, [sort: "id"]) >> [item2Source]
+        1 * item2Source.getProperty(SOURCE) >> source
+        0 * _
+
+        and:
+        result == [source]
     }
 }
