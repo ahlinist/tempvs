@@ -1,11 +1,13 @@
 package com.tempvs.user
 
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.transaction.Transactional
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service that manages operations with {@link com.tempvs.user.User} entitites.
  */
+@Transactional
 class UserService {
 
     ProfileService profileService
