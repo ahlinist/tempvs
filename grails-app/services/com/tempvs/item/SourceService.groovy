@@ -16,7 +16,7 @@ class SourceService {
 
     ImageService imageService
 
-    Source getSource(Object id) {
+    Source getSource(Long id) {
         Source.get id
     }
 

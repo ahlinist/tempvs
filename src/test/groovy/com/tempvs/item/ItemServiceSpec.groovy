@@ -15,7 +15,7 @@ import spock.lang.Specification
 @TestFor(ItemService)
 class ItemServiceSpec extends Specification {
 
-    private static final String ID = 'id'
+    private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
     private static final String ITEMS = 'items'
     private static final String IMAGES = 'images'
@@ -44,10 +44,10 @@ class ItemServiceSpec extends Specification {
 
     void "Test getGroup()"() {
         when:
-        def result = service.getGroup(ID)
+        def result = service.getGroup(LONG_ONE)
 
         then:
-        1 * ItemGroup.get(ID) >> itemGroup
+        1 * ItemGroup.get(LONG_ONE) >> itemGroup
         0 * _
 
         and:
@@ -56,10 +56,10 @@ class ItemServiceSpec extends Specification {
 
     void "Test getItem()"() {
         when:
-        def result = service.getItem(ID)
+        def result = service.getItem(LONG_ONE)
 
         then:
-        1 * Item.get(ID) >> item
+        1 * Item.get(LONG_ONE) >> item
         0 * _
 
         and:

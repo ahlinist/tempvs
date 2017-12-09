@@ -1,6 +1,5 @@
 package com.tempvs.image
 
-import com.tempvs.domain.ObjectDAOService
 import grails.test.mixin.TestFor
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
@@ -12,6 +11,8 @@ import spock.lang.Specification
 class ImageServiceSpec extends Specification {
 
     private static final String ID = 'id'
+    private static final Long LONG_ID = 1L
+    private static final String OBJECT_ID = 'objectId'
     private static final String IMAGE_INFO = 'imageInfo'
     private static final String COLLECTION = 'collection'
     private static final List<Byte> BYTE_LIST = "test data".bytes
@@ -20,13 +21,13 @@ class ImageServiceSpec extends Specification {
     def imageDAO = Mock ImageDAO
     def imageBean = Mock ImageBean
     def imageUploadBean = Mock ImageUploadBean
-    def objectDAOService = Mock ObjectDAOService
     def multipartFile = new MockMultipartFile('1234567', "1234567" as byte[])
 
 
     def setup() {
+        GroovyMock(Image, global: true)
+
         service.imageDAO = imageDAO
-        service.objectDAOService = objectDAOService
     }
 
     def cleanup() {
@@ -34,10 +35,10 @@ class ImageServiceSpec extends Specification {
 
     void "Test getImage()"() {
         when:
-        def result = service.getImage(ID)
+        def result = service.getImage(LONG_ID)
 
         then:
-        1 * objectDAOService.get(Image, ID) >> image
+        1 * Image.get(LONG_ID) >> image
         0 * _
 
         and:
@@ -62,9 +63,9 @@ class ImageServiceSpec extends Specification {
         service.deleteImage(image)
 
         then:
-        1 * image.collection >> COLLECTION
-        1 * image.objectId >> ID
-        1 * imageDAO.delete(COLLECTION, ID) >> Boolean.TRUE
+        1 * image.getProperty(COLLECTION) >> COLLECTION
+        1 * image.getProperty(OBJECT_ID) >> OBJECT_ID
+        1 * imageDAO.delete(COLLECTION, OBJECT_ID) >> Boolean.TRUE
         0 * _
     }
 
@@ -76,9 +77,9 @@ class ImageServiceSpec extends Specification {
         service.deleteImages(images)
 
         then:
-        2 * image.collection >> COLLECTION
-        2 * image.objectId >> ID
-        2 * imageDAO.delete(COLLECTION, ID)
+        2 * image.getProperty(COLLECTION) >> COLLECTION
+        2 * image.getProperty(OBJECT_ID) >> OBJECT_ID
+        2 * imageDAO.delete(COLLECTION, OBJECT_ID)
         0 * _
     }
 
@@ -89,8 +90,8 @@ class ImageServiceSpec extends Specification {
         then:
         1 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.objectId >> ID
-        1 * imageDAO.delete(COLLECTION, ID)
+        1 * image.getProperty(OBJECT_ID) >> OBJECT_ID
+        1 * imageDAO.delete(COLLECTION, OBJECT_ID)
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * image.setObjectId(ID)
@@ -108,7 +109,7 @@ class ImageServiceSpec extends Specification {
 
         then:
         1 * imageUploadBean.image >> multipartFile
-        1 * objectDAOService.create(Image) >> image
+        1 * new Image() >> image
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * image.setObjectId(ID)
@@ -127,7 +128,7 @@ class ImageServiceSpec extends Specification {
 
         then:
         1 * imageUploadBean.image >> multipartFile
-        1 * objectDAOService.create(Image) >> image
+        1 * new Image() >> image
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * image.setObjectId(ID)

@@ -14,7 +14,7 @@ import spock.lang.Specification
 @TestFor(SourceService)
 class SourceServiceSpec extends Specification {
 
-    private static final String ID = 'id'
+    private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
     private static final String IMAGES = 'images'
     private static final String FIELD_VALUE = 'fieldValue'
@@ -37,10 +37,10 @@ class SourceServiceSpec extends Specification {
 
     void "Test getSource()"() {
         when:
-        def result = service.getSource(ID)
+        def result = service.getSource(LONG_ONE)
 
         then:
-        1 * Source.get(ID) >> source
+        1 * Source.get(LONG_ONE) >> source
         0 * _
 
         and:

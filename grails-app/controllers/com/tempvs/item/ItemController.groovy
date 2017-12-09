@@ -75,7 +75,7 @@ class ItemController {
         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: itemGroup.id))
     }
 
-    def group(String id) {
+    def group(Long id) {
         if (id) {
             ItemGroup itemGroup = itemService.getGroup id
 
@@ -108,7 +108,7 @@ class ItemController {
         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'show', id: item.id))
     }
 
-    def deleteImage(String itemId, String imageId) {
+    def deleteImage(Long itemId, Long imageId) {
         Item item = itemService.getItem itemId
         Image image = imageService.getImage imageId
 
@@ -125,7 +125,7 @@ class ItemController {
         render([action: DELETE_ACTION] as JSON)
     }
 
-    def show(String id) {
+    def show(Long id) {
         if (id) {
             Item item = itemService.getItem id
 
@@ -147,7 +147,7 @@ class ItemController {
         }
     }
 
-    def deleteItem(String id) {
+    def deleteItem(Long id) {
         Item item = itemService.getItem id
 
         if (!item) {
@@ -158,7 +158,7 @@ class ItemController {
         render([action: DELETE_ACTION] as JSON)
     }
 
-    def deleteGroup(String id) {
+    def deleteGroup(Long id) {
         ItemGroup itemGroup = itemService.getGroup id
 
         if (!itemGroup) {
@@ -170,7 +170,7 @@ class ItemController {
     }
 
     def addImage(ImageUploadBean imageUploadBean) {
-        Item item = itemService.getItem params.itemId
+        Item item = itemService.getItem params.itemId as Long
         Image image = imageService.uploadImage(imageUploadBean, ITEM_COLLECTION)
 
         if (!item || !image) {
@@ -188,7 +188,7 @@ class ItemController {
         render([action: APPEND_ACTION, template: template] as JSON)
     }
 
-    def editItemField(String objectId, String fieldName, String fieldValue) {
+    def editItemField(Long objectId, String fieldName, String fieldValue) {
         Item item = itemService.getItem objectId
 
         if (!item) {
@@ -204,7 +204,7 @@ class ItemController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def editItemGroupField(String objectId, String fieldName, String fieldValue) {
+    def editItemGroupField(Long objectId, String fieldName, String fieldValue) {
         ItemGroup itemGroup = itemService.getGroup objectId
 
         if (!itemGroup) {
@@ -220,7 +220,7 @@ class ItemController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def linkSource(String itemId, String sourceId) {
+    def linkSource(Long itemId, Long sourceId) {
         Item item = itemService.getItem itemId
         Source source = sourceService.getSource sourceId
 
@@ -239,7 +239,7 @@ class ItemController {
         render([action: APPEND_ACTION, template: template] as JSON)
     }
 
-    def unlinkSource(String itemId, String sourceId) {
+    def unlinkSource(Long itemId, Long sourceId) {
         Item item = itemService.getItem itemId
         Source source = sourceService.getSource sourceId
 

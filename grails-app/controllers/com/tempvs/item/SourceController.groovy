@@ -57,9 +57,9 @@ class SourceController {
         render(sources.collect { Source source -> [id: source.id, name: source.name]} as JSON)
     }
 
-    def show(String id) {
+    def show(Long id) {
         if (id) {
-            Source source = sourceService.getSource(id)
+            Source source = sourceService.getSource id
             [source: source, period: source?.period, images: source.images]
         }
     }
@@ -79,7 +79,7 @@ class SourceController {
         render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
     }
 
-    def editSourceField(String objectId, String fieldName, String fieldValue) {
+    def editSourceField(Long objectId, String fieldName, String fieldValue) {
         Source source = sourceService.getSource objectId
 
         if (!source) {
@@ -95,7 +95,7 @@ class SourceController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def deleteImage(String sourceId, String imageId) {
+    def deleteImage(Long sourceId, Long imageId) {
         Source source = sourceService.getSource sourceId
         Image image = imageService.getImage imageId
 
@@ -112,7 +112,7 @@ class SourceController {
         render([action: DELETE_ACTION] as JSON)
     }
 
-    def deleteSource(String id) {
+    def deleteSource(Long id) {
         Source source = sourceService.getSource id
 
         if (!source) {
@@ -124,7 +124,7 @@ class SourceController {
     }
 
     def addImage(ImageUploadBean imageUploadBean) {
-        Source source = sourceService.getSource params.sourceId
+        Source source = sourceService.getSource params.sourceId as Long
         Image image = imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION)
 
         if (!source || !image) {

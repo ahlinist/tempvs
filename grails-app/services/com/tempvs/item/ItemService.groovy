@@ -16,11 +16,11 @@ class ItemService {
 
     ImageService imageService
 
-    ItemGroup getGroup(Object id) {
+    ItemGroup getGroup(Long id) {
         ItemGroup.get id
     }
 
-    Item getItem(Object id) {
+    Item getItem(Long id) {
         Item.get id
     }
 

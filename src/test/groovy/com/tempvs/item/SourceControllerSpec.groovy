@@ -19,14 +19,13 @@ import spock.lang.Specification
 @TestFor(SourceController)
 class SourceControllerSpec extends Specification {
 
-    private static final String ID = 'id'
     private static final String ONE = '1'
     private static final String TWO = '2'
-    private static final Long LONG_ID = 1L
+    private static final Long LONG_ONE = 1L
+    private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
-    private static final String OBJECT_ID = 'objectId'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
     private static final String PROPERTIES = 'properties'
@@ -74,10 +73,10 @@ class SourceControllerSpec extends Specification {
         Set<Image> images = [image]
 
         when:
-        def result = controller.show(ID)
+        def result = controller.show(LONG_ONE)
 
         then:
-        1 * sourceService.getSource(ID) >> source
+        1 * sourceService.getSource(LONG_ONE) >> source
         1 * source.period >> period
         1 * source.images >> images
         0 * _
@@ -102,8 +101,8 @@ class SourceControllerSpec extends Specification {
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
         1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.FALSE
-        1 * source.id >> LONG_ID
-        1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${LONG_ID}") >> json
+        1 * source.id >> SourceControllerSpec.LONG_ONE
+        1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${SourceControllerSpec.LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -168,7 +167,7 @@ class SourceControllerSpec extends Specification {
 
         then:
         1 * sourceService.getSourcesByPeriod(period) >> {[source, source]}
-        2 * source.id >> LONG_ID
+        2 * source.id >> SourceControllerSpec.LONG_ONE
         2 * source.name >> NAME
         0 * _
     }
@@ -178,10 +177,10 @@ class SourceControllerSpec extends Specification {
         request.method = POST_METHOD
 
         when:
-        controller.editSourceField(OBJECT_ID, FIELD_NAME, FIELD_VALUE)
+        controller.editSourceField(LONG_ONE, FIELD_NAME, FIELD_VALUE)
 
         then:
-        1 * sourceService.getSource(OBJECT_ID) >> source
+        1 * sourceService.getSource(LONG_ONE) >> source
         1 * sourceService.editSourceField(source, FIELD_NAME, FIELD_VALUE) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         0 * _
@@ -192,15 +191,14 @@ class SourceControllerSpec extends Specification {
 
     void "Test addImage()"() {
         given:
-        params.sourceId = ONE
-        params.imageId = TWO
+        params.sourceId = LONG_ONE
         request.method = POST_METHOD
 
         when:
         controller.addImage(imageUploadBean)
 
         then:
-        1 * sourceService.getSource(ONE) >> source
+        1 * sourceService.getSource(LONG_ONE) >> source
         1 * imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION) >> image
         1 * sourceService.updateSource(source, [image]) >> source
         1 * source.hasErrors() >> Boolean.FALSE
@@ -216,10 +214,10 @@ class SourceControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteSource(ONE)
+        controller.deleteSource(LONG_ONE)
 
         then: 'Successfully deleted'
-        1 * sourceService.getSource(ONE) >> source
+        1 * sourceService.getSource(LONG_ONE) >> source
         1 * sourceService.deleteSource(source)
         0 * _
 
@@ -232,11 +230,11 @@ class SourceControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteImage(ONE, TWO)
+        controller.deleteImage(LONG_ONE, LONG_TWO)
 
         then:
-        1 * sourceService.getSource(ONE) >> source
-        1 * imageService.getImage(TWO) >> image
+        1 * sourceService.getSource(LONG_ONE) >> source
+        1 * imageService.getImage(LONG_TWO) >> image
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         0 * _

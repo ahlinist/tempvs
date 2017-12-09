@@ -25,6 +25,7 @@ class ItemControllerSpec extends Specification {
     private static final String ONE = '1'
     private static final String TWO = '2'
     private static final Long LONG_ONE = 1L
+    private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
     private static final String POST_METHOD = 'POST'
     private static final String ITEM_URI = '/item/show'
@@ -186,10 +187,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test group() for non-existing id"() {
         when:
-        controller.group(ONE)
+        controller.group(LONG_ONE)
 
         then:
-        1 * itemService.getGroup(ONE) >> null
+        1 * itemService.getGroup(LONG_ONE) >> null
         0 * _
 
         and:
@@ -202,10 +203,10 @@ class ItemControllerSpec extends Specification {
         Collection items = [item]
 
         when:
-        def result = controller.group(ONE)
+        def result = controller.group(LONG_ONE)
 
         then:
-        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemService.getGroup(LONG_ONE) >> itemGroup
         1 * itemGroup.user >> user
         1 * itemGroup.items >> items
         1 * user.userProfile >> userProfile
@@ -286,11 +287,11 @@ class ItemControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteImage(ONE, TWO)
+        controller.deleteImage(LONG_ONE, LONG_TWO)
 
         then:
-        1 * itemService.getItem(ONE) >> item
-        1 * imageService.getImage(TWO) >> image
+        1 * itemService.getItem(LONG_ONE) >> item
+        1 * imageService.getImage(LONG_TWO) >> image
         1 * itemService.deleteImage(item, image) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         0 * _
@@ -313,10 +314,10 @@ class ItemControllerSpec extends Specification {
 
     void "Test show()"() {
         when:
-        def result = controller.show(ONE)
+        def result = controller.show(LONG_ONE)
 
         then:
-        1 * itemService.getItem(ONE) >> item
+        1 * itemService.getItem(LONG_ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * item.period >> period
         1 * item.images >> [image]
@@ -346,10 +347,10 @@ class ItemControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteItem(ONE)
+        controller.deleteItem(LONG_ONE)
 
         then:
-        1 * itemService.getItem(ONE) >> null
+        1 * itemService.getItem(LONG_ONE) >> null
         1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -360,10 +361,10 @@ class ItemControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteItem(ONE)
+        controller.deleteItem(LONG_ONE)
 
         then: 'Successfully deleted'
-        1 * itemService.getItem(ONE) >> item
+        1 * itemService.getItem(LONG_ONE) >> item
         1 * itemService.deleteItem(item)
         0 * _
 
@@ -376,10 +377,10 @@ class ItemControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteGroup(ONE)
+        controller.deleteGroup(LONG_ONE)
 
         then:
-        1 * itemService.getGroup(ONE) >> null
+        1 * itemService.getGroup(LONG_ONE) >> null
         1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -390,10 +391,10 @@ class ItemControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.deleteGroup(ONE)
+        controller.deleteGroup(LONG_ONE)
 
         then:
-        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemService.getGroup(LONG_ONE) >> itemGroup
         1 * itemService.deleteGroup(itemGroup)
         0 * _
 
@@ -411,7 +412,7 @@ class ItemControllerSpec extends Specification {
         controller.addImage(imageUploadBean)
 
         then:
-        1 * itemService.getItem(ONE) >> item
+        1 * itemService.getItem(LONG_ONE) >> item
         1 * imageService.uploadImage(imageUploadBean, ITEM_COLLECTION) >> image
         1 * itemService.updateItem(item, [image]) >> item
         1 * item.hasErrors() >> Boolean.FALSE
@@ -427,10 +428,10 @@ class ItemControllerSpec extends Specification {
         request.method = POST_METHOD
 
         when:
-        controller.editItemField(ONE, FIELD_NAME, FIELD_VALUE)
+        controller.editItemField(LONG_ONE, FIELD_NAME, FIELD_VALUE)
 
         then:
-        1 * itemService.getItem(ONE) >> item
+        1 * itemService.getItem(LONG_ONE) >> item
         1 * itemService.editItemField(item, FIELD_NAME, FIELD_VALUE) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         0 * _
@@ -444,10 +445,10 @@ class ItemControllerSpec extends Specification {
         request.method = POST_METHOD
 
         when:
-        controller.editItemGroupField(ONE, FIELD_NAME, FIELD_VALUE)
+        controller.editItemGroupField(LONG_ONE, FIELD_NAME, FIELD_VALUE)
 
         then:
-        1 * itemService.getGroup(ONE) >> itemGroup
+        1 * itemService.getGroup(LONG_ONE) >> itemGroup
         1 * itemService.editItemGroupField(itemGroup, FIELD_NAME, FIELD_VALUE) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
         0 * _
@@ -461,11 +462,11 @@ class ItemControllerSpec extends Specification {
         request.method = POST_METHOD
 
         when:
-        controller.linkSource(ONE, ONE)
+        controller.linkSource(LONG_ONE, LONG_ONE)
 
         then:
-        1 * itemService.getItem(ONE) >> item
-        1 * sourceService.getSource(ONE) >> source
+        1 * itemService.getItem(LONG_ONE) >> item
+        1 * sourceService.getSource(LONG_ONE) >> source
         1 * itemService.linkSource(item, source) >> item2source
         1 * item2source.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)
@@ -480,11 +481,11 @@ class ItemControllerSpec extends Specification {
         request.method = DELETE_METHOD
 
         when:
-        controller.unlinkSource(ONE, ONE)
+        controller.unlinkSource(LONG_ONE, LONG_ONE)
 
         then:
-        1 * itemService.getItem(ONE) >> item
-        1 * sourceService.getSource(ONE) >> source
+        1 * itemService.getItem(LONG_ONE) >> item
+        1 * sourceService.getSource(LONG_ONE) >> source
         1 * itemService.unlinkSource(item, source)
         0 * _
 

@@ -1,20 +1,18 @@
 package com.tempvs.image
 
-import com.tempvs.domain.ObjectDAOService
-import grails.compiler.GrailsCompileStatic
+import grails.transaction.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 /**
  * A service that manages {@link com.tempvs.image.ImageBean}-related operations.
  */
-@GrailsCompileStatic
+@Transactional
 class ImageService {
 
     ImageDAO imageDAO
-    ObjectDAOService objectDAOService
 
-    Image getImage(Object id) {
-        objectDAOService.get(Image, id)
+    Image getImage(Long id) {
+        Image.get id
     }
 
     byte[] getImageBytes(String collection, String objectId) {
@@ -36,7 +34,7 @@ class ImageService {
             if (image) {
                 imageDAO.delete(collection, image.objectId)
             } else {
-                image = objectDAOService.create(Image)
+                image = new Image()
             }
 
             InputStream inputStream = multipartFile.inputStream
