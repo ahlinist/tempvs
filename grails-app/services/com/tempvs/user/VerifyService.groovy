@@ -42,8 +42,8 @@ class VerifyService {
 
     Boolean isEmailUnique(String email, String action, Long instanceId) {
         User user = userService.getUserByEmail(email)
-        UserProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
-        ClubProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
+        BaseProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
+        BaseProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
 
         switch (action) {
             case REGISTRATION_ACTION:

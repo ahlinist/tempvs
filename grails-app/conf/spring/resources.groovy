@@ -8,13 +8,12 @@ beans = {
 
     imageDAO(MongoImageDAO) {
         gridFSFactory = ref("gridFSFactory")
-        objectDAOService = ref("objectDAOService")
     }
 
     profileHolder(ProfileHolder) { bean ->
         bean.scope = 'session'
         userService = ref("userService")
-        objectDAOService = ref("objectDAOService")
+        profileService = ref("profileService")
     }
 
     validationTagLib(ValidationTagLib)

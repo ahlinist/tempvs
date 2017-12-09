@@ -1,6 +1,5 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -12,11 +11,14 @@ import spock.lang.Specification
  * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
  */
 @TestFor(ProfileService)
-@Mock([ClubProfile])
+@Mock([ClubProfile, UserProfile])
 class ProfileServiceSpec extends Specification {
 
     private static final String ONE = '1'
+    private static final String USER = 'user'
     private static final String EMAIL = 'email'
+    private static final String CLASS = 'class'
+    private static final String AVATAR = 'avatar'
     private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String AVATAR_COLLECTION = 'avatar'
@@ -29,26 +31,24 @@ class ProfileServiceSpec extends Specification {
     def userProfile = Mock UserProfile
     def imageService = Mock ImageService
     def imageUploadBean = Mock ImageUploadBean
-    def objectDAOService = Mock ObjectDAOService
 
     def setup() {
+        GroovySpy(ClubProfile, global: true)
+        GroovySpy(UserProfile, global: true)
+
         service.userService = userService
         service.imageService = imageService
-        service.objectDAOService = objectDAOService
     }
 
     def cleanup() {
     }
 
     void "Test getProfile()"() {
-        given:
-        Map clubProfileProps = [profileId: ONE]
-
         when:
         def result = service.getProfile(ClubProfile, ONE)
 
         then:
-        1 * objectDAOService.find(ClubProfile, clubProfileProps) >> clubProfile
+        1 * ClubProfile.findByProfileId(ONE) >> clubProfile
         0 * _
 
         and:
@@ -58,8 +58,8 @@ class ProfileServiceSpec extends Specification {
         result = service.getProfile(UserProfile, ONE)
 
         then:
-        1 * objectDAOService.find(UserProfile, clubProfileProps) >> null
-        1 * objectDAOService.get(UserProfile, ONE) >> userProfile
+        1 * UserProfile.findByProfileId(ONE) >> null
+        1 * UserProfile.get(ONE) >> userProfile
         0 * _
 
         and:
@@ -67,14 +67,11 @@ class ProfileServiceSpec extends Specification {
     }
 
     void "Test getProfileByProfileEmail()"() {
-        given:
-        Map restrictions = [profileEmail: PROFILE_EMAIL]
-
         when:
         def result = service.getProfileByProfileEmail(UserProfile, PROFILE_EMAIL)
 
         then:
-        1 * objectDAOService.find(UserProfile, restrictions) >> userProfile
+        1 * UserProfile.findByProfileEmail(PROFILE_EMAIL) >> userProfile
         0 * _
 
         result == userProfile
@@ -89,7 +86,7 @@ class ProfileServiceSpec extends Specification {
         1 * clubProfile.setAvatar(image)
         1 * userService.currentUser >> user
         1 * clubProfile.setUser(user)
-        1 * objectDAOService.save(clubProfile) >> clubProfile
+        1 * clubProfile.save() >> clubProfile
         0 * _
 
         and:
@@ -101,9 +98,9 @@ class ProfileServiceSpec extends Specification {
         service.deleteProfile(clubProfile)
 
         then:
-        1 * clubProfile.avatar >> image
+        1 * clubProfile.getProperty(AVATAR) >> image
         1 * imageService.deleteImage(image)
-        1 * objectDAOService.delete(clubProfile)
+        1 * clubProfile.delete()
         0 * _
     }
 
@@ -113,7 +110,7 @@ class ProfileServiceSpec extends Specification {
 
         then:
         1 * userProfile.setFirstName(FIELD_VALUE)
-        1 * objectDAOService.save(userProfile) >> userProfile
+        1 * userProfile.save() >> userProfile
         0 * _
 
         and:
@@ -125,10 +122,10 @@ class ProfileServiceSpec extends Specification {
         def result = service.uploadAvatar(userProfile, imageUploadBean)
 
         then:
-        1 * userProfile.avatar >> image
+        1 * userProfile.getProperty(AVATAR) >> image
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * userProfile.setAvatar(image)
-        1 * objectDAOService.save(userProfile) >> userProfile
+        1 * userProfile.save() >> userProfile
         0 * _
 
         and:
@@ -140,25 +137,11 @@ class ProfileServiceSpec extends Specification {
         service.deleteAvatar(userProfile)
 
         then:
-        1 * userProfile.avatar >> image
+        1 * userProfile.getProperty(AVATAR) >> image
         1 * imageService.deleteImage(image)
         1 * userProfile.setAvatar(null)
-        1 * objectDAOService.save(userProfile) >> userProfile
+        1 * userProfile.save() >> userProfile
         0 * _
-    }
-
-    void "Test isProfileEmailUnique() for userProfile"() {
-        when:
-        def result = service.isProfileEmailUnique(userProfile, EMAIL)
-
-        then:
-        1 * userService.getUserByEmail(EMAIL) >> user
-        1 * objectDAOService.find(ClubProfile, [profileEmail: EMAIL])
-        1 * userProfile.user >> user
-        0 * _
-
-        and:
-        result == Boolean.TRUE
     }
 
     void "Test isProfileEmailUnique() for clubProfile"() {
@@ -166,10 +149,11 @@ class ProfileServiceSpec extends Specification {
         def result = service.isProfileEmailUnique(clubProfile, EMAIL)
 
         then:
-        1 * userService.getUserByEmail(EMAIL)
-        1 * objectDAOService.find(UserProfile, [profileEmail: EMAIL]) >> userProfile
-        1 * userProfile.user >> user
-        1 * clubProfile.user >> user
+        1 * userService.getUserByEmail(EMAIL) >> user
+        1 * clubProfile.getProperty(CLASS) >> ClubProfile
+        1 * UserProfile.findByProfileEmail(EMAIL) >> userProfile
+        1 * userProfile.getProperty(USER) >> user
+        1 * clubProfile.getProperty(USER) >> user
         0 * _
 
         and:

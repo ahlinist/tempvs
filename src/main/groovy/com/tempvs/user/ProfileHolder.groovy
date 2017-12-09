@@ -1,6 +1,5 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAOService
 import grails.compiler.GrailsCompileStatic
 
 /**
@@ -12,7 +11,7 @@ import grails.compiler.GrailsCompileStatic
 class ProfileHolder {
 
     UserService userService
-    ObjectDAOService objectDAOService
+    ProfileService profileService
 
     Class clazz
     Long id
@@ -27,7 +26,7 @@ class ProfileHolder {
                 this.profile = userProfile
                 userProfile
             } else {
-                BaseProfile profile = objectDAOService.get(clazz, id)
+                BaseProfile profile = profileService.getProfile(clazz, id)
 
                 if (profile) {
                     if (profile == userProfile || profile in user.clubProfiles) {

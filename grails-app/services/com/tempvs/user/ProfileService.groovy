@@ -1,49 +1,46 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAOService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
-import grails.compiler.GrailsCompileStatic
-import groovy.transform.TypeCheckingMode
+import grails.transaction.Transactional
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service for managing {@link com.tempvs.user.UserProfile} and
  * {@link com.tempvs.user.ClubProfile}.
  */
-@GrailsCompileStatic
+@Transactional
 class ProfileService {
 
     private static final String AVATAR_COLLECTION = 'avatar'
 
     UserService userService
     ImageService imageService
-    ObjectDAOService objectDAOService
 
-    public <T> T getProfile(Class<T> clazz, Object id) {
-        objectDAOService.find(clazz, [profileId: id]) ?: objectDAOService.get(clazz, id)
+    BaseProfile getProfile(Class clazz, Object id) {
+        clazz.findByProfileId(id) ?: clazz.get(id)
     }
 
-    public <T> T getProfileByProfileEmail(Class<T> clazz, String email) {
-        objectDAOService.find(clazz, [profileEmail: email])
+    BaseProfile getProfileByProfileEmail(Class clazz, String email) {
+        clazz.findByProfileEmail(email)
     }
 
     BaseProfile createProfile(BaseProfile profile, ImageUploadBean imageUploadBean) {
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
         profile.avatar = avatar
         profile.user = userService.currentUser
-        objectDAOService.save(profile)
+        profile.save()
+        profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
     void deleteProfile(BaseProfile profile) {
         imageService.deleteImage(profile.avatar)
-        objectDAOService.delete(profile)
+        profile.delete()
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#profile.user.email == authentication.name')
     BaseProfile editProfileField(BaseProfile profile, String fieldName, String fieldValue) {
         if (fieldName == 'period') {
@@ -56,30 +53,33 @@ class ProfileService {
             profile."${fieldName}" = fieldValue
         }
 
-        objectDAOService.save(profile)
+        profile.save()
+        profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
     BaseProfile uploadAvatar(BaseProfile profile, ImageUploadBean imageUploadBean) {
         profile.avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
-        objectDAOService.save(profile)
+        profile.save()
+        profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
     BaseProfile deleteAvatar(BaseProfile profile) {
         imageService.deleteImage(profile.avatar)
         profile.avatar = null
-        objectDAOService.save(profile)
+        profile.save()
+        profile
     }
 
     Boolean isProfileEmailUnique(BaseProfile profile, String email) {
         User user = userService.getUserByEmail(email)
-        Class persistedProfileClass = (profile instanceof UserProfile) ? ClubProfile : UserProfile
-        BaseProfile persistedProfile = getProfileByProfileEmail(persistedProfileClass, email)
 
         if (user && profile.user != user) {
             return Boolean.FALSE
         }
+
+        BaseProfile persistedProfile = profile.class.findByProfileEmail email
 
         if (persistedProfile && profile.user != persistedProfile.user) {
             return Boolean.FALSE

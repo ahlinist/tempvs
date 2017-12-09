@@ -1,8 +1,6 @@
 package com.tempvs.user
 
-import com.tempvs.domain.ObjectDAOService
 import spock.lang.Specification
-
 /**
  * {@link com.tempvs.user.ProfileHolder}-related unit-test suite.
  */
@@ -15,17 +13,18 @@ class ProfileHolderSpec extends Specification {
     def baseProfile = Mock BaseProfile
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
-    def objectDAOService = Mock ObjectDAOService
+    def profileService = Mock ProfileService
 
-    ProfileHolder profileHolder = new ProfileHolder()
+    ProfileHolder profileHolder
 
     def setup() {
+        profileHolder = new ProfileHolder()
         profileHolder.userService = userService
-        profileHolder.objectDAOService = objectDAOService
+        profileHolder.profileService = profileService
     }
 
     def cleanup() {
-        profileHolder = new ProfileHolder()
+
     }
 
     void "Test getProfile() when not logged in"() {
@@ -69,7 +68,7 @@ class ProfileHolderSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
-        1 * objectDAOService.get(clazz, id) >> null
+        1 * profileService.getProfile(clazz, id) >> null
         0 * _
 
         and:
@@ -86,7 +85,7 @@ class ProfileHolderSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * objectDAOService.get(clazz, id) >> baseProfile
+        1 * profileService.getProfile(clazz, id) >> baseProfile
         1 * user.userProfile >> userProfile
         1 * baseProfile.equals(userProfile)  >> Boolean.TRUE
         0 * _
@@ -105,7 +104,7 @@ class ProfileHolderSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * objectDAOService.get(clazz, id) >> baseProfile
+        1 * profileService.getProfile(clazz, id) >> baseProfile
         _ * user.clubProfiles >> [clubProfile]
         1 * user.userProfile >> userProfile
         1 * baseProfile.equals(userProfile)  >> Boolean.FALSE

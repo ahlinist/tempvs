@@ -3,7 +3,6 @@ package com.tempvs.mongodb
 import com.mongodb.gridfs.GridFS
 import com.mongodb.gridfs.GridFSDBFile
 import com.mongodb.gridfs.GridFSInputFile
-import com.tempvs.domain.ObjectDAOService
 import org.bson.types.ObjectId
 import spock.lang.Specification
 
@@ -17,21 +16,17 @@ class MongoImageDAOSpec extends Specification {
     private static final Boolean CLOSE_STREAM_ON_PERSIST = Boolean.TRUE
 
     def gridFS = Mock GridFS
-    def objectId = new ObjectId()
     def inputStream = Mock InputStream
     def gridFSDBFile = Mock GridFSDBFile
     def gridFSFactory = Mock GridFSFactory
-    def mongoImageBean = Mock MongoImageBean
     def gridFSInputFile = Mock GridFSInputFile
-    def objectDAOService = Mock ObjectDAOService
 
     MongoImageDAO mongoImageDAO
 
     def setup() {
-        mongoImageDAO = new MongoImageDAO(
-                gridFSFactory: gridFSFactory,
-                objectDAOService: objectDAOService,
-        )
+        GroovySpy(MongoImageBean, global: true)
+
+        mongoImageDAO = new MongoImageDAO(gridFSFactory: gridFSFactory)
     }
 
     def cleanup() {
@@ -44,13 +39,11 @@ class MongoImageDAOSpec extends Specification {
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        1 * objectDAOService.create(ObjectId, HEX_ID) >> objectId
-        1 * gridFS.findOne(objectId) >> gridFSDBFile
-        1 * objectDAOService.create(MongoImageBean, gridFSDBFile) >> mongoImageBean
+        1 * gridFS.findOne(_) >> gridFSDBFile
         0 * _
 
         and:
-        result == mongoImageBean
+        result instanceof MongoImageBean
     }
 
     void "Test create()"() {
@@ -60,12 +53,11 @@ class MongoImageDAOSpec extends Specification {
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
         1 * gridFS.createFile(inputStream, CLOSE_STREAM_ON_PERSIST) >> gridFSInputFile
-        1 * objectDAOService.create(MongoImageBean, gridFSInputFile) >> mongoImageBean
-        1 * mongoImageBean.save() >> mongoImageBean
+        1 * gridFSInputFile.save()
         0 * _
 
         and:
-        result == mongoImageBean
+        result instanceof MongoImageBean
     }
 
     void "Test delete()"() {
@@ -74,8 +66,7 @@ class MongoImageDAOSpec extends Specification {
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        1 * objectDAOService.create(ObjectId, HEX_ID) >> objectId
-        1 * gridFS.findOne(objectId) >> gridFSDBFile
+        1 * gridFS.findOne(_) >> gridFSDBFile
         1 * gridFS.remove(gridFSDBFile)
         0 * _
 
@@ -89,8 +80,7 @@ class MongoImageDAOSpec extends Specification {
 
         then:
         1 * gridFSFactory.getGridFS(COLLECTION) >> gridFS
-        1 * objectDAOService.create(ObjectId, HEX_ID) >> objectId
-        1 * gridFS.findOne(objectId) >> gridFSDBFile
+        1 * gridFS.findOne(_) >> gridFSDBFile
         1 * gridFS.remove(gridFSDBFile) >> {throw new Exception()}
         0 * _
 

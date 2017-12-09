@@ -55,8 +55,8 @@ class UserService {
     }
 
     Boolean isEmailUnique(String email) {
-        UserProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
-        ClubProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
+        BaseProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
+        BaseProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
 
         if (userProfile && userProfile.user.email != email) {
             return Boolean.FALSE
