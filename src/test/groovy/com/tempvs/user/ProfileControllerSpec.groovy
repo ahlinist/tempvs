@@ -1,6 +1,6 @@
 package com.tempvs.user
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -52,7 +52,7 @@ class ProfileControllerSpec extends Specification {
     def imageUploadBean = Mock ImageUploadBean
     def emailVerification = Mock EmailVerification
     def clubProfileCommand = Mock ClubProfileCommand
-    def ajaxResponseService = Mock AjaxResponseService
+    def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
         controller.userService = userService
@@ -60,7 +60,7 @@ class ProfileControllerSpec extends Specification {
         controller.profileHolder = profileHolder
         controller.verifyService = verifyService
         controller.profileService = profileService
-        controller.ajaxResponseService = ajaxResponseService
+        controller.ajaxResponseHelper = ajaxResponseHelper
     }
 
     def cleanup() {
@@ -179,7 +179,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(clubProfileCommand) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(clubProfileCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -199,7 +199,7 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
         1 * profileService.createProfile(_ as ClubProfile, imageUploadBean) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.renderValidationResponse(_ as ClubProfile) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(_ as ClubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -221,7 +221,7 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID
-        1 * ajaxResponseService.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
+        1 * ajaxResponseHelper.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -259,7 +259,7 @@ class ProfileControllerSpec extends Specification {
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
-        1 * ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -295,7 +295,7 @@ class ProfileControllerSpec extends Specification {
         then:
         1 * profileService.getProfile(UserProfile, ONE) >> userProfile
         1 * profileService.deleteAvatar(userProfile)
-        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
+        1 * ajaxResponseHelper.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -314,7 +314,7 @@ class ProfileControllerSpec extends Specification {
         1 * profileHolder.profile >> userProfile
         1 * profileService.uploadAvatar(userProfile, imageUploadBean) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
-        1 * ajaxResponseService.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
+        1 * ajaxResponseHelper.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

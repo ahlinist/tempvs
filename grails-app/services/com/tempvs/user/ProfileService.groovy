@@ -74,14 +74,15 @@ class ProfileService {
 
     Boolean isProfileEmailUnique(BaseProfile profile, String email) {
         User user = userService.getUserByEmail(email)
+        User profileUser = profile.user
 
-        if (user && profile.user != user) {
+        if (user && profileUser != user) {
             return Boolean.FALSE
         }
 
         BaseProfile persistedProfile = profile.class.findByProfileEmail email
 
-        if (persistedProfile && profile.user != persistedProfile.user) {
+        if (persistedProfile && profileUser != persistedProfile.user) {
             return Boolean.FALSE
         }
 

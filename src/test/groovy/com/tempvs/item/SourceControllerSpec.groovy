@@ -1,6 +1,6 @@
 package com.tempvs.item
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -47,13 +47,13 @@ class SourceControllerSpec extends Specification {
     def sourceCommand = Mock SourceCommand
     def imageUploadBean = Mock ImageUploadBean
     def groovyPageRenderer = Mock PageRenderer
-    def ajaxResponseService = Mock AjaxResponseService
+    def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
         controller.sourceService = sourceService
         controller.imageService = imageService
         controller.groovyPageRenderer = groovyPageRenderer
-        controller.ajaxResponseService = ajaxResponseService
+        controller.ajaxResponseHelper = ajaxResponseHelper
     }
 
     def cleanup() {
@@ -102,7 +102,7 @@ class SourceControllerSpec extends Specification {
         1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.id >> SourceControllerSpec.LONG_ONE
-        1 * ajaxResponseService.renderRedirect("${SHOW_URI}/${SourceControllerSpec.LONG_ONE}") >> json
+        1 * ajaxResponseHelper.renderRedirect("${SHOW_URI}/${SourceControllerSpec.LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -123,7 +123,7 @@ class SourceControllerSpec extends Specification {
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
         1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.renderValidationResponse(_ as Source) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(_ as Source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -137,7 +137,7 @@ class SourceControllerSpec extends Specification {
 
         then:
         1 * sourceCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(sourceCommand) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(sourceCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

@@ -8,10 +8,10 @@ import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 
 /**
- * A service for composing responses for ajax requests.
+ * A helper for composing responses for ajax requests.
  */
 @CompileStatic
-class AjaxResponseService {
+class AjaxResponseHelper {
 
     private static final String REDIRECT = 'redirect'
     private static final String FORM_MESSAGE = 'formMessage'

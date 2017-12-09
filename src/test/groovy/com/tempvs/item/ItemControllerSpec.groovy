@@ -1,6 +1,6 @@
 package com.tempvs.item
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -57,7 +57,7 @@ class ItemControllerSpec extends Specification {
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadBean = Mock ImageUploadBean
     def itemGroupCommand = Mock ItemGroupCommand
-    def ajaxResponseService = Mock AjaxResponseService
+    def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
         controller.userService = userService
@@ -65,7 +65,7 @@ class ItemControllerSpec extends Specification {
         controller.imageService = imageService
         controller.sourceService = sourceService
         controller.groovyPageRenderer = groovyPageRenderer
-        controller.ajaxResponseService = ajaxResponseService
+        controller.ajaxResponseHelper = ajaxResponseHelper
     }
 
     def cleanup() {
@@ -130,7 +130,7 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemGroupCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(itemGroupCommand) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(itemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -148,7 +148,7 @@ class ItemControllerSpec extends Specification {
         1 * itemGroupCommand.getProperty(PROPERTIES) >> parameters
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.renderValidationResponse(_ as ItemGroup) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(_ as ItemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -166,7 +166,7 @@ class ItemControllerSpec extends Specification {
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
         1 * itemGroup.id >> LONG_ONE
-        1 * ajaxResponseService.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
+        1 * ajaxResponseHelper.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -231,7 +231,7 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(itemCommand) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(itemCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -251,7 +251,7 @@ class ItemControllerSpec extends Specification {
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
         1 * itemService.updateItem(_ as Item, [image]) >> item
         1 * item.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.renderValidationResponse(_ as Item) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(_ as Item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -272,7 +272,7 @@ class ItemControllerSpec extends Specification {
         1 * itemService.updateItem(_ as Item, [image]) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.id >> LONG_ONE
-        1 * ajaxResponseService.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
+        1 * ajaxResponseHelper.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -346,7 +346,7 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getItem(LONG_ONE) >> null
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -376,7 +376,7 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemService.getGroup(LONG_ONE) >> null
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

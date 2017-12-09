@@ -1,6 +1,6 @@
 package com.tempvs.user
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.test.mixin.Mock
@@ -35,7 +35,7 @@ class UserControllerSpec extends Specification {
     def userService = Mock UserService
     def verifyService = Mock VerifyService
     def emailVerification = Mock EmailVerification
-    def ajaxResponseService = Mock AjaxResponseService
+    def ajaxResponseHelper = Mock AjaxResponseHelper
     def userPasswordCommand = Mock UserPasswordCommand
     def registrationCommand = Mock RegistrationCommand
     def springSecurityService = Mock SpringSecurityService
@@ -43,7 +43,7 @@ class UserControllerSpec extends Specification {
     def setup() {
         controller.userService = userService
         controller.verifyService = verifyService
-        controller.ajaxResponseService = ajaxResponseService
+        controller.ajaxResponseHelper = ajaxResponseHelper
         controller.springSecurityService = springSecurityService
     }
 
@@ -84,7 +84,7 @@ class UserControllerSpec extends Specification {
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
-        1 * ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -98,7 +98,7 @@ class UserControllerSpec extends Specification {
 
         then:
         1 * userPasswordCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(userPasswordCommand) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(userPasswordCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -117,7 +117,7 @@ class UserControllerSpec extends Specification {
         1 * userService.currentUser >> user
         1 * userService.editUserField(user, PASSWORD, NEW_PASSWORD) >> user
         1 * user.hasErrors() >> Boolean.FALSE
-        1 * ajaxResponseService.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -141,7 +141,7 @@ class UserControllerSpec extends Specification {
         1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
         1 * userService.register(_ as User, _ as UserProfile) >> user
         1 * user.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseService.renderValidationResponse(user) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -167,7 +167,7 @@ class UserControllerSpec extends Specification {
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(EMAIL)
         1 * emailVerification.delete([flush: Boolean.TRUE])
-        1 * ajaxResponseService.renderRedirect(PROFILE_PAGE_URI) >> json
+        1 * ajaxResponseHelper.renderRedirect(PROFILE_PAGE_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

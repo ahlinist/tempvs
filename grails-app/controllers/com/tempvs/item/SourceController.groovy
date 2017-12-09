@@ -1,6 +1,6 @@
 package com.tempvs.item
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -37,7 +37,7 @@ class SourceController {
     SourceService sourceService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
-    AjaxResponseService ajaxResponseService
+    AjaxResponseHelper ajaxResponseHelper
 
     def index() {
 
@@ -66,30 +66,30 @@ class SourceController {
 
     def createSource(SourceCommand command) {
         if (!command.validate()) {
-            return render(ajaxResponseService.renderValidationResponse(command))
+            return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
         List<Image> images = imageService.uploadImages(command.imageUploadBeans, SOURCE_COLLECTION)
         Source source = sourceService.updateSource(command.properties as Source, images)
 
         if (source.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(source))
+            return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
     }
 
     def editSourceField(Long objectId, String fieldName, String fieldValue) {
         Source source = sourceService.getSource objectId
 
         if (!source) {
-            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
         source = sourceService.editSourceField(source, fieldName, fieldValue)
 
         if (source.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(source))
+            return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
         render([action: SUCCESS_ACTION] as JSON)
@@ -106,7 +106,7 @@ class SourceController {
         source = sourceService.deleteImage(source, image)
 
         if (source.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(source))
+            return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
         render([action: DELETE_ACTION] as JSON)
@@ -116,7 +116,7 @@ class SourceController {
         Source source = sourceService.getSource id
 
         if (!source) {
-            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
         sourceService.deleteSource source
@@ -134,7 +134,7 @@ class SourceController {
         source = sourceService.updateSource(source, [image])
 
         if (source.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(source))
+            return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
         Map model = [image: image, itemId: params.sourceId]

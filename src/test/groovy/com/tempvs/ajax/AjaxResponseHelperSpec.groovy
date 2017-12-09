@@ -1,17 +1,15 @@
 package com.tempvs.ajax
 
 import com.tempvs.user.User
-import grails.test.mixin.TestFor
 import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import spock.lang.Specification
 
 /**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
+ * A unit-test suite for {@link com.tempvs.ajax.AjaxResponseHelper}.
  */
-@TestFor(AjaxResponseService)
-class AjaxResponseServiceSpec extends Specification {
+class AjaxResponseHelperSpec extends Specification {
 
     private static final String FIELD = 'field'
     private static final String TEST_URI = '/test/uri'
@@ -25,8 +23,11 @@ class AjaxResponseServiceSpec extends Specification {
     def errors = Mock(Errors)
     def fieldError = Mock(FieldError)
 
+    AjaxResponseHelper ajaxResponseHelper
+
     def setup() {
-        service.validationTagLib = validationTagLib
+        ajaxResponseHelper = new AjaxResponseHelper()
+        ajaxResponseHelper.validationTagLib = validationTagLib
     }
 
     def cleanup() {
@@ -37,7 +38,7 @@ class AjaxResponseServiceSpec extends Specification {
         Map messageMap = [code: SUCCESS_MESSAGE]
 
         when: 'renderValidationResponse() called for 2 args'
-        def result = service.renderValidationResponse(user, SUCCESS_MESSAGE)
+        def result = ajaxResponseHelper.renderValidationResponse(user, SUCCESS_MESSAGE)
 
         then:
         1 * user.hasErrors() >> Boolean.FALSE
@@ -53,7 +54,7 @@ class AjaxResponseServiceSpec extends Specification {
         Map errorMap = [error: fieldError]
 
         when: 'renderValidationResponse() called for 1 arg'
-        def result = service.renderValidationResponse(user)
+        def result = ajaxResponseHelper.renderValidationResponse(user)
 
         then:
         1 * user.hasErrors() >> Boolean.TRUE
@@ -72,7 +73,7 @@ class AjaxResponseServiceSpec extends Specification {
         Map messageMap = [code: SUCCESS_MESSAGE]
 
         when: 'renderMessage() called'
-        def result = service.renderFormMessage(Boolean.TRUE, SUCCESS_MESSAGE)
+        def result = ajaxResponseHelper.renderFormMessage(Boolean.TRUE, SUCCESS_MESSAGE)
 
         then: 'Ajax response returned'
         1 * validationTagLib.message(messageMap) >> SUCCESS_MESSAGE
@@ -84,7 +85,7 @@ class AjaxResponseServiceSpec extends Specification {
 
     void "Test renderRedirect()"() {
         when:
-        def result = service.renderRedirect(TEST_URI)
+        def result = ajaxResponseHelper.renderRedirect(TEST_URI)
 
         then:
         result.target.action == REDIRECT_ACTION

@@ -1,6 +1,6 @@
 package com.tempvs.auth
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.user.EmailVerification
 import com.tempvs.user.User
 import com.tempvs.user.UserService
@@ -38,7 +38,7 @@ class AuthControllerSpec extends Specification {
     def passwordEncoder = Mock PasswordEncoder
     def grailsLinkGenerator = Mock LinkGenerator
     def emailVerification = Mock EmailVerification
-    def ajaxResponseService = Mock AjaxResponseService
+    def ajaxResponseHelper = Mock AjaxResponseHelper
     def springSecurityService = Mock SpringSecurityService
     def requestRegistrationCommand = Mock RequestRegistrationCommand
 
@@ -46,7 +46,7 @@ class AuthControllerSpec extends Specification {
         controller.userService = userService
         controller.verifyService = verifyService
         controller.passwordEncoder = passwordEncoder
-        controller.ajaxResponseService = ajaxResponseService
+        controller.ajaxResponseHelper = ajaxResponseHelper
         controller.springSecurityService = springSecurityService
     }
 
@@ -70,7 +70,7 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * requestRegistrationCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(requestRegistrationCommand) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(requestRegistrationCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -86,7 +86,7 @@ class AuthControllerSpec extends Specification {
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
-        1 * ajaxResponseService.renderValidationResponse(emailVerification, _ as String) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(emailVerification, _ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -98,7 +98,7 @@ class AuthControllerSpec extends Specification {
 
         then:
         1 * loginCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseService.renderValidationResponse(loginCommand) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(loginCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -112,7 +112,7 @@ class AuthControllerSpec extends Specification {
         1 * loginCommand.validate() >> Boolean.TRUE
         1 * loginCommand.email >> EMAIL
         1 * userService.getUserByEmail(EMAIL) >> null
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER_CODE) >> json
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER_CODE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -129,7 +129,7 @@ class AuthControllerSpec extends Specification {
         1 * user.password >> PASSWORD
         1 * loginCommand.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.FALSE
-        1 * ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER_CODE) >> json
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER_CODE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -153,7 +153,7 @@ class AuthControllerSpec extends Specification {
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.TRUE
         1 * springSecurityService.reauthenticate(EMAIL, PASSWORD)
         1 * grailsLinkGenerator.link(linkGeneratorMap) >> PROFILE_PAGE_URI
-        1 * ajaxResponseService.renderRedirect(PROFILE_PAGE_URI) >> json
+        1 * ajaxResponseHelper.renderRedirect(PROFILE_PAGE_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -175,7 +175,7 @@ class AuthControllerSpec extends Specification {
         2 * loginCommand.password >> PASSWORD
         1 * passwordEncoder.isPasswordValid(PASSWORD, PASSWORD, null) >> Boolean.TRUE
         1 * springSecurityService.reauthenticate(EMAIL, PASSWORD)
-        1 * ajaxResponseService.renderRedirect(TEST_URI) >> json
+        1 * ajaxResponseHelper.renderRedirect(TEST_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

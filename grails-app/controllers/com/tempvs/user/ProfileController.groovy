@@ -1,6 +1,6 @@
 package com.tempvs.user
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import grails.compiler.GrailsCompileStatic
@@ -41,7 +41,7 @@ class ProfileController {
     VerifyService verifyService
     ProfileService profileService
     LinkGenerator grailsLinkGenerator
-    AjaxResponseService ajaxResponseService
+    AjaxResponseHelper ajaxResponseHelper
 
     def index() {
         BaseProfile profile = profileHolder.profile
@@ -72,25 +72,25 @@ class ProfileController {
 
     def createClubProfile(ClubProfileCommand command) {
         if (!command.validate()) {
-            return render(ajaxResponseService.renderValidationResponse(command))
+            return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
         Map properties = command.properties + [user: userService.currentUser]
         BaseProfile profile = profileService.createProfile(properties as ClubProfile, command.imageUploadBean)
 
         if (profile.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(profile))
+            return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
         profileHolder.profile = profile
-        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
     }
 
     def editProfileField() {
         BaseProfile profile = profileService.editProfileField(profileHolder.profile, params.fieldName as String, params.fieldValue as String)
 
         if (profile.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(profile))
+            return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
         render([action: SUCCESS_ACTION] as JSON)
@@ -113,12 +113,12 @@ class ProfileController {
                 verifyService.sendEmailVerification(emailVerification)
             }
 
-            render ajaxResponseService.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
+            render ajaxResponseHelper.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
         } else {
             BaseProfile persistedProfile = profileService.editProfileField(profile, PROFILE_EMAIL_FIELD, null)
 
             if (persistedProfile.hasErrors()) {
-                return render(ajaxResponseService.renderValidationResponse(persistedProfile))
+                return render(ajaxResponseHelper.renderValidationResponse(persistedProfile))
             }
 
             render([action: SUCCESS_ACTION] as JSON)
@@ -134,17 +134,17 @@ class ProfileController {
     def deleteAvatar() {
         BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
         profileService.deleteAvatar(profile)
-        render ajaxResponseService.renderRedirect(request.getHeader('referer'))
+        render ajaxResponseHelper.renderRedirect(request.getHeader('referer'))
     }
 
     def uploadAvatar(ImageUploadBean imageUploadBean) {
         BaseProfile profile = profileService.uploadAvatar(profileHolder.profile, imageUploadBean)
 
         if (profile.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(profile))
+            return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
-        render ajaxResponseService.renderRedirect(request.getHeader('referer'))
+        render ajaxResponseHelper.renderRedirect(request.getHeader('referer'))
     }
 
     def list() {
@@ -154,7 +154,7 @@ class ProfileController {
 
     def accessDeniedThrown(AccessDeniedException exception) {
         if (request.xhr) {
-            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect grailsLinkGenerator.link(controller: 'auth')
         }

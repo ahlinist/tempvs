@@ -1,6 +1,6 @@
 package com.tempvs.auth
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.user.EmailVerification
 import com.tempvs.user.User
 import com.tempvs.user.UserService
@@ -26,7 +26,7 @@ class AuthController {
     UserService userService
     VerifyService verifyService
     SpringSecurityService springSecurityService
-    AjaxResponseService ajaxResponseService
+    AjaxResponseHelper ajaxResponseHelper
     PasswordEncoder passwordEncoder
     LinkGenerator grailsLinkGenerator
 
@@ -43,18 +43,18 @@ class AuthController {
                     String referer = request.getHeader('referer')
 
                     if (referer.contains(AUTH_PATTERN)) {
-                        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
+                        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
                     } else {
-                        render ajaxResponseService.renderRedirect(referer)
+                        render ajaxResponseHelper.renderRedirect(referer)
                     }
                 } else {
-                    render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
+                    render ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
                 }
             } else {
-                render ajaxResponseService.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
+                render ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
             }
         } else {
-            render ajaxResponseService.renderValidationResponse(command)
+            render ajaxResponseHelper.renderValidationResponse(command)
         }
     }
 
@@ -67,9 +67,9 @@ class AuthController {
                 verifyService.sendEmailVerification(emailVerification)
             }
 
-            render ajaxResponseService.renderValidationResponse(emailVerification, REGISTER_MESSAGE_SENT)
+            render ajaxResponseHelper.renderValidationResponse(emailVerification, REGISTER_MESSAGE_SENT)
         } else {
-            render ajaxResponseService.renderValidationResponse(command)
+            render ajaxResponseHelper.renderValidationResponse(command)
         }
     }
 

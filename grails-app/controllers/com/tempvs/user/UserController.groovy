@@ -1,6 +1,6 @@
 package com.tempvs.user
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
@@ -27,7 +27,7 @@ class UserController {
     UserService userService
     VerifyService verifyService
     LinkGenerator grailsLinkGenerator
-    AjaxResponseService ajaxResponseService
+    AjaxResponseHelper ajaxResponseHelper
     SpringSecurityService springSecurityService
 
     def index() {
@@ -53,7 +53,7 @@ class UserController {
             verifyService.sendEmailVerification(emailVerification)
         }
 
-        render ajaxResponseService.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT)
+        render ajaxResponseHelper.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT)
     }
 
     def updatePassword(UserPasswordCommand command) {
@@ -62,18 +62,18 @@ class UserController {
             User user = userService.editUserField(userService.currentUser, PASSWORD, password)
 
             if (!user.hasErrors()) {
-                render ajaxResponseService.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE)
+                render ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE)
             } else {
-                render ajaxResponseService.renderValidationResponse(user)
+                render ajaxResponseHelper.renderValidationResponse(user)
             }
         } else {
-            render ajaxResponseService.renderValidationResponse(command)
+            render ajaxResponseHelper.renderValidationResponse(command)
         }
     }
 
     def register(RegistrationCommand command) {
         if (!command.validate()) {
-            return render(ajaxResponseService.renderValidationResponse(command))
+            return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
         EmailVerification emailVerification = command.emailVerification
@@ -84,11 +84,11 @@ class UserController {
         User user = userService.register(properties as User, properties as UserProfile)
 
         if (user.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(user))
+            return render(ajaxResponseHelper.renderValidationResponse(user))
         }
 
         springSecurityService.reauthenticate(email)
         emailVerification.delete(flush: true)
-        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
     }
 }

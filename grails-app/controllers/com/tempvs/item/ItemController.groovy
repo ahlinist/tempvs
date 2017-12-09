@@ -1,6 +1,6 @@
 package com.tempvs.item
 
-import com.tempvs.ajax.AjaxResponseService
+import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -51,7 +51,7 @@ class ItemController {
     SourceService sourceService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
-    AjaxResponseService ajaxResponseService
+    AjaxResponseHelper ajaxResponseHelper
 
     def stash(Long id) {
         User user = id ? userService.getUser(id) : userService.currentUser
@@ -63,16 +63,16 @@ class ItemController {
 
     def createGroup(ItemGroupCommand command) {
         if (!command.validate()) {
-            return render(ajaxResponseService.renderValidationResponse(command))
+            return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
         ItemGroup itemGroup = itemService.createGroup(command.properties as ItemGroup)
 
         if (itemGroup.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(itemGroup))
+            return render(ajaxResponseHelper.renderValidationResponse(itemGroup))
         }
 
-        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: itemGroup.id))
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: itemGroup.id))
     }
 
     def group(Long id) {
@@ -95,17 +95,17 @@ class ItemController {
 
     def createItem(ItemCommand command) {
         if (!command.validate()) {
-            return render(ajaxResponseService.renderValidationResponse(command))
+            return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
         List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
         Item item = itemService.updateItem(command.properties as Item, images)
 
         if (item.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(item))
+            return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'show', id: item.id))
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'show', id: item.id))
     }
 
     def deleteImage(Long itemId, Long imageId) {
@@ -119,7 +119,7 @@ class ItemController {
         item = itemService.deleteImage(item, image)
 
         if (item.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(item))
+            return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
         render([action: DELETE_ACTION] as JSON)
@@ -151,7 +151,7 @@ class ItemController {
         Item item = itemService.getItem id
 
         if (!item) {
-            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE))
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE))
         }
 
         itemService.deleteItem item
@@ -162,7 +162,7 @@ class ItemController {
         ItemGroup itemGroup = itemService.getGroup id
 
         if (!itemGroup) {
-            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE))
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE))
         }
 
         itemService.deleteGroup itemGroup
@@ -180,7 +180,7 @@ class ItemController {
         item = itemService.updateItem(item, [image])
 
         if (item.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(item))
+            return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
         Map model = [image: image, itemId: params.itemId]
@@ -192,13 +192,13 @@ class ItemController {
         Item item = itemService.getItem objectId
 
         if (!item) {
-            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
         item = itemService.editItemField(item, fieldName, fieldValue)
 
         if (item.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(item))
+            return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
         render([action: SUCCESS_ACTION] as JSON)
@@ -208,13 +208,13 @@ class ItemController {
         ItemGroup itemGroup = itemService.getGroup objectId
 
         if (!itemGroup) {
-            return render(ajaxResponseService.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
         itemGroup = itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
 
         if (itemGroup.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(itemGroup))
+            return render(ajaxResponseHelper.renderValidationResponse(itemGroup))
         }
 
         render([action: SUCCESS_ACTION] as JSON)
@@ -231,7 +231,7 @@ class ItemController {
         Item2Source item2source = itemService.linkSource(item, source)
 
         if (item2source.hasErrors()) {
-            return render(ajaxResponseService.renderValidationResponse(item2source))
+            return render(ajaxResponseHelper.renderValidationResponse(item2source))
         }
 
         Map model = [editAllowed: Boolean.TRUE, source: source, itemId: itemId]
@@ -254,7 +254,7 @@ class ItemController {
 
     def accessDeniedThrown(AccessDeniedException exception) {
         if (request.xhr) {
-            render ajaxResponseService.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect(controller: 'auth')
         }
