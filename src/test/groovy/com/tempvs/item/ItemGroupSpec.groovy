@@ -13,9 +13,15 @@ class ItemGroupSpec extends Specification {
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
 
-    def user = Mock(User)
+    def user = Mock User
+    def item = Mock Item
+
+    ItemGroup itemGroup
 
     def setup() {
+        GroovySpy(Item, global: true)
+
+        itemGroup = new ItemGroup()
     }
 
     def cleanup() {
@@ -23,7 +29,6 @@ class ItemGroupSpec extends Specification {
 
     void "Test itemGroup creation being not assigned to user"() {
         given:
-        ItemGroup itemGroup = new ItemGroup()
         itemGroup.name = NAME
         itemGroup.description = DESCRIPTION
 
@@ -33,7 +38,6 @@ class ItemGroupSpec extends Specification {
 
     void "Test itemGroup creation without name"() {
         given:
-        ItemGroup itemGroup = new ItemGroup()
         itemGroup.user = user
         itemGroup.description = DESCRIPTION
 
@@ -43,11 +47,22 @@ class ItemGroupSpec extends Specification {
 
     void "Test correct itemGroup creation"() {
         given:
-        ItemGroup itemGroup = new ItemGroup()
         itemGroup.user = user
         itemGroup.name = NAME
 
         expect:
         itemGroup.validate()
+    }
+
+    void "Test getItems()"() {
+        when:
+        def result = itemGroup.items
+
+        then:
+        1 * Item.findAllByItemGroup(_ as ItemGroup) >> [item]
+        0 * _
+
+        and:
+        result.find() instanceof Item
     }
 }

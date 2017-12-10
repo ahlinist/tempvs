@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 class ItemService {
 
     private static final String PERIOD_FIELD = 'period'
+    private static final String ITEM_GROUP = 'itemGroup'
 
     ImageService imageService
 
@@ -39,9 +40,10 @@ class ItemService {
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')
     void deleteGroup(ItemGroup itemGroup) {
-        List<Item> items = itemGroup.items as List
+        List<Item> items = itemGroup.items
         imageService.deleteImages(items*.images?.flatten())
         Item2Source.findAllByItemInList(items)*.delete()
+        items*.delete()
         itemGroup.delete()
     }
 
@@ -59,7 +61,7 @@ class ItemService {
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item editItemField(Item item, String fieldName, String fieldValue) {
-        if (fieldName == PERIOD_FIELD) {
+        if (fieldName == PERIOD_FIELD || fieldName == ITEM_GROUP) {
             throw new AccessDeniedException('Operation not supported.')
         } else {
             item."${fieldName}" = fieldValue

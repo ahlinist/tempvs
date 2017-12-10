@@ -14,9 +14,9 @@ class Item extends BasePersistent {
     String name
     String description
     Period period
+    ItemGroup itemGroup
 
     static hasMany = [images: Image]
-    static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
         name blank: false

@@ -100,6 +100,7 @@ class ItemServiceSpec extends Specification {
         1 * imageService.deleteImages([image])
         1 * Item2Source.findAllByItemInList([item]) >> [item2Source]
         1 * item2Source.delete()
+        1 * item.delete()
         1 * itemGroup.delete()
         0 * _
     }
