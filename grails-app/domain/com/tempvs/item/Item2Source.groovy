@@ -2,6 +2,10 @@ package com.tempvs.item
 
 import com.tempvs.domain.BasePersistent
 
+/**
+ * An entity that represents relation between {@link com.tempvs.item.Item}
+ * and {@link com.tempvs.item.Source}.
+ */
 class Item2Source extends BasePersistent {
 
     Item item
