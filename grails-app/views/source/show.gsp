@@ -46,7 +46,7 @@
                   </g:each>
                   <li class="list-group-item row">
                     <div class="row">
-                      <tempvs:ajaxForm controller="item" action="addImage" selector="ul#sourceImages">
+                      <tempvs:ajaxForm controller="source" action="addImage" selector="ul#sourceImages">
                         <tempvs:formField type="file" name="imageUploadBean.image" label="source.image.label" />
                         <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="source.imageInfo.label" />
                         <input type="hidden" name="sourceId" value="${sourceId}"/>
