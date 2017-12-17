@@ -40,7 +40,7 @@ class ProfileHolder {
         }
     }
 
-    void setProfile(BaseProfile profile = null) {
+    void setProfile(BaseProfile profile) {
         this.clazz = profile?.class
         this.id = profile?.id
     }

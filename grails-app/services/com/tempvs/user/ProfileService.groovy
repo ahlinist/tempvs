@@ -19,8 +19,8 @@ class ProfileService {
     UserService userService
     ImageService imageService
 
-    BaseProfile getProfile(Class clazz, Object id) {
-        clazz.findByProfileId(id) ?: clazz.get(id)
+    public <T> T getProfile(Class<T> clazz, id) {
+        clazz.findByProfileId(id as String) ?: clazz.get(id)
     }
 
     BaseProfile getProfileByProfileEmail(Class clazz, String email) {

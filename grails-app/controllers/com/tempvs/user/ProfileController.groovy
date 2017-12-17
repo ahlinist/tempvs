@@ -3,7 +3,6 @@ package com.tempvs.user
 import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
-import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
@@ -12,7 +11,6 @@ import org.springframework.security.access.AccessDeniedException
  * Controller for managing {@link com.tempvs.user.UserProfile} and
  * {@link com.tempvs.user.ClubProfile}.
  */
-@GrailsCompileStatic
 class ProfileController {
 
     private static final String SUCCESS_ACTION = 'success'
@@ -45,7 +43,7 @@ class ProfileController {
 
     def index() {
         BaseProfile profile = profileHolder.profile
-        redirect action: "${profile.class.simpleName}", id: profile.identifier
+        redirect action: "${profile.class.simpleName.uncapitalize()}", id: profile.identifier
     }
 
     def userProfile(String id) {
@@ -127,7 +125,7 @@ class ProfileController {
 
     def deleteProfile(String id) {
         profileService.deleteProfile(profileService.getProfile(ClubProfile.class, id))
-        profileHolder.profile = null
+        profileHolder.setProfile(null)
         render([action: DELETE_ACTION] as JSON)
     }
 

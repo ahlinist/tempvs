@@ -55,9 +55,6 @@ class ClubProfileSpec extends Specification {
     }
 
     void "Test successful clubProfile creation"() {
-        given:
-        clubProfile.validate()
-
         expect:
         clubProfile.validate()
     }

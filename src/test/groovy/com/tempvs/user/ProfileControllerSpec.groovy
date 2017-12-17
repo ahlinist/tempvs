@@ -18,9 +18,12 @@ import spock.lang.Specification
 @TestFor(ProfileController)
 class ProfileControllerSpec extends Specification {
 
+    private static final String ID = 'id'
     private static final String ONE = '1'
     private static final Long LONG_ID = 1L
+    private static final String USER = 'user'
     private static final String EMAIL = 'email'
+    private static final String CLASS = 'class'
     private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
@@ -31,8 +34,11 @@ class ProfileControllerSpec extends Specification {
     private static final String IDENTIFIER = 'identifier'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
+    private static final String USER_PROFILE = 'userProfile'
+    private static final String CLUB_PROFILES = 'clubProfiles'
     private static final String PROFILE_URL = '/profile/index'
     private static final String DELETE_ACTION = 'deleteElement'
+    private static final String IMAGE_UPLOAD_BEAN = 'imageUploadBean'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -72,7 +78,8 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileHolder.profile >> userProfile
-        1 * userProfile.getIdentifier() >> IDENTIFIER
+        1 * userProfile.getProperty(CLASS) >> UserProfile
+        1 * userProfile.getProperty(IDENTIFIER) >> IDENTIFIER
         0 * _
 
         and:
@@ -85,8 +92,8 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getUserProfile()  >> userProfile
-        1 * userProfile.getIdentifier() >> IDENTIFIER
+        1 * user.getProperty(USER_PROFILE)  >> userProfile
+        1 * userProfile.getProperty(IDENTIFIER) >> IDENTIFIER
         0 * _
 
         and:
@@ -98,8 +105,8 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
-        1 * userProfile.user >> user
-        1 * userProfile.getIdentifier() >> IDENTIFIER
+        1 * userProfile.getProperty(USER) >> user
+        1 * userProfile.getProperty(IDENTIFIER) >> IDENTIFIER
         1 * profileHolder.profile >> userProfile
         0 * _
 
@@ -148,7 +155,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getUserProfile() >> userProfile
+        1 * user.getProperty(USER_PROFILE) >> userProfile
         1 * profileHolder.setProfile(userProfile)
         0 * _
 
@@ -194,7 +201,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.imageUploadBean >> imageUploadBean
+        1 * clubProfileCommand.getProperty(IMAGE_UPLOAD_BEAN) >> imageUploadBean
         1 * userService.currentUser >> user
         1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
         1 * profileService.createProfile(_ as ClubProfile, imageUploadBean) >> clubProfile
@@ -214,13 +221,13 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.imageUploadBean >> imageUploadBean
+        1 * clubProfileCommand.getProperty(IMAGE_UPLOAD_BEAN) >> imageUploadBean
         1 * userService.currentUser >> user
         1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
         1 * profileService.createProfile(_ as ClubProfile, imageUploadBean) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProfile(clubProfile)
-        1 * clubProfile.id >> LONG_ID
+        1 * clubProfile.getProperty(ID) >> LONG_ID
         1 * ajaxResponseHelper.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -255,7 +262,8 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileHolder.getProfile() >> userProfile
-        1 * userProfile.getId() >> LONG_ID
+        1 * userProfile.getProperty(ID) >> LONG_ID
+        1 * userProfile.getProperty(CLASS) >> UserProfile
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
@@ -322,17 +330,16 @@ class ProfileControllerSpec extends Specification {
     void "Test list()"() {
         given:
         request.method = GET_METHOD
-        Set clubProfiles = [clubProfile]
 
         when:
         def result = controller.list()
 
         then:
         1 * userService.currentUser >> user
-        1 * user.userProfile >> userProfile
-        1 * user.clubProfiles >> clubProfiles
+        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * user.getProperty(CLUB_PROFILES) >> [clubProfile]
         0 * _
 
-        result == [userProfile: userProfile, clubProfiles: clubProfiles]
+        result == [userProfile: userProfile, clubProfiles: [clubProfile]]
     }
 }

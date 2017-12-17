@@ -124,6 +124,7 @@ class UserServiceSpec extends Specification {
         def result = service.register(user, userProfile)
 
         then:
+        1 * userProfile.setUser(user)
         1 * user.setUserProfile(userProfile)
         1 * user.save() >> user
         0 * _

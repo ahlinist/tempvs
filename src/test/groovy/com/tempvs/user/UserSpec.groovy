@@ -13,6 +13,7 @@ import static com.tempvs.tests.utils.TestingUtils.DEFAULT_USER_PROPS
 class UserSpec extends Specification {
 
     def itemGroup = Mock ItemGroup
+    def clubProfile = Mock ClubProfile
 
     def userProfile = Mock(UserProfile)
 
@@ -24,6 +25,7 @@ class UserSpec extends Specification {
 
     def setup() {
         GroovySpy(ItemGroup, global: true)
+        GroovySpy(ClubProfile, global: true)
 
         Map params = DEFAULT_USER_PROPS.clone()
         user = new User(params)
@@ -77,5 +79,17 @@ class UserSpec extends Specification {
 
         and:
         result == [itemGroup]
+    }
+
+    void "Test getClubProfiles()"() {
+        when:
+        def result = user.getClubProfiles()
+
+        then:
+        1 * ClubProfile.findAllByUser(_ as User) >> [clubProfile]
+        0 * _
+
+        and:
+        result == [clubProfile]
     }
 }

@@ -42,6 +42,7 @@ class UserService {
     }
 
     User register(User user, UserProfile userProfile) {
+        userProfile.user = user
         user.userProfile = userProfile
         user.save()
         user
