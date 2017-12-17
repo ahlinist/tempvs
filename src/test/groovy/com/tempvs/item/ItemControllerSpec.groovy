@@ -72,20 +72,17 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test stash() without id being logged in"() {
-        given:
-        Set itemGroups = [itemGroup]
-
         when:
         def result = controller.stash()
 
         then:
         1 * userService.currentUser >> user
-        1 * user.itemGroups >> itemGroups
+        1 * user.itemGroups >> [itemGroup]
         1 * user.userProfile >> userProfile
         0 * _
 
         and:
-        result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: Boolean.TRUE]
+        result == [itemGroups: [itemGroup], user: user, userProfile: userProfile, editAllowed: Boolean.TRUE]
     }
 
     void "Test stash() with id being not logged in"() {
@@ -103,9 +100,6 @@ class ItemControllerSpec extends Specification {
     }
 
     void "Test stash() for success"() {
-        given:
-        Set itemGroups = [itemGroup]
-
         when:
         def result = controller.stash(LONG_ONE)
 
@@ -114,11 +108,11 @@ class ItemControllerSpec extends Specification {
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
-        1 * user.itemGroups >> itemGroups
+        1 * user.itemGroups >> [itemGroup]
         0 * _
 
         and:
-        result == [itemGroups: [itemGroup] as Set, user: user, userProfile: userProfile, editAllowed: true]
+        result == [itemGroups: [itemGroup], user: user, userProfile: userProfile, editAllowed: true]
     }
 
     void "Test createGroup() against invalid command"() {

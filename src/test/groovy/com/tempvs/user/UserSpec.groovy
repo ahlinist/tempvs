@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.item.ItemGroup
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -11,6 +12,8 @@ import static com.tempvs.tests.utils.TestingUtils.DEFAULT_USER_PROPS
 @TestFor(User)
 class UserSpec extends Specification {
 
+    def itemGroup = Mock ItemGroup
+
     def userProfile = Mock(UserProfile)
 
     def userService = Mock(UserService) {
@@ -20,6 +23,8 @@ class UserSpec extends Specification {
     User user
 
     def setup() {
+        GroovySpy(ItemGroup, global: true)
+
         Map params = DEFAULT_USER_PROPS.clone()
         user = new User(params)
         user.userService = userService
@@ -60,5 +65,17 @@ class UserSpec extends Specification {
 
         expect:
         !user.validate()
+    }
+
+    void "Test getItemGroups()"() {
+        when:
+        def result = user.getItemGroups()
+
+        then:
+        1 * ItemGroup.findAllByUser(_ as User) >> [itemGroup]
+        0 * _
+
+        and:
+        result == [itemGroup]
     }
 }

@@ -12,8 +12,7 @@ class ItemGroup extends BasePersistent {
 
     String name
     String description
-
-    static belongsTo = [user: User]
+    User user
 
     static constraints = {
         description nullable: true

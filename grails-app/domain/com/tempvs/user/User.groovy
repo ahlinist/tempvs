@@ -25,10 +25,14 @@ class User extends BasePersistent implements Serializable {
 
 	static transients = ['userService']
 	static hasOne = [userProfile: UserProfile]
-	static hasMany = [clubProfiles: ClubProfile, itemGroups: ItemGroup]
+	static hasMany = [clubProfiles: ClubProfile]
 
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this)*.role
+	}
+
+	List<ItemGroup> getItemGroups() {
+		ItemGroup.findAllByUser(this)
 	}
 
 	static constraints = {
