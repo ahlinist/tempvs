@@ -80,6 +80,7 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/stash', model: model
 
         then:
+        1 * user.getProperty(ID) >> ID
         1 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * itemGroup.getProperty(ID) >> ONE
@@ -125,9 +126,10 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/group', model: model
 
         then:
-        1 * itemGroup.getProperty(NAME) >> NAME
+        1 * user.getProperty(ID) >> ID
+        2 * itemGroup.getProperty(NAME) >> NAME
         1 * itemGroup.getProperty(DESCRIPTION) >> DESCRIPTION
-        1 * itemGroup.getProperty(ID) >> ONE
+        2 * itemGroup.getProperty(ID) >> ONE
         1 * item.getProperty(ID) >> ONE
         1 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
@@ -173,8 +175,11 @@ class ItemViewSpec extends Specification {
         String result = render view: '/item/show', model: model
 
         then:
-        1 * item.getProperty(ID) >> ID
-        2 * item.getProperty(NAME) >> NAME
+        1 * user.getProperty(ID) >> ID
+        1 * itemGroup.getProperty(ID) >> ONE
+        1 * itemGroup.getProperty(NAME) >> NAME
+        2 * item.getProperty(ID) >> ID
+        3 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(PERIOD) >> period
         2 * source.getProperty(ID) >> ID

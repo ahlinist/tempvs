@@ -2,10 +2,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-      <meta name="layout" content="item"/>
+      <meta name="layout" content="main"/>
       <title>Tempvs - <g:message code="item.group.title"/></title>
     </head>
     <body>
+      <div class="row">
+        <g:render template="/item/templates/navBar" model="${[item, itemGroup, user, userProfile]}"/>
+      </div>
       <g:if test="${itemGroup}">
         <g:set var="itemGroupId" value="${itemGroup.id}"/>
         <div class="row">

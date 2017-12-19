@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-      <meta name="layout" content="item"/>
+      <meta name="layout" content="main"/>
       <title>Tempvs - <g:message code="item.stash.title"/></title>
     </head>
     <body>
+      <div class="row">
+        <g:render template="/item/templates/navBar" model="${[item, itemGroup, user, userProfile]}"/>
+      </div>
       <g:if test="${user}">
         <div class="row">
           <b><g:message code="item.groups.message"/></b>:
