@@ -14,11 +14,13 @@ class Source extends BasePersistent {
     String name
     String description
     Period period
-
-    static hasMany = [images: Image]
+    List<Image> images
 
     static constraints = {
         description nullable: true
-        images nullable: true
+    }
+
+    static mapping = {
+        images cascade: 'all-delete-orphan'
     }
 }
