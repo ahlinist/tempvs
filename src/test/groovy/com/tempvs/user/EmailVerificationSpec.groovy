@@ -20,10 +20,14 @@ class EmailVerificationSpec extends Specification {
     private static final String UPD_PROFILE_EMAIL_ACTION = 'userProfile'
 
     def verifyService = Mock(VerifyService) {
-        isEmailUnique(_, _, _) >> Boolean.TRUE
+        isEmailUnique(_ as String, _ as String, _ as Long) >> Boolean.TRUE
     }
 
+    def emailVerification
+
     def setup() {
+        emailVerification = new EmailVerification()
+        emailVerification.verifyService = verifyService
     }
 
     def cleanup() {
@@ -31,131 +35,117 @@ class EmailVerificationSpec extends Specification {
 
     void "Verification with no properties fails"() {
         expect:
-        !new EmailVerification(verifyService: verifyService).validate()
+        !emailVerification.validate()
     }
 
     void "Verification with valid properties passes"() {
         given:
-        Map properties = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: REGISTER_ACTION,
-                email: VALID_EMAIL,
-        ]
+        emailVerification.verificationCode = VERIFICATION_CODE
+        emailVerification.action = REGISTER_ACTION
+        emailVerification.email = VALID_EMAIL
 
         expect:
-        new EmailVerification(properties).validate()
+        emailVerification.validate()
     }
 
     void "Verification for email update without instanceId fails"() {
         given:
-        Map properties = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: UPD_EMAIL_ACTION,
-                email: VALID_EMAIL,
-        ]
+        emailVerification.verificationCode = VERIFICATION_CODE
+        emailVerification.action = UPD_EMAIL_ACTION
+        emailVerification.email = VALID_EMAIL
 
         expect:
-        !new EmailVerification(properties).validate()
+        !emailVerification.validate()
     }
 
     void "Verifications for different actions are created for the same mail"() {
         given:
-        Map registrationProperties = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: REGISTER_ACTION,
-                email: VALID_EMAIL,
-        ]
+        EmailVerification regVerification = new EmailVerification()
+        regVerification.verifyService = verifyService
+        regVerification.verificationCode = VERIFICATION_CODE
+        regVerification.action = REGISTER_ACTION
+        regVerification.email = VALID_EMAIL
 
-        Map emailUpdateProperties = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE + 1,
-                action: UPD_EMAIL_ACTION,
-                email: VALID_EMAIL,
-                instanceId: USER_ID,
-        ]
+        and:
+        EmailVerification emailVerification = new EmailVerification()
+        emailVerification.verifyService = verifyService
+        emailVerification.verificationCode = VERIFICATION_CODE + 1
+        emailVerification.action = UPD_EMAIL_ACTION
+        emailVerification.email = VALID_EMAIL
+        emailVerification.instanceId = USER_ID
 
-        Map profileEmailUpdateProperties = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE + 2,
-                action: UPD_PROFILE_EMAIL_ACTION,
-                email: VALID_EMAIL,
-                instanceId: USER_ID,
-        ]
+        and:
+        EmailVerification profileVerification = new EmailVerification()
+        profileVerification.verifyService = verifyService
+        profileVerification.verificationCode = VERIFICATION_CODE + 2
+        profileVerification.action = UPD_PROFILE_EMAIL_ACTION
+        profileVerification.email = VALID_EMAIL
+        profileVerification.instanceId = USER_ID
 
         expect:
-        new EmailVerification(registrationProperties).save(flush: true)
-        new EmailVerification(emailUpdateProperties).save(flush: true)
-        new EmailVerification(profileEmailUpdateProperties).save(flush: true)
+        regVerification.save(flush: true)
+        emailVerification.save(flush: true)
+        profileVerification.save(flush: true)
     }
 
     void "Verifications for non-listed action not saved"() {
         given:
-        Map properties = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: INVALID_ACTION,
-                email: VALID_EMAIL,
-        ]
+        emailVerification.verificationCode = VERIFICATION_CODE
+        emailVerification.action = INVALID_ACTION
+        emailVerification.email = VALID_EMAIL
 
         expect:
-        !new EmailVerification(properties).validate()
+        !emailVerification.validate()
     }
 
     void "Verifications for invalid email not saved"() {
         given:
-        Map properties = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: REGISTER_ACTION,
-                email: INVALID_EMAIL,
-        ]
+        emailVerification.verificationCode = VERIFICATION_CODE
+        emailVerification.action = REGISTER_ACTION
+        emailVerification.email = INVALID_EMAIL
 
         expect:
-        !new EmailVerification(properties).validate()
+        !emailVerification.validate()
     }
 
     void "Verification code should be unique"() {
         given:
-        Map properties1 = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: REGISTER_ACTION,
-                email: VALID_EMAIL,
-        ]
+        EmailVerification emailVerification1 = new EmailVerification()
+        emailVerification1.verifyService = verifyService
+        emailVerification1.verificationCode = VERIFICATION_CODE
+        emailVerification1.action = REGISTER_ACTION
+        emailVerification1.email = VALID_EMAIL
 
-        Map properties2 = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: UPD_EMAIL_ACTION,
-                email: 'suffix' + VALID_EMAIL,
-        ]
+        and:
+        EmailVerification emailVerification2 = new EmailVerification()
+        emailVerification2.verifyService = verifyService
+        emailVerification2.verificationCode = VERIFICATION_CODE
+        emailVerification2.action = UPD_EMAIL_ACTION
+        emailVerification2.email = 'suffix' + VALID_EMAIL
+        emailVerification2.instanceId = USER_ID
 
         expect:
-        new EmailVerification(properties1).save(flush:true)
-        !new EmailVerification(properties2).save(flush:true)
+        emailVerification1.save(flush:true)
+        !emailVerification2.save(flush:true)
     }
 
     void "Email should be unique within 1 action" () {
         given:
-        Map properties1 = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE,
-                action: REGISTER_ACTION,
-                email: VALID_EMAIL,
-        ]
+        EmailVerification emailVerification1 = new EmailVerification()
+        emailVerification1.verifyService = verifyService
+        emailVerification1.verificationCode = VERIFICATION_CODE
+        emailVerification1.action = REGISTER_ACTION
+        emailVerification1.email = VALID_EMAIL
 
-        Map properties2 = [
-                verifyService: verifyService,
-                verificationCode: VERIFICATION_CODE + 1,
-                action: REGISTER_ACTION,
-                email: VALID_EMAIL,
-        ]
+        and:
+        EmailVerification emailVerification2 = new EmailVerification()
+        emailVerification2.verifyService = verifyService
+        emailVerification2.verificationCode = VERIFICATION_CODE + 1
+        emailVerification2.action = REGISTER_ACTION
+        emailVerification2.email = VALID_EMAIL
 
         expect:
-        new EmailVerification(properties1).save(flush:true)
-        !new EmailVerification(properties2).save(flush:true)
+        emailVerification1.save(flush:true)
+        !emailVerification2.save(flush:true)
     }
 }

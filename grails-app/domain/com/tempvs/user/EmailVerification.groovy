@@ -6,16 +6,14 @@ import grails.compiler.GrailsCompileStatic
 /**
  * An object that represents a sent verification of email address.
  */
-@GrailsCompileStatic
 class EmailVerification extends BasePersistent {
+
+    def verifyService
 
     Long instanceId
     String email
     String action
     String verificationCode
-    VerifyService verifyService
-
-    static transients = ['verifyService']
 
     static constraints = {
         instanceId nullable: true, validator: { instanceId, EmailVerification verification ->
