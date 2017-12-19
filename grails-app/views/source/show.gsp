@@ -20,9 +20,9 @@
         </div>
         <div class="row">
           <div class="col-sm-8 ajax-form">
-            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" label="source.name.label" editAllowed="${editAllowed}"/>
-            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" label="source.description.label" editAllowed="${editAllowed}"/>
-            <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label"/>
+            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" label="source.name.label"/>
+            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" label="source.description.label"/>
+            <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
           </div>
         </div>
         <div class="row">
