@@ -69,20 +69,17 @@ class SourceControllerSpec extends Specification {
     }
 
     void "Test show()"() {
-        given:
-        Set<Image> images = [image]
-
         when:
         def result = controller.show(LONG_ONE)
 
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * source.period >> period
-        1 * source.images >> images
+        1 * source.images >> [image]
         0 * _
 
         and:
-        result == [source: source, period: period, images: images]
+        result == [source: source, period: period, images: [image]]
     }
 
     void "Test createSource()"() {
