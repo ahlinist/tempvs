@@ -27,10 +27,10 @@ enum Period {
     }
 
     String getValue() {
-        applicationContext.getMessage('periodization.' + this.name() + '.value', null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage("periodization.${this.name()}.value", null, this.name(), LocaleContextHolder.locale)
     }
 
     String getDescription() {
-        applicationContext.getMessage('periodization.' + this.name() + '.description', null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage("periodization.${this.name()}.description", null, this.name(), LocaleContextHolder.locale)
     }
 }
