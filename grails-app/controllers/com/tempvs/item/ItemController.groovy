@@ -141,7 +141,7 @@ class ItemController {
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
                         sources: item.sources,
-                        availableSources: sourceService.getSourcesByPeriod(item.period),
+                        availableSources: sourceService.getSourcesByPeriodAndType(item.period, item.type),
                 ]
             }
         }

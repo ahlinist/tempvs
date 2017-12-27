@@ -1,4 +1,4 @@
-<%@ page import="com.tempvs.periodization.Period"%>
+<%@ page import="com.tempvs.item.Type"%>
 
 <sec:ifLoggedIn>
   <g:set var="editAllowed" value="${true}"/>
@@ -55,6 +55,7 @@
                 <tempvs:ajaxForm action="createSource">
                   <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="source.image.label" infoLabel="source.imageInfo.label"/>
                   <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
+                  <tempvs:formField type="select" name="type" from="${Type.values()}" optionKey="key" optionValue="value" label="item.type.dropdown.label"/>
                   <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" />
                   <tempvs:formField type="text" name="description" value="${source?.description}" label="source.description.label" />
                   <input type="hidden" name="period" value="${period?.key}"/>

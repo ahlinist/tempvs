@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 @Transactional
 class ItemService {
 
+    private static final String TYPE_FIELD = 'type'
     private static final String PERIOD_FIELD = 'period'
     private static final String ITEM_GROUP = 'itemGroup'
 
@@ -65,7 +66,7 @@ class ItemService {
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item editItemField(Item item, String fieldName, String fieldValue) {
-        if (fieldName == PERIOD_FIELD || fieldName == ITEM_GROUP) {
+        if (fieldName in [PERIOD_FIELD, ITEM_GROUP, TYPE_FIELD]) {
             throw new AccessDeniedException('Operation not supported.')
         } else {
             item."${fieldName}" = fieldValue

@@ -15,13 +15,14 @@ class SourceViewSpec extends Specification {
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
     private static final String NAME = 'name'
-    private static final String IMAGES = 'images'
+    private static final String TYPE = 'type'
     private static final String PERIOD = 'period'
     private static final String SHOW_URI = '/source/show'
     private static final String DESCRIPTION = 'description'
 
     def image = Mock(Image)
-    def period = Period.XIX
+    def type = GroovyMock Type
+    def period = GroovyMock Period
     def source = Mock(Source)
 
     def setup() {
@@ -34,7 +35,6 @@ class SourceViewSpec extends Specification {
 
     void "Test /source/show"() {
         given:
-        Set<Image> images = [image] as Set
         String title = "<title>Tempvs - ${NAME}</title>"
         Map model = [source: source, period: period, editAllowed: Boolean.TRUE]
 
@@ -46,6 +46,11 @@ class SourceViewSpec extends Specification {
         1 * source.getProperty(DESCRIPTION) >> DESCRIPTION
         2 * source.getProperty(ID) >> ID
         1 * source.getProperty(PERIOD) >> period
+        1 * source.getProperty(TYPE) >> type
+        1 * type.value
+        1 * period.asBoolean() >> Boolean.TRUE
+        1 * period.id
+        2 * period.value
         0 * _
 
         and:
@@ -77,6 +82,10 @@ class SourceViewSpec extends Specification {
         then:
         1 * source.getProperty(NAME) >> NAME
         1 * source.getProperty(ID) >> LONG_ID
+        2 * period.asBoolean() >> Boolean.TRUE
+        1 * period.key
+        2 * period.id
+        3 * period.value
         0 * _
 
         and:

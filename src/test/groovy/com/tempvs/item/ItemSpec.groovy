@@ -16,7 +16,8 @@ class ItemSpec extends Specification {
     private static final String DESCRIPTION = 'description'
 
     def image = Mock Image
-    def period = Period.XIX
+    def type = GroovyMock Type
+    def period = GroovyMock Period
     def source = Mock Source
     def itemGroup = Mock ItemGroup
     def item2Source = Mock Item2Source
@@ -57,6 +58,7 @@ class ItemSpec extends Specification {
         item.name = NAME
         item.itemGroup = itemGroup
         item.period = period
+        item.type = type
 
         expect:
         item.validate()
@@ -69,6 +71,7 @@ class ItemSpec extends Specification {
         item.images = [image]
         item.itemGroup = itemGroup
         item.period = period
+        item.type = type
 
         expect:
         item.validate()

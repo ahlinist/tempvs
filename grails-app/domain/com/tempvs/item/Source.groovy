@@ -13,6 +13,7 @@ class Source extends BasePersistent {
 
     String name
     String description
+    Type type
     Period period
     List<Image> images
 

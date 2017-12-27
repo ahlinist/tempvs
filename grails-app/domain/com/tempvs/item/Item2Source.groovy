@@ -12,7 +12,9 @@ class Item2Source extends BasePersistent {
     Source source
 
     static constraints = {
-        item unique: ['source']
+        item unique: ['source'], validator: { Item item, Item2Source item2Source ->
+            item.type == item2Source.source?.type
+        }
         source validator: { Source source, Item2Source item2Source ->
             source.period == item2Source.item?.period
         }

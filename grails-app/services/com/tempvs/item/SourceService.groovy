@@ -12,6 +12,7 @@ import org.springframework.security.access.AccessDeniedException
 @Transactional
 class SourceService {
 
+    private static final String TYPE_FIELD = 'type'
     private static final String PERIOD_FIELD = 'period'
 
     ImageService imageService
@@ -24,8 +25,12 @@ class SourceService {
         Source.findAllByPeriod period
     }
 
+    List<Source> getSourcesByPeriodAndType(Period period, Type type) {
+        Source.findAllByPeriodAndType period, type
+    }
+
     Source editSourceField(Source source, String fieldName, String fieldValue) {
-        if (fieldName == PERIOD_FIELD) {
+        if (fieldName in [PERIOD_FIELD, TYPE_FIELD]) {
             throw new AccessDeniedException('Operation not supported.')
         } else {
             source."${fieldName}" = fieldValue

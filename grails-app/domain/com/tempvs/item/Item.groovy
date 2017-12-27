@@ -13,6 +13,7 @@ class Item extends BasePersistent {
 
     String name
     String description
+    Type type
     Period period
     ItemGroup itemGroup
     List<Image> images

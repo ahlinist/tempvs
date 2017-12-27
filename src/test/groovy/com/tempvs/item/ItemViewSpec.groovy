@@ -20,6 +20,7 @@ class ItemViewSpec extends Specification {
     private static final String ID = 'id'
     private static final String ONE = '1'
     private static final String NAME = 'name'
+    private static final String TYPE = 'type'
     private static final String PERIOD = 'period'
     private static final String IMAGE_INFO = 'imageInfo'
     private static final String DESCRIPTION = 'description'
@@ -35,7 +36,8 @@ class ItemViewSpec extends Specification {
     def itemGroup
     def image = Mock Image
     def source = Mock Source
-    def period = Period.ANCIENT
+    def type = GroovyMock Type
+    def period = GroovyMock Period
     def userProfile = Mock UserProfile
     def applicationContext = Mock ApplicationContext
 
@@ -182,6 +184,9 @@ class ItemViewSpec extends Specification {
         3 * item.getProperty(NAME) >> NAME
         1 * item.getProperty(DESCRIPTION) >> DESCRIPTION
         1 * item.getProperty(PERIOD) >> period
+        1 * period.value
+        1 * item.getProperty(TYPE) >> type
+        1 * type.value
         2 * source.getProperty(ID) >> ID
         2 * source.getProperty(NAME) >> NAME
         1 * image.getProperty(ID) >> ID

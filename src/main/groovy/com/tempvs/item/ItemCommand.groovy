@@ -14,6 +14,7 @@ class ItemCommand implements Validateable {
     String name
     String description
     Source source
+    Type type
     Period period
     ItemGroup itemGroup
     List<ImageUploadBean> imageUploadBeans

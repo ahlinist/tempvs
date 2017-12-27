@@ -21,7 +21,8 @@ class SourceServiceSpec extends Specification {
 
     def image = Mock Image
     def source = Mock Source
-    def period = Period.MEDIEVAL
+    def type = GroovyMock Type
+    def period = GroovyMock Period
     def item2Source = Mock Item2Source
     def imageService = Mock ImageService
 
@@ -48,18 +49,27 @@ class SourceServiceSpec extends Specification {
     }
 
     void "Test getSourcesByPeriod()"() {
-        given:
-        List<Source> sources = [source]
-
         when:
         def result = service.getSourcesByPeriod(period)
 
         then:
-        1 * Source.findAllByPeriod(period) >> sources
+        1 * Source.findAllByPeriod(period) >> [source]
         0 * _
 
         and:
-        result == sources
+        result == [source]
+    }
+
+    void "Test getSourcesByPeriodAndType()"() {
+        when:
+        def result = service.getSourcesByPeriodAndType(period, type)
+
+        then:
+        1 * Source.findAllByPeriodAndType(period, type) >> [source]
+        0 * _
+
+        and:
+        result == [source]
     }
 
     void "Test editSourceField()"() {

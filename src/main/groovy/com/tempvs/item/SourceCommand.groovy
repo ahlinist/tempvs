@@ -13,6 +13,7 @@ class SourceCommand implements Validateable {
 
     String name
     String description
+    Type type
     Period period
     List<ImageUploadBean> imageUploadBeans
 

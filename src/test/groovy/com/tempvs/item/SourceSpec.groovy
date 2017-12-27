@@ -13,6 +13,9 @@ class SourceSpec extends Specification {
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
 
+    def type = GroovyMock Type
+    def period = GroovyMock Period
+
     def setup() {
     }
 
@@ -32,9 +35,9 @@ class SourceSpec extends Specification {
 
     void "Test successful Source creation"() {
         expect:
-        new Source(name: NAME, period: Period.ANTIQUITY).validate()
+        new Source(name: NAME, period: period, type: type).validate()
 
         and:
-        new Source(name: NAME,  period: Period.ANTIQUITY, description: DESCRIPTION).validate()
+        new Source(name: NAME,  period: period, type: type, description: DESCRIPTION).validate()
     }
 }

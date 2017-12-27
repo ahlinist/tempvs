@@ -13,6 +13,7 @@ class ItemCommandSpec extends Specification {
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
 
+    def type = GroovyMock Type
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
 
@@ -38,6 +39,9 @@ class ItemCommandSpec extends Specification {
         !new ItemCommand(name: NAME, description: DESCRIPTION, period: period).validate()
 
         and:
-        new ItemCommand(name: NAME, description: DESCRIPTION, period: period, itemGroup: itemGroup).validate()
+        !new ItemCommand(name: NAME, description: DESCRIPTION, period: period, itemGroup: itemGroup).validate()
+
+        and:
+        new ItemCommand(name: NAME, description: DESCRIPTION, period: period, itemGroup: itemGroup, type: type).validate()
     }
 }

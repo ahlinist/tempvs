@@ -44,7 +44,8 @@ class ItemControllerSpec extends Specification {
     def json = Mock JSON
     def item = Mock Item
     def image = Mock Image
-    def period = Period.XIX
+    def type = GroovyMock Type
+    def period = GroovyMock Period
     def source = Mock Source
     def itemGroup = Mock ItemGroup
     def userService = Mock UserService
@@ -309,13 +310,14 @@ class ItemControllerSpec extends Specification {
         1 * itemService.getItem(LONG_ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * item.period >> period
+        1 * item.type >> type
         1 * item.images >> [image]
         1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * item.sources >> [source]
-        1 * sourceService.getSourcesByPeriod(period) >> [source]
+        1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
         0 * _
 
         and:
