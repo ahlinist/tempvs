@@ -10,21 +10,13 @@ import org.springframework.context.i18n.LocaleContextHolder
  */
 @CompileStatic
 enum Period {
-    ANCIENT('periodization.ANCIENT.value', 'periodization.ancient.description'),
-    ANTIQUITY('periodization.ANTIQUITY.value', 'periodization.antiquity.description'),
-    MEDIEVAL('periodization.MEDIEVAL.value', 'periodization.medieval.description'),
-    MODERN('periodization.MODERN.value', 'periodization.modern.description'),
-    XIX('periodization.XIX.value', 'periodization.xixcentury.description'),
-    CONTEMPORARY('periodization.CONTEMPORARY.value', 'periodization.contemporary.description'),
-    OTHER('periodization.OTHER.value', 'periodization.other.description')
-
-    String value
-    String description
-
-    Period(String value, String description) {
-        this.value = value
-        this.description = description
-    }
+    ANCIENT,
+    ANTIQUITY,
+    MEDIEVAL,
+    MODERN,
+    XIX,
+    CONTEMPORARY,
+    OTHER
 
     String getKey() {
         this.name()
@@ -35,10 +27,10 @@ enum Period {
     }
 
     String getValue() {
-        applicationContext.getMessage(this.value, null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage('periodization.' + this.name() + '.value', null, this.name(), LocaleContextHolder.locale)
     }
 
     String getDescription() {
-        applicationContext.getMessage(this.description, null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage('periodization.' + this.name() + '.description', null, this.name(), LocaleContextHolder.locale)
     }
 }
