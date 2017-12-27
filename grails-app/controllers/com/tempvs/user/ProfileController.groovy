@@ -1,6 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import grails.converters.JSON
@@ -14,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException
 class ProfileController {
 
     private static final String SUCCESS_ACTION = 'success'
+    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String DELETE_ACTION = 'deleteElement'
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -73,8 +75,10 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
-        Map properties = command.properties + [user: userService.currentUser]
-        BaseProfile profile = profileService.createProfile(properties as ClubProfile, command.imageUploadBean)
+        Image avatar = imageService.uploadImage(command.imageUploadBean, AVATAR_COLLECTION)
+
+        ClubProfile clubProfile = (command.properties + [user: userService.currentUser]) as ClubProfile
+        BaseProfile profile = profileService.createProfile(clubProfile, avatar)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
@@ -136,10 +140,12 @@ class ProfileController {
     }
 
     def uploadAvatar(ImageUploadBean imageUploadBean) {
-        BaseProfile profile = profileService.uploadAvatar(profileHolder.profile, imageUploadBean)
+        BaseProfile profile = profileHolder.profile
+        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
+        BaseProfile persistedProfile = profileService.uploadAvatar(profile, avatar)
 
-        if (profile.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(profile))
+        if (persistedProfile.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(persistedProfile))
         }
 
         render ajaxResponseHelper.renderRedirect(request.getHeader('referer'))

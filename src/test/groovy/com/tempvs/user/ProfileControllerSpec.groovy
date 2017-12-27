@@ -24,6 +24,7 @@ class ProfileControllerSpec extends Specification {
     private static final String USER = 'user'
     private static final String EMAIL = 'email'
     private static final String CLASS = 'class'
+    private static final String AVATAR = 'avatar'
     private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
@@ -34,6 +35,7 @@ class ProfileControllerSpec extends Specification {
     private static final String IDENTIFIER = 'identifier'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
+    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String USER_PROFILE = 'userProfile'
     private static final String CLUB_PROFILES = 'clubProfiles'
     private static final String PROFILE_URL = '/profile/index'
@@ -47,7 +49,7 @@ class ProfileControllerSpec extends Specification {
     def json = Mock JSON
     def user = Mock User
     def image = Mock Image
-    def period = Period.valueOf 'XIX'
+    def period = GroovyMock Period
     def userService = Mock UserService
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
@@ -204,7 +206,8 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.getProperty(IMAGE_UPLOAD_BEAN) >> imageUploadBean
         1 * userService.currentUser >> user
         1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
-        1 * profileService.createProfile(_ as ClubProfile, imageUploadBean) >> clubProfile
+        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
+        1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as ClubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -224,7 +227,8 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfileCommand.getProperty(IMAGE_UPLOAD_BEAN) >> imageUploadBean
         1 * userService.currentUser >> user
         1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
-        1 * profileService.createProfile(_ as ClubProfile, imageUploadBean) >> clubProfile
+        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
+        1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.setProfile(clubProfile)
         1 * clubProfile.getProperty(ID) >> LONG_ID
@@ -320,7 +324,9 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileHolder.profile >> userProfile
-        1 * profileService.uploadAvatar(userProfile, imageUploadBean) >> userProfile
+        1 * userProfile.getProperty(AVATAR) >> image
+        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * profileService.uploadAvatar(userProfile, image) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseHelper.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

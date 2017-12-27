@@ -21,7 +21,6 @@ class ProfileServiceSpec extends Specification {
     private static final String AVATAR = 'avatar'
     private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
-    private static final String AVATAR_COLLECTION = 'avatar'
     private static final String PROFILE_EMAIL = 'profileEmail'
 
     def user = Mock User
@@ -79,10 +78,9 @@ class ProfileServiceSpec extends Specification {
 
     void "Test createProfile()"() {
         when:
-        def result = service.createProfile(clubProfile, imageUploadBean)
+        def result = service.createProfile(clubProfile, image)
 
         then:
-        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * clubProfile.setAvatar(image)
         1 * userService.currentUser >> user
         1 * clubProfile.setUser(user)
@@ -119,11 +117,9 @@ class ProfileServiceSpec extends Specification {
 
     void "Test uploadAvatar()"() {
         when:
-        def result = service.uploadAvatar(userProfile, imageUploadBean)
+        def result = service.uploadAvatar(userProfile, image)
 
         then:
-        1 * userProfile.getProperty(AVATAR) >> image
-        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * userProfile.setAvatar(image)
         1 * userProfile.save() >> userProfile
         0 * _

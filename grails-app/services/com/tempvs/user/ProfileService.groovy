@@ -14,8 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 @Transactional
 class ProfileService {
 
-    private static final String AVATAR_COLLECTION = 'avatar'
-
     UserService userService
     ImageService imageService
 
@@ -27,8 +25,7 @@ class ProfileService {
         clazz.findByProfileEmail(email)
     }
 
-    BaseProfile createProfile(BaseProfile profile, ImageUploadBean imageUploadBean) {
-        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+    BaseProfile createProfile(BaseProfile profile, Image avatar) {
         profile.avatar = avatar
         profile.user = userService.currentUser
         profile.save()
@@ -58,8 +55,8 @@ class ProfileService {
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile uploadAvatar(BaseProfile profile, ImageUploadBean imageUploadBean) {
-        profile.avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
+    BaseProfile uploadAvatar(BaseProfile profile, Image avatar) {
+        profile.avatar = avatar
         profile.save()
         profile
     }
