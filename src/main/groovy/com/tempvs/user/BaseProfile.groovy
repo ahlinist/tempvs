@@ -27,4 +27,9 @@ abstract class BaseProfile extends BasePersistent {
     String toString() {
         "${firstName} ${lastName}"
     }
+
+    @Override
+    boolean equals(Object obj) {
+        (this.class == obj.class) && (id == obj.id)
+    }
 }
