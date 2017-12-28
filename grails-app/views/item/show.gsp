@@ -33,7 +33,7 @@
                   <div class="panel-heading">
                     <h4 class="panel-title">
                       <a data-toggle="collapse" href="#sourceCollapse">
-                        <g:message code="item.image.edit.collapse.title"/>
+                        <g:message code="item.linkSource.collapse.title"/>
                         <span class="caret"></span>
                       </a>
                     </h4>
