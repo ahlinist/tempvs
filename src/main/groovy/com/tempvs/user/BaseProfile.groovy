@@ -24,6 +24,7 @@ abstract class BaseProfile extends BasePersistent {
         profileId ?: id as String
     }
 
+    @Override
     String toString() {
         "${firstName} ${lastName}"
     }

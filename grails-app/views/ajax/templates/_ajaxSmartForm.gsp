@@ -1,8 +1,8 @@
 <div class="row ${name}-wrapper">
-  <div class="col-sm-6">
+  <div class="col-sm-5">
     <label for="fieldValue"><g:message code="${label}" /></label>
   </div>
-  <div class="col-sm-6">
+  <div class="col-sm-7">
     <g:if test="${editAllowed}">
       <g:form name="${name}-form" action="${action}">
         <p id="${name}-text" class="hovering" style="padding: 8px 15px;">
