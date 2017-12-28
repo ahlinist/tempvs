@@ -1,4 +1,5 @@
 # tempvs
+[![Circle CI](https://circleci.com/gh/ahlinist/tempvs/tree/master.svg?&style=shield)](https://circleci.com/gh/ahlinist/tempvs/tree/master)
 ## Getting started
 
 To get started you need:
