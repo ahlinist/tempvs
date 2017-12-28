@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.item.Passport
 import com.tempvs.periodization.Period
 
 /**
@@ -33,7 +34,12 @@ class ClubProfile extends BaseProfile {
         avatar cascade: 'all-delete-orphan'
     }
 
+    @Override
     String toString() {
         "${firstName} ${lastName ?: ''} ${nickName ?: ''}"
+    }
+
+    List<Passport> getPassports() {
+        Passport.findAllByClubProfile(this)
     }
 }

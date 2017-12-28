@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.item.Passport
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 
@@ -14,7 +15,8 @@ class ClubProfileSpec extends Specification {
     private static final String NON_VALID_EMAIL = 'non-valid-email'
     private static final String NUMERIC_PROFILE_ID = '123456'
 
-    def user = Mock(User)
+    def user = Mock User
+    def passport = Mock Passport
 
     def profileService = Mock(ProfileService) {
         isProfileEmailUnique(_ as BaseProfile, _ as String) >> Boolean.TRUE
@@ -23,6 +25,7 @@ class ClubProfileSpec extends Specification {
     ClubProfile clubProfile
 
     def setup() {
+        GroovySpy(Passport, global: true)
         Map params = DEFAULT_CLUB_PROFILE_PROPS.clone()
         clubProfile = new ClubProfile(params + [user: user, profileService: profileService])
     }
@@ -68,7 +71,22 @@ class ClubProfileSpec extends Specification {
     }
 
     void "Test toString()"() {
-        expect:
-        clubProfile.toString() == "${FIRST_NAME} ${LAST_NAME} ${NICK_NAME}"
+        when:
+        def result = clubProfile.toString()
+
+        then:
+        result == "${FIRST_NAME} ${LAST_NAME} ${NICK_NAME}"
+    }
+
+    void "Test getPassports()"() {
+        when:
+        def result = domain.getPassports()
+
+        then:
+        1 * Passport.findAllByClubProfile(domain) >> [passport]
+        0 * _
+
+        and:
+        result == [passport]
     }
 }

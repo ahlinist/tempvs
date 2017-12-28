@@ -4,6 +4,8 @@ import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.item.Passport
+import com.tempvs.item.PassportService
 import com.tempvs.periodization.Period
 import grails.converters.JSON
 import grails.test.mixin.Mock
@@ -49,6 +51,7 @@ class ProfileControllerSpec extends Specification {
     def json = Mock JSON
     def user = Mock User
     def image = Mock Image
+    def passport = Mock Passport
     def period = GroovyMock Period
     def userService = Mock UserService
     def userProfile = Mock UserProfile
@@ -58,6 +61,7 @@ class ProfileControllerSpec extends Specification {
     def verifyService = Mock VerifyService
     def profileService = Mock ProfileService
     def imageUploadBean = Mock ImageUploadBean
+    def passportService = Mock PassportService
     def emailVerification = Mock EmailVerification
     def clubProfileCommand = Mock ClubProfileCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -68,6 +72,7 @@ class ProfileControllerSpec extends Specification {
         controller.profileHolder = profileHolder
         controller.verifyService = verifyService
         controller.profileService = profileService
+        controller.passportService = passportService
         controller.ajaxResponseHelper = ajaxResponseHelper
     }
 
@@ -88,7 +93,7 @@ class ProfileControllerSpec extends Specification {
         response.redirectedUrl.contains USER_PROFILE_PAGE_URI
     }
 
-    void "Test userProfile() for existent profile"() {
+    void "Test userProfile()"() {
         when: 'No id given'
         controller.userProfile()
 
@@ -121,7 +126,6 @@ class ProfileControllerSpec extends Specification {
         controller.clubProfile()
 
         then:
-        1 * userService.currentUser
         0 * _
 
         and:
@@ -137,6 +141,23 @@ class ProfileControllerSpec extends Specification {
 
         and:
         result == [id: ONE, notFoundMessage: NO_SUCH_PROFILE]
+    }
+
+    void "Test clubProfile()"() {
+        when:
+        params.id = ONE
+        def result = controller.clubProfile()
+
+        then: 'For non-existing profile'
+        1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
+        1 * clubProfile.getProperty(USER) >> user
+        1 * clubProfile.getProperty(IDENTIFIER) >> IDENTIFIER
+        1 * profileHolder.profile >> clubProfile
+        1 * passportService.getPassportsByProfile(clubProfile) >> [passport]
+        0 * _
+
+        and:
+        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport], editAllowed: Boolean.TRUE]
     }
 
     void "Test switchProfile() being not logged in"() {

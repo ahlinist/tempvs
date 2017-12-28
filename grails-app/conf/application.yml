@@ -107,6 +107,9 @@ grails:
                 - pattern: /source/show/**
                   access:
                       - permitAll
+                - pattern: /passport/show/**
+                  access:
+                      - permitAll
                 - pattern: /assets/**
                   access:
                       - permitAll

@@ -22,20 +22,34 @@
           <tempvs:ajaxSmartForm type="text" value="${period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
         </div>
         <div class="col-sm-4">
-          <g:message code="item.sources.label"/>
+          <b><g:message code="item.sources.label"/></b>
           <ul id="linkedSources">
             <g:each var="source" in="${sources}">
               <g:render template="/item/templates/linkedSource" model="${[source: source, itemId: itemId]}"/>
             </g:each>
             <g:if test="${editAllowed}">
-              <li class="row">
-                <tempvs:ajaxForm controller="item" action="linkSource" selector="ul#linkedSources">
-                  <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${availableSources}" noSelection="${['':'-']}"
-                            optionKey="id" optionValue="name"/>
-                  <input type="hidden" name="itemId" value="${itemId}" />
-                  <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
-                </tempvs:ajaxForm>
-              </li>
+              <div class="panel-group">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" href="#sourceCollapse">
+                        <g:message code="item.image.edit.collapse.title"/>
+                        <span class="caret"></span>
+                      </a>
+                    </h4>
+                  </div>
+                  <div id="sourceCollapse" class="panel-collapse collapse">
+                    <li class="row">
+                      <tempvs:ajaxForm controller="item" action="linkSource" selector="ul#linkedSources">
+                        <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${availableSources}" noSelection="${['':'-']}"
+                                  optionKey="id" optionValue="name"/>
+                        <input type="hidden" name="itemId" value="${itemId}" />
+                        <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
+                      </tempvs:ajaxForm>
+                    </li>
+                  </div>
+                </div>
+              </div>
             </g:if>
           </ul>
         </div>
@@ -48,13 +62,13 @@
           <div class="panel panel-default">
             <div class="panel-heading">
               <h4 class="panel-title">
-                <a data-toggle="collapse" href="#collapse">
+                <a data-toggle="collapse" href="#imageCollapse">
                   <g:message code="item.image.edit.collapse.title"/>
                   <span class="caret"></span>
                 </a>
               </h4>
             </div>
-            <div id="collapse" class="panel-collapse collapse">
+            <div id="imageCollapse" class="panel-collapse collapse">
               <ul class="list-group" id="itemImages">
                 <g:each var="image" in="${images}">
                   <g:render template="/item/templates/addImageForm" model="${[image: image, itemId: itemId]}"/>

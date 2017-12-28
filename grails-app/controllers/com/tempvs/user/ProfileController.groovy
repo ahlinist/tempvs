@@ -4,6 +4,8 @@ import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.item.Passport
+import com.tempvs.item.PassportService
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
@@ -40,6 +42,7 @@ class ProfileController {
     ProfileHolder profileHolder
     VerifyService verifyService
     ProfileService profileService
+    PassportService passportService
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
 
@@ -49,11 +52,34 @@ class ProfileController {
     }
 
     def userProfile(String id) {
-        profile(id, UserProfile)
+        if (!id) {
+            UserProfile profile = userService.currentUser?.userProfile
+            return redirect(profile ? [action: 'userProfile', id: profile.identifier] : [controller: 'auth', action: 'index'])
+        }
+
+        UserProfile profile = profileService.getProfile(UserProfile, id)
+
+        if (!profile) {
+            return [id: id, notFoundMessage: NO_SUCH_PROFILE]
+        }
+
+        [profile: profile, user: profile.user, id: profile.identifier, editAllowed: profileHolder.profile == profile]
     }
 
     def clubProfile(String id) {
-        profile(id, ClubProfile)
+        if (!id) {
+            return redirect(controller: 'auth', action: 'index')
+        }
+
+        ClubProfile profile = profileService.getProfile(ClubProfile, id)
+
+        if (!profile) {
+            return [id: id, notFoundMessage: NO_SUCH_PROFILE]
+        }
+
+        List<Passport> passports = passportService.getPassportsByProfile(profile)
+        Boolean editAllowed = profileHolder.profile == profile
+        [profile: profile, user: profile.user, id: profile.identifier, passports: passports, editAllowed: editAllowed]
     }
 
     def switchProfile(String id) {
@@ -161,23 +187,6 @@ class ProfileController {
             render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect grailsLinkGenerator.link(controller: 'auth')
-        }
-    }
-
-    private profile(String id, Class clazz) {
-        if (id) {
-            BaseProfile profile = profileService.getProfile(clazz, id)
-
-            if (profile) {
-                [profile: profile, user: profile.user, id: profile.identifier, editAllowed: profileHolder.profile == profile]
-            } else {
-                [id: id, notFoundMessage: NO_SUCH_PROFILE]
-            }
-        } else {
-            User user = userService.currentUser
-            UserProfile profile = user?.userProfile
-
-            redirect(profile ? [action: 'userProfile', id: profile.identifier] : [controller: 'auth', action: 'index'])
         }
     }
 }

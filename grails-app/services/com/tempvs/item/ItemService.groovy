@@ -26,6 +26,10 @@ class ItemService {
         Item.get id
     }
 
+    List<Item> getItemsByPassport(Passport passport) {
+        Item2Passport.findAllByPassport(passport)*.item
+    }
+
     @PreAuthorize('#itemGroup.user.email == authentication.name')
     ItemGroup createGroup(ItemGroup itemGroup) {
         itemGroup.save()
@@ -46,6 +50,7 @@ class ItemService {
         if (items) {
             imageService.deleteImages(items*.images?.flatten())
             Item2Source.findAllByItemInList(items)*.delete()
+            Item2Passport.findAllByItemInList(items)*.delete()
             items*.delete()
         }
 
@@ -80,6 +85,7 @@ class ItemService {
     void deleteItem(Item item) {
         imageService.deleteImages(item.images)
         Item2Source.findAllByItem(item)*.delete()
+        Item2Passport.findAllByItem(item)*.delete()
         item.delete()
     }
 
