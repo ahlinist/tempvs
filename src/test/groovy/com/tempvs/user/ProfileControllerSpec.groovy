@@ -160,18 +160,6 @@ class ProfileControllerSpec extends Specification {
         result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport], editAllowed: Boolean.TRUE]
     }
 
-    void "Test switchProfile() being not logged in"() {
-        when:
-        controller.switchProfile()
-
-        then:
-        1 * userService.currentUser
-        0 * _
-
-        and:
-        response.redirectedUrl == AUTH_URL
-    }
-
     void "Test switchProfile() being logged in without id"() {
         when:
         controller.switchProfile()
@@ -188,11 +176,11 @@ class ProfileControllerSpec extends Specification {
 
     void "Test switchProfile() being logged in with id"() {
         when:
-        params.id = ONE
+        params.id = LONG_ID
         controller.switchProfile()
 
         then:
-        1 * profileService.getProfile(_, ONE) >> userProfile
+        1 * profileService.getProfile(_, LONG_ID) >> userProfile
         1 * profileHolder.setProfile(userProfile)
         0 * _
 

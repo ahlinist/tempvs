@@ -5,16 +5,28 @@ function getActions() {
 
     function deleteElementAction(element, response, selector) {
         var backdrop = document.querySelector('.modal-backdrop');
-        var toDelete = document.querySelector(selector);
+        var target = document.querySelector(selector);
         document.querySelector('body').classList.remove('modal-open');
         backdrop.parentNode.removeChild(backdrop);
-        toDelete.parentNode.removeChild(toDelete);
+        target.parentNode.removeChild(target);
         $(element).modal('hide');
     }
 
     function appendElementAction(element, response, selector) {
-        var appendTo = document.querySelector(selector);
-        appendTo.innerHTML = response.template + appendTo.innerHTML;
+        var container = document.querySelector(selector);
+        container.innerHTML = response.template + container.innerHTML;
+    }
+
+    function replaceElementAction(element, response, selector) {
+        var backdrop = document.querySelector('.modal-backdrop');
+
+        if (backdrop) {
+            backdrop.parentNode.removeChild(backdrop);
+        }
+
+        $(element).modal('hide');
+        var container = document.querySelector(selector);
+        container.innerHTML = response.template;
     }
 
     function formMessageAction(element, response) {
@@ -36,8 +48,9 @@ function getActions() {
 
     var actions = {
                redirect: redirectAction,
-               deleteElement: deleteElementAction,
                appendElement: appendElementAction,
+               deleteElement: deleteElementAction,
+               replaceElement: replaceElementAction,
                formMessage: formMessageAction,
                validationResponse: validationResponseAction,
                none: function() {},

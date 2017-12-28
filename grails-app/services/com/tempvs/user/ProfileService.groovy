@@ -2,7 +2,9 @@ package com.tempvs.user
 
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
+import com.tempvs.item.Item2Passport
+import com.tempvs.item.Passport
+import com.tempvs.item.PassportService
 import com.tempvs.periodization.Period
 import grails.transaction.Transactional
 import org.springframework.security.access.prepost.PreAuthorize
@@ -16,6 +18,7 @@ class ProfileService {
 
     UserService userService
     ImageService imageService
+    PassportService passportService
 
     public <T> T getProfile(Class<T> clazz, id) {
         clazz.findByProfileId(id as String) ?: clazz.get(id)
@@ -34,6 +37,13 @@ class ProfileService {
 
     @PreAuthorize('#profile.user.email == authentication.name')
     void deleteProfile(BaseProfile profile) {
+        List<Passport> passports = passportService.getPassportsByProfile(profile)
+
+        if (passports) {
+            Item2Passport.findAllByPassportInList(passports)*.delete()
+            passports*.delete()
+        }
+
         imageService.deleteImage(profile.avatar)
         profile.delete()
     }

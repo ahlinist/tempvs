@@ -76,7 +76,18 @@ class ItemServiceSpec extends Specification {
 
         then:
         1 * Item2Passport.findAllByPassport(passport) >> [item2Passport]
-        1 * item2Passport.getProperty(ITEM) >> item
+        0 * _
+
+        and:
+        result == [item2Passport]
+    }
+
+    void "Test getItemsByPeriod()"() {
+        when:
+        def result = service.getItemsByPeriod(period)
+
+        then:
+        1 * Item.findAllByPeriod(period) >> [item]
         0 * _
 
         and:

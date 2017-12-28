@@ -2,6 +2,7 @@ package com.tempvs.item
 
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.periodization.Period
 import grails.transaction.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
@@ -26,8 +27,12 @@ class ItemService {
         Item.get id
     }
 
-    List<Item> getItemsByPassport(Passport passport) {
-        Item2Passport.findAllByPassport(passport)*.item
+    List<Item2Passport> getItemsByPassport(Passport passport) {
+        Item2Passport.findAllByPassport(passport)
+    }
+
+    List<Item> getItemsByPeriod(Period period) {
+        Item.findAllByPeriod(period)
     }
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')

@@ -3,6 +3,9 @@ package com.tempvs.user
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.item.Item2Passport
+import com.tempvs.item.Passport
+import com.tempvs.item.PassportService
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -25,18 +28,23 @@ class ProfileServiceSpec extends Specification {
 
     def user = Mock User
     def image = Mock Image
+    def passport = Mock Passport
+    def item2Passport = Mock Item2Passport
+
     def userService = Mock UserService
     def clubProfile = Mock ClubProfile
     def userProfile = Mock UserProfile
     def imageService = Mock ImageService
-    def imageUploadBean = Mock ImageUploadBean
+    def passportService = Mock PassportService
 
     def setup() {
         GroovySpy(ClubProfile, global: true)
         GroovySpy(UserProfile, global: true)
+        GroovySpy(Item2Passport, global: true)
 
         service.userService = userService
         service.imageService = imageService
+        service.passportService = passportService
     }
 
     def cleanup() {
@@ -96,6 +104,10 @@ class ProfileServiceSpec extends Specification {
         service.deleteProfile(clubProfile)
 
         then:
+        1 * passportService.getPassportsByProfile(clubProfile) >> [passport]
+        1 * Item2Passport.findAllByPassportInList([passport]) >> [item2Passport]
+        1 * item2Passport.delete()
+        1 * passport.delete()
         1 * clubProfile.getProperty(AVATAR) >> image
         1 * imageService.deleteImage(image)
         1 * clubProfile.delete()
