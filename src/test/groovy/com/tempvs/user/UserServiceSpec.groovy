@@ -16,6 +16,7 @@ class UserServiceSpec extends Specification {
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
     private static final String FIELD_VALUE = 'fieldValue'
+    private static final String USER_PROFILE = 'userProfile'
 
     def user = Mock User
     def grailsUser = Mock GrailsUser
@@ -111,7 +112,7 @@ class UserServiceSpec extends Specification {
         def result = service.editUserField(user, EMAIL, FIELD_VALUE)
 
         then:
-        1 * user.setEmail(FIELD_VALUE)
+        1 * user.setProperty(EMAIL, FIELD_VALUE)
         1 * user.save() >> user
         0 * _
 
@@ -124,8 +125,8 @@ class UserServiceSpec extends Specification {
         def result = service.register(user, userProfile)
 
         then:
-        1 * userProfile.setUser(user)
-        1 * user.setUserProfile(userProfile)
+        1 * userProfile.setProperty(USER, user)
+        1 * user.setProperty(USER_PROFILE, userProfile)
         1 * user.save() >> user
         0 * _
 

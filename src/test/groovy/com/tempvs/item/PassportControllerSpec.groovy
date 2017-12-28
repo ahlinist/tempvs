@@ -77,7 +77,7 @@ class PassportControllerSpec extends Specification {
         response.redirectedUrl == PROFILE_URL
     }
 
-    void "Test createPassport"() {
+    void "Test createPassport()"() {
         given:
         request.method = POST_METHOD
 
@@ -86,7 +86,7 @@ class PassportControllerSpec extends Specification {
 
         then:
         1 * profileHolder.profile >> clubProfile
-        1 * passport.setClubProfile(clubProfile)
+        1 * passport.setProperty(CLUB_PROFILE, clubProfile)
         1 * passportService.createPassport(passport) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.getProperty(ID) >> LONG_ONE

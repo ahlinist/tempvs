@@ -77,7 +77,7 @@ class SourceServiceSpec extends Specification {
         def result = service.editSourceField(source, NAME, FIELD_VALUE)
 
         then:
-        1 * source.setName(FIELD_VALUE)
+        1 * source.setProperty(NAME, FIELD_VALUE)
         1 * source.save() >> source
         0 * _
 

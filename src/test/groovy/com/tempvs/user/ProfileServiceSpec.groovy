@@ -89,9 +89,9 @@ class ProfileServiceSpec extends Specification {
         def result = service.createProfile(clubProfile, image)
 
         then:
-        1 * clubProfile.setAvatar(image)
+        1 * clubProfile.setProperty(AVATAR, image)
         1 * userService.currentUser >> user
-        1 * clubProfile.setUser(user)
+        1 * clubProfile.setProperty(USER, user)
         1 * clubProfile.save() >> clubProfile
         0 * _
 
@@ -119,7 +119,7 @@ class ProfileServiceSpec extends Specification {
         def result = service.editProfileField(userProfile, FIRST_NAME, FIELD_VALUE)
 
         then:
-        1 * userProfile.setFirstName(FIELD_VALUE)
+        1 * userProfile.setProperty(FIRST_NAME, FIELD_VALUE)
         1 * userProfile.save() >> userProfile
         0 * _
 
@@ -132,7 +132,7 @@ class ProfileServiceSpec extends Specification {
         def result = service.uploadAvatar(userProfile, image)
 
         then:
-        1 * userProfile.setAvatar(image)
+        1 * userProfile.setProperty(AVATAR, image)
         1 * userProfile.save() >> userProfile
         0 * _
 
@@ -147,7 +147,7 @@ class ProfileServiceSpec extends Specification {
         then:
         1 * userProfile.getProperty(AVATAR) >> image
         1 * imageService.deleteImage(image)
-        1 * userProfile.setAvatar(null)
+        1 * userProfile.setProperty(AVATAR, null)
         1 * userProfile.save() >> userProfile
         0 * _
     }

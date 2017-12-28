@@ -111,7 +111,7 @@ class ItemServiceSpec extends Specification {
         def result = service.editItemGroupField(itemGroup, NAME, FIELD_VALUE)
 
         then:
-        1 * itemGroup.setName(FIELD_VALUE)
+        1 * itemGroup.setProperty(NAME, FIELD_VALUE)
         1 * itemGroup.save() >> itemGroup
         0 * _
 
@@ -157,7 +157,7 @@ class ItemServiceSpec extends Specification {
         def result = service.editItemField(item, NAME, FIELD_VALUE)
 
         then:
-        1 * item.setName(FIELD_VALUE)
+        1 * item.setProperty(NAME, FIELD_VALUE)
         1 * item.save() >> item
         0 * _
 

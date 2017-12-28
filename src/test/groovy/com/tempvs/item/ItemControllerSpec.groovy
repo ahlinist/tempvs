@@ -133,14 +133,16 @@ class ItemControllerSpec extends Specification {
     void "Test createGroup() against invalid group"() {
         given:
         request.method = POST_METHOD
-        Map parameters = [name: null]
 
         when:
         controller.createGroup(itemGroupCommand)
 
         then:
         1 * itemGroupCommand.validate() >> Boolean.TRUE
-        1 * itemGroupCommand.getProperty(PROPERTIES) >> parameters
+        1 * itemGroupCommand.name
+        1 * itemGroupCommand.description
+        1 * itemGroupCommand.errors
+        1 * itemGroupCommand.user
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as ItemGroup) >> json
@@ -157,7 +159,10 @@ class ItemControllerSpec extends Specification {
 
         then:
         1 * itemGroupCommand.validate() >> Boolean.TRUE
-        1 * itemGroupCommand.getProperty(PROPERTIES) >> [name: NAME]
+        1 * itemGroupCommand.name >> NAME
+        1 * itemGroupCommand.description
+        1 * itemGroupCommand.errors
+        1 * itemGroupCommand.user
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
         1 * itemGroup.id >> LONG_ONE
@@ -234,15 +239,20 @@ class ItemControllerSpec extends Specification {
     void "Test createItem() against invalid item"() {
         given:
         request.method = POST_METHOD
-        Map properties = [name: NAME, description: DESCRIPTION, imageUploadBeans: [imageUploadBean]]
 
         when:
         controller.createItem(itemCommand)
 
         then:
         1 * itemCommand.validate() >> Boolean.TRUE
-        1 * itemCommand.getProperty(PROPERTIES) >> properties
-        1 * itemCommand.imageUploadBeans >> [imageUploadBean]
+        1 * itemCommand.source
+        1 * itemCommand.description >> DESCRIPTION
+        1 * itemCommand.errors
+        1 * itemCommand.itemGroup
+        1 * itemCommand.type
+        1 * itemCommand.period
+        1 * itemCommand.name >> NAME
+        2 * itemCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
         1 * itemService.updateItem(_ as Item, [image]) >> item
         1 * item.hasErrors() >> Boolean.TRUE
@@ -254,15 +264,20 @@ class ItemControllerSpec extends Specification {
     void "Test createItem()"() {
         given:
         request.method = POST_METHOD
-        Map properties = [name: NAME, description: DESCRIPTION, period: period, imageUploadBeans: [imageUploadBean]]
 
         when:
         controller.createItem(itemCommand)
 
         then:
-        1 * itemCommand.getProperty(PROPERTIES) >> properties
         1 * itemCommand.validate() >> Boolean.TRUE
-        1 * itemCommand.imageUploadBeans >> [imageUploadBean]
+        1 * itemCommand.source
+        1 * itemCommand.description >> DESCRIPTION
+        1 * itemCommand.errors
+        1 * itemCommand.itemGroup
+        1 * itemCommand.type
+        1 * itemCommand.period >> period
+        1 * itemCommand.name >> NAME
+        2 * itemCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
         1 * itemService.updateItem(_ as Item, [image]) >> item
         1 * item.hasErrors() >> Boolean.FALSE

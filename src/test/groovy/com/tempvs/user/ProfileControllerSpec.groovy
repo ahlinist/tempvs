@@ -29,6 +29,7 @@ class ProfileControllerSpec extends Specification {
     private static final String AVATAR = 'avatar'
     private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
+    private static final String PROFILE = 'profile'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIRST_NAME = 'firstName'
     private static final String AUTH_URL = '/auth/index'
@@ -167,7 +168,7 @@ class ProfileControllerSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * profileHolder.setProfile(userProfile)
+        1 * profileHolder.setProperty(PROFILE, userProfile)
         0 * _
 
         and:
@@ -181,7 +182,7 @@ class ProfileControllerSpec extends Specification {
 
         then:
         1 * profileService.getProfile(_, LONG_ID) >> userProfile
-        1 * profileHolder.setProfile(userProfile)
+        1 * profileHolder.setProperty(PROFILE, userProfile)
         0 * _
 
         and:
@@ -239,7 +240,7 @@ class ProfileControllerSpec extends Specification {
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
-        1 * profileHolder.setProfile(clubProfile)
+        1 * profileHolder.setProperty(PROFILE, clubProfile)
         1 * clubProfile.getProperty(ID) >> LONG_ID
         1 * ajaxResponseHelper.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

@@ -20,7 +20,6 @@ import spock.lang.Specification
 class SourceControllerSpec extends Specification {
 
     private static final String ONE = '1'
-    private static final String TWO = '2'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
@@ -86,15 +85,18 @@ class SourceControllerSpec extends Specification {
         given:
         request.method = POST_METHOD
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
-        Map properties = [name: NAME, description: DESCRIPTION, period: period, imageUploadBeans: [imageUploadBean]]
 
         when:
         controller.createSource(sourceCommand)
 
         then:
         1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceCommand.getProperty(PROPERTIES) >> properties
-        1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
+        1 * sourceCommand.description >> DESCRIPTION
+        1 * sourceCommand.errors
+        1 * sourceCommand.type
+        1 * sourceCommand.period >> period
+        1 * sourceCommand.name >> NAME
+        2 * sourceCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
         1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.FALSE
@@ -108,15 +110,18 @@ class SourceControllerSpec extends Specification {
         given:
         params.sourceId = ONE
         request.method = POST_METHOD
-        Map properties = [imageUploadBeans: [imageUploadBean]]
 
         when:
         controller.createSource(sourceCommand)
 
         then:
         1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceCommand.getProperty(PROPERTIES) >> properties
-        1 * sourceCommand.imageUploadBeans >> [imageUploadBean]
+        1 * sourceCommand.description
+        1 * sourceCommand.errors
+        1 * sourceCommand.type
+        1 * sourceCommand.period
+        1 * sourceCommand.name
+        2 * sourceCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
         1 * sourceService.updateSource(_ as Source, [image]) >> source
         1 * source.hasErrors() >> Boolean.TRUE
