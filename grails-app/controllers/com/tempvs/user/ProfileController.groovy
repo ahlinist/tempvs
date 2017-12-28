@@ -82,18 +82,9 @@ class ProfileController {
         [profile: profile, user: profile.user, id: profile.identifier, passports: passports, editAllowed: editAllowed]
     }
 
-    def switchProfile(String id) {
-        Map destination = [uri: request.getHeader('referer')]
-
-        if (id) {
-            profileHolder.profile = profileService.getProfile(ClubProfile, id)
-        } else {
-            User user = userService.currentUser
-
-            user ? (profileHolder.profile = user.userProfile) : (destination = [controller: 'auth', action: 'index'])
-        }
-
-        redirect destination
+    def switchProfile(Long id) {
+        profileHolder.profile = id ? profileService.getProfile(ClubProfile, id) : userService.currentUser?.userProfile
+        redirect uri: request.getHeader('referer')
     }
 
     def createClubProfile(ClubProfileCommand command) {
