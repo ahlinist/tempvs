@@ -21,18 +21,10 @@ class UserFunctionalSpec extends GebSpec {
 
     void "Login page is available for non-logged users"() {
         when: 'Browser is pointed to /auth/login'
-        to LoginPage
+        to AuthPage
 
         then: 'Login page is rendered'
-        at LoginPage
-    }
-
-    void "Register page is available for non-logged users"() {
-        when: 'Browser is pointed to /auth/register'
-        to RegisterPage
-
-        then: 'Register page is rendered'
-        at RegisterPage
+        at AuthPage
     }
 
     void "Verify page is available for non-logged users"() {
@@ -43,12 +35,12 @@ class UserFunctionalSpec extends GebSpec {
         at VerifyPage
     }
 
-    void "Show page with id is available for non-logged users"() {
+    void "UserProfile page with id is available for non-logged users"() {
         when: 'Browser is pointed to /user/show/1'
-        to ShowPage, 1
+        to UserProfilePage, 1
 
         then: "Login page is rendered"
-        at ShowPage
+        at UserProfilePage
     }
 
     void "Home page redirects to login if not logged in"() {
@@ -56,6 +48,6 @@ class UserFunctionalSpec extends GebSpec {
         go '/'
 
         then: "Login page is rendered"
-        at LoginPage
+        at AuthPage
     }
 }
