@@ -7,7 +7,9 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:8u121
+      - image: circleci/mysql:5.7
+      - image: circleci/mongo:3.2
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -40,3 +42,4 @@ jobs:
 
       # run tests!
       - run: gradle test
+      - run: gradle integrationTest
