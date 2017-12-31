@@ -6,7 +6,6 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.User
 import com.tempvs.user.UserService
-import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
@@ -15,7 +14,6 @@ import org.springframework.security.access.AccessDeniedException
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
-@GrailsCompileStatic
 class ItemController {
 
     private static final String NO_ACTION = 'none'
@@ -228,10 +226,10 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Item2Source item2source = itemService.linkSource(item, source)
+        item = itemService.linkSource(item, source)
 
-        if (item2source.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(item2source))
+        if (item.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
         Map model = [editAllowed: Boolean.TRUE, source: source, itemId: itemId]
@@ -247,7 +245,11 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        itemService.unlinkSource(item, source)
+        item = itemService.unlinkSource(item, source)
+
+        if (item.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(item))
+        }
 
         render([action: DELETE_ACTION] as JSON)
     }

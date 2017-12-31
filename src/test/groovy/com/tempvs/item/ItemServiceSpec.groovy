@@ -4,20 +4,14 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@Mock([Item2Source])
-@TestFor(ItemService)
-class ItemServiceSpec extends Specification {
+class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemService>, DomainUnitTest<Item> {
 
     private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
-    private static final String ITEM = 'item'
     private static final String ITEMS = 'items'
     private static final String IMAGES = 'images'
     private static final String FIELD_VALUE = 'fieldValue'
@@ -26,19 +20,14 @@ class ItemServiceSpec extends Specification {
     def item = Mock Item
     def image = Mock Image
     def source = Mock Source
-    def passport = Mock Passport
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
-    def item2Source = Mock Item2Source
-    def item2Passport = Mock Item2Passport
 
     def imageService = Mock ImageService
 
     def setup() {
         GroovySpy(Item, global: true)
         GroovySpy(ItemGroup, global: true)
-        GroovySpy(Item2Source, global: true)
-        GroovySpy(Item2Passport, global: true)
 
         service.imageService = imageService
     }
@@ -68,18 +57,6 @@ class ItemServiceSpec extends Specification {
 
         and:
         result == item
-    }
-
-    void "Test getItemsByPassport()"() {
-        when:
-        def result = service.getItemsByPassport(passport)
-
-        then:
-        1 * Item2Passport.findAllByPassport(passport) >> [item2Passport]
-        0 * _
-
-        and:
-        result == [item2Passport]
     }
 
     void "Test getItemsByPeriod()"() {
@@ -127,11 +104,6 @@ class ItemServiceSpec extends Specification {
         1 * itemGroup.getProperty(ITEMS) >> [item]
         1 * item.getProperty(IMAGES) >> [image]
         1 * imageService.deleteImages([image])
-        1 * Item2Source.findAllByItemInList([item]) >> [item2Source]
-        1 * item2Source.delete()
-        1 * Item2Passport.findAllByItemInList([item]) >> [item2Passport]
-        1 * item2Passport.delete()
-        1 * item.delete()
         1 * itemGroup.delete()
         0 * _
     }
@@ -172,10 +144,6 @@ class ItemServiceSpec extends Specification {
         then:
         1 * item.getProperty(IMAGES) >> [image]
         1 * imageService.deleteImages([image])
-        1 * Item2Source.findAllByItem(item) >> [item2Source]
-        1 * item2Source.delete()
-        1 * Item2Passport.findAllByItem(item) >> item2Passport
-        1 * item2Passport.delete()
         1 * item.delete()
         0 * _
     }
@@ -203,21 +171,24 @@ class ItemServiceSpec extends Specification {
         def result = service.linkSource(item, source)
 
         then:
-        1 * new Item2Source([item: item, source: source]) >> item2Source
-        1 * item2Source.save()
+        1 * item.addToSources(source)
+        1 * item.save()
         0 * _
 
         and:
-        result == item2Source
+        result == item
     }
 
     void "Test unlinkSource()"() {
         when:
-        service.unlinkSource(item, source)
+        def result = service.unlinkSource(item, source)
 
         then:
-        1 * Item2Source.findByItemAndSource(item, source) >> item2Source
-        1 * item2Source.delete()
+        1 * item.removeFromSources(source)
+        1 * item.save()
         0 * _
+
+        and:
+        result == item
     }
 }

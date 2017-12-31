@@ -1,14 +1,10 @@
 package com.tempvs.item
 
 import com.tempvs.user.User
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
- */
-@TestFor(ItemGroup)
-class ItemGroupSpec extends Specification {
+class ItemGroupSpec extends Specification implements DomainUnitTest<ItemGroup> {
 
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
@@ -52,17 +48,5 @@ class ItemGroupSpec extends Specification {
 
         expect:
         itemGroup.validate()
-    }
-
-    void "Test getItems()"() {
-        when:
-        def result = itemGroup.items
-
-        then:
-        1 * Item.findAllByItemGroup(_ as ItemGroup) >> [item]
-        0 * _
-
-        and:
-        result.find() instanceof Item
     }
 }

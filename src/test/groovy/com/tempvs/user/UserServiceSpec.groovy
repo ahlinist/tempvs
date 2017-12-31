@@ -2,14 +2,11 @@ package com.tempvs.user
 
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(UserService)
-class UserServiceSpec extends Specification {
+class UserServiceSpec extends Specification implements ServiceUnitTest<UserService>, DomainUnitTest<User> {
 
     private static final Long LONG_ID = 1L
     private static final String USER = 'user'
@@ -112,6 +109,8 @@ class UserServiceSpec extends Specification {
         def result = service.editUserField(user, EMAIL, FIELD_VALUE)
 
         then:
+        1 * profileService.getProfileByProfileEmail(UserProfile, FIELD_VALUE)
+        1 * profileService.getProfileByProfileEmail(ClubProfile, FIELD_VALUE)
         1 * user.setProperty(EMAIL, FIELD_VALUE)
         1 * user.save() >> user
         0 * _
@@ -125,7 +124,9 @@ class UserServiceSpec extends Specification {
         def result = service.register(user, userProfile)
 
         then:
-        1 * userProfile.setProperty(USER, user)
+        1 * user.getProperty(EMAIL) >> EMAIL
+        1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
+        1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL)
         1 * user.setProperty(USER_PROFILE, userProfile)
         1 * user.save() >> user
         0 * _

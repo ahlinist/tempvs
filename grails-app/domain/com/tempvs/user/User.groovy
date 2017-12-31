@@ -14,8 +14,6 @@ class User extends BasePersistent implements Serializable {
 
 	private static final long serialVersionUID = 1
 
-    def userService
-
     String email
 	String password
 	boolean enabled = true
@@ -23,24 +21,18 @@ class User extends BasePersistent implements Serializable {
 	boolean accountLocked
 	boolean passwordExpired
 	Date lastActive = new Date()
-	UserProfile userProfile
+	Collection<ClubProfile> clubProfiles
+    Collection<ItemGroup> itemGroups
+
+	static hasMany = [clubProfiles: ClubProfile, itemGroups: ItemGroup]
+	static hasOne = [userProfile: UserProfile]
 
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this)*.role
 	}
 
-	List<ItemGroup> getItemGroups() {
-		ItemGroup.findAllByUser(this)
-	}
-
-	List<ClubProfile> getClubProfiles() {
-		ClubProfile.findAllByUser(this)
-	}
-
 	static constraints = {
 		password blank: false, password: true
-		email email: true, unique: true, blank: false, validator: { String email, User user ->
-			email ? user.userService.isEmailUnique(email) : Boolean.TRUE
-		}
+		email email: true, unique: true, blank: false
 	}
 }

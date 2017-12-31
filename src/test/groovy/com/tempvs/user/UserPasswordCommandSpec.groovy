@@ -1,13 +1,11 @@
 package com.tempvs.user
 
-import grails.test.mixin.TestFor
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
 
 /**
  * A test-suite for command object handles a password value for {@link com.tempvs.user.User} entity.
  */
-@TestFor(UserController)
 class UserPasswordCommandSpec extends Specification {
 
     private static final String PASSWORD = 'password'

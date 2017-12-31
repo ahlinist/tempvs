@@ -2,32 +2,21 @@ package com.tempvs.item
 
 import com.tempvs.image.Image
 import com.tempvs.periodization.Period
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
- */
-@TestFor(Item)
-class ItemSpec extends Specification {
+class ItemSpec extends Specification implements DomainUnitTest<Item> {
 
     private static final String NAME = 'name'
-    private static final String SOURCE = 'source'
     private static final String DESCRIPTION = 'description'
 
     def image = Mock Image
     def type = GroovyMock Type
     def period = GroovyMock Period
-    def source = Mock Source
     def itemGroup = Mock ItemGroup
-    def item2Source = Mock Item2Source
 
-    Item item
 
     def setup() {
-        GroovySpy(Item2Source, global: true)
-
-        item = new Item()
     }
 
     def cleanup() {
@@ -35,67 +24,54 @@ class ItemSpec extends Specification {
 
     void "Test item creation being not assigned to itemGroup"() {
         given:
-        item.name = NAME
-        item.description = DESCRIPTION
-        item.period = period
+        domain.name = NAME
+        domain.description = DESCRIPTION
+        domain.period = period
 
         expect:
-        !item.validate()
+        !domain.validate()
     }
 
     void "Test item creation having no name"() {
         given:
-        item.description = DESCRIPTION
-        item.itemGroup = itemGroup
-        item.period = period
+        domain.description = DESCRIPTION
+        domain.itemGroup = itemGroup
+        domain.period = period
 
         expect:
-        !item.validate()
+        !domain.validate()
     }
 
     void "Test correct item creation with minimal data"() {
         given:
-        item.name = NAME
-        item.itemGroup = itemGroup
-        item.period = period
-        item.type = type
+        domain.name = NAME
+        domain.itemGroup = itemGroup
+        domain.period = period
+        domain.type = type
 
         expect:
-        item.validate()
+        domain.validate()
     }
 
     void "Test correct item creation with maximum data"() {
         given:
-        item.name = NAME
-        item.description = DESCRIPTION
-        item.images = [image]
-        item.itemGroup = itemGroup
-        item.period = period
-        item.type = type
+        domain.name = NAME
+        domain.description = DESCRIPTION
+        domain.images = [image]
+        domain.itemGroup = itemGroup
+        domain.period = period
+        domain.type = type
 
         expect:
-        item.validate()
+        domain.validate()
     }
 
     void "Test item creation without period assigned"() {
         given:
-        item.name = NAME
-        item.itemGroup = itemGroup
+        domain.name = NAME
+        domain.itemGroup = itemGroup
 
         expect:
-        !item.validate()
-    }
-
-    void "Test getSources()"() {
-        when:
-        def result = item.getSources()
-
-        then:
-        1 * Item2Source.findAllByItem(_ as Item, [sort: "id"]) >> [item2Source]
-        1 * item2Source.getProperty(SOURCE) >> source
-        0 * _
-
-        and:
-        result == [source]
+        !domain.validate()
     }
 }

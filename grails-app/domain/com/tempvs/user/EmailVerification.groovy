@@ -6,9 +6,8 @@ import grails.compiler.GrailsCompileStatic
 /**
  * An object that represents a sent verification of email address.
  */
+@GrailsCompileStatic
 class EmailVerification extends BasePersistent {
-
-    def verifyService
 
     Long instanceId
     String email
@@ -23,9 +22,7 @@ class EmailVerification extends BasePersistent {
                 instanceId == null ? false : true
             }
         }
-        email email: true, unique: ['action'], validator: { String email, EmailVerification emailVerification ->
-            email ? emailVerification.verifyService.isEmailUnique(email, emailVerification.action, emailVerification.instanceId) : Boolean.TRUE
-        }
+        email email: true, unique: ['action']
         action inList: ['registration', 'email', 'userProfile', 'clubProfile']
         verificationCode unique: true
     }

@@ -1,17 +1,11 @@
 package com.tempvs.date
 
-import grails.test.mixin.TestFor
-import grails.test.mixin.TestMixin
-import grails.test.mixin.web.GroovyPageUnitTestMixin
+import grails.testing.web.taglib.TagLibUnitTest
 import groovy.time.TimeCategory
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
- */
-@TestFor(DateTagLib)
-@TestMixin(GroovyPageUnitTestMixin)
-class DateTagLibSpec extends Specification {
+
+class DateTagLibSpec extends Specification implements TagLibUnitTest<DateTagLib> {
 
     private static final String DATE_FORMAT = 'dd-MM-yyyy'
     private static final String RIGHT_NOW = 'date.rightNow'

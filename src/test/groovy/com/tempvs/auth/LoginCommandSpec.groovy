@@ -1,9 +1,7 @@
 package com.tempvs.auth
 
-import grails.test.mixin.TestFor
 import spock.lang.Specification
 
-@TestFor(AuthController)
 class LoginCommandSpec extends Specification {
     private static final String PASSWORD = 'passWord'
     private static final INVALID_EMAIL = 'test-email.com'

@@ -12,16 +12,15 @@ class ItemGroup extends BasePersistent {
 
     String name
     String description
-    User user
+    Collection<Item> items
+
+    static hasMany = [items: Item]
+    static belongsTo = [user: User]
 
     static constraints = {
         description nullable: true
     }
 
     static mapping = {
-    }
-
-    List<Item> getItems() {
-        Item.findAllByItemGroup(this)
     }
 }

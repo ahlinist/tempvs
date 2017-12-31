@@ -7,17 +7,11 @@ import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import grails.converters.JSON
 import grails.gsp.PageRenderer
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@Mock([Source])
-@TestFor(SourceController)
-class SourceControllerSpec extends Specification {
+class SourceControllerSpec extends Specification implements ControllerUnitTest<SourceController> {
 
     private static final String ONE = '1'
     private static final Long LONG_ONE = 1L
@@ -27,7 +21,6 @@ class SourceControllerSpec extends Specification {
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
-    private static final String PROPERTIES = 'properties'
     private static final String SHOW_URI = '/source/show'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'

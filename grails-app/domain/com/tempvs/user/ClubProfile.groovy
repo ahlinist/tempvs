@@ -12,34 +12,26 @@ class ClubProfile extends BaseProfile {
     String clubName
     Period period
 
-    static constraints = {
-        firstName nullable: false, blank: false
-        lastName nullable: true
-        nickName nullable: true
-        clubName nullable: true
-        profileId shared: "profileId"
-        location nullable: true
-        avatar nullable: true
-
-        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, ClubProfile profile ->
-            if (profileEmail) {
-                profile.profileService?.isProfileEmailUnique(profile, profileEmail)
-            } else {
-                Boolean.TRUE
-            }
-        }
-    }
+    static belongsTo = [user: User]
+    static hasMany = [passports: Passport]
 
     static mapping = {
         avatar cascade: 'all-delete-orphan'
     }
 
+    static constraints = {
+        firstName nullable: false, blank: false
+        lastName nullable: true
+        nickName nullable: true
+        clubName nullable: true
+        profileId nullable: true, unique: true, matches: PROFILE_ID_MATCHER
+        location nullable: true
+        avatar nullable: true
+        profileEmail nullable: true, unique: true, email: true
+    }
+
     @Override
     String toString() {
         "${firstName} ${lastName ?: ''} ${nickName ?: ''}"
-    }
-
-    List<Passport> getPassports() {
-        Passport.findAllByClubProfile(this)
     }
 }

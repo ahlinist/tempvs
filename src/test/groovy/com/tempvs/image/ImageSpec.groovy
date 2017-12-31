@@ -1,13 +1,9 @@
 package com.tempvs.image
 
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
- */
-@TestFor(Image)
-class ImageSpec extends Specification {
+class ImageSpec extends Specification implements DomainUnitTest<Image> {
 
     private static final String OBJECT_ID = 'objectId'
     private static final String COLLECTION = 'collection'

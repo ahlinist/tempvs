@@ -2,20 +2,13 @@ package com.tempvs.user
 
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.image.ImageUploadBean
-import com.tempvs.item.Item2Passport
 import com.tempvs.item.Passport
 import com.tempvs.item.PassportService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(ProfileService)
-@Mock([ClubProfile, UserProfile])
-class ProfileServiceSpec extends Specification {
+class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DomainUnitTest<UserProfile> {
 
     private static final String ONE = '1'
     private static final String USER = 'user'
@@ -29,7 +22,6 @@ class ProfileServiceSpec extends Specification {
     def user = Mock User
     def image = Mock Image
     def passport = Mock Passport
-    def item2Passport = Mock Item2Passport
 
     def userService = Mock UserService
     def clubProfile = Mock ClubProfile
@@ -40,7 +32,6 @@ class ProfileServiceSpec extends Specification {
     def setup() {
         GroovySpy(ClubProfile, global: true)
         GroovySpy(UserProfile, global: true)
-        GroovySpy(Item2Passport, global: true)
 
         service.userService = userService
         service.imageService = imageService
@@ -89,6 +80,7 @@ class ProfileServiceSpec extends Specification {
         def result = service.createProfile(clubProfile, image)
 
         then:
+        1 * clubProfile.getProperty(PROFILE_EMAIL)
         1 * clubProfile.setProperty(AVATAR, image)
         1 * userService.currentUser >> user
         1 * clubProfile.setProperty(USER, user)
@@ -104,10 +96,6 @@ class ProfileServiceSpec extends Specification {
         service.deleteProfile(clubProfile)
 
         then:
-        1 * passportService.getPassportsByProfile(clubProfile) >> [passport]
-        1 * Item2Passport.findAllByPassportInList([passport]) >> [item2Passport]
-        1 * item2Passport.delete()
-        1 * passport.delete()
         1 * clubProfile.getProperty(AVATAR) >> image
         1 * imageService.deleteImage(image)
         1 * clubProfile.delete()

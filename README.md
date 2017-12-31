@@ -5,7 +5,7 @@
 To get started you need:
  * Java 1.8
  * Groovy 2.3.6
- * Grails 3.2.11
+ * Grails 3.3.2
  * MySQL 5.7
  * MongoDB 3.2
  

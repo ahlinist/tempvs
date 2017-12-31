@@ -17,7 +17,7 @@
         </div>
         <div class="col-sm-6">
           <ul id="passportItems">
-            <g:render template="/passport/templates/itemButton" model="${[itemMap: itemMap]}"/>
+            <g:render template="/passport/templates/itemButton" model="${[itemMap: itemMap, passport: passport]}"/>
           </ul>
           <g:if test="${editAllowed}">
             <div class="panel-group">

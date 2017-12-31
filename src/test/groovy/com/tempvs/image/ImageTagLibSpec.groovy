@@ -1,14 +1,10 @@
 package com.tempvs.image
 
 import com.tempvs.common.CommonTagLib
-import grails.test.mixin.TestFor
+import grails.testing.web.taglib.TagLibUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
- */
-@TestFor(ImageTagLib)
-class ImageTagLibSpec extends Specification {
+class ImageTagLibSpec extends Specification implements TagLibUnitTest<ImageTagLib> {
 
     private static final String ID = 'id'
     private static final String OBJECT_ID = 'objectId'

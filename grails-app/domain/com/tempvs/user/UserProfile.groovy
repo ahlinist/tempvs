@@ -5,6 +5,8 @@ package com.tempvs.user
  */
 class UserProfile extends BaseProfile {
 
+    static belongsTo = [user: User]
+
     static mapping = {
         avatar cascade: 'all-delete-orphan'
     }
@@ -12,16 +14,9 @@ class UserProfile extends BaseProfile {
     static constraints = {
         firstName nullable: false, blank: false
         lastName nullable: false, blank: false
-        profileId shared: "profileId"
+        profileId nullable: true, unique: true, matches: PROFILE_ID_MATCHER
         location nullable: true
         avatar nullable: true
-
-        profileEmail nullable: true, unique: true, email: true, validator: { String profileEmail, UserProfile profile ->
-            if (profileEmail) {
-                profile.profileService?.isProfileEmailUnique(profile, profileEmail)
-            } else {
-                Boolean.TRUE
-            }
-        }
+        profileEmail nullable: true, unique: true, email: true
     }
 }

@@ -3,16 +3,11 @@ package com.tempvs.item
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@Mock([Source])
-@TestFor(SourceService)
-class SourceServiceSpec extends Specification {
+class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceService>, DomainUnitTest<Source> {
 
     private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
@@ -23,14 +18,12 @@ class SourceServiceSpec extends Specification {
     def source = Mock Source
     def type = GroovyMock Type
     def period = GroovyMock Period
-    def item2Source = Mock Item2Source
     def imageService = Mock ImageService
 
     def setup() {
         service.imageService = imageService
 
         GroovySpy(Source, global: true)
-        GroovySpy(Item2Source, global: true)
     }
 
     def cleanup() {
@@ -108,8 +101,6 @@ class SourceServiceSpec extends Specification {
         then:
         1 * source.getProperty(IMAGES) >> [image]
         1 * imageService.deleteImages([image])
-        1 * Item2Source.findAllBySource(source) >> [item2Source]
-        1 * item2Source.delete()
         1 * source.delete()
         0 * _
     }

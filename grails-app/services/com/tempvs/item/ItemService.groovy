@@ -3,7 +3,7 @@ package com.tempvs.item
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -25,10 +25,6 @@ class ItemService {
 
     Item getItem(Long id) {
         Item.get id
-    }
-
-    List<Item2Passport> getItemsByPassport(Passport passport) {
-        Item2Passport.findAllByPassport(passport)
     }
 
     List<Item> getItemsByPeriod(Period period) {
@@ -54,9 +50,6 @@ class ItemService {
 
         if (items) {
             imageService.deleteImages(items*.images?.flatten())
-            Item2Source.findAllByItemInList(items)*.delete()
-            Item2Passport.findAllByItemInList(items)*.delete()
-            items*.delete()
         }
 
         itemGroup.delete()
@@ -89,8 +82,6 @@ class ItemService {
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     void deleteItem(Item item) {
         imageService.deleteImages(item.images)
-        Item2Source.findAllByItem(item)*.delete()
-        Item2Passport.findAllByItem(item)*.delete()
         item.delete()
     }
 
@@ -107,15 +98,16 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item2Source linkSource(Item item, Source source) {
-        Item2Source item2Source = [item: item, source: source] as Item2Source
-        item2Source.save()
-        item2Source
+    Item linkSource(Item item, Source source) {
+        item.addToSources(source)
+        item.save()
+        item
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    void unlinkSource(Item item, Source source) {
-        Item2Source item2Source = Item2Source.findByItemAndSource(item, source)
-        item2Source.delete()
+    Item unlinkSource(Item item, Source source) {
+        item.removeFromSources(source)
+        item.save()
+        item
     }
 }

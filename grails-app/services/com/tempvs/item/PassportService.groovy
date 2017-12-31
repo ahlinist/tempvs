@@ -1,7 +1,7 @@
 package com.tempvs.item
 
 import com.tempvs.user.ClubProfile
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -15,10 +15,6 @@ class PassportService {
 
     Passport getPassport(id) {
         Passport.get id
-    }
-
-    List<Passport> getPassportsByProfile(ClubProfile clubProfile) {
-        Passport.findAllByClubProfile(clubProfile)
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
@@ -40,21 +36,21 @@ class PassportService {
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
-    Item2Passport addItem(Passport passport, Item item, Long quantity) {
-        Item2Passport item2Passport = new Item2Passport(passport: passport, item: item, quantity: quantity)
-        item2Passport.save()
-        item2Passport
+    Passport addItem(Passport passport, Item item) {
+        passport.addToItems(item)
+        passport.save()
+        passport
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
-    void removeItem(Passport passport, Item item) {
-        Item2Passport item2Passport = Item2Passport.findByPassportAndItem(passport, item)
-        item2Passport.delete()
+    Passport removeItem(Passport passport, Item item) {
+        passport.removeFromItems(item)
+        passport.save()
+        passport
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
     void deletePassport(Passport passport) {
-        Item2Passport.findAllByPassport(passport)*.delete()
         passport.delete()
     }
 }

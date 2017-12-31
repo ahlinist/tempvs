@@ -1,16 +1,10 @@
 package com.tempvs.user
 
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(VerifyController)
-@Mock([UserProfile, ClubProfile])
-class VerifyControllerSpec extends Specification {
+class VerifyControllerSpec extends Specification implements ControllerUnitTest<VerifyController> {
 
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
@@ -132,7 +126,7 @@ class VerifyControllerSpec extends Specification {
         1 * userProfile.validate() >> Boolean.TRUE
         1 * profileService.editProfileField(userProfile, PROFILE_EMAIL, EMAIL) >> userProfile
         1 * profileHolder.setProfile(userProfile)
-        1 * userProfile.id >> LONG_ID
+        1 * userProfile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
         0 * _
 
@@ -161,7 +155,7 @@ class VerifyControllerSpec extends Specification {
         1 * clubProfile.validate() >> Boolean.TRUE
         1 * profileService.editProfileField(clubProfile, PROFILE_EMAIL, EMAIL) >> clubProfile
         1 * profileHolder.setProfile(clubProfile)
-        1 * clubProfile.id >> LONG_ID
+        1 * clubProfile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
         0 * _
 

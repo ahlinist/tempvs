@@ -1,16 +1,12 @@
 package com.tempvs.user
 
 import com.tempvs.item.Passport
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
 import static com.tempvs.tests.utils.TestingUtils.*
 
-/**
- * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
- */
-@TestFor(ClubProfile)
-class ClubProfileSpec extends Specification {
+class ClubProfileSpec extends Specification implements DomainUnitTest<ClubProfile> {
 
     private static final String NON_VALID_EMAIL = 'non-valid-email'
     private static final String NUMERIC_PROFILE_ID = '123456'
@@ -76,17 +72,5 @@ class ClubProfileSpec extends Specification {
 
         then:
         result == "${FIRST_NAME} ${LAST_NAME} ${NICK_NAME}"
-    }
-
-    void "Test getPassports()"() {
-        when:
-        def result = domain.getPassports()
-
-        then:
-        1 * Passport.findAllByClubProfile(domain) >> [passport]
-        0 * _
-
-        and:
-        result == [passport]
     }
 }

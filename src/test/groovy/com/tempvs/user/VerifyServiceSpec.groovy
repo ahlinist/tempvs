@@ -1,16 +1,11 @@
 package com.tempvs.user
 
 import grails.plugins.mail.MailService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(VerifyService)
-@Mock([EmailVerification])
-class VerifyServiceSpec extends Specification {
+class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyService>, DomainUnitTest<EmailVerification> {
 
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
@@ -54,6 +49,11 @@ class VerifyServiceSpec extends Specification {
 
         then:
         1 * emailVerification.email >> EMAIL
+        1 * userService.getUserByEmail(EMAIL)
+        1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
+        1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL)
+        1 * emailVerification.action >> REGISTRATION_ACTION
+        1 * emailVerification.instanceId >> LONG_ID
         1 * emailVerification.setVerificationCode(_ as String)
         1 * emailVerification.save() >> emailVerification
         0 * _

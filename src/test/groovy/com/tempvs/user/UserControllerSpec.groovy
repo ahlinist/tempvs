@@ -3,28 +3,18 @@ package com.tempvs.user
 import com.tempvs.ajax.AjaxResponseHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@Mock([User, UserService])
-@TestFor(UserController)
-class UserControllerSpec extends Specification {
+class UserControllerSpec extends Specification implements ControllerUnitTest<UserController> {
 
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String POST_METHOD = 'POST'
     private static final String PASSWORD = 'password'
-    private static final String PROPERTIES = 'properties'
     private static final String NEW_PASSWORD = 'newPassword'
     private static final String PROFILE_PAGE_URI = '/profile'
-    private static final String EMAIL_USED = 'user.email.used'
-    private static final String DIFFERENT_EMAIL = 'differentEmail'
-    private static final String EMAIL_UPDATE_DUPLICATE = 'user.edit.email.duplicate'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
 

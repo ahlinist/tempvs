@@ -3,7 +3,7 @@ package com.tempvs.item
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.security.access.AccessDeniedException
 
 /**
@@ -53,7 +53,6 @@ class SourceService {
 
     void deleteSource(Source source) {
         imageService.deleteImages source.images
-        Item2Source.findAllBySource(source)*.delete()
         source.delete()
     }
 

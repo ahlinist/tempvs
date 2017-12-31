@@ -1,13 +1,9 @@
 package com.tempvs.ajax
 
-import grails.test.mixin.TestFor
+import grails.testing.web.taglib.TagLibUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
- */
-@TestFor(AjaxTagLib)
-class AjaxTagLibSpec extends Specification {
+class AjaxTagLibSpec extends Specification implements TagLibUnitTest<AjaxTagLib> {
 
     private static final String ID = 'id'
     private static final String ITEM = 'item'

@@ -60,7 +60,7 @@ class SourceController {
     def show(Long id) {
         if (id) {
             Source source = sourceService.getSource id
-            [source: source, period: source?.period, images: source.images]
+            [source: source, period: source?.period, images: source?.images]
         }
     }
 

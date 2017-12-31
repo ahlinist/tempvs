@@ -7,17 +7,13 @@ import com.tempvs.user.UserService
 import com.tempvs.user.VerifyService
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import grails.web.mapping.LinkGenerator
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.springframework.security.authentication.encoding.PasswordEncoder
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(AuthController)
-class AuthControllerSpec extends Specification {
+class AuthControllerSpec extends Specification implements ControllerUnitTest<AuthController> {
 
     private static final String EMAIL = 'email'
     private static final String TEST_URI = '/test'

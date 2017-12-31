@@ -1,14 +1,10 @@
 package com.tempvs.user
 
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.test.mixin.TestFor
+import grails.testing.web.interceptor.InterceptorUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(ActivityInterceptor)
-class ActivityInterceptorSpec extends Specification {
+class ActivityInterceptorSpec extends Specification implements InterceptorUnitTest<ActivityInterceptor> {
 
     private static final String AUTH = 'auth'
     private static final String USER = 'user'

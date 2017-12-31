@@ -4,17 +4,15 @@ import com.tempvs.domain.BasePersistent
 import com.tempvs.user.ClubProfile
 
 /**
- * An entity that represents {@link com.tempvs.user.ClubProfile}'s belognings.
+ * An entity that represents {@link com.tempvs.user.ClubProfile}'s belongings.
  */
 class Passport extends BasePersistent {
 
     String name
     String description
-    ClubProfile clubProfile
 
-    List<Item> getItems() {
-        Item2Passport.findAllByPassport(this)?.item
-    }
+    static belongsTo = [clubProfile: ClubProfile]
+    static hasMany = [items: Item]
 
     static constraints = {
         description nullable: true, blank: true

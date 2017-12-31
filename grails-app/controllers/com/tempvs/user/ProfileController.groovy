@@ -71,15 +71,14 @@ class ProfileController {
             return redirect(controller: 'auth', action: 'index')
         }
 
-        ClubProfile profile = profileService.getProfile(ClubProfile, id)
+        ClubProfile clubProfile = profileService.getProfile(ClubProfile, id)
 
-        if (!profile) {
+        if (!clubProfile) {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
-        List<Passport> passports = passportService.getPassportsByProfile(profile)
-        Boolean editAllowed = profileHolder.profile == profile
-        [profile: profile, user: profile.user, id: profile.identifier, passports: passports, editAllowed: editAllowed]
+        Boolean editAllowed = profileHolder.profile == clubProfile
+        [profile: clubProfile, user: clubProfile.user, id: clubProfile.identifier, passports: clubProfile.passports, editAllowed: editAllowed]
     }
 
     def switchProfile(Long id) {
@@ -106,7 +105,7 @@ class ProfileController {
     }
 
     def editProfileField() {
-        BaseProfile profile = profileService.editProfileField(profileHolder.profile, params.fieldName as String, params.fieldValue as String)
+        BaseProfile profile = profileService.editProfileField(profileHolder.profile, params.fieldName, params.fieldValue)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))

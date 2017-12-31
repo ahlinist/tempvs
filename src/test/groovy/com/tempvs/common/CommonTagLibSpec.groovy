@@ -1,13 +1,9 @@
 package com.tempvs.common
 
-import grails.test.mixin.TestFor
+import grails.testing.web.taglib.TagLibUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.GroovyPageUnitTestMixin} for usage instructions
- */
-@TestFor(CommonTagLib)
-class CommonTagLibSpec extends Specification {
+class CommonTagLibSpec extends Specification implements TagLibUnitTest<CommonTagLib> {
 
     private static final String ID = 'id'
     private static final String SIZE = 'size'

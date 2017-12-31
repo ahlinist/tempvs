@@ -3,7 +3,6 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.user.ClubProfile
 import com.tempvs.user.ProfileHolder
-import com.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 
@@ -29,7 +28,6 @@ class PassportController {
     ]
 
     ItemService itemService
-    UserService userService
     ProfileHolder profileHolder
     PassportService passportService
     PageRenderer groovyPageRenderer
@@ -62,9 +60,9 @@ class PassportController {
         [
                 clubProfile: clubProfile,
                 passport: passport,
-                itemMap: prepareItemMap(passport),
+                itemMap: passport.items.groupBy {it.type},
                 availableItems: itemService.getItemsByPeriod(clubProfile.period),
-                editAllowed: clubProfile.user == userService.currentUser,
+                editAllowed: clubProfile == profileHolder.profile,
         ]
     }
 
@@ -84,21 +82,21 @@ class PassportController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def addItem(Long passportId, Long itemId, Long quantity) {
+    def addItem(Long passportId, Long itemId) {
         Passport passport = passportService.getPassport passportId
         Item item = itemService.getItem itemId
 
-        if (!passport || !item || !quantity) {
+        if (!passport || !item) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Item2Passport item2Passport = passportService.addItem(passport, item, quantity)
+        passport = passportService.addItem(passport, item)
 
-        if (item2Passport.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(item2Passport))
+        if (passport.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [itemMap: prepareItemMap(passport), editAllowed: Boolean.TRUE]
+        Map model = [itemMap: passport.items.groupBy {it.type}, passport: passport, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/passport/templates/itemButton', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -111,9 +109,13 @@ class PassportController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        passportService.removeItem(passport, item)
+        passport = passportService.removeItem(passport, item)
 
-        Map model = [itemMap: prepareItemMap(passport), editAllowed: Boolean.TRUE]
+        if (passport.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(passport))
+        }
+
+        Map model = [itemMap: passport.items.groupBy {it.type}, passport: passport, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/passport/templates/itemButton', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -122,13 +124,5 @@ class PassportController {
         Passport passport = passportService.getPassport id
         passportService.deletePassport(passport)
         render([action: DELETE_ACTION] as JSON)
-    }
-
-    private Map<Type, Item2Passport> prepareItemMap(Passport passport) {
-        List<Item2Passport> items2Passport = itemService.getItemsByPassport(passport)
-
-        items2Passport.groupBy { item2Passport ->
-            item2Passport.item.type
-        }
     }
 }

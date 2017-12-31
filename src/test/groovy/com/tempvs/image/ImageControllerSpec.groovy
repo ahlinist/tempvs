@@ -1,15 +1,11 @@
 package com.tempvs.image
 
 import asset.pipeline.grails.AssetResourceLocator
-import grails.test.mixin.TestFor
+import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 import org.springframework.core.io.Resource
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@TestFor(ImageController)
-class ImageControllerSpec extends Specification {
+class ImageControllerSpec extends Specification implements ControllerUnitTest<ImageController> {
 
     private static final String ID = 'id'
     private static final String COLLECTION = 'collection'

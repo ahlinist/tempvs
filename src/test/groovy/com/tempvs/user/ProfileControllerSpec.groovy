@@ -8,17 +8,12 @@ import com.tempvs.item.Passport
 import com.tempvs.item.PassportService
 import com.tempvs.periodization.Period
 import grails.converters.JSON
-import grails.test.mixin.Mock
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.web.ControllerUnitTestMixin} for usage instructions
- */
-@Mock([ClubProfile])
-@TestFor(ProfileController)
-class ProfileControllerSpec extends Specification {
+class ProfileControllerSpec extends Specification implements ControllerUnitTest<ProfileController>, DomainUnitTest<UserProfile> {
 
     private static final String ID = 'id'
     private static final String ONE = '1'
@@ -28,8 +23,9 @@ class ProfileControllerSpec extends Specification {
     private static final String CLASS = 'class'
     private static final String AVATAR = 'avatar'
     private static final String GET_METHOD = 'GET'
-    private static final String POST_METHOD = 'POST'
     private static final String PROFILE = 'profile'
+    private static final String POST_METHOD = 'POST'
+    private static final String PASSPORTS = 'passports'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIRST_NAME = 'firstName'
     private static final String AUTH_URL = '/auth/index'
@@ -154,7 +150,7 @@ class ProfileControllerSpec extends Specification {
         1 * clubProfile.getProperty(USER) >> user
         1 * clubProfile.getProperty(IDENTIFIER) >> IDENTIFIER
         1 * profileHolder.profile >> clubProfile
-        1 * passportService.getPassportsByProfile(clubProfile) >> [passport]
+        1 * clubProfile.getProperty(PASSPORTS) >> [passport]
         0 * _
 
         and:
@@ -206,16 +202,22 @@ class ProfileControllerSpec extends Specification {
     void "Test createClubProfile() against invalid profile"() {
         given:
         request.method = POST_METHOD
-        Map properties = [firstName: FIRST_NAME]
 
         when:
         controller.createClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.getProperty(IMAGE_UPLOAD_BEAN) >> imageUploadBean
+        2 * clubProfileCommand.imageUploadBean >> imageUploadBean
+        1 * clubProfileCommand.getErrors()
+        1 * clubProfileCommand.getLastName()
+        1 * clubProfileCommand.getPeriod()
+        1 * clubProfileCommand.getProfileId()
+        1 * clubProfileCommand.getLocation()
+        1 * clubProfileCommand.getNickName()
+        1 * clubProfileCommand.getFirstName() >> FIRST_NAME
+        1 * clubProfileCommand.getClubName()
         1 * userService.currentUser >> user
-        1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.TRUE
@@ -227,16 +229,22 @@ class ProfileControllerSpec extends Specification {
     void "Test createClubProfile()"() {
         given:
         request.method = POST_METHOD
-        Map properties = [user: user, period: period, firstName: FIRST_NAME]
 
         when: 'Command valid. Profile created.'
         controller.createClubProfile(clubProfileCommand)
 
         then:
         1 * clubProfileCommand.validate() >> Boolean.TRUE
-        1 * clubProfileCommand.getProperty(IMAGE_UPLOAD_BEAN) >> imageUploadBean
+        2 * clubProfileCommand.imageUploadBean >> imageUploadBean
+        1 * clubProfileCommand.getErrors()
+        1 * clubProfileCommand.getLastName()
+        1 * clubProfileCommand.getPeriod() >> period
+        1 * clubProfileCommand.getProfileId()
+        1 * clubProfileCommand.getLocation()
+        1 * clubProfileCommand.getNickName()
+        1 * clubProfileCommand.getFirstName() >> FIRST_NAME
+        1 * clubProfileCommand.getClubName()
         1 * userService.currentUser >> user
-        1 * clubProfileCommand.getProperty(PROPERTIES) >> properties
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE

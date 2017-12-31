@@ -2,7 +2,7 @@ package com.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
 import grails.plugins.mail.MailService
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 
 /**
  * A service that handles operations related to {@link com.tempvs.user.EmailVerification}.
@@ -11,10 +11,12 @@ import grails.transaction.Transactional
 @GrailsCompileStatic
 class VerifyService {
 
+    private static String EMAIL_FIELD = 'email'
     private static String EMAIL_ACTION = 'email'
     private static String USER_PROFILE_ACTION = 'userProfile'
     private static String CLUB_PROFILE_ACTION = 'clubProfile'
     private static String REGISTRATION_ACTION = 'registration'
+    private static String EMAIL_USED_CODE = 'emailVerification.email.used.error'
 
     UserService userService
     MailService mailService
@@ -25,9 +27,15 @@ class VerifyService {
     }
 
     EmailVerification createEmailVerification(EmailVerification emailVerification) {
-        String verificationCode = (emailVerification.email + new Date().time).encodeAsMD5()
-        emailVerification.verificationCode = verificationCode
-        emailVerification.save()
+        String email = emailVerification.email
+
+        if (isEmailUnique(email, emailVerification.action, emailVerification.instanceId)) {
+            emailVerification.verificationCode = (email + new Date().time).encodeAsMD5()
+            emailVerification.save()
+        } else {
+            emailVerification.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [email] as Object[], EMAIL_USED_CODE)
+        }
+
         emailVerification
     }
 
@@ -42,8 +50,8 @@ class VerifyService {
 
     Boolean isEmailUnique(String email, String action, Long instanceId) {
         User user = userService.getUserByEmail(email)
-        BaseProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
-        BaseProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
+        UserProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
+        ClubProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
 
         switch (action) {
             case REGISTRATION_ACTION:

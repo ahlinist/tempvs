@@ -1,14 +1,11 @@
 package com.tempvs.image
 
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(ImageService)
-class ImageServiceSpec extends Specification {
+class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageService>, DomainUnitTest<Image> {
 
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L

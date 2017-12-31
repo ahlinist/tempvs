@@ -2,11 +2,9 @@ package com.tempvs.user
 
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.item.Item2Passport
-import com.tempvs.item.Passport
 import com.tempvs.item.PassportService
 import com.tempvs.periodization.Period
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
@@ -16,6 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize
 @Transactional
 class ProfileService {
 
+    private static String PERIOD_FIELD = 'period'
+    private static String PROFILE_EMAIL_FIELD = 'profileEmail'
+    private static String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
+
     UserService userService
     ImageService imageService
     PassportService passportService
@@ -24,11 +26,16 @@ class ProfileService {
         clazz.findByProfileId(id as String) ?: clazz.get(id)
     }
 
-    BaseProfile getProfileByProfileEmail(Class clazz, String email) {
+    public <T> T getProfileByProfileEmail(Class<T> clazz, String email) {
         clazz.findByProfileEmail(email)
     }
 
     BaseProfile createProfile(BaseProfile profile, Image avatar) {
+        if (!isProfileEmailUnique(profile, profile.profileEmail)) {
+            profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)
+            return profile
+        }
+
         profile.avatar = avatar
         profile.user = userService.currentUser
         profile.save()
@@ -37,25 +44,21 @@ class ProfileService {
 
     @PreAuthorize('#profile.user.email == authentication.name')
     void deleteProfile(BaseProfile profile) {
-        List<Passport> passports = passportService.getPassportsByProfile(profile)
-
-        if (passports) {
-            Item2Passport.findAllByPassportInList(passports)*.delete()
-            passports*.delete()
-        }
-
         imageService.deleteImage(profile.avatar)
         profile.delete()
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
     BaseProfile editProfileField(BaseProfile profile, String fieldName, String fieldValue) {
-        if (fieldName == 'period') {
+        if (fieldName == PERIOD_FIELD) {
             try {
                 profile.period = Period.valueOf(fieldValue)
             } catch (IllegalArgumentException exception) {
                 profile.period = null
             }
+        } else if ((fieldName == PROFILE_EMAIL_FIELD) && !isProfileEmailUnique(profile, profile.profileEmail)) {
+            profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [fieldValue] as Object[], EMAIL_USED_CODE)
+            return profile
         } else {
             profile."${fieldName}" = fieldValue
         }
@@ -80,17 +83,19 @@ class ProfileService {
     }
 
     Boolean isProfileEmailUnique(BaseProfile profile, String email) {
-        User user = userService.getUserByEmail(email)
-        User profileUser = profile.user
+        if (email) {
+            User user = userService.getUserByEmail(email)
+            User profileUser = profile.user
 
-        if (user && profileUser != user) {
-            return Boolean.FALSE
-        }
+            if (user && profileUser != user) {
+                return Boolean.FALSE
+            }
 
-        BaseProfile persistedProfile = profile.class.findByProfileEmail email
+            BaseProfile persistedProfile = profile.class.findByProfileEmail email
 
-        if (persistedProfile && profileUser != persistedProfile.user) {
-            return Boolean.FALSE
+            if (persistedProfile && profileUser != persistedProfile.user) {
+                return Boolean.FALSE
+            }
         }
 
         return Boolean.TRUE

@@ -1,7 +1,7 @@
 package com.tempvs.user
 
 import grails.plugin.springsecurity.SpringSecurityService
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
@@ -9,6 +9,9 @@ import org.springframework.security.access.prepost.PreAuthorize
  */
 @Transactional
 class UserService {
+
+    private static String EMAIL_FIELD = 'email'
+    private static String EMAIL_USED_CODE = 'user.email.used.error'
 
     ProfileService profileService
     SpringSecurityService springSecurityService
@@ -42,14 +45,23 @@ class UserService {
     }
 
     User register(User user, UserProfile userProfile) {
-        userProfile.user = user
-        user.userProfile = userProfile
-        user.save()
+        if (isEmailUnique(user.email)) {
+            user.userProfile = userProfile
+            user.save()
+        } else {
+            user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [user.email] as Object[], EMAIL_USED_CODE)
+        }
+
         user
     }
 
     @PreAuthorize('#user.email == authentication.name')
     User editUserField(User user, String fieldName, Object fieldValue) {
+        if ((fieldName == EMAIL_FIELD) && !isEmailUnique(fieldValue)) {
+            user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [fieldValue] as Object[], EMAIL_USED_CODE)
+            return user
+        }
+
         user."${fieldName}" = fieldValue
         user.save()
         user

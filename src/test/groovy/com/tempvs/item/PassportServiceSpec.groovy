@@ -1,14 +1,11 @@
 package com.tempvs.item
 
 import com.tempvs.user.ClubProfile
-import grails.test.mixin.TestFor
+import grails.testing.gorm.DomainUnitTest
+import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-/**
- * See the API for {@link grails.test.mixin.services.ServiceUnitTestMixin} for usage instructions
- */
-@TestFor(PassportService)
-class PassportServiceSpec extends Specification {
+class PassportServiceSpec extends Specification implements ServiceUnitTest<PassportService>, DomainUnitTest<Passport> {
 
     private static final Long LONG_ID = 1L
     private static final String DESCRIPTION = 'description'
@@ -17,11 +14,9 @@ class PassportServiceSpec extends Specification {
     def item = Mock Item
     def passport = Mock Passport
     def clubProfile = Mock ClubProfile
-    def item2Passport = Mock Item2Passport
 
     def setup() {
         GroovySpy(Passport, global: true)
-        GroovySpy(Item2Passport, global: true)
     }
 
     def cleanup() {
@@ -37,18 +32,6 @@ class PassportServiceSpec extends Specification {
 
         and:
         result == passport
-    }
-
-    void "Test getPassportsByProfile()"() {
-        when:
-        def result = service.getPassportsByProfile(clubProfile)
-
-        then:
-        1 * Passport.findAllByClubProfile(clubProfile) >> [passport]
-        0 * _
-
-        and:
-        result == [passport]
     }
 
     void "Test createPassport()"() {
@@ -78,25 +61,28 @@ class PassportServiceSpec extends Specification {
 
     void "Test addItem()"() {
         when:
-        def result = service.addItem(passport, item, 1)
+        def result = service.addItem(passport, item)
 
         then:
-        1 * new Item2Passport([item: item, passport: passport, quantity: 1]) >> item2Passport
-        1 * item2Passport.save() >> item2Passport
+        1 * passport.addToItems(item) >> passport
+        1 * passport.save() >> passport
         0 * _
 
         and:
-        result == item2Passport
+        result == passport
     }
 
     void "Test removeItem()"() {
         when:
-        service.removeItem(passport, item)
+        def result = service.removeItem(passport, item)
 
         then:
-        1 * Item2Passport.findByPassportAndItem(passport, item) >> item2Passport
-        1 * item2Passport.delete()
+        1 * passport.removeFromItems(item)
+        1 * passport.save()
         0 * _
+
+        and:
+        result == passport
     }
 
     void "Test deletePassport()"() {
@@ -104,8 +90,6 @@ class PassportServiceSpec extends Specification {
         service.deletePassport(passport)
 
         then:
-        1 * Item2Passport.findAllByPassport(passport) >> [item2Passport]
-        1 * item2Passport.delete()
         1 * passport.delete()
         0 * _
     }

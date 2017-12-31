@@ -1,6 +1,6 @@
 package com.tempvs.image
 
-import grails.transaction.Transactional
+import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 /**
