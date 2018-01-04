@@ -35,7 +35,6 @@
                     <g:select class="col-sm-12 tempvs-form-field" name="itemId" from="${availableItems}" noSelection="${['':'-']}"
                               optionKey="id" optionValue="name"/>
                     <input type="hidden" name="passportId" value="${passportId}" />
-                    <input type="number" name="quantity" value="1" />
                     <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
                   </tempvs:ajaxForm>
                 </div>
