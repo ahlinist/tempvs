@@ -30,7 +30,7 @@ class ProfileService {
         clazz.findByProfileEmail(email)
     }
 
-    BaseProfile createProfile(BaseProfile profile, Image avatar) {
+    Profile createProfile(Profile profile, Image avatar) {
         if (!isProfileEmailUnique(profile, profile.profileEmail)) {
             profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)
             return profile
@@ -43,13 +43,13 @@ class ProfileService {
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    void deleteProfile(BaseProfile profile) {
+    void deleteProfile(Profile profile) {
         imageService.deleteImage(profile.avatar)
         profile.delete()
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile editProfileField(BaseProfile profile, String fieldName, String fieldValue) {
+    Profile editProfileField(Profile profile, String fieldName, String fieldValue) {
         if (fieldName == PERIOD_FIELD) {
             try {
                 profile.period = Period.valueOf(fieldValue)
@@ -68,21 +68,21 @@ class ProfileService {
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile uploadAvatar(BaseProfile profile, Image avatar) {
+    Profile uploadAvatar(Profile profile, Image avatar) {
         profile.avatar = avatar
         profile.save()
         profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    BaseProfile deleteAvatar(BaseProfile profile) {
+    Profile deleteAvatar(Profile profile) {
         imageService.deleteImage(profile.avatar)
         profile.avatar = null
         profile.save()
         profile
     }
 
-    Boolean isProfileEmailUnique(BaseProfile profile, String email) {
+    Boolean isProfileEmailUnique(Profile profile, String email) {
         if (email) {
             User user = userService.getUserByEmail(email)
             User profileUser = profile.user
@@ -91,7 +91,7 @@ class ProfileService {
                 return Boolean.FALSE
             }
 
-            BaseProfile persistedProfile = profile.class.findByProfileEmail email
+            Profile persistedProfile = profile.class.findByProfileEmail email
 
             if (persistedProfile && profileUser != persistedProfile.user) {
                 return Boolean.FALSE

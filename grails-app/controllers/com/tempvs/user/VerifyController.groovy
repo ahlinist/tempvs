@@ -75,7 +75,7 @@ class VerifyController {
     }
 
     private profileEmail(Class clazz, EmailVerification emailVerification) {
-        BaseProfile profile = profileService.getProfile(clazz, emailVerification.instanceId)
+        Profile profile = profileService.getProfile(clazz, emailVerification.instanceId)
 
         if (profile) {
             profile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)

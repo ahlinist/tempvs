@@ -4,7 +4,6 @@ import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
-import com.tempvs.item.Passport
 import com.tempvs.item.PassportService
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
@@ -47,7 +46,7 @@ class ProfileController {
     AjaxResponseHelper ajaxResponseHelper
 
     def index() {
-        BaseProfile profile = profileHolder.profile
+        Profile profile = profileHolder.profile
         redirect action: "${profile.class.simpleName.uncapitalize()}", id: profile.identifier
     }
 
@@ -94,7 +93,7 @@ class ProfileController {
         Image avatar = imageService.uploadImage(command.imageUploadBean, AVATAR_COLLECTION)
 
         ClubProfile clubProfile = (command.properties + [user: userService.currentUser]) as ClubProfile
-        BaseProfile profile = profileService.createProfile(clubProfile, avatar)
+        Profile profile = profileService.createProfile(clubProfile, avatar)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
@@ -105,7 +104,7 @@ class ProfileController {
     }
 
     def editProfileField() {
-        BaseProfile profile = profileService.editProfileField(profileHolder.profile, params.fieldName, params.fieldValue)
+        Profile profile = profileService.editProfileField(profileHolder.profile, params.fieldName, params.fieldValue)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
@@ -116,7 +115,7 @@ class ProfileController {
 
     def editProfileEmail() {
         String email = params.fieldValue
-        BaseProfile profile = profileHolder.profile
+        Profile profile = profileHolder.profile
 
         if (email) {
             Map properties = [
@@ -133,7 +132,7 @@ class ProfileController {
 
             render ajaxResponseHelper.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
         } else {
-            BaseProfile persistedProfile = profileService.editProfileField(profile, PROFILE_EMAIL_FIELD, null)
+            Profile persistedProfile = profileService.editProfileField(profile, PROFILE_EMAIL_FIELD, null)
 
             if (persistedProfile.hasErrors()) {
                 return render(ajaxResponseHelper.renderValidationResponse(persistedProfile))
@@ -150,15 +149,15 @@ class ProfileController {
     }
 
     def deleteAvatar() {
-        BaseProfile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
+        Profile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
         profileService.deleteAvatar(profile)
         render ajaxResponseHelper.renderRedirect(request.getHeader('referer'))
     }
 
     def uploadAvatar(ImageUploadBean imageUploadBean) {
-        BaseProfile profile = profileHolder.profile
+        Profile profile = profileHolder.profile
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
-        BaseProfile persistedProfile = profileService.uploadAvatar(profile, avatar)
+        Profile persistedProfile = profileService.uploadAvatar(profile, avatar)
 
         if (persistedProfile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(persistedProfile))

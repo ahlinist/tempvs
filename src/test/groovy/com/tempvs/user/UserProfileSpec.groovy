@@ -13,7 +13,7 @@ class UserProfileSpec extends Specification implements DomainUnitTest<UserProfil
     def user = Mock(User)
 
     def profileService = Mock(ProfileService) {
-        isProfileEmailUnique(_ as BaseProfile, _ as String) >> Boolean.TRUE
+        isProfileEmailUnique(_ as Profile, _ as String) >> Boolean.TRUE
     }
 
     UserProfile userProfile

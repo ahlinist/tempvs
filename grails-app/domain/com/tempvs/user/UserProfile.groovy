@@ -3,7 +3,7 @@ package com.tempvs.user
 /**
  * Contains basic {@link com.tempvs.user.User} information.
  */
-class UserProfile extends BaseProfile {
+class UserProfile extends Profile {
 
     static belongsTo = [user: User]
 

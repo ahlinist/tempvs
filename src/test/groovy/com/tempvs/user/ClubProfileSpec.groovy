@@ -15,7 +15,7 @@ class ClubProfileSpec extends Specification implements DomainUnitTest<ClubProfil
     def passport = Mock Passport
 
     def profileService = Mock(ProfileService) {
-        isProfileEmailUnique(_ as BaseProfile, _ as String) >> Boolean.TRUE
+        isProfileEmailUnique(_ as Profile, _ as String) >> Boolean.TRUE
     }
 
     ClubProfile clubProfile

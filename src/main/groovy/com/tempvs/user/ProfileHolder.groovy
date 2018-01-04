@@ -17,7 +17,7 @@ class ProfileHolder {
     Class clazz
 
     @PostAuthorize('#returnObject == null or #returnObject.user.email == authentication.name')
-    BaseProfile getProfile() {
+    Profile getProfile() {
         if (clazz && id) {
             profileService.getProfile(clazz, id)
         } else {
@@ -28,7 +28,7 @@ class ProfileHolder {
     }
 
     @PreAuthorize('#profile == null or #profile.user.email == authentication.name')
-    void setProfile(BaseProfile profile) {
+    void setProfile(Profile profile) {
         this.clazz = profile?.class
         this.id = profile?.id
     }

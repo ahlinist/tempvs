@@ -6,7 +6,7 @@ import com.tempvs.periodization.Period
 /**
  * Belongs as many-to-one to {@link com.tempvs.user.User} entity.
  */
-class ClubProfile extends BaseProfile {
+class ClubProfile extends Profile {
 
     String nickName
     String clubName
