@@ -4,8 +4,9 @@
 
 To get started you need:
  * Java 1.8
- * Groovy 2.3.6
+ * Groovy 2.4.11
  * Grails 3.3.2
+ * Gradle 4.4.1
  * MySQL 5.7
  * MongoDB 3.2
  
