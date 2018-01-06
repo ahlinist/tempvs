@@ -22,12 +22,14 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     def source = Mock Source
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
+    def item2Passport = Mock Item2Passport
 
     def imageService = Mock ImageService
 
     def setup() {
         GroovySpy(Item, global: true)
         GroovySpy(ItemGroup, global: true)
+        GroovySpy(Item2Passport, global: true)
 
         service.imageService = imageService
     }
@@ -102,6 +104,8 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
 
         then:
         1 * itemGroup.getProperty(ITEMS) >> [item]
+        1 * Item2Passport.findAllByItemInList([item]) >> [item2Passport, item2Passport]
+        2 * item2Passport.delete()
         1 * item.getProperty(IMAGES) >> [image]
         1 * imageService.deleteImages([image])
         1 * itemGroup.delete()
@@ -142,6 +146,8 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         service.deleteItem(item)
 
         then:
+        1 * Item2Passport.findAllByItem(item) >> [item2Passport, item2Passport]
+        2 * item2Passport.delete()
         1 * item.getProperty(IMAGES) >> [image]
         1 * imageService.deleteImages([image])
         1 * item.delete()

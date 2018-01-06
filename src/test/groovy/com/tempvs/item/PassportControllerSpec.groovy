@@ -17,10 +17,10 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     private static final String ONE = '1'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
+    private static final Long LONG_THREE = 3L
     private static final String NAME = 'name'
     private static final String TYPE = 'type'
-    private static final String USER = 'user'
-    private static final String ITEMS = 'items'
+    private static final String ITEM = 'item'
     private static final String PERIOD = 'period'
     private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
@@ -39,6 +39,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def passport = Mock Passport
     def period = GroovyMock Period
     def clubProfile = Mock ClubProfile
+    def item2Passport = Mock Item2Passport
 
     def itemService = Mock ItemService
     def profileHolder = Mock ProfileHolder
@@ -97,17 +98,18 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.getPassport(ONE) >> passport
         1 * passport.getProperty(CLUB_PROFILE) >> clubProfile
         1 * clubProfile.getProperty(PERIOD) >> period
-        1 * itemService.getItemsByPeriod(period) >> [item, item]
+        1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
+        1 * item2Passport.getProperty(ITEM) >> item
         1 * item.getProperty(TYPE) >> type
+        1 * itemService.getItemsByPeriod(period) >> [item, item]
         1 * profileHolder.profile >> clubProfile
-        1 * passport.getProperty(ITEMS) >> [item]
         0 * _
 
         and:
         result == [
                 clubProfile: clubProfile,
                 passport: passport,
-                itemMap: [(type): [item]],
+                itemMap: [(type): [item2Passport]],
                 availableItems: [item, item],
                 editAllowed: Boolean.TRUE,
         ]
@@ -135,14 +137,15 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         request.method = POST_METHOD
 
         when:
-        controller.addItem(LONG_ONE, LONG_TWO)
+        controller.addItem(LONG_ONE, LONG_TWO, LONG_THREE)
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
         1 * itemService.getItem(LONG_TWO) >> item
-        1 * passportService.addItem(passport, item) >> passport
-        1 * passport.hasErrors() >> Boolean.FALSE
-        1 * passport.getProperty(ITEMS) >> [item]
+        1 * passportService.addItem(passport, item, LONG_THREE) >> item2Passport
+        1 * item2Passport.hasErrors() >> Boolean.FALSE
+        1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
+        1 * item2Passport.getProperty(ITEM) >> item
         1 * item.getProperty(TYPE) >> type
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
@@ -161,9 +164,9 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
         1 * itemService.getItem(LONG_TWO) >> item
-        1 * passportService.removeItem(passport, item) >> passport
-        1 * passport.hasErrors() >> Boolean.FALSE
-        1 * passport.getProperty(ITEMS) >> [item]
+        1 * passportService.removeItem(passport, item)
+        1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
+        1 * item2Passport.getProperty(ITEM) >> item
         1 * item.getProperty(TYPE) >> type
         1 * groovyPageRenderer.render(_ as Map)
         0 * _

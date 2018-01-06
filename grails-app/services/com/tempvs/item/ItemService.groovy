@@ -49,6 +49,7 @@ class ItemService {
         List<Item> items = itemGroup.items
 
         if (items) {
+            Item2Passport.findAllByItemInList(items)*.delete()
             imageService.deleteImages(items*.images?.flatten())
         }
 
@@ -81,6 +82,7 @@ class ItemService {
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     void deleteItem(Item item) {
+        Item2Passport.findAllByItem(item)*.delete()
         imageService.deleteImages(item.images)
         item.delete()
     }

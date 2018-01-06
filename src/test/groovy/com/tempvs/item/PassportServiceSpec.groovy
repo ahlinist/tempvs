@@ -14,9 +14,11 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
     def item = Mock Item
     def passport = Mock Passport
     def clubProfile = Mock ClubProfile
+    def item2Passport = Mock Item2Passport
 
     def setup() {
         GroovySpy(Passport, global: true)
+        GroovySpy(Item2Passport, global: true)
     }
 
     def cleanup() {
@@ -32,6 +34,18 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
         and:
         result == passport
+    }
+
+    void "Test getItem2PassportRelations()"() {
+        when:
+        def result = service.getItem2PassportRelations(passport)
+
+        then:
+        1 * Item2Passport.findAllByPassport(passport) >> [item2Passport]
+        0 * _
+
+        and:
+        result == [item2Passport]
     }
 
     void "Test createPassport()"() {
@@ -61,28 +75,25 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
     void "Test addItem()"() {
         when:
-        def result = service.addItem(passport, item)
+        def result = service.addItem(passport, item, 1)
 
         then:
-        1 * passport.addToItems(item) >> passport
-        1 * passport.save() >> passport
+        1 * new Item2Passport([item: item, passport: passport, quantity: 1]) >> item2Passport
+        1 * item2Passport.save() >> item2Passport
         0 * _
 
         and:
-        result == passport
+        result == item2Passport
     }
 
     void "Test removeItem()"() {
         when:
-        def result = service.removeItem(passport, item)
+        service.removeItem(passport, item)
 
         then:
-        1 * passport.removeFromItems(item)
-        1 * passport.save()
+        1 * Item2Passport.findByItemAndPassport(item, passport) >> item2Passport
+        1 * item2Passport.delete()
         0 * _
-
-        and:
-        result == passport
     }
 
     void "Test deletePassport()"() {
@@ -90,6 +101,8 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
         service.deletePassport(passport)
 
         then:
+        1 * Item2Passport.findByPassport(passport) >> item2Passport
+        1 * item2Passport.delete()
         1 * passport.delete()
         0 * _
     }

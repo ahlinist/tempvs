@@ -1,9 +1,13 @@
 <g:each var="itemEntry" in="${itemMap}">
   <h4><g:message code="item.type.${itemEntry.key}.value"/>:</h4>
-  <g:each var="item" in="${itemEntry.value}">
+  <g:each var="item2Passport" in="${itemEntry.value}">
+    <g:set var="item" value="${item2Passport.item}"/>
+    <g:set var="passport" value="${item2Passport.passport}"/>
+    <g:set var="quantity" value="${item2Passport.quantity}"/>
     <g:set var="itemId" value="${item.id}"/>
     <li class="row" id="item-${itemId}">
-      <g:link controller="item" action="show" id="${itemId}" class="btn btn-default col-sm-11">
+      <span class="btn btn-default pull-left" style="cursor:default;">${quantity} x </span>
+      <g:link controller="item" action="show" id="${itemId}" class="btn btn-default col-sm-10">
         ${item.name}
       </g:link>
       <g:if test="${editAllowed}">

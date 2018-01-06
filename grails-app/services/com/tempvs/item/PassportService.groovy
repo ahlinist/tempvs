@@ -17,6 +17,10 @@ class PassportService {
         Passport.get id
     }
 
+    List<Item2Passport> getItem2PassportRelations(Passport passport) {
+        Item2Passport.findAllByPassport(passport)
+    }
+
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
     Passport createPassport(Passport passport) {
         passport.save()
@@ -36,21 +40,20 @@ class PassportService {
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
-    Passport addItem(Passport passport, Item item) {
-        passport.addToItems(item)
-        passport.save()
-        passport
+    Item2Passport addItem(Passport passport, Item item, Long quantity) {
+        Item2Passport item2Passport = new Item2Passport(item: item, passport: passport, quantity: quantity)
+        item2Passport.save()
+        item2Passport
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
-    Passport removeItem(Passport passport, Item item) {
-        passport.removeFromItems(item)
-        passport.save()
-        passport
+    void removeItem(Passport passport, Item item) {
+        Item2Passport.findByItemAndPassport(item, passport)?.delete()
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
     void deletePassport(Passport passport) {
+        Item2Passport.findByPassport(passport)?.delete()
         passport.delete()
     }
 }

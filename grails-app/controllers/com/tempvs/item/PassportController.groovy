@@ -60,7 +60,7 @@ class PassportController {
         [
                 clubProfile: clubProfile,
                 passport: passport,
-                itemMap: passport.items.groupBy {it.type},
+                itemMap: composeItemMap(passport),
                 availableItems: itemService.getItemsByPeriod(clubProfile.period),
                 editAllowed: clubProfile == profileHolder.profile,
         ]
@@ -82,7 +82,7 @@ class PassportController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def addItem(Long passportId, Long itemId) {
+    def addItem(Long passportId, Long itemId, Long quantity) {
         Passport passport = passportService.getPassport passportId
         Item item = itemService.getItem itemId
 
@@ -90,13 +90,13 @@ class PassportController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        passport = passportService.addItem(passport, item)
+        Item2Passport item2Passport = passportService.addItem(passport, item, quantity)
 
-        if (passport.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(passport))
+        if (item2Passport.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(item2Passport))
         }
 
-        Map model = [itemMap: passport.items.groupBy {it.type}, passport: passport, editAllowed: Boolean.TRUE]
+        Map model = [itemMap: composeItemMap(passport), passport: passport, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/passport/templates/itemButton', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -109,13 +109,9 @@ class PassportController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        passport = passportService.removeItem(passport, item)
+        passportService.removeItem(passport, item)
 
-        if (passport.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(passport))
-        }
-
-        Map model = [itemMap: passport.items.groupBy {it.type}, passport: passport, editAllowed: Boolean.TRUE]
+        Map model = [itemMap: composeItemMap(passport), passport: passport, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/passport/templates/itemButton', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -124,5 +120,9 @@ class PassportController {
         Passport passport = passportService.getPassport id
         passportService.deletePassport(passport)
         render([action: DELETE_ACTION] as JSON)
+    }
+
+    private Map<Type,List<Item2Passport>> composeItemMap(passport) {
+        passportService.getItem2PassportRelations(passport).groupBy {it.item.type}
     }
 }

@@ -12,9 +12,12 @@ class Passport extends BasePersistent {
     String description
 
     static belongsTo = [clubProfile: ClubProfile]
-    static hasMany = [items: Item]
 
     static constraints = {
         description nullable: true, blank: true
+    }
+
+    List<Item> getItems() {
+        Item2Passport.findAllByPassport(this)*.item
     }
 }

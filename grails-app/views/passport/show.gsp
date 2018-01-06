@@ -34,6 +34,7 @@
                   <tempvs:ajaxForm controller="passport" action="addItem" selector="ul#passportItems">
                     <g:select class="col-sm-12 tempvs-form-field" name="itemId" from="${availableItems}" noSelection="${['':'-']}"
                               optionKey="id" optionValue="name"/>
+                    <input type="number" name="quantity" value="1" />
                     <input type="hidden" name="passportId" value="${passportId}" />
                     <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
                   </tempvs:ajaxForm>
