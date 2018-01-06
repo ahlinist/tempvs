@@ -7,7 +7,7 @@ import com.tempvs.periodization.Period
 /**
  * An entity that corresponds the reconstructed item.
  */
-class Item extends BasePersistent {
+class Item implements BasePersistent {
 
     String name
     String description

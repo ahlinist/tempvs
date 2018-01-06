@@ -9,7 +9,7 @@ import grails.compiler.GrailsCompileStatic
  * An entity that corresponds a source for an {@link com.tempvs.item.Item}
  */
 @GrailsCompileStatic
-class Source extends BasePersistent {
+class Source implements BasePersistent {
 
     String name
     String description

@@ -11,7 +11,7 @@ import javax.persistence.MappedSuperclass
  * or {@link com.tempvs.user.ClubProfile}.
  */
 @DirtyCheck
-abstract class Profile extends BasePersistent {
+abstract class Profile implements BasePersistent {
 
     protected static final String PROFILE_ID_MATCHER = /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/
 

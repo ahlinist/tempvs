@@ -7,7 +7,7 @@ import grails.compiler.GrailsCompileStatic
  * An entity that includes image's id and info.
  */
 @GrailsCompileStatic
-class Image extends BasePersistent {
+class Image implements BasePersistent {
 
     String objectId
     String imageInfo

@@ -65,7 +65,7 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
         def result = service.editPassportField(passport, DESCRIPTION, FIELD_VALUE)
 
         then:
-        1 * passport.setProperty(DESCRIPTION, FIELD_VALUE)
+        1 * passport.setDescription(FIELD_VALUE)
         1 * passport.save()
         0 * _
 

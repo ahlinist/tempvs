@@ -5,7 +5,7 @@ import com.tempvs.domain.BasePersistent
 /**
  * An entity that corresponds the relation of {@link Item} to {@ link Passport}.
  */
-class Item2Passport extends BasePersistent {
+class Item2Passport implements BasePersistent {
 
     Item item
     Passport passport

@@ -6,7 +6,7 @@ import com.tempvs.user.ClubProfile
 /**
  * An entity that represents {@link com.tempvs.user.ClubProfile}'s belongings.
  */
-class Passport extends BasePersistent {
+class Passport implements BasePersistent {
 
     String name
     String description

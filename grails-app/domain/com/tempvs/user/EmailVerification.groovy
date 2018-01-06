@@ -7,7 +7,7 @@ import grails.compiler.GrailsCompileStatic
  * An object that represents a sent verification of email address.
  */
 @GrailsCompileStatic
-class EmailVerification extends BasePersistent {
+class EmailVerification implements BasePersistent {
 
     Long instanceId
     String email

@@ -10,7 +10,6 @@ class ProfileHolderSpec extends Specification {
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
     private static final String CLASS = 'class'
-    private static final String USER_PROFILE = 'userProfile'
 
     def user = Mock User
     def userService = Mock UserService
@@ -52,7 +51,7 @@ class ProfileHolderSpec extends Specification {
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * user.userProfile >> userProfile
         1 * userProfile.getProperty(CLASS) >> UserProfile
         1 * userProfile.getProperty(ID) >> LONG_ID
         0 * _

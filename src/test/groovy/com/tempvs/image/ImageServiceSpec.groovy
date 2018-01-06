@@ -60,8 +60,8 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         service.deleteImage(image)
 
         then:
-        1 * image.getProperty(COLLECTION) >> COLLECTION
-        1 * image.getProperty(OBJECT_ID) >> OBJECT_ID
+        1 * image.collection >> COLLECTION
+        1 * image.objectId >> OBJECT_ID
         1 * imageDAO.delete(COLLECTION, OBJECT_ID) >> Boolean.TRUE
         0 * _
     }
@@ -74,8 +74,8 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         service.deleteImages(images)
 
         then:
-        2 * image.getProperty(COLLECTION) >> COLLECTION
-        2 * image.getProperty(OBJECT_ID) >> OBJECT_ID
+        2 * image.collection >> COLLECTION
+        2 * image.objectId >> OBJECT_ID
         2 * imageDAO.delete(COLLECTION, OBJECT_ID)
         0 * _
     }
@@ -87,13 +87,13 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         1 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.getProperty(OBJECT_ID) >> OBJECT_ID
+        1 * image.objectId >> OBJECT_ID
         1 * imageDAO.delete(COLLECTION, OBJECT_ID)
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
-        1 * image.setProperty(OBJECT_ID, ID)
-        1 * image.setProperty(COLLECTION, COLLECTION)
-        1 * image.setProperty(IMAGE_INFO, IMAGE_INFO)
+        1 * image.setObjectId(ID)
+        1 * image.setCollection(COLLECTION)
+        1 * image.setImageInfo(IMAGE_INFO)
         0 * _
 
         and:
@@ -110,9 +110,9 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.setProperty(OBJECT_ID, ID)
-        1 * image.setProperty(COLLECTION, COLLECTION)
-        1 * image.setProperty(IMAGE_INFO, IMAGE_INFO)
+        1 * image.setObjectId(ID)
+        1 * image.setCollection(COLLECTION)
+        1 * image.setImageInfo(IMAGE_INFO)
         0 * _
 
         and:
@@ -129,9 +129,9 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.setProperty(OBJECT_ID, ID)
-        1 * image.setProperty(COLLECTION, COLLECTION)
-        1 * image.setProperty(IMAGE_INFO, IMAGE_INFO)
+        1 * image.setObjectId(ID)
+        1 * image.setCollection(COLLECTION)
+        1 * image.setImageInfo(IMAGE_INFO)
         0 * _
 
         and:

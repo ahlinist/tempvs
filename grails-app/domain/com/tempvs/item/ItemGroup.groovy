@@ -8,7 +8,7 @@ import grails.compiler.GrailsCompileStatic
  * Group of {@link com.tempvs.item.Item} that belong to {@link com.tempvs.user.User}.
  */
 @GrailsCompileStatic
-class ItemGroup extends BasePersistent {
+class ItemGroup implements BasePersistent {
 
     String name
     String description

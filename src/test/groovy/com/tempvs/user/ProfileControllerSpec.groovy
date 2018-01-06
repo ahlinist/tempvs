@@ -30,16 +30,12 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final String FIRST_NAME = 'firstName'
     private static final String AUTH_URL = '/auth/index'
     private static final String FIELD_NAME = 'fieldName'
-    private static final String PROPERTIES = 'properties'
     private static final String IDENTIFIER = 'identifier'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String AVATAR_COLLECTION = 'avatar'
-    private static final String USER_PROFILE = 'userProfile'
-    private static final String CLUB_PROFILES = 'clubProfiles'
     private static final String PROFILE_URL = '/profile/index'
     private static final String DELETE_ACTION = 'deleteElement'
-    private static final String IMAGE_UPLOAD_BEAN = 'imageUploadBean'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -96,7 +92,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getProperty(USER_PROFILE)  >> userProfile
+        1 * user.userProfile  >> userProfile
         1 * userProfile.getProperty(IDENTIFIER) >> IDENTIFIER
         0 * _
 
@@ -163,7 +159,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * user.userProfile >> userProfile
         1 * profileHolder.setProperty(PROFILE, userProfile)
         0 * _
 
@@ -360,8 +356,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * user.getProperty(CLUB_PROFILES) >> [clubProfile]
+        1 * user.userProfile >> userProfile
+        1 * user.clubProfiles >> [clubProfile]
         0 * _
 
         result == [userProfile: userProfile, clubProfiles: [clubProfile]]

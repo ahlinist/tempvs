@@ -7,16 +7,8 @@ import groovy.transform.CompileStatic
  * A class inherited by all domains.
  */
 @CompileStatic
-abstract class BasePersistent implements Validateable, Serializable {
+trait BasePersistent extends Validateable implements Serializable {
 
     Date dateCreated
     Date lastUpdated
-
-    public <T> T save() {
-
-    }
-
-    void delete() {
-
-    }
 }

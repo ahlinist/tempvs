@@ -11,7 +11,6 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
 
     private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
-    private static final String IMAGES = 'images'
     private static final String FIELD_VALUE = 'fieldValue'
 
     def image = Mock Image
@@ -70,7 +69,7 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         def result = service.editSourceField(source, NAME, FIELD_VALUE)
 
         then:
-        1 * source.setProperty(NAME, FIELD_VALUE)
+        1 * source.setName(FIELD_VALUE)
         1 * source.save() >> source
         0 * _
 
@@ -99,7 +98,7 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         service.deleteSource(source)
 
         then:
-        1 * source.getProperty(IMAGES) >> [image]
+        1 * source.images >> [image]
         1 * imageService.deleteImages([image])
         1 * source.delete()
         0 * _
@@ -110,7 +109,7 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         def result = service.deleteImage(source, image)
 
         then:
-        1 * source.getProperty(IMAGES) >> [image]
+        1 * source.images >> [image]
         1 * source.removeFromImages(image)
         1 * imageService.deleteImage(image)
         1 * source.save() >> source

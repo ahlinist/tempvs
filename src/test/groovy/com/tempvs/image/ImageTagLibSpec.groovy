@@ -34,9 +34,9 @@ class ImageTagLibSpec extends Specification implements TagLibUnitTest<ImageTagLi
         String result = tagLib.image(properties)
 
         then:
-        2 * image.getProperty(COLLECTION) >> COLLECTION
-        1 * image.getProperty(OBJECT_ID) >> ID
-        1 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
+        2 * image.collection >> COLLECTION
+        1 * image.objectId >> ID
+        1 * image.imageInfo >> IMAGE_INFO
         0 * _
 
         and:
@@ -68,9 +68,9 @@ class ImageTagLibSpec extends Specification implements TagLibUnitTest<ImageTagLi
         String result = tagLib.carousel(properties)
 
         then:
-        4 * image.getProperty(COLLECTION) >> COLLECTION
-        2 * image.getProperty(OBJECT_ID) >> OBJECT_ID
-        4 * image.getProperty(IMAGE_INFO) >> IMAGE_INFO
+        4 * image.collection >> COLLECTION
+        2 * image.objectId >> OBJECT_ID
+        4 * image.imageInfo >> IMAGE_INFO
         0 * _
 
         and:

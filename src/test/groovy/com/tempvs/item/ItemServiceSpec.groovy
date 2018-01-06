@@ -12,7 +12,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
 
     private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
-    private static final String ITEMS = 'items'
     private static final String IMAGES = 'images'
     private static final String FIELD_VALUE = 'fieldValue'
 
@@ -90,7 +89,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         def result = service.editItemGroupField(itemGroup, NAME, FIELD_VALUE)
 
         then:
-        1 * itemGroup.setProperty(NAME, FIELD_VALUE)
+        1 * itemGroup.setName(FIELD_VALUE)
         1 * itemGroup.save() >> itemGroup
         0 * _
 
@@ -103,7 +102,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         service.deleteGroup(itemGroup)
 
         then:
-        1 * itemGroup.getProperty(ITEMS) >> [item]
+        1 * itemGroup.items >> [item]
         1 * Item2Passport.findAllByItemInList([item]) >> [item2Passport, item2Passport]
         2 * item2Passport.delete()
         1 * item.getProperty(IMAGES) >> [image]
@@ -133,7 +132,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         def result = service.editItemField(item, NAME, FIELD_VALUE)
 
         then:
-        1 * item.setProperty(NAME, FIELD_VALUE)
+        1 * item.setName(FIELD_VALUE)
         1 * item.save() >> item
         0 * _
 
@@ -148,7 +147,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         then:
         1 * Item2Passport.findAllByItem(item) >> [item2Passport, item2Passport]
         2 * item2Passport.delete()
-        1 * item.getProperty(IMAGES) >> [image]
+        1 * item.images >> [image]
         1 * imageService.deleteImages([image])
         1 * item.delete()
         0 * _
@@ -162,7 +161,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         def result = service.deleteImage(item, image)
 
         then:
-        1 * item.getProperty(IMAGES) >> images
+        1 * item.images >> images
         1 * item.removeFromImages(image)
         1 * imageService.deleteImage(image)
         1 * item.save() >> item

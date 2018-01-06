@@ -10,7 +10,7 @@ import groovy.transform.ToString
  */
 @EqualsAndHashCode(includes='email')
 @ToString(includes='email', includeNames=true, includePackage=false)
-class User extends BasePersistent implements Serializable {
+class User implements BasePersistent {
 
 	private static final long serialVersionUID = 1
 

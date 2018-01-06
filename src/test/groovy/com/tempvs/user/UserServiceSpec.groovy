@@ -13,7 +13,6 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
     private static final String EMAIL = 'email'
     private static final String PASSWORD = 'password'
     private static final String FIELD_VALUE = 'fieldValue'
-    private static final String USER_PROFILE = 'userProfile'
 
     def user = Mock User
     def grailsUser = Mock GrailsUser
@@ -111,7 +110,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         then:
         1 * profileService.getProfileByProfileEmail(UserProfile, FIELD_VALUE)
         1 * profileService.getProfileByProfileEmail(ClubProfile, FIELD_VALUE)
-        1 * user.setProperty(EMAIL, FIELD_VALUE)
+        1 * user.setEmail(FIELD_VALUE)
         1 * user.save() >> user
         0 * _
 
@@ -124,10 +123,10 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         def result = service.register(user, userProfile)
 
         then:
-        1 * user.getProperty(EMAIL) >> EMAIL
+        1 * user.email >> EMAIL
         1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
         1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL)
-        1 * user.setProperty(USER_PROFILE, userProfile)
+        1 * user.setUserProfile(userProfile)
         1 * user.save() >> user
         0 * _
 
@@ -143,7 +142,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
         1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL) >> clubProfile
         1 * clubProfile.getProperty(USER) >> user
-        1 * user.getProperty(EMAIL) >> EMAIL
+        1 * user.email >> EMAIL
         0 * _
 
         and:

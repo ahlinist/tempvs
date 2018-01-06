@@ -16,27 +16,17 @@ import spock.lang.Specification
 
 class ItemControllerSpec extends Specification implements ControllerUnitTest<ItemController> {
 
-    private static final String ID = 'id'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
-    private static final String USER = 'user'
-    private static final String TYPE = 'type'
-    private static final String ITEMS = 'items'
-    private static final String IMAGES = 'images'
-    private static final String PERIOD = 'period'
-    private static final String SOURCES = 'sources'
     private static final String POST_METHOD = 'POST'
     private static final String ITEM_URI = '/item/show'
-    private static final String ITEM_GROUP = 'itemGroup'
     private static final String ITEM_COLLECTION = 'item'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
-    private static final String ITEM_GROUPS = 'itemGroups'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String DESCRIPTION = 'description'
-    private static final String USER_PROFILE = 'userProfile'
     private static final String DELETE_ACTION = 'deleteElement'
     private static final String APPEND_ACTION = 'appendElement'
     private static final String ITEM_GROUP_URI = '/item/group'
@@ -80,8 +70,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * userService.currentUser >> user
-        1 * user.getProperty(ITEM_GROUPS) >> [itemGroup]
-        1 * user.getProperty(USER_PROFILE) >> userProfile
+        1 * user.itemGroups >> [itemGroup]
+        1 * user.userProfile >> userProfile
         0 * _
 
         and:
@@ -108,10 +98,10 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * userService.getUser(LONG_ONE) >> user
-        1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * user.getProperty(ID) >> LONG_ONE
+        1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
-        1 * user.getProperty(ITEM_GROUPS) >> [itemGroup]
+        1 * user.itemGroups >> [itemGroup]
         0 * _
 
         and:
@@ -167,7 +157,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemGroupCommand.user
         1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
-        1 * itemGroup.getProperty(ID) >> LONG_ONE
+        1 * itemGroup.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -207,10 +197,10 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getGroup(LONG_ONE) >> itemGroup
-        1 * itemGroup.getProperty(USER) >> user
-        1 * itemGroup.getProperty(ITEMS) >> items
-        1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * user.getProperty(ID) >> LONG_ONE
+        1 * itemGroup.user >> user
+        1 * itemGroup.items >> items
+        1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         0 * _
 
@@ -283,7 +273,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
         1 * itemService.updateItem(_ as Item, [image]) >> item
         1 * item.hasErrors() >> Boolean.FALSE
-        1 * item.getProperty(ID) >> LONG_ONE
+        1 * item.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -325,15 +315,15 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * item.getProperty(ITEM_GROUP) >> itemGroup
-        1 * item.getProperty(PERIOD) >> period
-        1 * item.getProperty(TYPE) >> type
-        1 * item.getProperty(IMAGES) >> [image]
-        1 * itemGroup.getProperty(USER) >> user
-        1 * user.getProperty(USER_PROFILE) >> userProfile
-        1 * user.getProperty(ID) >> LONG_ONE
+        1 * item.itemGroup >> itemGroup
+        1 * item.period >> period
+        1 * item.type >> type
+        1 * item.images >> [image]
+        1 * itemGroup.user >> user
+        1 * user.userProfile >> userProfile
+        1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
-        1 * item.getProperty(SOURCES) >> [source]
+        1 * item.sources >> [source]
         1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
         0 * _
 
@@ -345,7 +335,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
                 images: [image],
-                sources: [source],
+                sources: [source] as Set,
                 availableSources: [source],
         ]
     }
