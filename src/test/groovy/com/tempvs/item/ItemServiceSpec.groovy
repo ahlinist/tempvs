@@ -21,6 +21,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     def source = Mock Source
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
+    def item2Source = Mock Item2Source
     def item2Passport = Mock Item2Passport
 
     def imageService = Mock ImageService
@@ -28,6 +29,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     def setup() {
         GroovySpy(Item, global: true)
         GroovySpy(ItemGroup, global: true)
+        GroovySpy(Item2Source, global: true)
         GroovySpy(Item2Passport, global: true)
 
         service.imageService = imageService
@@ -105,6 +107,8 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         1 * itemGroup.items >> [item]
         1 * Item2Passport.findAllByItemInList([item]) >> [item2Passport, item2Passport]
         2 * item2Passport.delete()
+        1 * Item2Source.findAllByItemInList([item]) >> [item2Source, item2Source]
+        2 * item2Source.delete()
         1 * item.getProperty(IMAGES) >> [image]
         1 * imageService.deleteImages([image])
         1 * itemGroup.delete()
@@ -147,6 +151,8 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         then:
         1 * Item2Passport.findAllByItem(item) >> [item2Passport, item2Passport]
         2 * item2Passport.delete()
+        1 * Item2Source.findAllByItem(item) >> [item2Source, item2Source]
+        2 * item2Source.delete()
         1 * item.images >> [image]
         1 * imageService.deleteImages([image])
         1 * item.delete()
@@ -176,24 +182,21 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         def result = service.linkSource(item, source)
 
         then:
-        1 * item.addToSources(source)
-        1 * item.save()
+        1 * new Item2Source([item: item, source: source]) >> item2Source
+        1 * item2Source.save() >> item2Source
         0 * _
 
         and:
-        result == item
+        result == item2Source
     }
 
     void "Test unlinkSource()"() {
         when:
-        def result = service.unlinkSource(item, source)
+        service.unlinkSource(item, source)
 
         then:
-        1 * item.removeFromSources(source)
-        1 * item.save()
+        1 * Item2Source.findByItemAndSource(item, source) >> item2Source
+        1 * item2Source.delete()
         0 * _
-
-        and:
-        result == item
     }
 }

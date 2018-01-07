@@ -44,6 +44,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def userService = Mock UserService
     def userProfile = Mock UserProfile
     def itemService = Mock ItemService
+    def item2Source = Mock Item2Source
     def itemCommand = Mock ItemCommand
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
@@ -335,7 +336,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 userProfile: userProfile,
                 editAllowed: Boolean.TRUE,
                 images: [image],
-                sources: [source] as Set,
+                sources: [source],
                 availableSources: [source],
         ]
     }
@@ -464,8 +465,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         then:
         1 * itemService.getItem(LONG_ONE) >> item
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * itemService.linkSource(item, source) >> item
-        1 * item.hasErrors() >> Boolean.FALSE
+        1 * itemService.linkSource(item, source) >> item2Source
+        1 * item2Source.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -483,8 +484,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         then:
         1 * itemService.getItem(LONG_ONE) >> item
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * itemService.unlinkSource(item, source) >> item
-        1 * item.hasErrors() >> Boolean.FALSE
+        1 * itemService.unlinkSource(item, source)
         0 * _
 
         and:

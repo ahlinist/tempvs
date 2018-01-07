@@ -15,4 +15,8 @@ class Item2Passport implements BasePersistent {
         quantity min: 1L
         item unique: ['passport']
     }
+
+    static mapping = {
+        id composite: ['item', 'passport']
+    }
 }

@@ -8,15 +8,19 @@ import spock.lang.Specification
 class ItemSpec extends Specification implements DomainUnitTest<Item> {
 
     private static final String NAME = 'name'
+    private static final String SOURCE = 'source'
     private static final String DESCRIPTION = 'description'
 
     def image = Mock Image
+    def source = Mock Source
     def type = GroovyMock Type
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
+    def item2Source = Mock Item2Source
 
 
     def setup() {
+        GroovyMock(Item2Source, global: true)
     }
 
     def cleanup() {
@@ -73,5 +77,18 @@ class ItemSpec extends Specification implements DomainUnitTest<Item> {
 
         expect:
         !domain.validate()
+    }
+
+    void "Test getSources()"() {
+        when:
+        def result = domain.getSources()
+
+        then:
+        1 * Item2Source.findAllByItem(domain) >> [item2Source, item2Source]
+        2 * item2Source.getProperty(SOURCE) >> source
+        0 * _
+
+        and:
+        result == [source, source]
     }
 }

@@ -50,6 +50,7 @@ class ItemService {
 
         if (items) {
             Item2Passport.findAllByItemInList(items)*.delete()
+            Item2Source.findAllByItemInList(items)*.delete()
             imageService.deleteImages(items*.images?.flatten())
         }
 
@@ -83,6 +84,7 @@ class ItemService {
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     void deleteItem(Item item) {
         Item2Passport.findAllByItem(item)*.delete()
+        Item2Source.findAllByItem(item)*.delete()
         imageService.deleteImages(item.images)
         item.delete()
     }
@@ -100,16 +102,14 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item linkSource(Item item, Source source) {
-        item.addToSources(source)
-        item.save()
-        item
+    Item2Source linkSource(Item item, Source source) {
+        Item2Source item2Source = new Item2Source(item: item, source: source)
+        item2Source.save()
+        item2Source
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item unlinkSource(Item item, Source source) {
-        item.removeFromSources(source)
-        item.save()
-        item
+    void unlinkSource(Item item, Source source) {
+        Item2Source.findByItemAndSource(item, source)?.delete()
     }
 }

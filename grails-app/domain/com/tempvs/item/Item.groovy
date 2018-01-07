@@ -15,15 +15,16 @@ class Item implements BasePersistent {
     Period period
     Collection<Image> images
 
-    static hasMany = [sources: Source, images: Image]
+    List<Source> getSources() {
+        Item2Source.findAllByItem(this)*.source
+    }
+
+    static hasMany = [images: Image]
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
         name blank: false
         description nullable: true
-        sources validator: { Set sources, Item item ->
-             sources*.type.every {it == item.type} && sources*.period.every {it == item.period}
-        }
     }
 
     static mapping = {

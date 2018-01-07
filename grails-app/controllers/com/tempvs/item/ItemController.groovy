@@ -226,10 +226,10 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        item = itemService.linkSource(item, source)
+        Item2Source item2Source = itemService.linkSource(item, source)
 
-        if (item.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(item))
+        if (item2Source.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(item2Source))
         }
 
         Map model = [editAllowed: Boolean.TRUE, source: source, itemId: itemId]
@@ -245,11 +245,7 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        item = itemService.unlinkSource(item, source)
-
-        if (item.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(item))
-        }
+        itemService.unlinkSource(item, source)
 
         render([action: DELETE_ACTION] as JSON)
     }

@@ -52,6 +52,7 @@ class SourceService {
     }
 
     void deleteSource(Source source) {
+        Item2Source.findAllBySource(source)*.delete()
         imageService.deleteImages source.images
         source.delete()
     }

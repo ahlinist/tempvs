@@ -17,12 +17,14 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
     def source = Mock Source
     def type = GroovyMock Type
     def period = GroovyMock Period
+    def item2Source = Mock Item2Source
     def imageService = Mock ImageService
 
     def setup() {
         service.imageService = imageService
 
         GroovySpy(Source, global: true)
+        GroovySpy(Item2Source, global: true)
     }
 
     def cleanup() {
@@ -98,6 +100,8 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         service.deleteSource(source)
 
         then:
+        1 * Item2Source.findAllBySource(source) >> [item2Source, item2Source]
+        2 * item2Source.delete()
         1 * source.images >> [image]
         1 * imageService.deleteImages([image])
         1 * source.delete()
