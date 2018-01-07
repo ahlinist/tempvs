@@ -16,10 +16,11 @@ import org.springframework.security.authentication.encoding.PasswordEncoder
 @GrailsCompileStatic
 class AuthController {
 
-    private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
-    private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
-    private static final String REGISTRATION_ACTION = 'registration'
+    private static final String REFERER = 'referer'
     private static final String AUTH_PATTERN = '/auth'
+    private static final String REGISTRATION_ACTION = 'registration'
+    private static final String NO_SUCH_USER = 'auth.login.noSuchUser.message'
+    private static final String REGISTER_MESSAGE_SENT = 'auth.register.verification.sent.message'
 
     static allowedMethods = [index: 'GET', login: 'POST', register: 'POST']
 
@@ -34,27 +35,28 @@ class AuthController {
     }
 
     def login(LoginCommand command) {
-        if (command.validate()) {
-            User user = userService.getUserByEmail(command.email)
+        if (!command.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(command))
+        }
 
-            if (user) {
-                if (passwordEncoder.isPasswordValid(user.password, command.password, null)) {
-                    springSecurityService.reauthenticate(command.email, command.password)
-                    String referer = request.getHeader('referer')
+        User user = userService.getUserByEmail(command.email)
 
-                    if (referer.contains(AUTH_PATTERN)) {
-                        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
-                    } else {
-                        render ajaxResponseHelper.renderRedirect(referer)
-                    }
-                } else {
-                    render ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
-                }
-            } else {
-                render ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER)
-            }
+        if (!user) {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER))
+
+        }
+
+        if (!passwordEncoder.isPasswordValid(user.password, command.password, null)) {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER))
+        }
+
+        springSecurityService.reauthenticate(command.email, command.password)
+        String refererLink = request.getHeader(REFERER)
+
+        if (refererLink.contains(AUTH_PATTERN)) {
+            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
         } else {
-            render ajaxResponseHelper.renderValidationResponse(command)
+            render ajaxResponseHelper.renderRedirect(refererLink)
         }
     }
 
@@ -75,6 +77,6 @@ class AuthController {
 
     def logout() {
         session.invalidate()
-        redirect uri: request.getHeader('referer')
+        redirect uri: request.getHeader(REFERER)
     }
 }
