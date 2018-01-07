@@ -74,7 +74,7 @@ class AuthController {
     }
 
     def logout() {
-        request.logout()
+        session.invalidate()
         redirect uri: request.getHeader('referer')
     }
 }
