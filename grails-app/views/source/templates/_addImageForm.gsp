@@ -11,12 +11,12 @@
       <tempvs:modalButton id="deleteSourceImage-${image.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
         <g:message code='source.imageDeleteConfirmation.text'/>
         <br/>
-        <tempvs:ajaxLink message="yes" controller="source" action="deleteImage" params="${[sourceId: sourceId, imageId: imageId]}" method="DELETE" selector="li#itemImage-${imageId}"/>
+        <tempvs:ajaxLink message="yes" controller="source" action="deleteImage" params="${[sourceId: sourceId, imageId: imageId]}" method="DELETE" selector="li#sourceImage-${imageId}"/>
         <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
       </tempvs:modalButton>
     </span>
     <g:if test="${imageInfo}">
-      <b><g:message code="item.imageInfo.label"/></b>:
+      <b><g:message code="source.imageInfo.label"/></b>:
       <p>${imageInfo}</p>
     </g:if>
   </div>

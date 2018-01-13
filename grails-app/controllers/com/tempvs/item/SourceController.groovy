@@ -137,8 +137,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [image: image, itemId: params.sourceId]
-        String template = groovyPageRenderer.render(template: '/item/templates/addImageForm', model: model)
+        Map model = [image: image, sourceId: params.sourceId]
+        String template = groovyPageRenderer.render(template: '/source/templates/addImageForm', model: model)
         render([action: APPEND_ACTION, template: template] as JSON)
     }
 }
