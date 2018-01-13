@@ -20,7 +20,7 @@ class ItemController {
     private static final String ITEM_COLLECTION = 'item'
     private static final String SUCCESS_ACTION = 'success'
     private static final String DELETE_ACTION = 'deleteElement'
-    private static final String APPEND_ACTION = 'appendElement'
+    private static final String REPLACE_ACTION = 'replaceElement'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
@@ -120,7 +120,9 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        render([action: DELETE_ACTION] as JSON)
+        Map model = [images: item.images, itemId: itemId, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/item/templates/imageSection', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def show(Long id) {
@@ -181,9 +183,9 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [image: image, itemId: params.itemId]
-        String template = groovyPageRenderer.render(template: '/item/templates/addImageForm', model: model)
-        render([action: APPEND_ACTION, template: template] as JSON)
+        Map model = [images: item.images, itemId: params.itemId, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/item/templates/imageSection', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def editItemField(Long objectId, String fieldName, String fieldValue) {
@@ -232,9 +234,10 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item2Source))
         }
 
-        Map model = [editAllowed: Boolean.TRUE, source: source, itemId: itemId]
-        String template = groovyPageRenderer.render(template: '/item/templates/linkedSource', model: model)
-        render([action: APPEND_ACTION, template: template] as JSON)
+        List<Source> availableSources = sourceService.getSourcesByPeriodAndType(item.period, item.type)
+        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
+        String template = groovyPageRenderer.render(template: '/item/templates/sources', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def unlinkSource(Long itemId, Long sourceId) {
@@ -246,8 +249,10 @@ class ItemController {
         }
 
         itemService.unlinkSource(item, source)
-
-        render([action: DELETE_ACTION] as JSON)
+        List<Source> availableSources = sourceService.getSourcesByPeriodAndType(item.period, item.type)
+        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
+        String template = groovyPageRenderer.render(template: '/item/templates/sources', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {

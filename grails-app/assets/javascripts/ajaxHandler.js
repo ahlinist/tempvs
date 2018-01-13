@@ -12,11 +12,6 @@ function getActions() {
         $(element).modal('hide');
     }
 
-    function appendElementAction(element, response, selector) {
-        var container = document.querySelector(selector);
-        container.innerHTML = response.template + container.innerHTML;
-    }
-
     function replaceElementAction(element, response, selector) {
         var backdrop = document.querySelector('.modal-backdrop');
 
@@ -48,7 +43,6 @@ function getActions() {
 
     var actions = {
                redirect: redirectAction,
-               appendElement: appendElementAction,
                deleteElement: deleteElementAction,
                replaceElement: replaceElementAction,
                formMessage: formMessageAction,

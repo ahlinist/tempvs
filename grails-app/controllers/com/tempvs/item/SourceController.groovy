@@ -19,7 +19,7 @@ class SourceController {
     private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String DELETE_ACTION = 'deleteElement'
-    private static final String APPEND_ACTION = 'appendElement'
+    private static final String REPLACE_ACTION = 'replaceElement'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
 
     static allowedMethods = [
@@ -109,7 +109,9 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        render([action: DELETE_ACTION] as JSON)
+        Map model = [images: source.images, sourceId: sourceId, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/source/templates/imageSection', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def deleteSource(Long id) {
@@ -137,8 +139,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [image: image, sourceId: params.sourceId]
-        String template = groovyPageRenderer.render(template: '/source/templates/addImageForm', model: model)
-        render([action: APPEND_ACTION, template: template] as JSON)
+        Map model = [images: source.images, sourceId: params.sourceId, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/source/templates/imageSection', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 }

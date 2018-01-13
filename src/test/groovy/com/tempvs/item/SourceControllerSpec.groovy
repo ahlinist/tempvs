@@ -28,7 +28,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String SOURCE_COLLECTION = 'source'
     private static final String PERIOD_URI = '/source/period'
     private static final String DELETE_ACTION = 'deleteElement'
-    private static final String APPEND_ACTION = 'appendElement'
+    private static final String REPLACE_ACTION = 'replaceElement'
 
     def json = Mock JSON
     def image = Mock Image
@@ -197,11 +197,12 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION) >> image
         1 * sourceService.updateSource(source, [image]) >> source
         1 * source.hasErrors() >> Boolean.FALSE
+        1 * source.images >> [image]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == APPEND_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test deleteSource()"() {
@@ -232,9 +233,11 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * imageService.getImage(LONG_TWO) >> image
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
+        1 * source.images >> [image]
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 }

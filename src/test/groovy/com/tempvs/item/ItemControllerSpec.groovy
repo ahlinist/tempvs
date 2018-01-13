@@ -27,9 +27,9 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String DESCRIPTION = 'description'
-    private static final String DELETE_ACTION = 'deleteElement'
-    private static final String APPEND_ACTION = 'appendElement'
     private static final String ITEM_GROUP_URI = '/item/group'
+    private static final String DELETE_ACTION = 'deleteElement'
+    private static final String REPLACE_ACTION = 'replaceElement'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
@@ -292,10 +292,12 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * imageService.getImage(LONG_TWO) >> image
         1 * itemService.deleteImage(item, image) >> item
         1 * item.hasErrors() >> Boolean.FALSE
+        1 * item.images >> [image]
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test show() without id"() {
@@ -414,11 +416,12 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * imageService.uploadImage(imageUploadBean, ITEM_COLLECTION) >> image
         1 * itemService.updateItem(item, [image]) >> item
         1 * item.hasErrors() >> Boolean.FALSE
+        1 * item.images >> [image]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == APPEND_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test editItemField()"() {
@@ -467,11 +470,15 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * itemService.linkSource(item, source) >> item2Source
         1 * item2Source.hasErrors() >> Boolean.FALSE
+        1 * item.period >> period
+        1 * item.type >> type
+        1 * item.sources >> [source]
+        1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == APPEND_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test unlinkSource()"() {
@@ -485,9 +492,14 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.getItem(LONG_ONE) >> item
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * itemService.unlinkSource(item, source)
+        1 * item.period >> period
+        1 * item.type >> type
+        1 * item.sources >> [source]
+        1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 }

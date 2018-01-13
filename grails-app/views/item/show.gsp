@@ -23,71 +23,10 @@
         </div>
         <div class="col-sm-4">
           <b><g:message code="item.sources.label"/></b>
-          <ul id="linkedSources">
-            <g:each var="source" in="${sources}">
-              <g:render template="/item/templates/linkedSource" model="${[source: source, itemId: itemId]}"/>
-            </g:each>
-            <g:if test="${editAllowed}">
-              <div class="panel-group">
-                <div class="panel panel-default">
-                  <div class="panel-heading">
-                    <h4 class="panel-title">
-                      <a data-toggle="collapse" href="#sourceCollapse">
-                        <g:message code="item.linkSource.collapse.title"/>
-                        <span class="caret"></span>
-                      </a>
-                    </h4>
-                  </div>
-                  <div id="sourceCollapse" class="panel-collapse collapse">
-                    <li class="row">
-                      <tempvs:ajaxForm controller="item" action="linkSource" selector="ul#linkedSources">
-                        <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${availableSources}" noSelection="${['':'-']}"
-                                  optionKey="id" optionValue="name"/>
-                        <input type="hidden" name="itemId" value="${itemId}" />
-                        <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
-                      </tempvs:ajaxForm>
-                    </li>
-                  </div>
-                </div>
-              </div>
-            </g:if>
-          </ul>
+          <g:render template="/item/templates/sources" model="${[itemId: itemId]}"/>
         </div>
       </div>
-      <div class="row">
-        <tempvs:carousel images="${images}" orientation="horizontal" styles="min-height: 25vw; max-height: 25vw;"/>
-      </div>
-      <g:if test="${editAllowed}">
-        <div class="panel-group">
-          <div class="panel panel-default">
-            <div class="panel-heading">
-              <h4 class="panel-title">
-                <a data-toggle="collapse" href="#imageCollapse">
-                  <g:message code="item.image.edit.collapse.title"/>
-                  <span class="caret"></span>
-                </a>
-              </h4>
-            </div>
-            <div id="imageCollapse" class="panel-collapse collapse">
-              <ul class="list-group" id="itemImages">
-                <g:each var="image" in="${images}">
-                  <g:render template="/item/templates/addImageForm" model="${[image: image, itemId: itemId]}"/>
-                </g:each>
-                <li class="list-group-item row">
-                  <div class="row">
-                    <tempvs:ajaxForm controller="item" action="addImage" selector="ul#itemImages">
-                      <tempvs:formField type="file" name="imageUploadBean.image" label="item.image.label" />
-                      <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="item.imageInfo.label" />
-                      <input type="hidden" name="itemId" value="${itemId}"/>
-                      <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
-                    </tempvs:ajaxForm>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </g:if>
+      <g:render template="/item/templates/imageSection" model="${[itemId: itemId]}"/>
     </g:if>
     <g:else>
       <g:message code="item.notFound.message"/>
