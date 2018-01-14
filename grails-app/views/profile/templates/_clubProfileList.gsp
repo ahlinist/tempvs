@@ -8,7 +8,7 @@
       <g:each var="clubProfile" in="${clubProfiles}">
         <g:set var="clubProfileId" value="${clubProfile.id}"/>
         <li class="row" id="clubProfile-${clubProfileId}">
-          <g:link class="btn btn-default col-sm-10" action="clubProfile" id="${clubProfileId}">
+          <g:link class="btn btn-default col-sm-10" controller="profile" action="clubProfile" id="${clubProfileId}">
             ${clubProfile}
           </g:link>
           <span class="pull-left">
