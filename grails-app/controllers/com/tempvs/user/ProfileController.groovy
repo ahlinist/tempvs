@@ -5,7 +5,9 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.item.PassportService
+import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
 
@@ -13,11 +15,13 @@ import org.springframework.security.access.AccessDeniedException
  * Controller for managing {@link com.tempvs.user.UserProfile} and
  * {@link com.tempvs.user.ClubProfile}.
  */
+@GrailsCompileStatic
 class ProfileController {
 
+    private static final String NO_ACTION = 'none'
     private static final String SUCCESS_ACTION = 'success'
     private static final String AVATAR_COLLECTION = 'avatar'
-    private static final String DELETE_ACTION = 'deleteElement'
+    private static final String REPLACE_ACTION = 'replaceElement'
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
@@ -42,6 +46,7 @@ class ProfileController {
     VerifyService verifyService
     ProfileService profileService
     PassportService passportService
+    PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
 
@@ -76,7 +81,7 @@ class ProfileController {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
-        Boolean editAllowed = profileHolder.profile == clubProfile
+        Boolean editAllowed = (profileHolder.profile == clubProfile)
         [profile: clubProfile, user: clubProfile.user, id: clubProfile.identifier, passports: clubProfile.passports, editAllowed: editAllowed]
     }
 
@@ -104,7 +109,7 @@ class ProfileController {
     }
 
     def editProfileField() {
-        Profile profile = profileService.editProfileField(profileHolder.profile, params.fieldName, params.fieldValue)
+        Profile profile = profileService.editProfileField(profileHolder.profile, params.fieldName as String, params.fieldValue as String)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
@@ -143,9 +148,23 @@ class ProfileController {
     }
 
     def deleteProfile(String id) {
-        profileService.deleteProfile(profileService.getProfile(ClubProfile.class, id))
-        profileHolder.setProfile(null)
-        render([action: DELETE_ACTION] as JSON)
+        ClubProfile clubProfile = profileService.getProfile(ClubProfile.class, id)
+
+        if (!clubProfile) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        User user = clubProfile.user
+
+        if (profileHolder.profile == clubProfile) {
+            profileHolder.setProfile(null)
+        }
+
+        profileService.deleteProfile(clubProfile)
+
+        Map model = [clubProfiles: user.clubProfiles, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/profile/templates/clubProfileList', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def deleteAvatar() {

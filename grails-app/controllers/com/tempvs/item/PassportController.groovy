@@ -3,12 +3,15 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.user.ClubProfile
 import com.tempvs.user.ProfileHolder
+import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import grails.web.mapping.LinkGenerator
 
 /**
  * A controller that handles operations related to {@link com.tempvs.item.Passport}.
  */
+@GrailsCompileStatic
 class PassportController {
 
     private static final String NO_ACTION = 'none'
@@ -31,6 +34,7 @@ class PassportController {
     ProfileHolder profileHolder
     PassportService passportService
     PageRenderer groovyPageRenderer
+    LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
 
     def index() {
@@ -38,14 +42,14 @@ class PassportController {
     }
 
     def createPassport(Passport passport) {
-        passport.clubProfile = profileHolder.profile
+        passport.clubProfile = profileHolder.profile as ClubProfile
         passport = passportService.createPassport(passport)
 
         if (passport.hasErrors()) {
             return ajaxResponseHelper.renderValidationResponse(passport)
         }
 
-        render ajaxResponseHelper.renderRedirect(g.createLink(controller: 'passport', action: 'show', id: passport.id))
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'passport', action: 'show', id: passport.id))
     }
 
     def show(String id) {
@@ -122,7 +126,7 @@ class PassportController {
         render([action: DELETE_ACTION] as JSON)
     }
 
-    private Map<Type,List<Item2Passport>> composeItemMap(passport) {
+    private Map<Type,List<Item2Passport>> composeItemMap(Passport passport) {
         passportService.getItem2PassportRelations(passport).groupBy {it.item.type}
     }
 }

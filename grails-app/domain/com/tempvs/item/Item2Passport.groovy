@@ -1,10 +1,12 @@
 package com.tempvs.item
 
 import com.tempvs.domain.BasePersistent
+import grails.compiler.GrailsCompileStatic
 
 /**
  * An entity that corresponds the relation of {@link Item} to {@ link Passport}.
  */
+@GrailsCompileStatic
 class Item2Passport implements BasePersistent {
 
     Item item

@@ -18,7 +18,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     private static final Long LONG_TWO = 2L
     private static final Long LONG_THREE = 3L
     private static final String NAME = 'name'
-    private static final String PERIOD = 'period'
     private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
     private static final String PROFILE_URL = '/profile'
@@ -75,7 +74,8 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * profileHolder.profile >> clubProfile
-        1 * passport.setProperty(CLUB_PROFILE, clubProfile)
+        1 * clubProfile.asType(ClubProfile) >> clubProfile
+        1 * passport.setClubProfile(clubProfile)
         1 * passportService.createPassport(passport) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.id >> LONG_ONE
@@ -94,7 +94,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         then:
         1 * passportService.getPassport(ONE) >> passport
         1 * passport.clubProfile >> clubProfile
-        1 * clubProfile.getProperty(PERIOD) >> period
+        1 * clubProfile.period >> period
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * item2Passport.item >> item
         1 * item.type >> type

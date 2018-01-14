@@ -1,8 +1,11 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
+
 /**
  * Contains basic {@link com.tempvs.user.User} information.
  */
+@GrailsCompileStatic
 class UserProfile extends Profile {
 
     static belongsTo = [user: User]

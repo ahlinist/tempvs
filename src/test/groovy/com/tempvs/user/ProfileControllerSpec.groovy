@@ -8,6 +8,7 @@ import com.tempvs.item.Passport
 import com.tempvs.item.PassportService
 import com.tempvs.periodization.Period
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
@@ -15,17 +16,11 @@ import spock.lang.Specification
 
 class ProfileControllerSpec extends Specification implements ControllerUnitTest<ProfileController>, DomainUnitTest<UserProfile> {
 
-    private static final String ID = 'id'
     private static final String ONE = '1'
     private static final Long LONG_ID = 1L
-    private static final String USER = 'user'
     private static final String EMAIL = 'email'
-    private static final String CLASS = 'class'
-    private static final String AVATAR = 'avatar'
     private static final String GET_METHOD = 'GET'
-    private static final String PROFILE = 'profile'
     private static final String POST_METHOD = 'POST'
-    private static final String PASSPORTS = 'passports'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIRST_NAME = 'firstName'
     private static final String AUTH_URL = '/auth/index'
@@ -35,7 +30,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final String SUCCESS_ACTION = 'success'
     private static final String AVATAR_COLLECTION = 'avatar'
     private static final String PROFILE_URL = '/profile/index'
-    private static final String DELETE_ACTION = 'deleteElement'
+    private static final String REPLACE_ACTION = 'replaceElement'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
     private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -55,6 +50,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def profileService = Mock ProfileService
     def imageUploadBean = Mock ImageUploadBean
     def passportService = Mock PassportService
+    def groovyPageRenderer = Mock PageRenderer
     def emailVerification = Mock EmailVerification
     def clubProfileCommand = Mock ClubProfileCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -67,6 +63,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.profileService = profileService
         controller.passportService = passportService
         controller.ajaxResponseHelper = ajaxResponseHelper
+        controller.groovyPageRenderer = groovyPageRenderer
     }
 
     def cleanup() {
@@ -78,8 +75,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileHolder.profile >> userProfile
-        1 * userProfile.getProperty(CLASS) >> UserProfile
-        1 * userProfile.getProperty(IDENTIFIER) >> IDENTIFIER
+        1 * userProfile.identifier >> IDENTIFIER
         0 * _
 
         and:
@@ -93,7 +89,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * userService.currentUser >> user
         1 * user.userProfile  >> userProfile
-        1 * userProfile.getProperty(IDENTIFIER) >> IDENTIFIER
+        1 * userProfile.identifier >> IDENTIFIER
         0 * _
 
         and:
@@ -105,8 +101,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
-        1 * userProfile.getProperty(USER) >> user
-        1 * userProfile.getProperty(IDENTIFIER) >> IDENTIFIER
+        1 * userProfile.user >> user
+        1 * userProfile.identifier >> IDENTIFIER
         1 * profileHolder.profile >> userProfile
         0 * _
 
@@ -143,14 +139,14 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then: 'For non-existing profile'
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
-        1 * clubProfile.getProperty(USER) >> user
-        1 * clubProfile.getProperty(IDENTIFIER) >> IDENTIFIER
+        1 * clubProfile.user >> user
+        1 * clubProfile.identifier >> IDENTIFIER
         1 * profileHolder.profile >> clubProfile
-        1 * clubProfile.getProperty(PASSPORTS) >> [passport]
+        1 * clubProfile.passports >> [passport]
         0 * _
 
         and:
-        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport], editAllowed: Boolean.TRUE]
+        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport] as Set, editAllowed: Boolean.TRUE]
     }
 
     void "Test switchProfile() being logged in without id"() {
@@ -160,7 +156,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
-        1 * profileHolder.setProperty(PROFILE, userProfile)
+        1 * profileHolder.setProfile(userProfile)
         0 * _
 
         and:
@@ -174,7 +170,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.getProfile(_, LONG_ID) >> userProfile
-        1 * profileHolder.setProperty(PROFILE, userProfile)
+        1 * profileHolder.setProfile(userProfile)
         0 * _
 
         and:
@@ -244,8 +240,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
-        1 * profileHolder.setProperty(PROFILE, clubProfile)
-        1 * clubProfile.getProperty(ID) >> LONG_ID
+        1 * profileHolder.setProfile(clubProfile)
+        1 * clubProfile.id >> LONG_ID
         1 * ajaxResponseHelper.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -279,9 +275,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.editProfileEmail()
 
         then:
-        1 * profileHolder.getProfile() >> userProfile
-        1 * userProfile.getProperty(ID) >> LONG_ID
-        1 * userProfile.getProperty(CLASS) >> UserProfile
+        1 * profileHolder.profile >> userProfile
+        1 * userProfile.id >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
         1 * verifyService.sendEmailVerification(emailVerification)
@@ -300,12 +295,16 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
+        1 * clubProfile.user >> user
+        1 * user.clubProfiles >> [clubProfile]
         1 * profileService.deleteProfile(clubProfile)
-        1 * profileHolder.setProfile(null)
+        1 * profileHolder.profile >> userProfile
+        1 * userProfile.equals(clubProfile) >> Boolean.FALSE
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test deleteAvatar()"() {
@@ -338,7 +337,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileHolder.profile >> userProfile
-        1 * userProfile.getProperty(AVATAR) >> image
+        1 * userProfile.avatar >> image
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * profileService.uploadAvatar(userProfile, image) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE

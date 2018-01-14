@@ -28,7 +28,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     private static final String SUCCESS_ACTION = 'success'
     private static final String DESCRIPTION = 'description'
     private static final String ITEM_GROUP_URI = '/item/group'
-    private static final String DELETE_ACTION = 'deleteElement'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
     private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'

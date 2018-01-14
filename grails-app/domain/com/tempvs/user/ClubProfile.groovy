@@ -2,10 +2,12 @@ package com.tempvs.user
 
 import com.tempvs.item.Passport
 import com.tempvs.periodization.Period
+import grails.compiler.GrailsCompileStatic
 
 /**
  * Belongs as many-to-one to {@link com.tempvs.user.User} entity.
  */
+@GrailsCompileStatic
 class ClubProfile extends Profile {
 
     String nickName
