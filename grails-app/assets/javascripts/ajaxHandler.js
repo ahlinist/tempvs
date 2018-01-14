@@ -20,6 +20,7 @@ function getActions() {
         }
 
         $(element).modal('hide');
+        document.querySelector('body').classList.remove('modal-open');
         var container = document.querySelector(selector);
         container.innerHTML = response.template;
     }
