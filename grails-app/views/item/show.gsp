@@ -23,7 +23,7 @@
         </div>
         <div class="col-sm-4">
           <b><g:message code="item.sources.label"/></b>
-          <g:render template="/item/templates/sources" model="${[itemId: itemId]}"/>
+          <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
         </div>
       </div>
       <g:render template="/item/templates/imageSection" model="${[itemId: itemId]}"/>

@@ -6,6 +6,7 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.user.User
 import com.tempvs.user.UserService
+import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
@@ -14,12 +15,12 @@ import org.springframework.security.access.AccessDeniedException
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
+@GrailsCompileStatic
 class ItemController {
 
     private static final String NO_ACTION = 'none'
     private static final String ITEM_COLLECTION = 'item'
     private static final String SUCCESS_ACTION = 'success'
-    private static final String DELETE_ACTION = 'deleteElement'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
@@ -154,8 +155,11 @@ class ItemController {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE))
         }
 
+        ItemGroup itemGroup = item.itemGroup
         itemService.deleteItem item
-        render([action: DELETE_ACTION] as JSON)
+        Map model = [items: itemGroup.items, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/item/templates/itemList', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def deleteGroup(Long id) {
@@ -165,8 +169,11 @@ class ItemController {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE))
         }
 
+        User user = itemGroup.user
         itemService.deleteGroup itemGroup
-        render([action: DELETE_ACTION] as JSON)
+        Map model = [itemGroups: user.itemGroups, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/item/templates/groupList', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def addImage(ImageUploadBean imageUploadBean) {
@@ -236,7 +243,7 @@ class ItemController {
 
         List<Source> availableSources = sourceService.getSourcesByPeriodAndType(item.period, item.type)
         Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
-        String template = groovyPageRenderer.render(template: '/item/templates/sources', model: model)
+        String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -251,7 +258,7 @@ class ItemController {
         itemService.unlinkSource(item, source)
         List<Source> availableSources = sourceService.getSourcesByPeriodAndType(item.period, item.type)
         Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
-        String template = groovyPageRenderer.render(template: '/item/templates/sources', model: model)
+        String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

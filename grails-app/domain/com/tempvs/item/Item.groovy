@@ -3,10 +3,12 @@ package com.tempvs.item
 import com.tempvs.domain.BasePersistent
 import com.tempvs.image.Image
 import com.tempvs.periodization.Period
+import grails.compiler.GrailsCompileStatic
 
 /**
  * An entity that corresponds the reconstructed item.
  */
+@GrailsCompileStatic
 class Item implements BasePersistent {
 
     String name
@@ -16,7 +18,8 @@ class Item implements BasePersistent {
     Collection<Image> images
 
     List<Source> getSources() {
-        Item2Source.findAllByItem(this)*.source
+        List<Item2Source> item2Sources = Item2Source.findAllByItem(this)
+        item2Sources*.source
     }
 
     static hasMany = [images: Image]

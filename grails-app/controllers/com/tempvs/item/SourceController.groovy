@@ -9,6 +9,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
+
 /**
  * Controller for {@link com.tempvs.item.Source} entities managing.
  */
@@ -18,7 +19,6 @@ class SourceController {
     private static final String NO_ACTION = 'none'
     private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
-    private static final String DELETE_ACTION = 'deleteElement'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
 
@@ -116,13 +116,17 @@ class SourceController {
 
     def deleteSource(Long id) {
         Source source = sourceService.getSource id
+        Period period = source.period
 
         if (!source) {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
         sourceService.deleteSource source
-        render([action: DELETE_ACTION] as JSON)
+        List<Source> sources = sourceService.getSourcesByPeriod(period)
+        Map model = [sources: sources, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/source/templates/sourceList', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def addImage(ImageUploadBean imageUploadBean) {

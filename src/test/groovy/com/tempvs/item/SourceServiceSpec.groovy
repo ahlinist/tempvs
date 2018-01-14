@@ -30,18 +30,6 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
     def cleanup() {
     }
 
-    void "Test getSource()"() {
-        when:
-        def result = service.getSource(LONG_ONE)
-
-        then:
-        1 * Source.get(LONG_ONE) >> source
-        0 * _
-
-        and:
-        result == source
-    }
-
     void "Test getSourcesByPeriod()"() {
         when:
         def result = service.getSourcesByPeriod(period)

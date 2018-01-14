@@ -23,31 +23,7 @@
           </div>
         </div>
         <b><g:message code="source.list.label"/></b>:
-        <g:if test="${sources}">
-          <ul>
-            <g:each in="${sources}" var="source">
-              <g:set var="sourceId" value="${source.id}"/>
-              <g:set var="sourceName" value="${source.name}"/>
-              <li class="row" id="source-${sourceId}">
-                <g:link controller="source" action="show" id="${sourceId}" class="btn btn-default col-sm-3">
-                  ${sourceName}
-                </g:link>
-                <g:if test="${editAllowed}">
-                  <div class="pull-left">
-                    <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.delete.button')}">
-                      <tempvs:modalButton id="deleteSource-${source.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
-                        <g:message code='source.deleteConfirmation.text' args="${[sourceName]}"/>
-                        <br/>
-                        <tempvs:ajaxLink message="yes" controller="source" action="deleteSource" id="${sourceId}" method="DELETE" selector="li#source-${sourceId}"/>
-                        <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-                      </tempvs:modalButton>
-                    </span>
-                  </div>
-                </g:if>
-              </li>
-            </g:each>
-          </ul>
-        </g:if>
+        <g:render template="/source/templates/sourceList"/>
         <div>
           <g:if test="${editAllowed}">
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.createSource.tooltip')}">

@@ -3,13 +3,17 @@ package com.tempvs.item
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
+import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
+import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.AccessDeniedException
 
 /**
  * Service that manages operations with {@link com.tempvs.item.Source}
  */
 @Transactional
+@GrailsCompileStatic
 class SourceService {
 
     private static final String TYPE_FIELD = 'type'
@@ -29,6 +33,7 @@ class SourceService {
         Source.findAllByPeriodAndType period, type
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Source editSourceField(Source source, String fieldName, String fieldValue) {
         if (fieldName in [PERIOD_FIELD, TYPE_FIELD]) {
             throw new AccessDeniedException('Operation not supported.')
@@ -52,7 +57,8 @@ class SourceService {
     }
 
     void deleteSource(Source source) {
-        Item2Source.findAllBySource(source)*.delete()
+        List<Item2Source> item2Sources = Item2Source.findAllBySource(source)
+        item2Sources*.delete()
         imageService.deleteImages source.images
         source.delete()
     }

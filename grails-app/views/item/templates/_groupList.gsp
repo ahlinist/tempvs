@@ -1,0 +1,27 @@
+<div id="group-list">
+  <ul>
+    <g:each var="itemGroup" in="${itemGroups.sort { it.id }}">
+      <g:set var="itemGroupId" value="${itemGroup.id}"/>
+      <g:set var="itemGroupName" value="${itemGroup.name}"/>
+      <li id="itemGroup-${itemGroupId}">
+        <div class="row">
+          <g:link class="btn btn-default col-sm-3" controller="item" action="group" id="${itemGroupId}" data-toggle="tooltip" data-placement="bottom" title="${itemGroup.description}">
+              ${itemGroupName}
+          </g:link>
+          <g:if test="${editAllowed}">
+            <div class="pull-left">
+              <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.group.delete.tooltip')}">
+                <tempvs:modalButton id="deleteGroup-${itemGroup.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                  <g:message code='item.group.deleteConfirmation.text' args="${[itemGroupName]}"/>
+                  <br/>
+                  <tempvs:ajaxLink message="yes" controller="item" action="deleteGroup" id="${itemGroupId}" method="DELETE" selector="div#group-list"/>
+                  <button class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                </tempvs:modalButton>
+              </span>
+            </div>
+          </g:if>
+        </div>
+      </li>
+    </g:each>
+  </ul>
+</div>

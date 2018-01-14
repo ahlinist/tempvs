@@ -1,7 +1,9 @@
 package com.tempvs.item
 
 import com.tempvs.domain.BasePersistent
+import grails.compiler.GrailsCompileStatic
 
+@GrailsCompileStatic
 class Item2Source implements BasePersistent {
 
     Item item

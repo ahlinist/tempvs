@@ -27,7 +27,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String DESCRIPTION = 'description'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String PERIOD_URI = '/source/period'
-    private static final String DELETE_ACTION = 'deleteElement'
     private static final String REPLACE_ACTION = 'replaceElement'
 
     def json = Mock JSON
@@ -214,11 +213,14 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         then: 'Successfully deleted'
         1 * sourceService.getSource(LONG_ONE) >> source
+        1 * source.period >> period
         1 * sourceService.deleteSource(source)
+        1 * sourceService.getSourcesByPeriod(period) >> [source]
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test deleteImage()"() {

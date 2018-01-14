@@ -366,11 +366,14 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then: 'Successfully deleted'
         1 * itemService.getItem(LONG_ONE) >> item
+        1 * item.itemGroup >> itemGroup
         1 * itemService.deleteItem(item)
+        1 * itemGroup.items >> [item]
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test deleteGroup() against unexisting one"() {
@@ -396,11 +399,14 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getGroup(LONG_ONE) >> itemGroup
+        1 * itemGroup.user >> user
         1 * itemService.deleteGroup(itemGroup)
+        1 * user.itemGroups >> [itemGroup]
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test addImage()"() {
