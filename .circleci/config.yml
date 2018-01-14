@@ -43,3 +43,5 @@ jobs:
       # run tests!
       - run: gradle test
       #- run: gradle integrationTest
+      #create a deployable artifact
+      - run: gradle war
