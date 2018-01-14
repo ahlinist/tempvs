@@ -16,7 +16,6 @@ class PassportController {
 
     private static final String NO_ACTION = 'none'
     private static final String SUCCESS_ACTION = 'success'
-    private static final String DELETE_ACTION = 'deleteElement'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String NO_SUCH_PASSPORT = 'passport.noSuchPassport.message'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
@@ -100,8 +99,9 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(item2Passport))
         }
 
-        Map model = [itemMap: composeItemMap(passport), passport: passport, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/passport/templates/itemButton', model: model)
+        List<Item> availableItems = itemService.getItemsByPeriod(item.period)
+        Map model = [availableItems: availableItems, itemMap: composeItemMap(passport), passport: passport, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/passport/templates/itemSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -114,16 +114,19 @@ class PassportController {
         }
 
         passportService.removeItem(passport, item)
-
-        Map model = [itemMap: composeItemMap(passport), passport: passport, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/passport/templates/itemButton', model: model)
+        List<Item> availableItems = itemService.getItemsByPeriod(item.period)
+        Map model = [availableItems: availableItems, itemMap: composeItemMap(passport), passport: passport, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/passport/templates/itemSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def deletePassport(Long id) {
         Passport passport = passportService.getPassport id
+        ClubProfile clubProfile = passport.clubProfile
         passportService.deletePassport(passport)
-        render([action: DELETE_ACTION] as JSON)
+        Map model = [passports: clubProfile.passports, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/profile/templates/passportList', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     private Map<Type,List<Item2Passport>> composeItemMap(Passport passport) {

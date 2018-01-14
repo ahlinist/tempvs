@@ -3,15 +3,6 @@ function getActions() {
         window.location.href = response.location;
     }
 
-    function deleteElementAction(element, response, selector) {
-        var backdrop = document.querySelector('.modal-backdrop');
-        var target = document.querySelector(selector);
-        document.querySelector('body').classList.remove('modal-open');
-        backdrop.parentNode.removeChild(backdrop);
-        target.parentNode.removeChild(target);
-        $(element).modal('hide');
-    }
-
     function replaceElementAction(element, response, selector) {
         var backdrop = document.querySelector('.modal-backdrop');
 
@@ -44,7 +35,6 @@ function getActions() {
 
     var actions = {
                redirect: redirectAction,
-               deleteElement: deleteElementAction,
                replaceElement: replaceElementAction,
                formMessage: formMessageAction,
                validationResponse: validationResponseAction,

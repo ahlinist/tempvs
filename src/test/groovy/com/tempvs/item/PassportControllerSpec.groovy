@@ -24,8 +24,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     private static final String DELETE_METHOD = 'DELETE'
     private static final String SUCCESS_ACTION = 'success'
     private static final String FIELD_VALUE = 'fieldValue'
-    private static final String CLUB_PROFILE = 'clubProfile'
-    private static final String DELETE_ACTION = 'deleteElement'
     private static final String REPLACE_ACTION = 'replaceElement'
 
     def json = Mock JSON
@@ -144,6 +142,8 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * item2Passport.item >> item
         1 * item.type >> type
+        1 * item.period >> period
+        1 * itemService.getItemsByPeriod(period) >> [item]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -165,6 +165,8 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * item2Passport.item >> item
         1 * item.type >> type
+        1 * item.period >> period
+        1 * itemService.getItemsByPeriod(period) >> [item]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -181,10 +183,13 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
+        1 * passport.clubProfile >> clubProfile
         1 * passportService.deletePassport(passport)
+        1 * clubProfile.passports >> [passport]
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
-        response.json.action == DELETE_ACTION
+        response.json.action == REPLACE_ACTION
     }
 }
