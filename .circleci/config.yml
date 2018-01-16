@@ -48,4 +48,5 @@ jobs:
 
       #store the build war
       - store_artifacts:
-        path: ~/repo/build/libs
+          path: ~/repo/build/libs
+          
