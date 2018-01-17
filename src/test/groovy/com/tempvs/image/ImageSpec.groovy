@@ -15,13 +15,17 @@ class ImageSpec extends Specification implements DomainUnitTest<Image> {
     }
 
     void "Test valid Image creation"() {
+        given:
+        domain.objectId = OBJECT_ID
+        domain.collection = COLLECTION
+
         expect:
-        new Image(objectId: OBJECT_ID, collection: COLLECTION).validate()
+        domain.validate()
 
     }
 
     void "Test invalid Image reation"() {
         expect:
-        !new Image().validate()
+        !domain.validate()
     }
 }
