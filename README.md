@@ -16,6 +16,6 @@ MySQL:
  * User: root (no password)
  * Schema: tempvs
 
-MongoDB:
+MongoDB (no auth):
  * Port: 27017
  
