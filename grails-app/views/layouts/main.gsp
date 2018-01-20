@@ -35,7 +35,7 @@
                   ${currentUser.userProfile}
                 </g:link>
               </li>
-              <g:each var="clubProfile" in="${currentUser.clubProfiles}">
+              <g:each var="clubProfile" in="${currentUser.clubProfiles.findAll {it.active}}">
                 <li>
                   <g:link class="list-group-item disableable" controller="profile" action="switchProfile" id="${clubProfile.id}">
                     ${clubProfile}

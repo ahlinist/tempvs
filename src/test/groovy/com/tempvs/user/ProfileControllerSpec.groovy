@@ -20,6 +20,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String GET_METHOD = 'GET'
+    private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIRST_NAME = 'firstName'
@@ -133,8 +134,10 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     }
 
     void "Test clubProfile()"() {
-        when:
+        given:
         params.id = ONE
+
+        when:
         def result = controller.clubProfile()
 
         then: 'For non-existing profile'
@@ -156,6 +159,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
+        1 * userProfile.active >> Boolean.TRUE
         1 * profileHolder.setProfile(userProfile)
         0 * _
 
@@ -164,12 +168,15 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     }
 
     void "Test switchProfile() being logged in with id"() {
-        when:
+        given:
         params.id = LONG_ID
+
+        when:
         controller.switchProfile()
 
         then:
         1 * profileService.getProfile(_, LONG_ID) >> userProfile
+        1 * userProfile.active >> Boolean.TRUE
         1 * profileHolder.setProfile(userProfile)
         0 * _
 
@@ -285,21 +292,23 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
     }
 
-    void "Test deleteProfile()"() {
+    void "Test deactivateProfile()"() {
         given:
         params.id = ONE
-        request.method = DELETE_METHOD
+        request.method = POST_METHOD
 
         when:
-        controller.deleteProfile()
+        controller.deactivateProfile()
 
         then:
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
         1 * clubProfile.user >> user
         1 * user.clubProfiles >> [clubProfile]
-        1 * profileService.deleteProfile(clubProfile)
+        1 * profileService.deactivateProfile(clubProfile) >> clubProfile
+        1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileHolder.profile >> userProfile
         1 * userProfile.equals(clubProfile) >> Boolean.FALSE
+        2 * clubProfile.active >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -307,12 +316,31 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         response.json.action == REPLACE_ACTION
     }
 
+    void "Test activateProfile()"() {
+        given:
+        params.id = ONE
+        request.method = POST_METHOD
+        controller.request.addHeader('referer', REFERER)
+
+        when:
+        controller.activateProfile()
+
+        then:
+        1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
+        1 * clubProfile.active >> Boolean.FALSE
+        1 * profileService.activateProfile(clubProfile) >> clubProfile
+        1 * clubProfile.hasErrors() >> Boolean.FALSE
+        1 * ajaxResponseHelper.renderRedirect(REFERER) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
     void "Test deleteAvatar()"() {
         given:
         params.profileId = ONE
         request.method = DELETE_METHOD
         params.profileClass = UserProfile.class.name
-        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
+        controller.request.addHeader('referer', REFERER)
 
         when:
         controller.deleteAvatar()
@@ -320,7 +348,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.getProfile(UserProfile, ONE) >> userProfile
         1 * profileService.deleteAvatar(userProfile)
-        1 * ajaxResponseHelper.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
+        1 * ajaxResponseHelper.renderRedirect(REFERER) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -330,7 +358,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         params.profileId = ONE
         request.method = POST_METHOD
         params.profileClass = UserProfile.class.name
-        controller.request.addHeader('referer', "${USER_PROFILE_PAGE_URI}/${LONG_ID}")
+        controller.request.addHeader('referer', REFERER)
 
         when:
         controller.uploadAvatar(imageUploadBean)
@@ -341,7 +369,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * profileService.uploadAvatar(userProfile, image) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderRedirect("${USER_PROFILE_PAGE_URI}/${LONG_ID}") >> json
+        1 * ajaxResponseHelper.renderRedirect(REFERER) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -357,8 +385,9 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
         1 * user.clubProfiles >> [clubProfile]
+        2 * clubProfile.active >> Boolean.TRUE
         0 * _
 
-        result == [userProfile: userProfile, clubProfiles: [clubProfile]]
+        result == [userProfile: userProfile, activeProfiles: [clubProfile], inactiveProfiles: []]
     }
 }

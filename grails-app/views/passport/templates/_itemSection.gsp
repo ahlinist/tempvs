@@ -18,7 +18,9 @@
                 <tempvs:modalButton id="unlinkSource-${item.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
                   <g:message code='passport.removeConfirmation.text' args="${[item.name]}"/>
                   <br/>
-                  <tempvs:ajaxLink message="yes" controller="passport" action="removeItem" params="${[passportId: passportId, itemId: itemId]}" method="DELETE" selector="div#item-section"/>
+                  <tempvs:ajaxLink controller="passport" action="removeItem" params="${[passportId: passportId, itemId: itemId]}" method="DELETE" selector="div#item-section">
+                    <g:message code="yes"/>
+                  </tempvs:ajaxLink>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </tempvs:modalButton>
               </span>

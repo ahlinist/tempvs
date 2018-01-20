@@ -39,7 +39,7 @@ class AjaxTagLibSpec extends Specification implements TagLibUnitTest<AjaxTagLib>
         String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
-        def template = applyTemplate("<tempvs:ajaxLink message=\"${MESSAGE}\" controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\" method=\"${DELETE_METHOD}\" selector=\"${SELECTOR}\"/>")
+        def template = applyTemplate("<tempvs:ajaxLink controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\" method=\"${DELETE_METHOD}\" selector=\"${SELECTOR}\"/>")
 
         then:
         template.contains spinner

@@ -145,6 +145,7 @@ CREATE TABLE `club_profile` (
   `last_updated` datetime NOT NULL,
   `location` varchar(255) DEFAULT NULL,
   `profile_id` varchar(255) DEFAULT NULL,
+  `active` bit(1) NOT NULL,
   `period` varchar(255) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `last_name` varchar(255) DEFAULT NULL,
@@ -563,6 +564,7 @@ CREATE TABLE `user_profile` (
   `last_updated` datetime NOT NULL,
   `location` varchar(255) DEFAULT NULL,
   `profile_id` varchar(255) DEFAULT NULL,
+  `active` bit(1) NOT NULL,
   `user_id` bigint(20) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `avatar_id` bigint(20) DEFAULT NULL,
@@ -621,3 +623,5 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2018-01-20 13:37:39

@@ -14,7 +14,9 @@
                 <tempvs:modalButton id="deleteGroup-${itemGroup.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
                   <g:message code='item.group.deleteConfirmation.text' args="${[itemGroupName]}"/>
                   <br/>
-                  <tempvs:ajaxLink message="yes" controller="item" action="deleteGroup" id="${itemGroupId}" method="DELETE" selector="div#group-list"/>
+                  <tempvs:ajaxLink controller="item" action="deleteGroup" id="${itemGroupId}" method="DELETE" selector="div#group-list">
+                    <g:message code="yes"/>
+                  </tempvs:ajaxLink>
                   <button class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </tempvs:modalButton>
               </span>

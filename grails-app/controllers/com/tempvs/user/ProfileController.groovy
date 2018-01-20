@@ -21,6 +21,7 @@ class ProfileController {
     private static final String NO_ACTION = 'none'
     private static final String SUCCESS_ACTION = 'success'
     private static final String AVATAR_COLLECTION = 'avatar'
+    private static final String REFERER = 'referer'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -35,7 +36,8 @@ class ProfileController {
             createClubProfile: 'POST',
             editProfileField: 'POST',
             editProfileEmail: 'POST',
-            deleteProfile: 'DELETE',
+            activateProfile: 'POST',
+            deactivateProfile: 'POST',
             deleteAvatar: 'DELETE',
             uploadAvatar: 'POST'
     ]
@@ -86,8 +88,13 @@ class ProfileController {
     }
 
     def switchProfile(Long id) {
-        profileHolder.profile = id ? profileService.getProfile(ClubProfile, id) : userService.currentUser?.userProfile
-        redirect uri: request.getHeader('referer')
+        Profile profile = id ? profileService.getProfile(ClubProfile, id) : userService.currentUser?.userProfile
+
+        if (profile.active) {
+            profileHolder.profile = profile
+        }
+
+        redirect uri: request.getHeader(REFERER)
     }
 
     def createClubProfile(ClubProfileCommand command) {
@@ -147,30 +154,50 @@ class ProfileController {
         }
     }
 
-    def deleteProfile(String id) {
-        ClubProfile clubProfile = profileService.getProfile(ClubProfile.class, id)
+    def deactivateProfile(String id) {
+        ClubProfile clubProfile = profileService.getProfile(ClubProfile, id)
 
         if (!clubProfile) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        User user = clubProfile.user
-
         if (profileHolder.profile == clubProfile) {
             profileHolder.setProfile(null)
         }
 
-        profileService.deleteProfile(clubProfile)
+        Profile profile = profileService.deactivateProfile(clubProfile)
 
-        Map model = [clubProfiles: user.clubProfiles, editAllowed: Boolean.TRUE]
+        if (profile.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(profile))
+        }
+
+        User user = clubProfile.user
+        Collection<ClubProfile> clubProfiles = user.clubProfiles
+        Map model = [activeProfiles: clubProfiles.findAll {it.active}, inactiveProfiles: clubProfiles.findAll {!it.active}, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/profile/templates/clubProfileList', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def activateProfile(String id) {
+        ClubProfile clubProfile = profileService.getProfile(ClubProfile, id)
+
+        if (!clubProfile || clubProfile.active) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        Profile profile = profileService.activateProfile(clubProfile)
+
+        if (profile.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(profile))
+        }
+
+        render ajaxResponseHelper.renderRedirect(request.getHeader(REFERER))
     }
 
     def deleteAvatar() {
         Profile profile = profileService.getProfile(params.profileClass as Class, params.profileId)
         profileService.deleteAvatar(profile)
-        render ajaxResponseHelper.renderRedirect(request.getHeader('referer'))
+        render ajaxResponseHelper.renderRedirect(request.getHeader(REFERER))
     }
 
     def uploadAvatar(ImageUploadBean imageUploadBean) {
@@ -182,12 +209,13 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(persistedProfile))
         }
 
-        render ajaxResponseHelper.renderRedirect(request.getHeader('referer'))
+        render ajaxResponseHelper.renderRedirect(request.getHeader(REFERER))
     }
 
     def list() {
         User user = userService.currentUser
-        [userProfile: user.userProfile, clubProfiles: user.clubProfiles]
+        Collection<ClubProfile> clubProfiles = user.clubProfiles
+        [userProfile: user.userProfile, activeProfiles: clubProfiles.findAll {it.active}, inactiveProfiles: clubProfiles.findAll {!it.active}]
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {

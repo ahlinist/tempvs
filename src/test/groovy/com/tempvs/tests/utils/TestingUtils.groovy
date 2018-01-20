@@ -19,11 +19,6 @@ class TestingUtils {
     public static final String CLUB_NAME = 'defaultClubName'
     public static final Period PERIOD = Period.ANCIENT
 
-    public static final Map DEFAULT_USER_PROPS = [
-            email:          EMAIL,
-            password:       PASSWORD,
-    ]
-
     public static final Map DEFAULT_CLUB_PROFILE_PROPS = [
             firstName:      FIRST_NAME,
             lastName:       LAST_NAME,
@@ -33,6 +28,7 @@ class TestingUtils {
             profileId:      PROFILE_ID,
             clubName:       CLUB_NAME,
             period:         PERIOD,
+            active:         Boolean.TRUE,
     ]
 
     public static final Map DEFAULT_USER_PROFILE_PROPS = [
@@ -41,5 +37,6 @@ class TestingUtils {
             profileEmail:   PROFILE_EMAIL,
             location:       LOCATION,
             profileId:      PROFILE_ID,
+            active:         Boolean.TRUE,
     ]
 }

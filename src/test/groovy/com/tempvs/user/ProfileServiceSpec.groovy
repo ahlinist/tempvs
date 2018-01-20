@@ -80,10 +80,10 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         def result = service.createProfile(clubProfile, image)
 
         then:
-        1 * clubProfile.getProperty(PROFILE_EMAIL)
-        1 * clubProfile.setProperty(AVATAR, image)
+        1 * clubProfile.profileEmail
+        1 * clubProfile.setAvatar(image)
         1 * userService.currentUser >> user
-        1 * clubProfile.setProperty(USER, user)
+        1 * clubProfile.setUser(user)
         1 * clubProfile.save() >> clubProfile
         0 * _
 
@@ -91,15 +91,30 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         result == clubProfile
     }
 
-    void "Test deleteProfile()"() {
+    void "Test deactivateProfile()"() {
         when:
-        service.deleteProfile(clubProfile)
+        def result = service.deactivateProfile(clubProfile)
 
         then:
-        1 * clubProfile.getProperty(AVATAR) >> image
-        1 * imageService.deleteImage(image)
-        1 * clubProfile.delete()
+        1 * clubProfile.setActive(Boolean.FALSE)
+        1 * clubProfile.save()
         0 * _
+
+        and:
+        result == clubProfile
+    }
+
+    void "Test activateProfile()"() {
+        when:
+        def result = service.activateProfile(clubProfile)
+
+        then:
+        1 * clubProfile.setActive(Boolean.TRUE)
+        1 * clubProfile.save()
+        0 * _
+
+        and:
+        result == clubProfile
     }
 
     void "Test editProfileField()"() {
@@ -120,7 +135,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         def result = service.uploadAvatar(userProfile, image)
 
         then:
-        1 * userProfile.setProperty(AVATAR, image)
+        1 * userProfile.setAvatar(image)
         1 * userProfile.save() >> userProfile
         0 * _
 
@@ -133,9 +148,9 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         service.deleteAvatar(userProfile)
 
         then:
-        1 * userProfile.getProperty(AVATAR) >> image
+        1 * userProfile.avatar >> image
         1 * imageService.deleteImage(image)
-        1 * userProfile.setProperty(AVATAR, null)
+        1 * userProfile.setAvatar(null)
         1 * userProfile.save() >> userProfile
         0 * _
     }

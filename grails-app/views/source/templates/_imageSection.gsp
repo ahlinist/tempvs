@@ -29,7 +29,9 @@
                     <tempvs:modalButton id="deleteSourceImage-${imageId}" size="modal-sm" classes="glyphicon glyphicon-trash">
                       <g:message code='source.imageDeleteConfirmation.text'/>
                       <br/>
-                      <tempvs:ajaxLink message="yes" controller="source" action="deleteImage" params="${[sourceId: sourceId, imageId: imageId]}" method="DELETE" selector="div#image-section"/>
+                      <tempvs:ajaxLink controller="source" action="deleteImage" params="${[sourceId: sourceId, imageId: imageId]}" method="DELETE" selector="div#image-section">
+                        <g:message code="yes"/>
+                      </tempvs:ajaxLink>
                       <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                     </tempvs:modalButton>
                   </span>

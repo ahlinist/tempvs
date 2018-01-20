@@ -4,7 +4,9 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.item.PassportService
 import com.tempvs.periodization.Period
+import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
+import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
@@ -12,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize
  * {@link com.tempvs.user.ClubProfile}.
  */
 @Transactional
+@GrailsCompileStatic
 class ProfileService {
 
     private static String PERIOD_FIELD = 'period'
@@ -22,10 +25,12 @@ class ProfileService {
     ImageService imageService
     PassportService passportService
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     public <T> T getProfile(Class<T> clazz, id) {
         clazz.findByProfileId(id as String) ?: clazz.get(id)
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     public <T> T getProfileByProfileEmail(Class<T> clazz, String email) {
         clazz.findByProfileEmail(email)
     }
@@ -43,11 +48,20 @@ class ProfileService {
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
-    void deleteProfile(Profile profile) {
-        imageService.deleteImage(profile.avatar)
-        profile.delete()
+    Profile deactivateProfile(Profile profile) {
+        profile.active = Boolean.FALSE
+        profile.save()
+        profile
     }
 
+    @PreAuthorize('#profile.user.email == authentication.name')
+    Profile activateProfile(Profile profile) {
+        profile.active = Boolean.TRUE
+        profile.save()
+        profile
+    }
+
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#profile.user.email == authentication.name')
     Profile editProfileField(Profile profile, String fieldName, String fieldValue) {
         if (fieldName == PERIOD_FIELD) {
@@ -82,6 +96,7 @@ class ProfileService {
         profile
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Boolean isProfileEmailUnique(Profile profile, String email) {
         if (email) {
             User user = userService.getUserByEmail(email)

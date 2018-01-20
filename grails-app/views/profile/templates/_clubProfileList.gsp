@@ -1,28 +1,56 @@
 <%@ page import="com.tempvs.periodization.Period"%>
 <div id="club-profile-list">
-  <g:if test="${clubProfiles}">
-    <label>
-      <g:message code="clubProfile.list.message"/>
-    </label>
-    <ul>
-      <g:each var="clubProfile" in="${clubProfiles}">
-        <g:set var="clubProfileId" value="${clubProfile.id}"/>
-        <li class="row" id="clubProfile-${clubProfileId}">
-          <g:link class="btn btn-default col-sm-10" controller="profile" action="clubProfile" id="${clubProfileId}">
-            ${clubProfile}
-          </g:link>
-          <span class="pull-left">
-            <tempvs:modalButton id="deleteProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-trash">
-              <g:message code='profile.deleteConfirmation.text' args="${[clubProfile]}"/>
-              <br/>
-              <tempvs:ajaxLink message="yes" controller="profile" action="deleteProfile" id="${clubProfileId}"
-                      method="DELETE" selector="div#club-profile-list"/>
-              <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-            </tempvs:modalButton>
-          </span>
-        </li>
-      </g:each>
-    </ul>
+  <g:if test="${activeProfiles || inactiveProfiles}">
+    <g:if test="${activeProfiles}">
+      <label>
+        <g:message code="clubProfile.active.list.label"/>
+      </label>
+      <ul>
+        <g:each var="clubProfile" in="${activeProfiles}">
+          <g:set var="clubProfileId" value="${clubProfile.id}"/>
+          <li class="row" id="clubProfile-${clubProfileId}">
+            <g:link class="btn btn-default col-sm-10" controller="profile" action="clubProfile" id="${clubProfileId}">
+              ${clubProfile}
+            </g:link>
+            <span class="pull-left">
+              <tempvs:modalButton id="deactivateProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-off">
+                <g:message code='profile.deactivateConfirmation.text' args="${[clubProfile]}"/>
+                <br/>
+                <tempvs:ajaxLink controller="profile" action="deactivateProfile" id="${clubProfileId}" method="POST" selector="div#club-profile-list">
+                  <g:message code="yes"/>
+                </tempvs:ajaxLink>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+              </tempvs:modalButton>
+            </span>
+          </li>
+        </g:each>
+      </ul>
+    </g:if>
+    <g:if test="${inactiveProfiles}">
+      <label>
+        <g:message code="clubProfile.inactive.list.label"/>
+      </label>
+      <ul>
+        <g:each var="clubProfile" in="${inactiveProfiles}">
+          <g:set var="clubProfileId" value="${clubProfile.id}"/>
+          <li class="row" id="clubProfile-${clubProfileId}">
+            <g:link class="btn btn-default col-sm-10" controller="profile" action="clubProfile" id="${clubProfileId}">
+              ${clubProfile}
+            </g:link>
+            <span class="pull-left">
+              <tempvs:modalButton id="activateProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-play">
+                <g:message code='profile.activateConfirmation.text' args="${[clubProfile]}"/>
+                <br/>
+                <tempvs:ajaxLink controller="profile" action="activateProfile" id="${clubProfileId}" method="POST">
+                  <g:message code="yes"/>
+                </tempvs:ajaxLink>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+              </tempvs:modalButton>
+            </span>
+          </li>
+        </g:each>
+      </ul>
+    </g:if>
   </g:if>
   <g:else>
     <i><g:message code="clubProfile.noProfiles.message"/></i>

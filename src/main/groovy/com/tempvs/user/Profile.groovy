@@ -23,6 +23,7 @@ abstract class Profile implements BasePersistent {
     String profileEmail
     String location
     String profileId
+    Boolean active = Boolean.TRUE
     Image avatar
     User user
 
@@ -39,5 +40,9 @@ abstract class Profile implements BasePersistent {
     boolean equals(Object obj) {
         Profile profile = obj as Profile
         (this.class == profile.class) && (id == profile.id)
+    }
+
+    Profile save() {
+
     }
 }
