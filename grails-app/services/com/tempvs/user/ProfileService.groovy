@@ -35,6 +35,31 @@ class ProfileService {
         clazz.findByProfileEmail(email)
     }
 
+    Profile getCurrentProfile() {
+        User user = userService.currentUser
+
+        if (user) {
+            Class clazz = user.currentProfileClass
+            Long id = user.currentProfileId
+
+            if (!clazz || !id) {
+                setCurrentProfile(user.userProfile)
+            }
+
+            getProfile(clazz, id)
+        }
+    }
+
+    void setCurrentProfile(Profile profile) {
+        User user = userService.currentUser
+
+        if (user) {
+            user.currentProfileClass = profile?.class
+            user.currentProfileId = profile?.id
+            user.save(flush: true)
+        }
+    }
+
     Profile createProfile(Profile profile, Image avatar) {
         if (!isProfileEmailUnique(profile, profile.profileEmail)) {
             profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)

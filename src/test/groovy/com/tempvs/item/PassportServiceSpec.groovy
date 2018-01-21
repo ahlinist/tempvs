@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.communication.Comment
 import com.tempvs.user.ClubProfile
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
@@ -12,6 +13,7 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
     private static final String FIELD_VALUE = 'fieldValue'
 
     def item = Mock Item
+    def comment = Mock Comment
     def passport = Mock Passport
     def clubProfile = Mock ClubProfile
     def item2Passport = Mock Item2Passport
@@ -105,5 +107,31 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
         1 * item2Passport.delete()
         1 * passport.delete()
         0 * _
+    }
+
+    void "Test addComment()"() {
+        when:
+        def result = service.addComment(passport, comment)
+
+        then:
+        1 * passport.addToComments(comment) >> passport
+        1 * passport.save()
+        0 * _
+
+        and:
+        result == passport
+    }
+
+    void "Test deleteComment()"() {
+        when:
+        def result = service.deleteComment(passport, comment)
+
+        then:
+        1 * passport.removeFromComments(comment) >> passport
+        1 * passport.save()
+        0 * _
+
+        and:
+        result == passport
     }
 }

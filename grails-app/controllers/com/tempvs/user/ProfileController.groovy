@@ -44,7 +44,6 @@ class ProfileController {
 
     UserService userService
     ImageService imageService
-    ProfileHolder profileHolder
     VerifyService verifyService
     ProfileService profileService
     PassportService passportService
@@ -53,7 +52,7 @@ class ProfileController {
     AjaxResponseHelper ajaxResponseHelper
 
     def index() {
-        Profile profile = profileHolder.profile
+        Profile profile = profileService.currentProfile
         redirect action: "${profile.class.simpleName.uncapitalize()}", id: profile.identifier
     }
 
@@ -69,7 +68,7 @@ class ProfileController {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
-        [profile: profile, user: profile.user, id: profile.identifier, editAllowed: profileHolder.profile == profile]
+        [profile: profile, user: profile.user, id: profile.identifier, editAllowed: profileService.currentProfile == profile]
     }
 
     def clubProfile(String id) {
@@ -83,15 +82,16 @@ class ProfileController {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
-        Boolean editAllowed = (profileHolder.profile == clubProfile)
+        Boolean editAllowed = (profileService.currentProfile == clubProfile)
         [profile: clubProfile, user: clubProfile.user, id: clubProfile.identifier, passports: clubProfile.passports, editAllowed: editAllowed]
     }
 
     def switchProfile(Long id) {
         Profile profile = id ? profileService.getProfile(ClubProfile, id) : userService.currentUser?.userProfile
 
+
         if (profile.active) {
-            profileHolder.profile = profile
+            profileService.currentProfile = profile
         }
 
         redirect uri: request.getHeader(REFERER)
@@ -111,12 +111,12 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
-        profileHolder.profile = profile
+        profileService.currentProfile = profile
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
     }
 
     def editProfileField() {
-        Profile profile = profileService.editProfileField(profileHolder.profile, params.fieldName as String, params.fieldValue as String)
+        Profile profile = profileService.editProfileField(profileService.currentProfile, params.fieldName as String, params.fieldValue as String)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
@@ -127,7 +127,7 @@ class ProfileController {
 
     def editProfileEmail() {
         String email = params.fieldValue
-        Profile profile = profileHolder.profile
+        Profile profile = profileService.currentProfile
 
         if (email) {
             Map properties = [
@@ -161,8 +161,8 @@ class ProfileController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        if (profileHolder.profile == clubProfile) {
-            profileHolder.setProfile(null)
+        if (profileService.currentProfile == clubProfile) {
+            profileService.setCurrentProfile(null)
         }
 
         Profile profile = profileService.deactivateProfile(clubProfile)
@@ -201,7 +201,7 @@ class ProfileController {
     }
 
     def uploadAvatar(ImageUploadBean imageUploadBean) {
-        Profile profile = profileHolder.profile
+        Profile profile = profileService.currentProfile
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
         Profile persistedProfile = profileService.uploadAvatar(profile, avatar)
 

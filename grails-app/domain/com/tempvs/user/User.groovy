@@ -23,6 +23,8 @@ class User implements BasePersistent {
 	boolean accountLocked
 	boolean passwordExpired
 	Date lastActive = new Date()
+	Class currentProfileClass
+	Long currentProfileId
 	Collection<ClubProfile> clubProfiles
     Collection<ItemGroup> itemGroups
 
@@ -37,5 +39,7 @@ class User implements BasePersistent {
 	static constraints = {
 		password blank: false, password: true
 		email email: true, unique: true, blank: false
+		currentProfileClass nullable: true
+		currentProfileId nullable: true
 	}
 }

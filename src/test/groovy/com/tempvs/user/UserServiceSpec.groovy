@@ -31,24 +31,13 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
     def cleanup() {
     }
 
-    void "Test getUser()"() {
-        when:
-        def result = service.getUser(LONG_ID)
-
-        then:
-        1 * User.get(LONG_ID) >> user
-        0 * _
-
-        and:
-        result == user
-    }
-
     void "Test getCurrentUser()"() {
         when:
         def result = service.getCurrentUser()
 
         then:
         1 * springSecurityService.currentUser >> user
+        1 * user.asType(User) >> user
         0 * _
 
         result == user
@@ -141,7 +130,7 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         then:
         1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
         1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL) >> clubProfile
-        1 * clubProfile.getProperty(USER) >> user
+        1 * clubProfile.user >> user
         1 * user.email >> EMAIL
         0 * _
 

@@ -1,12 +1,16 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.Comment
+import com.tempvs.communication.CommentService
 import com.tempvs.user.ClubProfile
-import com.tempvs.user.ProfileHolder
+import com.tempvs.user.Profile
+import com.tempvs.user.ProfileService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
+import org.springframework.security.access.AccessDeniedException
 
 /**
  * A controller that handles operations related to {@link com.tempvs.item.Passport}.
@@ -27,10 +31,13 @@ class PassportController {
             addItem: 'POST',
             removeItem: 'DELETE',
             deletePassport: 'DELETE',
+            addComment: 'POST',
+            deleteComment: 'DELETE',
     ]
 
     ItemService itemService
-    ProfileHolder profileHolder
+    CommentService commentService
+    ProfileService profileService
     PassportService passportService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
@@ -41,7 +48,7 @@ class PassportController {
     }
 
     def createPassport(Passport passport) {
-        passport.clubProfile = profileHolder.profile as ClubProfile
+        passport.clubProfile = profileService.currentProfile as ClubProfile
         passport = passportService.createPassport(passport)
 
         if (passport.hasErrors()) {
@@ -59,13 +66,15 @@ class PassportController {
         }
 
         ClubProfile clubProfile = passport.clubProfile
+        Profile currentProfile = profileService.currentProfile
 
         [
+                currentProfile: currentProfile,
                 clubProfile: clubProfile,
                 passport: passport,
                 itemMap: composeItemMap(passport),
                 availableItems: itemService.getItemsByPeriod(clubProfile.period),
-                editAllowed: clubProfile == profileHolder.profile,
+                editAllowed: clubProfile == currentProfile,
         ]
     }
 
@@ -127,6 +136,54 @@ class PassportController {
         Map model = [passports: clubProfile.passports, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/profile/templates/passportList', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def addComment(Long passportId, String text) {
+        Passport passport = passportService.getPassport passportId
+
+        if (!passport || !text) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        Comment comment = commentService.createComment(text)
+        passport = passportService.addComment(passport, comment)
+
+        if (comment.hasErrors()) {
+            ajaxResponseHelper.renderValidationResponse(comment)
+        }
+
+        Profile currentProfile = profileService.currentProfile
+        Map model = [currentProfile: currentProfile, passport: passport, editAllowed: passport.clubProfile == currentProfile]
+        String template = groovyPageRenderer.render(template: '/passport/templates/comments', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def deleteComment(Long passportId, Long commentId) {
+        Passport passport = passportService.getPassport passportId
+        Comment comment = commentService.getComment commentId
+
+        if (! passport || !comment) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        passport = passportService.deleteComment(passport, comment)
+
+        if (passport.hasErrors()) {
+            ajaxResponseHelper.renderValidationResponse(passport)
+        }
+
+        Profile currentProfile = profileService.currentProfile
+        Map model = [currentProfile: currentProfile, passport: passport, editAllowed: passport.clubProfile == currentProfile]
+        String template = groovyPageRenderer.render(template: '/passport/templates/comments', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def accessDeniedThrown(AccessDeniedException exception) {
+        if (request.xhr) {
+            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+        } else {
+            redirect(controller: 'auth')
+        }
     }
 
     private Map<Type,List<Item2Passport>> composeItemMap(Passport passport) {

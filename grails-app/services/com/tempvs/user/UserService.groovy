@@ -1,13 +1,17 @@
 package com.tempvs.user
 
+import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.userdetails.GrailsUser
+import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service that manages operations with {@link com.tempvs.user.User} entitites.
  */
 @Transactional
+@GrailsCompileStatic
 class UserService {
 
     private static String EMAIL_FIELD = 'email'
@@ -21,22 +25,24 @@ class UserService {
     }
 
     User getCurrentUser() {
-        springSecurityService.currentUser
+        springSecurityService.currentUser as User
     }
 
     Long getCurrentUserId() {
-        springSecurityService.currentUserId
+        springSecurityService.currentUserId as Long
     }
 
     String getCurrentUserEmail() {
         if (springSecurityService.loggedIn) {
-            springSecurityService.principal.username
+            GrailsUser grailsUser = springSecurityService.principal as GrailsUser
+            grailsUser.username as String
         }
     }
 
     String getCurrentUserPassword() {
         if (springSecurityService.loggedIn) {
-            springSecurityService.principal.password
+            GrailsUser grailsUser = springSecurityService.principal as GrailsUser
+            grailsUser.password as String
         }
     }
 
@@ -55,6 +61,7 @@ class UserService {
         user
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#user.email == authentication.name')
     User editUserField(User user, String fieldName, Object fieldValue) {
         if ((fieldName == EMAIL_FIELD) && !isEmailUnique(fieldValue)) {

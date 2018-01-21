@@ -24,7 +24,6 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
     def verifyService = Mock VerifyService
-    def profileHolder = Mock ProfileHolder
     def profileService = Mock ProfileService
     def emailVerification = Mock EmailVerification
     def springSecurityService = Mock SpringSecurityService
@@ -32,7 +31,6 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
     def setup() {
         controller.userService = userService
         controller.verifyService = verifyService
-        controller.profileHolder = profileHolder
         controller.profileService = profileService
         controller.springSecurityService = springSecurityService
     }
@@ -125,7 +123,7 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         1 * profileService.getProfile(UserProfile, LONG_ID) >> userProfile
         1 * userProfile.validate() >> Boolean.TRUE
         1 * profileService.editProfileField(userProfile, PROFILE_EMAIL, EMAIL) >> userProfile
-        1 * profileHolder.setProfile(userProfile)
+        1 * profileService.setCurrentProfile(userProfile)
         1 * userProfile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
         0 * _
@@ -154,7 +152,7 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         1 * profileService.getProfile(ClubProfile, LONG_ID) >> clubProfile
         1 * clubProfile.validate() >> Boolean.TRUE
         1 * profileService.editProfileField(clubProfile, PROFILE_EMAIL, EMAIL) >> clubProfile
-        1 * profileHolder.setProfile(clubProfile)
+        1 * profileService.setCurrentProfile(clubProfile)
         1 * clubProfile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
         0 * _

@@ -2,7 +2,6 @@ package com.tempvs.user
 
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
-import com.tempvs.item.Passport
 import com.tempvs.item.PassportService
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
@@ -11,17 +10,16 @@ import spock.lang.Specification
 class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DomainUnitTest<UserProfile> {
 
     private static final String ONE = '1'
+    private static final Long LONG_ONE = 1L
     private static final String USER = 'user'
     private static final String EMAIL = 'email'
     private static final String CLASS = 'class'
-    private static final String AVATAR = 'avatar'
     private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String PROFILE_EMAIL = 'profileEmail'
 
     def user = Mock User
     def image = Mock Image
-    def passport = Mock Passport
 
     def userService = Mock UserService
     def clubProfile = Mock ClubProfile
@@ -73,6 +71,36 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         0 * _
 
         result == userProfile
+    }
+
+    void "Test getCurrentProfile()"() {
+        when:
+        def result = service.getCurrentProfile()
+
+        then:
+        1 * userService.currentUser >> user
+        1 * user.currentProfileClass >> ClubProfile
+        1 * user.currentProfileId >> LONG_ONE
+        1 * ClubProfile.findByProfileId(ONE) >> null
+        1 * ClubProfile.get(LONG_ONE) >> clubProfile
+        1 * ClubProfile.asBoolean()
+        0 * _
+
+        and:
+        result == clubProfile
+    }
+
+    void "Test setCurrentUserProfile()"() {
+        when:
+        service.setCurrentProfile(clubProfile)
+
+        then:
+        1 * userService.currentUser >> user
+        1 * clubProfile.id >> LONG_ONE
+        1 * user.setCurrentProfileClass(_ as Class)
+        1 * user.setCurrentProfileId(LONG_ONE)
+        1 * user.save([flush: true])
+        0 * _
     }
 
     void "Test createProfile()"() {

@@ -1,9 +1,11 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.Comment
+import com.tempvs.communication.CommentService
 import com.tempvs.periodization.Period
 import com.tempvs.user.ClubProfile
-import com.tempvs.user.ProfileHolder
+import com.tempvs.user.ProfileService
 import com.tempvs.user.User
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -17,6 +19,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final Long LONG_THREE = 3L
+    private static final String TEXT = 'text'
     private static final String NAME = 'name'
     private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
@@ -29,6 +32,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def json = Mock JSON
     def user = Mock User
     def item = Mock Item
+    def comment = Mock Comment
     def type = GroovyMock Type
     def passport = Mock Passport
     def period = GroovyMock Period
@@ -36,7 +40,8 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def item2Passport = Mock Item2Passport
 
     def itemService = Mock ItemService
-    def profileHolder = Mock ProfileHolder
+    def commentService = Mock CommentService
+    def profileService = Mock ProfileService
     def passportService = Mock PassportService
     def groovyPageRenderer = Mock PageRenderer
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -44,7 +49,8 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
     def setup() {
         controller.itemService = itemService
-        controller.profileHolder = profileHolder
+        controller.profileService = profileService
+        controller.commentService = commentService
         controller.passportService = passportService
         controller.ajaxResponseHelper = ajaxResponseHelper
         controller.groovyPageRenderer = groovyPageRenderer
@@ -71,7 +77,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         controller.createPassport(passport)
 
         then:
-        1 * profileHolder.profile >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         1 * clubProfile.asType(ClubProfile) >> clubProfile
         1 * passport.setClubProfile(clubProfile)
         1 * passportService.createPassport(passport) >> passport
@@ -97,11 +103,12 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * item2Passport.item >> item
         1 * item.type >> type
         1 * itemService.getItemsByPeriod(period) >> [item, item]
-        1 * profileHolder.profile >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         0 * _
 
         and:
         result == [
+                currentProfile: clubProfile,
                 clubProfile: clubProfile,
                 passport: passport,
                 itemMap: [(type): [item2Passport]],
@@ -186,6 +193,48 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passport.clubProfile >> clubProfile
         1 * passportService.deletePassport(passport)
         1 * clubProfile.passports >> [passport]
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test addComment()"() {
+        given:
+        request.method = POST_METHOD
+
+        when:
+        controller.addComment(LONG_ONE, TEXT)
+
+        then:
+        1 * passportService.getPassport(LONG_ONE) >> passport
+        1 * commentService.createComment(TEXT) >> comment
+        1 * passportService.addComment(passport, comment) >> passport
+        1 * comment.hasErrors() >> Boolean.FALSE
+        1 * profileService.currentProfile >> clubProfile
+        1 * passport.clubProfile >> clubProfile
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test deleteComment()"() {
+        given:
+        request.method = DELETE_METHOD
+
+        when:
+        controller.deleteComment(LONG_ONE, LONG_TWO)
+
+        then:
+        1 * passportService.getPassport(LONG_ONE) >> passport
+        1 * commentService.getComment(LONG_TWO) >> comment
+        1 * passportService.deleteComment(passport, comment) >> passport
+        1 * passport.hasErrors() >> Boolean.FALSE
+        1 * profileService.currentProfile >> clubProfile
+        1 * passport.clubProfile >> clubProfile
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

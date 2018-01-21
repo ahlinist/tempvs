@@ -1,6 +1,6 @@
 package com.tempvs.item
 
-import com.tempvs.user.ClubProfile
+import com.tempvs.communication.Comment
 import grails.gorm.transactions.Transactional
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
@@ -55,5 +55,18 @@ class PassportService {
     void deletePassport(Passport passport) {
         Item2Passport.findByPassport(passport)?.delete()
         passport.delete()
+    }
+
+    Passport addComment(Passport passport, Comment comment) {
+        passport.addToComments(comment)
+        passport.save()
+        passport
+    }
+
+    @PreAuthorize('#passport.clubProfile.user.email == authentication.name or (#comment.userProfile != null and #comment.userProfile.user.email == authentication.name) or (#comment.clubProfile != null and #comment.clubProfile.user.email == authentication.name)')
+    Passport deleteComment(Passport passport, Comment comment) {
+        passport.removeFromComments(comment)
+        passport.save()
+        passport
     }
 }

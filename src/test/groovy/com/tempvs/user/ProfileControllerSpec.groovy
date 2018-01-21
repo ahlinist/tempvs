@@ -46,7 +46,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
     def imageService = Mock ImageService
-    def profileHolder = Mock ProfileHolder
     def verifyService = Mock VerifyService
     def profileService = Mock ProfileService
     def imageUploadBean = Mock ImageUploadBean
@@ -59,7 +58,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def setup() {
         controller.userService = userService
         controller.imageService = imageService
-        controller.profileHolder = profileHolder
         controller.verifyService = verifyService
         controller.profileService = profileService
         controller.passportService = passportService
@@ -75,7 +73,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.index()
 
         then:
-        1 * profileHolder.profile >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.identifier >> IDENTIFIER
         0 * _
 
@@ -104,7 +102,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
         1 * userProfile.user >> user
         1 * userProfile.identifier >> IDENTIFIER
-        1 * profileHolder.profile >> userProfile
+        1 * profileService.currentProfile >> userProfile
         0 * _
 
         and:
@@ -144,7 +142,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
         1 * clubProfile.user >> user
         1 * clubProfile.identifier >> IDENTIFIER
-        1 * profileHolder.profile >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         1 * clubProfile.passports >> [passport]
         0 * _
 
@@ -160,7 +158,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
         1 * userProfile.active >> Boolean.TRUE
-        1 * profileHolder.setProfile(userProfile)
+        1 * profileService.setCurrentProfile(userProfile)
         0 * _
 
         and:
@@ -177,7 +175,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.getProfile(_, LONG_ID) >> userProfile
         1 * userProfile.active >> Boolean.TRUE
-        1 * profileHolder.setProfile(userProfile)
+        1 * profileService.setCurrentProfile(userProfile)
         0 * _
 
         and:
@@ -247,7 +245,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
-        1 * profileHolder.setProfile(clubProfile)
+        1 * profileService.setCurrentProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID
         1 * ajaxResponseHelper.renderRedirect("${CLUB_PROFILE_URL}/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -264,7 +262,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.editProfileField()
 
         then:
-        1 * profileHolder.getProfile() >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * profileService.editProfileField(userProfile, FIELD_NAME, FIELD_VALUE) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         0 * _
@@ -282,7 +280,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.editProfileEmail()
 
         then:
-        1 * profileHolder.profile >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.id >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
@@ -306,7 +304,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * user.clubProfiles >> [clubProfile]
         1 * profileService.deactivateProfile(clubProfile) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
-        1 * profileHolder.profile >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.equals(clubProfile) >> Boolean.FALSE
         2 * clubProfile.active >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
@@ -364,7 +362,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.uploadAvatar(imageUploadBean)
 
         then:
-        1 * profileHolder.profile >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.avatar >> image
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * profileService.uploadAvatar(userProfile, image) >> userProfile
