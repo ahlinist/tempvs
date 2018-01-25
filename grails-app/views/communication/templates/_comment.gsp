@@ -1,4 +1,5 @@
 <g:set var="profile" value="${comment.clubProfile ?: comment.userProfile}"/>
+<g:set var="currentProfile" value="${applicationContext.profileService.currentProfile}"/>
 <div style="border: 1px solid #000;">
   <div>
     <tempvs:image image="${profile.avatar}" styles="max-width: 45px; float: left;"/>
@@ -12,7 +13,7 @@
         <tempvs:modalButton id="deleteComment-${comment.id}" size="modal-sm" classes="glyphicon glyphicon-trash">
           <g:message code='comment.deleteConfirmation.text'/>
           <br/>
-          <tempvs:ajaxLink controller="passport" action="deleteComment" params="${[passportId: passport.id, commentId: comment.id]}" method="DELETE" selector="div#comments">
+          <tempvs:ajaxLink controller="${controllerName}" action="deleteComment" params="${[objectId: object.id, commentId: comment.id]}" method="DELETE" selector="div#comments">
             <g:message code="yes"/>
           </tempvs:ajaxLink>
           <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>

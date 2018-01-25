@@ -43,7 +43,9 @@ class ProfileService {
             Long id = user.currentProfileId
 
             if (!clazz || !id) {
-                setCurrentProfile(user.userProfile)
+                UserProfile userProfile = user.userProfile
+                setCurrentProfile(userProfile)
+                return userProfile
             }
 
             getProfile(clazz, id)

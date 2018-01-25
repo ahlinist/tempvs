@@ -108,7 +108,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         and:
         result == [
-                currentProfile: clubProfile,
                 clubProfile: clubProfile,
                 passport: passport,
                 itemMap: [(type): [item2Passport]],

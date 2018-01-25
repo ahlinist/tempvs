@@ -1,9 +1,13 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.Comment
+import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.user.Profile
+import com.tempvs.user.ProfileService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -42,12 +46,16 @@ class ItemController {
             deleteImage: 'DELETE',
             addSource: 'POST',
             deleteSource: 'DELETE',
+            addComment: 'POST',
+            deleteComment: 'DELETE',
     ]
 
     ItemService itemService
     UserService userService
     ImageService imageService
     SourceService sourceService
+    CommentService commentService
+    ProfileService profileService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
@@ -261,6 +269,45 @@ class ItemController {
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
+
+    def addComment(Long itemId, String text) {
+        Item item = itemService.getItem itemId
+
+        if (!item || !text) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        Comment comment = commentService.createComment(text)
+        item = itemService.addComment(item, comment)
+
+        if (comment.hasErrors()) {
+            ajaxResponseHelper.renderValidationResponse(comment)
+        }
+
+        Map model = [item: item, editAllowed: item.itemGroup.user.id == userService.currentUserId]
+        String template = groovyPageRenderer.render(template: '/item/templates/comments', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def deleteComment(Long objectId, Long commentId) {
+        Item item = itemService.getItem objectId
+        Comment comment = commentService.getComment commentId
+
+        if (!item || !comment) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        item = itemService.deleteComment(item, comment)
+
+        if (item.hasErrors()) {
+            ajaxResponseHelper.renderValidationResponse(item)
+        }
+
+        Map model = [item: item, editAllowed: item.itemGroup.user.id == userService.currentUserId]
+        String template = groovyPageRenderer.render(template: '/item/templates/comments', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
 
     def accessDeniedThrown(AccessDeniedException exception) {
         if (request.xhr) {

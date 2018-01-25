@@ -1,17 +1,16 @@
 package com.tempvs.item
 
+import com.tempvs.communication.Comment
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import grails.testing.gorm.DataTest
-import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
 class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemService>, DataTest {
 
-    private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
     private static final String IMAGES = 'images'
     private static final String FIELD_VALUE = 'fieldValue'
@@ -20,6 +19,7 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     def item = Mock Item
     def image = Mock Image
     def source = Mock Source
+    def comment = Mock Comment
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
     def item2Source = Mock Item2Source
@@ -175,5 +175,32 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         1 * Item2Source.findByItemAndSource(item, source) >> item2Source
         1 * item2Source.delete()
         0 * _
+    }
+
+    void "Test addComment()"() {
+        when:
+        def result = service.addComment(item, comment)
+
+        then:
+        1 * item.addToComments(comment)
+        1 * item.save() >> item
+        0 * _
+
+        and:
+        result == item
+    }
+
+
+    void "Test deleteComment()"() {
+        when:
+        def result = service.deleteComment(item, comment)
+
+        then:
+        1 * item.removeFromComments(comment)
+        1 * item.save() >> item
+        0 * _
+
+        and:
+        result == item
     }
 }

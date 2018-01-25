@@ -1,6 +1,8 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.Comment
+import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -19,6 +21,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
+    private static final String TEXT = 'text'
     private static final String POST_METHOD = 'POST'
     private static final String ITEM_URI = '/item/show'
     private static final String ITEM_COLLECTION = 'item'
@@ -39,6 +42,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def type = GroovyMock Type
     def period = GroovyMock Period
     def source = Mock Source
+    def comment = Mock Comment
     def itemGroup = Mock ItemGroup
     def userService = Mock UserService
     def userProfile = Mock UserProfile
@@ -47,6 +51,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def itemCommand = Mock ItemCommand
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
+    def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadBean = Mock ImageUploadBean
     def itemGroupCommand = Mock ItemGroupCommand
@@ -57,6 +62,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.itemService = itemService
         controller.imageService = imageService
         controller.sourceService = sourceService
+        controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
     }
@@ -501,6 +507,52 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.type >> type
         1 * item.sources >> [source]
         1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test addComment()"() {
+        given:
+        request.method = POST_METHOD
+
+        when:
+        controller.addComment(LONG_ONE, TEXT)
+
+        then:
+        1 * itemService.getItem(LONG_ONE) >> item
+        1 * commentService.createComment(TEXT) >> comment
+        1 * comment.hasErrors() >> Boolean.FALSE
+        1 * itemService.addComment(item, comment) >> item
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.user >> user
+        1 * user.id >> LONG_TWO
+        1 * userService.currentUserId >> LONG_TWO
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test deleteComment()"() {
+        given:
+        request.method = DELETE_METHOD
+
+        when:
+        controller.deleteComment(LONG_ONE, LONG_TWO)
+
+        then:
+        1 * itemService.getItem(LONG_ONE) >> item
+        1 * commentService.getComment(LONG_TWO) >> comment
+        1 * itemService.deleteComment(item, comment) >> item
+        1 * item.hasErrors() >> Boolean.FALSE
+        1 * item.itemGroup >> itemGroup
+        1 * itemGroup.user >> user
+        1 * user.id >> LONG_TWO
+        1 * userService.currentUserId >> LONG_TWO
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

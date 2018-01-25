@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.communication.Comment
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
@@ -121,5 +122,18 @@ class ItemService {
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     void unlinkSource(Item item, Source source) {
         Item2Source.findByItemAndSource(item, source)?.delete()
+    }
+
+    Item addComment(Item item, Comment comment) {
+        item.addToComments(comment)
+        item.save()
+        item
+    }
+
+    @PreAuthorize('#item.itemGroup.user.email == authentication.name or (#comment.userProfile != null and #comment.userProfile.user.email == authentication.name) or (#comment.clubProfile != null and #comment.clubProfile.user.email == authentication.name)')
+    Item deleteComment(Item item, Comment comment) {
+        item.removeFromComments(comment)
+        item.save()
+        item
     }
 }
