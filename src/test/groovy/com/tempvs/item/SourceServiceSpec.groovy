@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.communication.Comment
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
@@ -9,15 +10,16 @@ import spock.lang.Specification
 
 class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceService>, DomainUnitTest<Source> {
 
-    private static final Long LONG_ONE = 1L
     private static final String NAME = 'name'
     private static final String FIELD_VALUE = 'fieldValue'
 
     def image = Mock Image
     def source = Mock Source
     def type = GroovyMock Type
+    def comment = Mock Comment
     def period = GroovyMock Period
     def item2Source = Mock Item2Source
+
     def imageService = Mock ImageService
 
     def setup() {
@@ -105,6 +107,32 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         1 * source.removeFromImages(image)
         1 * imageService.deleteImage(image)
         1 * source.save() >> source
+        0 * _
+
+        and:
+        result == source
+    }
+
+    void "Test addComment()"() {
+        when:
+        def result = service.addComment(source, comment)
+
+        then:
+        1 * source.addToComments(comment) >> source
+        1 * source.save()
+        0 * _
+
+        and:
+        result == source
+    }
+
+    void "Test deleteComment()"() {
+        when:
+        def result = service.deleteComment(source, comment)
+
+        then:
+        1 * source.removeFromComments(comment) >> source
+        1 * source.save()
         0 * _
 
         and:

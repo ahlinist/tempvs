@@ -1,6 +1,8 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.Comment
+import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -9,6 +11,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
+import org.springframework.security.access.AccessDeniedException
 
 /**
  * Controller for {@link com.tempvs.item.Source} entities managing.
@@ -31,10 +34,13 @@ class SourceController {
             editSourceField: 'POST',
             deleteImage: 'DELETE',
             deleteSource: 'DELETE',
+            addComment: 'POST',
+            deleteComment: 'DELETE',
     ]
 
     ImageService imageService
     SourceService sourceService
+    CommentService commentService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
@@ -146,5 +152,51 @@ class SourceController {
         Map model = [images: source.images, sourceId: params.sourceId, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/source/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def addComment(Long sourceId, String text) {
+        Source source = sourceService.getSource sourceId
+
+        if (!source || !text) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        Comment comment = commentService.createComment(text)
+        source = sourceService.addComment(source, comment)
+
+        if (comment.hasErrors()) {
+            ajaxResponseHelper.renderValidationResponse(comment)
+        }
+
+        Map model = [source: source]
+        String template = groovyPageRenderer.render(template: '/source/templates/comments', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def deleteComment(Long objectId, Long commentId) {
+        Source source = sourceService.getSource objectId
+        Comment comment = commentService.getComment commentId
+
+        if (!source || !comment) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        source = sourceService.deleteComment(source, comment)
+
+        if (source.hasErrors()) {
+            ajaxResponseHelper.renderValidationResponse(source)
+        }
+
+        Map model = [source: source]
+        String template = groovyPageRenderer.render(template: '/source/templates/comments', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def accessDeniedThrown(AccessDeniedException exception) {
+        if (request.xhr) {
+            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+        } else {
+            redirect(controller: 'auth')
+        }
     }
 }

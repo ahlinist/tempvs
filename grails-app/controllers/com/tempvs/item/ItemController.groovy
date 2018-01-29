@@ -6,7 +6,6 @@ import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
-import com.tempvs.user.Profile
 import com.tempvs.user.ProfileService
 import com.tempvs.user.User
 import com.tempvs.user.UserService
@@ -307,7 +306,6 @@ class ItemController {
         String template = groovyPageRenderer.render(template: '/item/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
-
 
     def accessDeniedThrown(AccessDeniedException exception) {
         if (request.xhr) {

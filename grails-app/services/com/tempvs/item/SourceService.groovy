@@ -1,13 +1,14 @@
 package com.tempvs.item
 
+import com.tempvs.communication.Comment
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
-import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service that manages operations with {@link com.tempvs.item.Source}
@@ -70,6 +71,19 @@ class SourceService {
 
         source.removeFromImages(image)
         imageService.deleteImage image
+        source.save()
+        source
+    }
+
+    Source addComment(Source source, Comment comment) {
+        source.addToComments(comment)
+        source.save()
+        source
+    }
+
+    @PreAuthorize('(#comment.userProfile != null and #comment.userProfile.user.email == authentication.name) or (#comment.clubProfile != null and #comment.clubProfile.user.email == authentication.name)')
+    Source deleteComment(Source source, Comment comment) {
+        source.removeFromComments(comment)
         source.save()
         source
     }

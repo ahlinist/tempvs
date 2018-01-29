@@ -1,6 +1,8 @@
 package com.tempvs.item
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.Comment
+import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -17,6 +19,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
+    private static final String TEXT = 'text'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
@@ -33,16 +36,20 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def image = Mock Image
     def period = Period.XIX
     def source = Mock Source
-    def imageService = Mock ImageService
-    def sourceService = Mock SourceService
+    def comment = Mock Comment
     def sourceCommand = Mock SourceCommand
     def imageUploadBean = Mock ImageUploadBean
     def groovyPageRenderer = Mock PageRenderer
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
+    def imageService = Mock ImageService
+    def sourceService = Mock SourceService
+    def commentService = Mock CommentService
+
     def setup() {
-        controller.sourceService = sourceService
         controller.imageService = imageService
+        controller.sourceService = sourceService
+        controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
     }
@@ -236,6 +243,44 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test addComment()"() {
+        given:
+        request.method = POST_METHOD
+
+        when:
+        controller.addComment(LONG_ONE, TEXT)
+
+        then:
+        1 * sourceService.getSource(LONG_ONE) >> source
+        1 * commentService.createComment(TEXT) >> comment
+        1 * comment.hasErrors() >> Boolean.FALSE
+        1 * sourceService.addComment(source, comment) >> source
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test deleteComment()"() {
+        given:
+        request.method = DELETE_METHOD
+
+        when:
+        controller.deleteComment(LONG_ONE, LONG_TWO)
+
+        then:
+        1 * sourceService.getSource(LONG_ONE) >> source
+        1 * commentService.getComment(LONG_TWO) >> comment
+        1 * sourceService.deleteComment(source, comment) >> source
+        1 * source.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

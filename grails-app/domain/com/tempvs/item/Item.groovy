@@ -24,7 +24,6 @@ class Item implements BasePersistent {
         item2Sources*.source
     }
 
-    static hasMany = [images: Image]
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {

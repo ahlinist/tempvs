@@ -1,5 +1,6 @@
 package com.tempvs.item
 
+import com.tempvs.communication.Comment
 import com.tempvs.domain.BasePersistent
 import com.tempvs.image.Image
 import com.tempvs.periodization.Period
@@ -15,7 +16,8 @@ class Source implements BasePersistent {
     String description
     Type type
     Period period
-    List<Image> images
+    Collection<Image> images
+    List<Comment> comments
 
     static constraints = {
         description nullable: true
@@ -23,5 +25,6 @@ class Source implements BasePersistent {
 
     static mapping = {
         images cascade: 'all-delete-orphan'
+        comments cascade: 'all-delete-orphan'
     }
 }

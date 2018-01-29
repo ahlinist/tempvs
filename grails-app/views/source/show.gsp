@@ -1,5 +1,5 @@
 <sec:ifLoggedIn>
-  <g:set var="editAllowed" value="${true}"/>
+  <g:set var="canEditFields" value="${true}"/>
 </sec:ifLoggedIn>
 
 <!DOCTYPE html>
@@ -19,11 +19,14 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-8 ajax-form">
-            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" label="source.name.label"/>
-            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" label="source.description.label"/>
+          <div class="col-sm-6 ajax-form">
+            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.name.label"/>
+            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.description.label"/>
             <tempvs:ajaxSmartForm type="text" value="${source.type.value}" label="item.type.dropdown.label" editAllowed="${false}"/>
             <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
+          </div>
+          <div class="col-sm-6">
+            <g:render template="/source/templates/comments"/>
           </div>
         </div>
         <g:render template="/source/templates/imageSection" model="${[sourceId: sourceId]}"/>

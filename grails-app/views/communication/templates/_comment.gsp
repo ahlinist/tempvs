@@ -1,12 +1,6 @@
 <g:set var="profile" value="${comment.clubProfile ?: comment.userProfile}"/>
 <g:set var="currentProfile" value="${applicationContext.profileService.currentProfile}"/>
 <div style="border: 1px solid #000;">
-  <div>
-    <tempvs:image image="${profile.avatar}" styles="max-width: 45px; float: left;"/>
-    <g:link controller="profile" action="${profile.class}" id="${profile.id}" class="btn btn-default">
-      ${profile}
-    </g:link>
-  </div>
   <g:if test="${editAllowed || profile == currentProfile}">
     <div class="pull-right">
       <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'comment.delete.button')}">
@@ -21,8 +15,14 @@
       </span>
     </div>
   </g:if>
+  <div>
+    <tempvs:image image="${profile.avatar}" styles="max-width: 45px; float: left;"/>
+    <g:link controller="profile" action="${profile.class}" id="${profile.id}" class="btn btn-default">
+      ${profile}
+    </g:link>
+  </div>
   <br/>
   <div class="row">
-    ${comment.text}
+    <div class="well">${comment.text}</div>
   </div>
 </div>
