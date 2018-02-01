@@ -47,7 +47,7 @@
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.list.tooltip')}">
             <g:link class="btn btn-secondary disableable" controller="profile" action="list">
-              <span class="fa fa-users"></span>
+              <span class="glyphicon glyphicon-th-list"></span>
             </g:link>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">
