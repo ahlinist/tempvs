@@ -50,6 +50,11 @@
               <span class="glyphicon glyphicon-th-list"></span>
             </g:link>
           </span>
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
+            <g:link class="btn btn-secondary disableable" controller="following" action="show">
+              <span class="fa fa-users"></span>
+            </g:link>
+          </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">
             <g:link class="btn btn-secondary disableable" controller="item" action="stash">
               <span class="glyphicon glyphicon-tent"></span>

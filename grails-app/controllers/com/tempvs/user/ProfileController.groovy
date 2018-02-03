@@ -1,6 +1,7 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.FollowingService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -48,6 +49,7 @@ class ProfileController {
     ProfileService profileService
     PassportService passportService
     PageRenderer groovyPageRenderer
+    FollowingService followingService
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
 
@@ -62,13 +64,22 @@ class ProfileController {
             return redirect(profile ? [action: 'userProfile', id: profile.identifier] : [controller: 'auth', action: 'index'])
         }
 
-        UserProfile profile = profileService.getProfile(UserProfile, id)
+        UserProfile userProfile = profileService.getProfile(UserProfile, id)
 
-        if (!profile) {
+        if (!userProfile) {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
-        [profile: profile, user: profile.user, id: profile.identifier, editAllowed: profileService.currentProfile == profile]
+        Profile currentProfile = profileService.currentProfile
+
+        [
+                profile: userProfile,
+                user: userProfile.user,
+                id: userProfile.identifier,
+                editAllowed: currentProfile == userProfile,
+                mayBeFollowed: followingService.mayBeFollowed(currentProfile, userProfile),
+                isFollowed: followingService.getFollowing(currentProfile, userProfile) as Boolean,
+        ]
     }
 
     def clubProfile(String id) {
@@ -82,8 +93,17 @@ class ProfileController {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
-        Boolean editAllowed = (profileService.currentProfile == clubProfile)
-        [profile: clubProfile, user: clubProfile.user, id: clubProfile.identifier, passports: clubProfile.passports, editAllowed: editAllowed]
+        Profile currentProfile = profileService.currentProfile
+
+        [
+                profile: clubProfile,
+                user: clubProfile.user,
+                id: clubProfile.identifier,
+                passports: clubProfile.passports,
+                editAllowed: currentProfile == clubProfile,
+                mayBeFollowed: followingService.mayBeFollowed(currentProfile, clubProfile),
+                isFollowed: followingService.getFollowing(currentProfile, clubProfile) as Boolean,
+        ]
     }
 
     def switchProfile(Long id) {

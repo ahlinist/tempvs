@@ -16,7 +16,7 @@
               <tempvs:modalButton id="deactivateProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-off">
                 <g:message code='profile.deactivateConfirmation.text' args="${[clubProfile]}"/>
                 <br/>
-                <tempvs:ajaxLink controller="profile" action="deactivateProfile" id="${clubProfileId}" method="POST" selector="div#club-profile-list">
+                <tempvs:ajaxLink controller="profile" action="deactivateProfile" id="${clubProfileId}" method="POST" selector="div#club-profile-list" classes="btn btn-default">
                   <g:message code="yes"/>
                 </tempvs:ajaxLink>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
@@ -41,7 +41,7 @@
               <tempvs:modalButton id="activateProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-play">
                 <g:message code='profile.activateConfirmation.text' args="${[clubProfile]}"/>
                 <br/>
-                <tempvs:ajaxLink controller="profile" action="activateProfile" id="${clubProfileId}" method="POST">
+                <tempvs:ajaxLink controller="profile" action="activateProfile" id="${clubProfileId}" method="POST" classes="btn btn-default">
                   <g:message code="yes"/>
                 </tempvs:ajaxLink>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>

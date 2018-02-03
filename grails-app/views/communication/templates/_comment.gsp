@@ -7,7 +7,7 @@
         <tempvs:modalButton id="deleteComment-${comment.id}" size="modal-sm" classes="glyphicon glyphicon-trash">
           <g:message code='comment.deleteConfirmation.text'/>
           <br/>
-          <tempvs:ajaxLink controller="${controllerName}" action="deleteComment" params="${[objectId: object.id, commentId: comment.id]}" method="DELETE" selector="div#comments">
+          <tempvs:ajaxLink controller="${controllerName}" action="deleteComment" params="${[objectId: object.id, commentId: comment.id]}" method="DELETE" selector="div#comments" classes="btn btn-default">
             <g:message code="yes"/>
           </tempvs:ajaxLink>
           <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>

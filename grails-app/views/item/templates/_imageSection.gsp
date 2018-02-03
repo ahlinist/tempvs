@@ -29,7 +29,7 @@
                     <tempvs:modalButton id="deleteItemImage-${image.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
                       <g:message code='item.imageDeleteConfirmation.text'/>
                       <br/>
-                      <tempvs:ajaxLink controller="item" action="deleteImage" params="${[itemId: itemId, imageId: imageId]}" method="DELETE" selector="div#image-section">
+                      <tempvs:ajaxLink controller="item" action="deleteImage" params="${[itemId: itemId, imageId: imageId]}" method="DELETE" selector="div#image-section" classes="btn btn-default">
                         <g:message code="yes"/>
                       </tempvs:ajaxLink>
                       <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>

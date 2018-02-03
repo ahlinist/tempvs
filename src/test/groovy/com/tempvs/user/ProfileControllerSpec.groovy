@@ -1,6 +1,8 @@
 package com.tempvs.user
 
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.communication.Following
+import com.tempvs.communication.FollowingService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
@@ -41,18 +43,21 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def user = Mock User
     def image = Mock Image
     def passport = Mock Passport
+    def following = Mock Following
     def period = GroovyMock Period
-    def userService = Mock UserService
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
+    def imageUploadBean = Mock ImageUploadBean
+    def emailVerification = Mock EmailVerification
+    def clubProfileCommand = Mock ClubProfileCommand
+
+    def userService = Mock UserService
     def imageService = Mock ImageService
     def verifyService = Mock VerifyService
     def profileService = Mock ProfileService
-    def imageUploadBean = Mock ImageUploadBean
     def passportService = Mock PassportService
     def groovyPageRenderer = Mock PageRenderer
-    def emailVerification = Mock EmailVerification
-    def clubProfileCommand = Mock ClubProfileCommand
+    def followingService = Mock FollowingService
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
@@ -61,6 +66,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.verifyService = verifyService
         controller.profileService = profileService
         controller.passportService = passportService
+        controller.followingService = followingService
         controller.ajaxResponseHelper = ajaxResponseHelper
         controller.groovyPageRenderer = groovyPageRenderer
     }
@@ -103,10 +109,13 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * userProfile.user >> user
         1 * userProfile.identifier >> IDENTIFIER
         1 * profileService.currentProfile >> userProfile
+        1 * followingService.mayBeFollowed(userProfile, userProfile) >> Boolean.TRUE
+        1 * followingService.getFollowing(userProfile, userProfile) >> following
+        1 * following.asType(Boolean) >> Boolean.TRUE
         0 * _
 
         and:
-        result == [profile: userProfile, user: user, id: IDENTIFIER, editAllowed: Boolean.TRUE]
+        result == [profile: userProfile, user: user, id: IDENTIFIER, editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
     }
 
     void "Test clubProfile() for non-existent profile"() {
@@ -144,10 +153,13 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * clubProfile.identifier >> IDENTIFIER
         1 * profileService.currentProfile >> clubProfile
         1 * clubProfile.passports >> [passport]
+        1 * followingService.mayBeFollowed(clubProfile, clubProfile) >> Boolean.TRUE
+        1 * followingService.getFollowing(clubProfile, clubProfile) >> following
+        1 * following.asType(Boolean) >> Boolean.TRUE
         0 * _
 
         and:
-        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport] as Set, editAllowed: Boolean.TRUE]
+        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport] as Set, editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
     }
 
     void "Test switchProfile() being logged in without id"() {

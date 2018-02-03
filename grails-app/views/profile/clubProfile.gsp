@@ -16,7 +16,7 @@
           <div class="text-right">
             <b><g:message code="profile.inactive.message"/></b>&nbsp;
             <g:if test="${profile.user == user}">
-              <tempvs:ajaxLink class="btn btn-default" controller="profile" action="activateProfile" id="${profile.id}" method="POST">
+              <tempvs:ajaxLink class="btn btn-default" controller="profile" action="activateProfile" id="${profile.id}" method="POST" classes="btn btn-default">
                 <g:message code="profile.activate.button"/>
               </tempvs:ajaxLink>
             </g:if>
