@@ -195,14 +195,14 @@ dataSource:
     pooled: true
     jmxExport: true
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: root
-    password: ''
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASS}
 
 environments:
     development:
         dataSource:
             dbCreate: update
-            url: jdbc:mysql://localhost:3306/tempvs?useSSL=false
+            url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB_NAME}?useSSL=false
     test:
         dataSource:
             dbCreate: create-drop
@@ -210,7 +210,7 @@ environments:
     production:
         dataSource:
             dbCreate: update
-            url: jdbc:mysql://localhost:3306/tempvs?useSSL=false
+            url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB_NAME}?useSSL=false
             properties:
                 jmxEnabled: true
                 initialSize: 5

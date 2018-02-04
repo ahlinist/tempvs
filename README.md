@@ -10,17 +10,21 @@ To get started you need:
  * MySQL 5.7
  * MongoDB 3.2
  
-## Database configuration
+## DB configuration
 
-###MySQL:
- * User: root (no password)
- * Schema: tempvs
-
-###MongoDB:
+### MySQL:
 Connection parameters are retrieved from env variables:
- * USER
- * PASSWORD
- * HOST
- * PORT
- * DATABASE_NAME
+ * MYSQL_USER
+ * MYSQL_PASS
+ * MYSQL_HOST
+ * MYSQL_PORT
+ * MYSQL_DB_NAME
+
+### MongoDB:
+Connection parameters are retrieved from env variables:
+ * MONGO_USER
+ * MONGO_PASS
+ * MONGO_HOST
+ * MONGO_PORT
+ * MONGO_DB_NAME
  
