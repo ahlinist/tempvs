@@ -42,4 +42,9 @@ class User implements BasePersistent {
 		currentProfileClass nullable: true
 		currentProfileId nullable: true
 	}
+
+	static mapping = {
+		table '`user`'
+		password column: '`password`'
+	}
 }

@@ -7,18 +7,16 @@ To get started you need:
  * Groovy 2.4.11
  * Grails 3.3.2
  * Gradle 4.4.1
- * MySQL 5.7
+ * PostgreSQL 9.5.10
  * MongoDB 3.2
  
 ## DB configuration
 
-### MySQL:
+### PostgreSQL:
 Connection parameters are retrieved from env variables:
- * MYSQL_USER
- * MYSQL_PASS
- * MYSQL_HOST
- * MYSQL_PORT
- * MYSQL_DB_NAME
+ * JDBC_DATABASE_USERNAME
+ * JDBC_DATABASE_PASSWORD
+ * JDBC_DATABASE_URL
 
 ### MongoDB:
 Connection parameters are retrieved from env variables:
