@@ -64,6 +64,8 @@ dependencies {
     compile 'org.grails.plugins:quartz:2.0.9'
     compile 'org.mongodb:mongodb-driver:3.4.2'
     compile 'mysql:mysql-connector-java:6.0.6'
+    //heroku
+    compile 'com.github.jsimone:webapp-runner:8.0.30.2'
 }
 
 bootRun {
@@ -86,3 +88,27 @@ assets {
     minifyJs = true
     minifyCss = true
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = gradleWrapperVersion
+}
+
+task stage() {
+    dependsOn clean, war
+}
+tasks.stage.doLast() {
+    delete fileTree(dir: "build/distributions")
+    delete fileTree(dir: "build/assetCompile")
+    delete fileTree(dir: "build/distributions")
+    delete fileTree(dir: "build/libs", exclude: "*.war")
+}
+war.mustRunAfter clean
+
+task copyToLib(type: Copy) {
+    into "$buildDir/server"
+    from(configurations.compile) {
+        include "webapp-runner*"
+    }
+}
+
+stage.dependsOn(copyToLib)
