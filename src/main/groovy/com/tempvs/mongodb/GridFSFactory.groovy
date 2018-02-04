@@ -1,17 +1,22 @@
 package com.tempvs.mongodb
 
 import com.mongodb.DB
-import com.mongodb.Mongo
+import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import com.mongodb.gridfs.GridFS
 import groovy.transform.CompileStatic
 
 @CompileStatic
 class GridFSFactory {
-    private static final String host = 'localhost'
-    private static final int port = 27017
-    private static final String databaseName = 'tempvs'
 
-    DB mongoDB = new DB(new Mongo(host, port), databaseName)
+    private static final String user = System.getenv'USER'
+    private static final String password = System.getenv'PASSWORD'
+    private static final String host = System.getenv'HOST'
+    private static final String port = System.getenv'PORT'
+    private static final String databaseName = System.getenv'DATABASE_NAME'
+    private static final String uriString = "mongodb://${user}:${password}@${host}:${port}/${databaseName}"
+
+    DB mongoDB = new DB(new MongoClient(new MongoClientURI(uriString)), databaseName)
 
     GridFS getGridFS(String collection) {
         new GridFS(mongoDB, collection)

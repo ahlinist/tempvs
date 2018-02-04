@@ -12,10 +12,15 @@ To get started you need:
  
 ## Database configuration
 
-MySQL:
+###MySQL:
  * User: root (no password)
  * Schema: tempvs
 
-MongoDB (no auth):
- * Port: 27017
+###MongoDB:
+Connection parameters are retrieved from env variables:
+ * USER
+ * PASSWORD
+ * HOST
+ * PORT
+ * DATABASE_NAME
  
