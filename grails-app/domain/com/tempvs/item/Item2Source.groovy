@@ -3,6 +3,9 @@ package com.tempvs.item
 import com.tempvs.domain.BasePersistent
 import grails.compiler.GrailsCompileStatic
 
+/**
+ * Defines a relation between {@link Item} and {@link Source}.
+ */
 @GrailsCompileStatic
 class Item2Source implements BasePersistent {
 
@@ -20,5 +23,23 @@ class Item2Source implements BasePersistent {
 
     static mapping = {
         id composite: ['item', 'source']
+    }
+
+    int hashCode() {
+        item.hashCode() * source.hashCode()
+    }
+
+    boolean equals(Object obj) {
+        Item2Source object = (Item2Source) obj
+
+        if (object.item != this.item) {
+            return false
+        }
+
+        if (object.source != this.source) {
+            return false
+        }
+
+        return true
     }
 }

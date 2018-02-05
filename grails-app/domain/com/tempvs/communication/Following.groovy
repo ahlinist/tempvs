@@ -31,4 +31,30 @@ class Following implements BasePersistent {
     static mapping = {
         id composite: ['profileClassName', 'followerId', 'followingId']
     }
+
+    int hashCode() {
+        profileClassName.hashCode() * followerId * followingId * period.name().hashCode()
+    }
+
+    boolean equals(Object obj) {
+        Following object = (Following) obj
+
+        if (object.profileClassName != this.profileClassName) {
+            return false
+        }
+
+        if (object.followerId != this.followerId) {
+            return false
+        }
+
+        if (object.followingId != this.followingId) {
+            return false
+        }
+
+        if (object.period != this.period) {
+            return false
+        }
+
+        return true
+    }
 }

@@ -21,4 +21,26 @@ class Item2Passport implements BasePersistent {
     static mapping = {
         id composite: ['item', 'passport']
     }
+
+    int hashCode() {
+        item.hashCode() * passport.hashCode() * quantity.hashCode()
+    }
+
+    boolean equals(Object obj) {
+        Item2Passport object = (Item2Passport) obj
+
+        if (object.item != this.item) {
+            return false
+        }
+
+        if (object.passport != this.passport) {
+            return false
+        }
+
+        if (object.quantity != this.quantity) {
+            return false
+        }
+
+        return true
+    }
 }
