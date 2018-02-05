@@ -49,4 +49,9 @@ jobs:
       #store the build war
       - store_artifacts:
           path: ~/repo/build/libs
-          
+
+deployment:
+  staging:
+    branch: master
+    heroku:
+      appname: tempvs
