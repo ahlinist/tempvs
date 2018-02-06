@@ -1,5 +1,6 @@
 package com.tempvs.user
 
+import com.tempvs.communication.Following
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.item.PassportService
@@ -33,6 +34,20 @@ class ProfileService {
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     public <T> T getProfileByProfileEmail(Class<T> clazz, String email) {
         clazz.findByProfileEmail(email)
+    }
+
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
+    List<Profile> getProfilesByFollowings(List<Following> followings) {
+        followings.collect { Following following ->
+            Class.forName(following.profileClassName).get(following.followingId)
+        }
+    }
+
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
+    List<Profile> getProfilesByFollowers(List<Following> followings) {
+        followings.collect { Following following ->
+            Class.forName(following.profileClassName).get(following.followerId)
+        }
     }
 
     Profile getCurrentProfile() {

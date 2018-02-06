@@ -15,6 +15,7 @@ class Following implements BasePersistent {
     Long followerId
     Long followingId
     Period period
+    Boolean isNew = Boolean.TRUE
 
     static constraints = {
         followerId validator: { Long followerId, Following following ->

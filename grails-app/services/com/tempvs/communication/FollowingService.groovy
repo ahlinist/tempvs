@@ -30,6 +30,16 @@ class FollowingService {
         }
     }
 
+    Integer getNewFollowingsCount() {
+        Profile currentProfile = profileService.currentProfile
+
+        if (currentProfile) {
+            String profileClassName = currentProfile.class.name
+            Long profileId = currentProfile.id
+            Following.countByProfileClassNameAndFollowingIdAndIsNew(profileClassName, profileId, Boolean.TRUE)
+        }
+    }
+
     @PreAuthorize('#followerProfile.user.email == authentication.name')
     Following createFollowing(Profile followerProfile, Profile followingProfile) {
         Following following = new Following()
@@ -61,21 +71,22 @@ class FollowingService {
         following?.delete()
     }
 
-    List<Profile> getFollowerProfiles(Profile profile) {
-        Class clazz = profile?.class
-        List<Following> followings = Following.findAllByProfileClassNameAndFollowingId(clazz?.name, profile.id)
-
-        followings.collect { Following following ->
-            profileService.getProfile(clazz, following.followerId)
+    List<Following> getFollowers(Profile profile) {
+        if (profile) {
+            Following.findAllByProfileClassNameAndFollowingId(profile.class.name, profile.id)
         }
     }
 
-    List<Profile> getFollowingProfiles(Profile profile) {
-        Class clazz = profile?.class
-        List<Following> followings = Following.findAllByProfileClassNameAndFollowerId(clazz?.name, profile.id)
+    List<Following> getFollowings(Profile profile) {
+        if (profile) {
+            Following.findAllByProfileClassNameAndFollowerId(profile.class.name, profile.id)
+        }
+    }
 
-        followings.collect { Following following ->
-            profileService.getProfile(clazz, following.followingId)
+    void ageFollowings(List<Following> followings) {
+        followings.each { Following following ->
+            following.isNew = Boolean.FALSE
+            following.save()
         }
     }
 

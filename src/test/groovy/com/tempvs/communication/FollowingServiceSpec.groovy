@@ -94,34 +94,58 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         result == following
     }
 
-    void "Test getFollowingProfiles()"() {
+    void "Test getNewFollowingsCount()"() {
+        given:
+        Integer newFollowingsCount = 3
+
         when:
-        def result = service.getFollowingProfiles(followerUserProfile)
+        def result = service.getNewFollowingsCount()
+
+        then:
+        1 * profileService.currentProfile >> followingUserProfile
+        1 * followingUserProfile.getProperty(CLASS) >> UserProfile
+        1 * followingUserProfile.getProperty(ID) >> LONG_ONE
+        1 * Following.countByProfileClassNameAndFollowingIdAndIsNew(UserProfile.name, LONG_ONE, Boolean.TRUE) >> newFollowingsCount
+        0 * _
+
+        and:
+        result == newFollowingsCount
+    }
+
+    void "Test getFollowings()"() {
+        when:
+        def result = service.getFollowings(followerUserProfile)
 
         then:
         1 * followerUserProfile.getProperty(ID) >> LONG_ONE
         1 * followerUserProfile.getProperty(CLASS) >> UserProfile
         1 * Following.findAllByProfileClassNameAndFollowerId(UserProfile.name, LONG_ONE) >> [following]
-        1 * following.followingId >> LONG_ONE
-        1 * profileService.getProfile(UserProfile, LONG_ONE) >> followerUserProfile
         0 * _
 
-        result instanceof List<Profile>
+        result instanceof List<Following>
     }
 
-    void "Test getFollowerProfiles()"() {
+    void "Test getFollowers()"() {
         when:
-        def result = service.getFollowerProfiles(followerClubProfile)
+        def result = service.getFollowers(followerClubProfile)
 
         then:
         1 * followerClubProfile.getProperty(ID) >> LONG_ONE
         1 * followerClubProfile.getProperty(CLASS) >> ClubProfile
         1 * Following.findAllByProfileClassNameAndFollowingId(ClubProfile.name, LONG_ONE) >> [following]
-        1 * following.followerId >> LONG_ONE
-        1 * profileService.getProfile(ClubProfile, LONG_ONE) >> followerClubProfile
         0 * _
 
-        result instanceof List<Profile>
+        result instanceof List<Following>
+    }
+
+    void "Test ageFollowings()"() {
+        when:
+        service.ageFollowings([following])
+
+        then:
+        1 * following.setIsNew(Boolean.FALSE)
+        1 * following.save()
+        0 * _
     }
 
     void "Test mayBeFollowed()"() {

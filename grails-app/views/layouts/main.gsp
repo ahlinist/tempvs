@@ -1,5 +1,8 @@
-<g:set var="currentUser" value="${applicationContext.userService.currentUser}"/>
-<g:set var="currentProfile" value="${applicationContext.profileService.currentProfile}"/>
+<sec:ifLoggedIn>
+  <g:set var="currentUser" value="${applicationContext.userService.currentUser}"/>
+  <g:set var="currentProfile" value="${applicationContext.profileService.currentProfile}"/>
+  <g:set var="newFollowings" value="${applicationContext.followingService.newFollowingsCount}"/>
+</sec:ifLoggedIn>
 
 <!DOCTYPE html>
 <html>
@@ -52,7 +55,13 @@
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
             <g:link class="btn btn-secondary disableable" controller="following" action="show">
-              <span class="fa fa-users"></span>
+              <span class="fa fa-users">
+                <g:if test="${newFollowings}">
+                  <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
+                    ${newFollowings}
+                  </span>
+                </g:if>
+              </span>
             </g:link>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">

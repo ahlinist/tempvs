@@ -31,11 +31,18 @@ class FollowingController {
 
     def show() {
         Profile profile = profileService.currentProfile
+        List<Following> followers = followingService.getFollowers(profile)
+        List<Following> followings = followingService.getFollowings(profile)
+        List<Following> newFollowers = followers.findAll {it.isNew}
+        List<Following> newFollowings = followings.findAll {it.isNew}
+        followingService.ageFollowings(newFollowers + newFollowings)
 
         [
                 profile: profile,
-                followerProfiles: followingService.getFollowerProfiles(profile),
-                followingProfiles: followingService.getFollowingProfiles(profile),
+                followerProfiles: profileService.getProfilesByFollowers(followers - newFollowers),
+                newFollowerProfiles: profileService.getProfilesByFollowers(newFollowers),
+                followingProfiles: profileService.getProfilesByFollowings(followings - newFollowings),
+                newFollowingProfiles: profileService.getProfilesByFollowings(newFollowings),
         ]
     }
 

@@ -43,12 +43,18 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
 
         then:
         1 * profileService.currentProfile >> userProfile
-        1 * followingService.getFollowerProfiles(userProfile) >> [userProfile]
-        1 * followingService.getFollowingProfiles(userProfile) >> [userProfile]
+        1 * followingService.getFollowers(userProfile) >> [following]
+        1 * followingService.getFollowings(userProfile) >> [following]
+        2 * following.isNew >> Boolean.FALSE
+        1 * profileService.getProfilesByFollowings([]) >> []
+        1 * profileService.getProfilesByFollowers([]) >> []
+        1 * profileService.getProfilesByFollowings([following]) >> [userProfile]
+        1 * profileService.getProfilesByFollowers([following]) >> [userProfile]
+        1 * followingService.ageFollowings([])
         0 * _
 
         and:
-        result == [profile: userProfile, followerProfiles: [userProfile], followingProfiles: [userProfile]]
+        result == [profile: userProfile, followerProfiles: [userProfile], newFollowerProfiles: [], followingProfiles: [userProfile], newFollowingProfiles: []]
     }
 
     void "Test follow()"() {
