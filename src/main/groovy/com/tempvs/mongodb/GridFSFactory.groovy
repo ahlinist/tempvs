@@ -10,9 +10,10 @@ import groovy.transform.CompileStatic
 class GridFSFactory {
 
     private static final String MONGODB_URI = System.getenv 'MONGODB_URI'
-    private static final DB mongoDB = new DB(new MongoClient(new MongoClientURI(MONGODB_URI)), MONGODB_URI.split('/').last())
+
+    DB db = new DB(new MongoClient(new MongoClientURI(MONGODB_URI)), MONGODB_URI.split('/').last())
 
     GridFS getGridFS(String collection) {
-        new GridFS(mongoDB, collection)
+        new GridFS(db, collection)
     }
 }
