@@ -20,9 +20,5 @@ Connection parameters are retrieved from env variables:
 
 ### MongoDB:
 Connection parameters are retrieved from env variables:
- * MONGO_USER
- * MONGO_PASS
- * MONGO_HOST
- * MONGO_PORT
- * MONGO_DB_NAME
+ * MONGODB_URI (mongodb://\<user\>:\<pass\>@\<host\>:\<port\>/\<db_name\>)
  
