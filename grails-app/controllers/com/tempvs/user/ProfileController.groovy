@@ -30,6 +30,7 @@ class ProfileController {
 
     static allowedMethods = [
             index: 'GET',
+            search: 'GET',
             userProfile: 'GET',
             clubProfile: 'GET',
             switchProfile: 'GET',
@@ -56,6 +57,14 @@ class ProfileController {
     def index() {
         Profile profile = profileService.currentProfile
         redirect action: "${profile.class.simpleName.uncapitalize()}", id: profile.identifier
+    }
+
+
+    def search(String query, Integer max, Integer offset) {
+        List<Profile> profiles = profileService.searchProfiles(profileService.currentProfile, query, max, offset)
+        Map model = [profiles: profiles]
+        String template = groovyPageRenderer.render(template: '/profile/templates/profileSearchResult', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def userProfile(String id) {

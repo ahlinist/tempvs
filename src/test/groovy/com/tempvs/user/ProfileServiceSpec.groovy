@@ -3,6 +3,7 @@ package com.tempvs.user
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.item.PassportService
+import grails.orm.HibernateCriteriaBuilder
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
@@ -20,6 +21,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     def user = Mock User
     def image = Mock Image
+    def criteria = Mock HibernateCriteriaBuilder
 
     def userService = Mock UserService
     def clubProfile = Mock ClubProfile
@@ -88,6 +90,25 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         and:
         result == clubProfile
+    }
+
+    void "Test searchProfiles()"() {
+        given:
+        String query = 'query'
+        Integer max = 10
+        Integer offset = 0
+
+        when:
+        def result = service.searchProfiles(userProfile, query, max, offset)
+
+        then:
+        1 * userProfile.getProperty(CLASS) >> UserProfile
+        1 * UserProfile.createCriteria() >> criteria
+        1 * criteria.list(['max': max, 'offset': offset], _ as Closure) >> [userProfile]
+        0 * _
+
+        and:
+        result == [userProfile]
     }
 
     void "Test setCurrentUserProfile()"() {

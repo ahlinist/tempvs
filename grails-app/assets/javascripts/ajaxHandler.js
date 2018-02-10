@@ -16,6 +16,10 @@ function getActions() {
         container.innerHTML = response.template;
     }
 
+    function error(element, response) {
+        formMessageAction(element, response);
+    }
+
     function formMessageAction(element, response) {
         var messageContainer = document.createElement('span');
         messageContainer.classList.add('text-center');
@@ -37,6 +41,7 @@ function getActions() {
                redirect: redirectAction,
                replaceElement: replaceElementAction,
                formMessage: formMessageAction,
+               error: error,
                validationResponse: validationResponseAction,
                none: function() {},
     };
@@ -71,11 +76,11 @@ function processAjaxRequest(element, url, data, method, selector, actions) {
         },
         success: function(response) {
             complete(submitButton, spinner);
-            success(element, response, actions, selector);
+            actions[response.action](element, response, selector);
         },
         error: function() {
             complete(submitButton, spinner);
-            actions.formMessage(element, {success: false, message: "Something went wrong :("});
+            actions.error(element, {success: false, message: "Something went wrong :("});
         }
     });
 };
@@ -100,10 +105,6 @@ function complete(submitButton, spinner) {
     if (submitButton) {
         submitButton.removeAttribute("disabled");
     }
-}
-
-function success(element, response, actions, selector) {
-    actions[response.action](element, response, selector);
 }
 
 function createPopover(element, fieldEntry) {

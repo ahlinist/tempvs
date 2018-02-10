@@ -69,10 +69,25 @@
               <span class="glyphicon glyphicon-tent"></span>
             </g:link>
           </span>
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
-              <span class="glyphicon glyphicon-log-out"></span>
-            </g:link>
+          <span>
+            <span id="profile-search-dropdown" class="dropdown" style="margin:10px;">
+              <input style="width: 300px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" id="profile-search-box" name="query"/>
+              <button id="profile-search-button" class="btn btn-default dropdown-toggle" onclick="searchProfile(this, 10, 0);">
+                <span class="glyphicon glyphicon-search"></span>
+              </button>
+              <div class="dropdown-menu" style="width: 300px;">
+                <span class="col-sm-12 text-center">
+                  <asset:image class="ajaxSpinner" id="profile-search-spinner" style="display: none;" src="spinner.gif" />
+                </span>
+                <div id="profile-search-result">
+                </div>
+              </div>
+            </span>
+            <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.tooltip')}">
+              <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
+                <span class="glyphicon glyphicon-log-out"></span>
+              </g:link>
+            </span>
           </span>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
             <g:link class="btn btn-default disableable" controller="user" action="edit">
@@ -98,5 +113,53 @@
     <div class="row">
       <g:layoutBody/>
     </div>
+    <script>
+        function searchProfile(element, max, offset) {
+            <g:set var="searchProfileUri" value="${g.createLink(controller: 'profile', action: 'search')}"/>
+            var profileSearchSpinner = document.querySelector('#profile-search-spinner');
+            var profileSearchDropdown = document.querySelector('#profile-search-dropdown');
+            var profileSearchButton = document.querySelector('#profile-search-button');
+            var query = document.querySelector('#profile-search-box').value;
+            var searchProfileUrl = '${searchProfileUri}?query=' + query + '&max=' + max + '&offset=' + offset;
+            var selector = '#profile-search-result';
+
+            var actions = {
+                    error: error,
+                    replaceElement: replaceElement,
+            };
+
+            profileSearchButton.disabled = true;
+            document.querySelector(selector).innerHTML = '';
+            profileSearchSpinner.style.display = 'inline';
+            profileSearchDropdown.classList.add('open');
+            sendAjaxRequest(element, searchProfileUrl, 'GET', selector, actions);
+
+            function error(element, response) {
+                profileSearchButton.disabled = false;
+                profileSearchSpinner.style.display = 'none';
+                document.querySelector(selector).innerHTML = 'Something went wrong :(';
+                window.addEventListener("click", eventListener);
+            }
+
+            function replaceElement(element, response, selector) {
+                profileSearchButton.disabled = false;
+                profileSearchSpinner.style.display = 'none';
+                document.querySelector(selector).innerHTML = response.template;
+                window.addEventListener("click", eventListener);
+            }
+
+            var eventListener =  function(event) {
+                if(event.target != profileSearchButton) {
+                    profileSearchDropdown.classList.remove('open');
+                }
+
+                removeListener();
+            }
+
+            function removeListener() {
+                window.removeEventListener('click', eventListener);
+            }
+        }
+    </script>
   </body>
 </html>

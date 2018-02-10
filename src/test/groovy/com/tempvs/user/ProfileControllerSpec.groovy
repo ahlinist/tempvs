@@ -19,8 +19,11 @@ import spock.lang.Specification
 class ProfileControllerSpec extends Specification implements ControllerUnitTest<ProfileController>, DomainUnitTest<UserProfile> {
 
     private static final String ONE = '1'
+    private static final Integer MAX = 10
+    private static final Integer OFFSET = 0
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
+    private static final String QUERY = 'query'
     private static final String GET_METHOD = 'GET'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
@@ -85,6 +88,26 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         and:
         response.redirectedUrl.contains USER_PROFILE_PAGE_URI
+    }
+
+    void "Test search()"() {
+        given:
+        params.query = QUERY
+        params.max = MAX
+        params.offset = OFFSET
+        request.method = GET_METHOD
+
+        when:
+        controller.search()
+
+        then:
+        1 * profileService.currentProfile >> userProfile
+        1 * profileService.searchProfiles(userProfile, QUERY, MAX, OFFSET) >> [userProfile]
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
     }
 
     void "Test userProfile()"() {

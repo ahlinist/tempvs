@@ -50,6 +50,42 @@ class ProfileService {
         }
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
+    List<Profile> searchProfiles(Profile profile, String query, Integer max, Integer offset) {
+        profile.class.createCriteria().list (max: max, offset: offset) {
+            if (profile instanceof UserProfile) {
+                ne('id', profile.id)
+
+                if (query) {
+                    or {
+                        query.tokenize(' ').each { String value ->
+                            or {
+                                ilike('firstName', "%${value}%")
+                                ilike('lastName', "%${value}%")
+                            }
+                        }
+                    }
+                }
+            } else if (profile instanceof ClubProfile) {
+                not {'in'('id', profile.user.clubProfiles.id)}
+                eq ('active', Boolean.TRUE)
+                eq('period', ((ClubProfile) profile).period)
+
+                if (query) {
+                    or {
+                        query.tokenize(' ').each { String value ->
+                            or {
+                                ilike('firstName', "%${value}%")
+                                ilike('lastName', "%${value}%")
+                                ilike('nickName', "%${value}%")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Profile getCurrentProfile() {
         User user = userService.currentUser
 
