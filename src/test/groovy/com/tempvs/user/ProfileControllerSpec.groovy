@@ -93,7 +93,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     void "Test search()"() {
         given:
         params.query = QUERY
-        params.max = MAX
         params.offset = OFFSET
         request.method = GET_METHOD
 
@@ -102,7 +101,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.currentProfile >> userProfile
-        1 * profileService.searchProfiles(userProfile, QUERY, MAX, OFFSET) >> [userProfile]
+        1 * profileService.searchProfiles(userProfile, QUERY, OFFSET) >> [userProfile]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

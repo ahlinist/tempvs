@@ -60,11 +60,11 @@ class ProfileController {
     }
 
 
-    def search(String query, Integer max, Integer offset) {
-        List<Profile> profiles = profileService.searchProfiles(profileService.currentProfile, query, max, offset)
+    def search(String query, Integer offset) {
+        List<Profile> profiles = profileService.searchProfiles(profileService.currentProfile, query, offset)
         Map model = [profiles: profiles]
         String template = groovyPageRenderer.render(template: '/profile/templates/profileSearchResult', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render([action: profiles ? REPLACE_ACTION : NO_ACTION, template: template] as JSON)
     }
 
     def userProfile(String id) {

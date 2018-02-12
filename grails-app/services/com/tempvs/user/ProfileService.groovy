@@ -19,6 +19,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 class ProfileService {
 
     private static String PERIOD_FIELD = 'period'
+    private static Integer MAX_PROFILES_RETRIEVED = 10
     private static String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
 
@@ -51,8 +52,8 @@ class ProfileService {
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    List<Profile> searchProfiles(Profile profile, String query, Integer max, Integer offset) {
-        profile.class.createCriteria().list (max: max, offset: offset) {
+    List<Profile> searchProfiles(Profile profile, String query, Integer offset) {
+        profile.class.createCriteria().list (max: MAX_PROFILES_RETRIEVED, offset: offset) {
             if (profile instanceof UserProfile) {
                 ne('id', profile.id)
 

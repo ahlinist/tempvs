@@ -99,7 +99,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         Integer offset = 0
 
         when:
-        def result = service.searchProfiles(userProfile, query, max, offset)
+        def result = service.searchProfiles(userProfile, query, offset)
 
         then:
         1 * userProfile.getProperty(CLASS) >> UserProfile
