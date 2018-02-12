@@ -2,12 +2,12 @@ var profileSearchOffsetCounter;
 
 function searchProfile(element, offset) {
     var searchProfileUrl;
-    const loadMoreButton = document.querySelector('#load-more-button');
-    const profileSearchBox = document.querySelector('#profile-search-box');
-    const profileSearchSpinner = document.querySelector('#profile-search-spinner');
-    const profileSearchDropdown = document.querySelector('#profile-search-dropdown');
-    const profileSearchButton = document.querySelector('#profile-search-button');
-    const profileSearchResult = document.querySelector('#profile-search-result');
+    var loadMoreButton = document.querySelector('#load-more-button');
+    var profileSearchBox = document.querySelector('#profile-search-box');
+    var profileSearchSpinner = document.querySelector('#profile-search-spinner');
+    var profileSearchDropdown = document.querySelector('#profile-search-dropdown');
+    var profileSearchButton = document.querySelector('#profile-search-button');
+    var profileSearchResult = document.querySelector('#profile-search-result');
 
     var actions = {
             error: error,
