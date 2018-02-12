@@ -17,9 +17,6 @@ $(function (){
     //enabling tooltips for glyphiconed buttons
     $('[data-toggle="tooltip"]').tooltip();
 
-    //incrementing lastActive
-    incrementMinutes()
-
     //hide inner modals and their backdrops after hiding the outer modal
     $('.modal').on('hidden.bs.modal', function (e) {
         if ($('.modal:visible').length == 0) {
@@ -28,21 +25,3 @@ $(function (){
         }
     });
 });
-
-function incrementMinutes() {
-    setTimeout(function() {
-        $('.incrementMinutes').each(
-            function() {
-                var minutesAgo = parseInt($(this).attr('minutes'));
-
-                if (minutesAgo < 30) {
-                    $(this).attr("minutes", minutesAgo + 1).text(minutesAgo + 1 + ' ' + $('#mins-ago').text());
-                } else {
-                    $(this).text($('#half-hour-ago').text()).removeClass('incrementMinutes').removeAttr('minutes');
-                }
-            }
-        );
-
-        incrementMinutes();
-    }, 60000);
-}

@@ -7,13 +7,10 @@
       </g:if>
     </head>
     <body>
-      <span id="mins-ago" class="hidden"><g:message code="date.minutesAgo"/></span>
-      <span id="half-hour-ago" class="hidden"><g:message code="date.halfHourAgo"/></span>
       <g:if test="${profile}">
         <div class="row">
           <div class="col-sm-3">
             <g:render template="/profile/templates/identity"/>
-            <div><b><g:message code="date.lastActive" /></b> <tempvs:dateFromNow date="${user.lastActive}"/></div>
           </div>
           <div class="col-sm-6 ajax-form">
             <tempvs:ajaxSmartForm type="text" action="editProfileField" name="firstName" value="${profile.firstName}" label="profile.firstName.label"/>

@@ -117,7 +117,6 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         request.method = POST_METHOD
         params.password = PASSWORD
         params.repeatedPassword = PASSWORD
-        controller.session.email = EMAIL
 
         when:
         controller.register(registrationCommand)
@@ -144,7 +143,6 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         request.method = POST_METHOD
         params.password = PASSWORD
         params.repeatedPassword = PASSWORD
-        controller.session.email = EMAIL
 
         when:
         controller.register(registrationCommand)
