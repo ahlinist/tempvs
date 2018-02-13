@@ -1,5 +1,6 @@
 function getActions() {
     function redirectAction(element, response){
+        hideModals();
         window.location.href = response.location;
     }
 
