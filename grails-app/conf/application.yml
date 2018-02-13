@@ -174,12 +174,12 @@ grails:
                 taglib: none
                 staticparts: none
     mail:
-        host: smtp.gmail.com
-        port: 587
-        username: tempvs.com@gmail.com
-        password: tempvs.com.pwd
+        host: ${SMTP_HOST}
+        port: ${SMTP_PORT}
+        username: ${SMTP_USERNAME}
+        password: ${SMTP_PASSWORD}
         props:
-            mail.smtp.port: 587
+            mail.smtp.port: ${SMTP_PORT}
             mail.smtp.starttls.enable: true
 
 endpoints:
