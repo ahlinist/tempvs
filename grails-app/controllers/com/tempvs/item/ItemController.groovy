@@ -68,6 +68,8 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
+        command.user = userService.currentUser
+
         if (!command.validate()) {
             return render(ajaxResponseHelper.renderValidationResponse(command))
         }

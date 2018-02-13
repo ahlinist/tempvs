@@ -122,6 +122,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroupCommand)
 
         then:
+        1 * userService.currentUser >> user
+        1 * itemGroupCommand.setUser(user)
         1 * itemGroupCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseHelper.renderValidationResponse(itemGroupCommand) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -136,6 +138,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroupCommand)
 
         then:
+        1 * userService.currentUser >> user
+        1 * itemGroupCommand.setUser(user)
         1 * itemGroupCommand.validate() >> Boolean.TRUE
         1 * itemGroupCommand.name
         1 * itemGroupCommand.description
@@ -156,6 +160,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroupCommand)
 
         then:
+        1 * userService.currentUser >> user
+        1 * itemGroupCommand.setUser(user)
         1 * itemGroupCommand.validate() >> Boolean.TRUE
         1 * itemGroupCommand.name >> NAME
         1 * itemGroupCommand.description
