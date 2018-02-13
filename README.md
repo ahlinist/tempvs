@@ -10,6 +10,13 @@ To get started you need:
  * PostgreSQL 9.5.10
  * MongoDB 3.2
  
+## SMTP configuration
+SMTP-connection parameters are retrieved from env variables:
+ * SMTP_HOST
+ * SMTP_PORT
+ * SMTP_USERNAME
+ * SMTP_PASSWORD
+ 
 ## DB configuration
 
 ### PostgreSQL:
