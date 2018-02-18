@@ -22,7 +22,7 @@ class EmailVerification implements BasePersistent {
                 instanceId == null ? false : true
             }
         }
-        email email: true, unique: ['action']
+        email email: true, unique: ['action'], size: 0..35
         action inList: ['registration', 'email', 'userProfile', 'clubProfile']
         verificationCode unique: true
     }

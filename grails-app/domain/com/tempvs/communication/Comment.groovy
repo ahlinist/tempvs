@@ -29,5 +29,6 @@ class Comment implements BasePersistent {
         }
 
         clubProfile nullable: true
+        text size: 0..2000
     }
 }

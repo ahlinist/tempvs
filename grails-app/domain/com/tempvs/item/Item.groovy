@@ -27,8 +27,8 @@ class Item implements BasePersistent {
     static belongsTo = [itemGroup: ItemGroup]
 
     static constraints = {
-        name blank: false
-        description nullable: true
+        name blank: false, size: 0..35
+        description nullable: true, size: 0..2000
     }
 
     static mapping = {

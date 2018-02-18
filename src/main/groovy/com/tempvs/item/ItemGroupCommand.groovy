@@ -15,6 +15,7 @@ class ItemGroupCommand implements Validateable {
     User user
 
     static constraints = {
-        description nullable: true
+        name blank: false, size: 0..35
+        description nullable: true, size: 0..2000
     }
 }

@@ -18,9 +18,7 @@ class ItemGroup implements BasePersistent {
     static belongsTo = [user: User]
 
     static constraints = {
-        description nullable: true
-    }
-
-    static mapping = {
+        name blank: false, size: 0..35
+        description nullable: true, size: 0..2000
     }
 }

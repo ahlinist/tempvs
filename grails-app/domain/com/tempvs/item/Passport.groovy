@@ -18,15 +18,11 @@ class Passport implements BasePersistent {
     static belongsTo = [clubProfile: ClubProfile]
 
     static constraints = {
-        description nullable: true, blank: true
+        name blank: false, size: 0..35
+        description nullable: true, size: 0..2000
     }
 
     static mapping = {
         comments cascade: 'all-delete-orphan'
-    }
-
-    List<Item> getItems() {
-        List<Item2Passport> item2Passports = Item2Passport.findAllByPassport(this)
-        item2Passports*.item
     }
 }

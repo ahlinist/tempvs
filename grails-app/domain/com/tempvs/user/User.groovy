@@ -37,8 +37,8 @@ class User implements BasePersistent {
 	}
 
 	static constraints = {
-		password blank: false, password: true
-		email email: true, unique: true, blank: false
+		password blank: false, password: true, size: 0..35
+		email email: true, unique: true, blank: false, size: 0..35
 		currentProfileClass nullable: true
 		currentProfileId nullable: true
 	}

@@ -20,7 +20,8 @@ class Source implements BasePersistent {
     List<Comment> comments
 
     static constraints = {
-        description nullable: true
+        name blank: false, size: 0..35
+        description nullable: true, size: 0..2000
     }
 
     static mapping = {

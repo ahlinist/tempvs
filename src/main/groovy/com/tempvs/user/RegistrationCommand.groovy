@@ -19,5 +19,10 @@ class RegistrationCommand implements Validateable {
         confirmPassword validator: { String password, RegistrationCommand command ->
             password == command.password
         }
+
+        password blank: false, password: true, size: 0..35
+
+        firstName size: 0..35
+        lastName size: 0..35
     }
 }

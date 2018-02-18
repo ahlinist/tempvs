@@ -530,7 +530,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         then:
         1 * itemService.getItem(LONG_ONE) >> item
         1 * commentService.createComment(TEXT) >> comment
-        1 * comment.hasErrors() >> Boolean.FALSE
+        1 * item.hasErrors() >> Boolean.FALSE
         1 * itemService.addComment(item, comment) >> item
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.user >> user

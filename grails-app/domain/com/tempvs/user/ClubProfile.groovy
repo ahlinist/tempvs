@@ -22,14 +22,14 @@ class ClubProfile extends Profile {
     }
 
     static constraints = {
-        firstName nullable: false, blank: false
-        lastName nullable: true
-        nickName nullable: true
-        clubName nullable: true
-        profileId nullable: true, unique: true, matches: PROFILE_ID_MATCHER
-        location nullable: true
+        firstName nullable: false, blank: false, size: 0..35
+        lastName nullable: true, size: 0..35
+        nickName nullable: true, size: 0..35
+        clubName nullable: true, size: 0..35
+        profileId nullable: true, unique: true, matches: PROFILE_ID_MATCHER, size: 0..35
+        location nullable: true, size: 0..35
         avatar nullable: true
-        profileEmail nullable: true, unique: true, email: true
+        profileEmail nullable: true, unique: true, email: true, size: 0..35
     }
 
     @Override

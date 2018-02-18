@@ -14,6 +14,6 @@ class Image implements BasePersistent {
     String collection
 
     static constraints = {
-        imageInfo nullable: true
+        imageInfo nullable: true, size: 0..255
     }
 }

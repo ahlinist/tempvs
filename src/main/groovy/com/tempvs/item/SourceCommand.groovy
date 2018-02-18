@@ -18,6 +18,7 @@ class SourceCommand implements Validateable {
     List<ImageUploadBean> imageUploadBeans
 
     static constraints = {
-        description nullable: true
+        name blank: false, size: 0..35
+        description nullable: true, size: 0..2000
     }
 }

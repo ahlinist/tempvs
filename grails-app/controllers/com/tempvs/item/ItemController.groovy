@@ -281,8 +281,8 @@ class ItemController {
         Comment comment = commentService.createComment(text)
         item = itemService.addComment(item, comment)
 
-        if (comment.hasErrors()) {
-            ajaxResponseHelper.renderValidationResponse(comment)
+        if (item.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
         Map model = [item: item, editAllowed: item.itemGroup.user.id == userService.currentUserId]

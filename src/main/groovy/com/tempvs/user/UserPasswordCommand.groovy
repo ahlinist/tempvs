@@ -18,6 +18,8 @@ class UserPasswordCommand implements Validateable {
     String repeatNewPassword
 
     static constraints = {
+        newPassword size: 0..35
+
         currentPassword validator: { String password, UserPasswordCommand command ->
             command.passwordEncoder.isPasswordValid(command.userService.currentUserPassword, password, null)
         }
