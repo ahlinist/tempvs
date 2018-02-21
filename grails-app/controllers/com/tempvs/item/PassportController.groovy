@@ -6,6 +6,7 @@ import com.tempvs.communication.CommentService
 import com.tempvs.user.ClubProfile
 import com.tempvs.user.Profile
 import com.tempvs.user.ProfileService
+import com.tempvs.user.UserInfoHelper
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -36,6 +37,7 @@ class PassportController {
     ]
 
     ItemService itemService
+    UserInfoHelper userInfoHelper
     CommentService commentService
     ProfileService profileService
     PassportService passportService
@@ -48,7 +50,7 @@ class PassportController {
     }
 
     def createPassport(Passport passport) {
-        passport.clubProfile = profileService.currentProfile as ClubProfile
+        passport.clubProfile = userInfoHelper.getCurrentProfile(request) as ClubProfile
         passport = passportService.createPassport(passport)
 
         if (passport.hasErrors()) {
@@ -72,7 +74,7 @@ class PassportController {
                 passport: passport,
                 itemMap: composeItemMap(passport),
                 availableItems: itemService.getItemsByPeriod(clubProfile.period),
-                editAllowed: clubProfile == profileService.currentProfile,
+                editAllowed: clubProfile == userInfoHelper.getCurrentProfile(request),
         ]
     }
 
@@ -143,14 +145,15 @@ class PassportController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Comment comment = commentService.createComment(text)
+        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Comment comment = commentService.createComment(text, profile)
         passport = passportService.addComment(passport, comment)
 
         if (comment.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(comment))
         }
 
-        Map model = [passport: passport, editAllowed: passport.clubProfile == profileService.currentProfile]
+        Map model = [passport: passport, currentProfile: profile, editAllowed: passport.clubProfile == profile,]
         String template = groovyPageRenderer.render(template: '/passport/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -163,13 +166,19 @@ class PassportController {
             return render([action: NO_ACTION] as JSON)
         }
 
+        Profile profile = userInfoHelper.getCurrentProfile(request)
         passport = passportService.deleteComment(passport, comment)
 
         if (passport.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [passport: passport, editAllowed: passport.clubProfile == profileService.currentProfile]
+        Map model = [
+                passport: passport,
+                currentProfile: profile,
+                editAllowed: passport.clubProfile == profile,
+        ]
+
         String template = groovyPageRenderer.render(template: '/passport/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

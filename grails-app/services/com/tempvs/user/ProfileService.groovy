@@ -87,25 +87,8 @@ class ProfileService {
         }
     }
 
-    Profile getCurrentProfile() {
-        User user = userService.currentUser
-
-        if (user) {
-            Class clazz = user.currentProfileClass
-            Long id = user.currentProfileId
-
-            if (!clazz || !id) {
-                UserProfile userProfile = user.userProfile
-                setCurrentProfile(userProfile)
-                return userProfile
-            }
-
-            getProfile(clazz, id)
-        }
-    }
-
     void setCurrentProfile(Profile profile) {
-        User user = userService.currentUser
+        User user = profile.user
 
         if (user) {
             user.currentProfileClass = profile?.class
@@ -121,7 +104,6 @@ class ProfileService {
         }
 
         profile.avatar = avatar
-        profile.user = userService.currentUser
         profile.save()
         profile
     }

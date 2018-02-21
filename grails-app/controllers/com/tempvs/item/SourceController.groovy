@@ -7,6 +7,8 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
+import com.tempvs.user.Profile
+import com.tempvs.user.UserInfoHelper
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -40,6 +42,7 @@ class SourceController {
 
     ImageService imageService
     SourceService sourceService
+    UserInfoHelper userInfoHelper
     CommentService commentService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
@@ -161,14 +164,15 @@ class SourceController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Comment comment = commentService.createComment(text)
+        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Comment comment = commentService.createComment(text, profile)
         source = sourceService.addComment(source, comment)
 
         if (comment.hasErrors()) {
             ajaxResponseHelper.renderValidationResponse(comment)
         }
 
-        Map model = [source: source]
+        Map model = [source: source, currentProfile: profile]
         String template = groovyPageRenderer.render(template: '/source/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

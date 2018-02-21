@@ -8,11 +8,13 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
+import com.tempvs.user.UserInfoHelper
 import com.tempvs.user.UserProfile
 import com.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
+import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
@@ -51,6 +53,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def itemCommand = Mock ItemCommand
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
+    def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadBean = Mock ImageUploadBean
@@ -62,6 +65,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.itemService = itemService
         controller.imageService = imageService
         controller.sourceService = sourceService
+        controller.userInfoHelper = userInfoHelper
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -75,7 +79,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         def result = controller.stash()
 
         then:
-        1 * userService.currentUser >> user
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * user.itemGroups >> [itemGroup]
         1 * user.userProfile >> userProfile
         0 * _
@@ -122,7 +126,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroupCommand)
 
         then:
-        1 * userService.currentUser >> user
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * itemGroupCommand.setUser(user)
         1 * itemGroupCommand.validate() >> Boolean.FALSE
         1 * ajaxResponseHelper.renderValidationResponse(itemGroupCommand) >> json
@@ -138,7 +142,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroupCommand)
 
         then:
-        1 * userService.currentUser >> user
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * itemGroupCommand.setUser(user)
         1 * itemGroupCommand.validate() >> Boolean.TRUE
         1 * itemGroupCommand.name
@@ -160,7 +164,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroupCommand)
 
         then:
-        1 * userService.currentUser >> user
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * itemGroupCommand.setUser(user)
         1 * itemGroupCommand.validate() >> Boolean.TRUE
         1 * itemGroupCommand.name >> NAME
@@ -529,7 +533,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * commentService.createComment(TEXT) >> comment
+        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * commentService.createComment(TEXT, userProfile) >> comment
         1 * item.hasErrors() >> Boolean.FALSE
         1 * itemService.addComment(item, comment) >> item
         1 * item.itemGroup >> itemGroup
@@ -559,6 +564,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemGroup.user >> user
         1 * user.id >> LONG_TWO
         1 * userService.currentUserId >> LONG_TWO
+        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

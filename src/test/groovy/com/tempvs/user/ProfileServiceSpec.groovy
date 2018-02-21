@@ -75,23 +75,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         result == userProfile
     }
 
-    void "Test getCurrentProfile()"() {
-        when:
-        def result = service.getCurrentProfile()
-
-        then:
-        1 * userService.currentUser >> user
-        1 * user.currentProfileClass >> ClubProfile
-        1 * user.currentProfileId >> LONG_ONE
-        1 * ClubProfile.findByProfileId(ONE) >> null
-        1 * ClubProfile.get(LONG_ONE) >> clubProfile
-        1 * ClubProfile.asBoolean()
-        0 * _
-
-        and:
-        result == clubProfile
-    }
-
     void "Test searchProfiles()"() {
         given:
         String query = 'query'
@@ -111,12 +94,12 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         result == [userProfile]
     }
 
-    void "Test setCurrentUserProfile()"() {
+    void "Test setCurrentProfile()"() {
         when:
         service.setCurrentProfile(clubProfile)
 
         then:
-        1 * userService.currentUser >> user
+        1 * clubProfile.user >> user
         1 * clubProfile.id >> LONG_ONE
         1 * user.setCurrentProfileClass(_ as Class)
         1 * user.setCurrentProfileId(LONG_ONE)
@@ -131,8 +114,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         then:
         1 * clubProfile.profileEmail
         1 * clubProfile.setAvatar(image)
-        1 * userService.currentUser >> user
-        1 * clubProfile.setUser(user)
         1 * clubProfile.save() >> clubProfile
         0 * _
 

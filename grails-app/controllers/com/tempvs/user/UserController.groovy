@@ -26,6 +26,7 @@ class UserController {
 
     UserService userService
     VerifyService verifyService
+    UserInfoHelper userInfoHelper
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
     SpringSecurityService springSecurityService
@@ -35,7 +36,7 @@ class UserController {
     }
 
     def edit() {
-        [user: userService.currentUser]
+        [user: userInfoHelper.getCurrentUser(request)]
     }
 
     def updateEmail() {
@@ -59,7 +60,7 @@ class UserController {
     def updatePassword(UserPasswordCommand command) {
         if (command.validate()) {
             String password = springSecurityService.encodePassword(command.newPassword)
-            User user = userService.editUserField(userService.currentUser, PASSWORD, password)
+            User user = userService.editUserField(userInfoHelper.getCurrentUser(request), PASSWORD, password)
 
             if (!user.hasErrors()) {
                 render ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE)

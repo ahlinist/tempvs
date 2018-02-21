@@ -7,9 +7,12 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.periodization.Period
+import com.tempvs.user.UserInfoHelper
+import com.tempvs.user.UserProfile
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
+import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
@@ -37,6 +40,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def period = Period.XIX
     def source = Mock Source
     def comment = Mock Comment
+    def userProfile = Mock UserProfile
     def sourceCommand = Mock SourceCommand
     def imageUploadBean = Mock ImageUploadBean
     def groovyPageRenderer = Mock PageRenderer
@@ -44,11 +48,13 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
+    def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
 
     def setup() {
         controller.imageService = imageService
         controller.sourceService = sourceService
+        controller.userInfoHelper = userInfoHelper
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -259,7 +265,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * commentService.createComment(TEXT) >> comment
+        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * commentService.createComment(TEXT, userProfile) >> comment
         1 * comment.hasErrors() >> Boolean.FALSE
         1 * sourceService.addComment(source, comment) >> source
         1 * groovyPageRenderer.render(_ as Map)

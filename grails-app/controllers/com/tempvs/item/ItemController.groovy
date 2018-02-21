@@ -6,8 +6,10 @@ import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.user.Profile
 import com.tempvs.user.ProfileService
 import com.tempvs.user.User
+import com.tempvs.user.UserInfoHelper
 import com.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
@@ -53,6 +55,7 @@ class ItemController {
     UserService userService
     ImageService imageService
     SourceService sourceService
+    UserInfoHelper userInfoHelper
     CommentService commentService
     ProfileService profileService
     PageRenderer groovyPageRenderer
@@ -60,7 +63,7 @@ class ItemController {
     AjaxResponseHelper ajaxResponseHelper
 
     def stash(Long id) {
-        User user = id ? userService.getUser(id) : userService.currentUser
+        User user = id ? userService.getUser(id) : userInfoHelper.getCurrentUser(request)
 
         if (user) {
             [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE]
@@ -68,7 +71,7 @@ class ItemController {
     }
 
     def createGroup(ItemGroupCommand command) {
-        command.user = userService.currentUser
+        command.user = userInfoHelper.getCurrentUser(request)
 
         if (!command.validate()) {
             return render(ajaxResponseHelper.renderValidationResponse(command))
@@ -278,14 +281,15 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Comment comment = commentService.createComment(text)
+        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Comment comment = commentService.createComment(text, profile)
         item = itemService.addComment(item, comment)
 
         if (item.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [item: item, editAllowed: item.itemGroup.user.id == userService.currentUserId]
+        Map model = [item: item, currentProfile: profile, editAllowed: item.itemGroup.user.id == userService.currentUserId,]
         String template = groovyPageRenderer.render(template: '/item/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -304,7 +308,12 @@ class ItemController {
             ajaxResponseHelper.renderValidationResponse(item)
         }
 
-        Map model = [item: item, editAllowed: item.itemGroup.user.id == userService.currentUserId]
+        Map model = [
+                item: item,
+                currentProfile: userInfoHelper.getCurrentProfile(request),
+                editAllowed: item.itemGroup.user.id == userService.currentUserId,
+        ]
+
         String template = groovyPageRenderer.render(template: '/item/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

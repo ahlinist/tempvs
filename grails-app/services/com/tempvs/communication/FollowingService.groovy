@@ -30,12 +30,10 @@ class FollowingService {
         }
     }
 
-    Integer getNewFollowingsCount() {
-        Profile currentProfile = profileService.currentProfile
-
-        if (currentProfile) {
-            String profileClassName = currentProfile.class.name
-            Long profileId = currentProfile.id
+    Integer getNewFollowingsCount(Profile profile) {
+        if (profile) {
+            String profileClassName = profile.class.name
+            Long profileId = profile.id
             Following.countByProfileClassNameAndFollowingIdAndIsNew(profileClassName, profileId, Boolean.TRUE)
         }
     }

@@ -2,7 +2,8 @@
   <ul>
     <g:each var="comment" in="${item.comments}">
       <li>
-        <g:render template="/communication/templates/comment" model="${[object: item, comment: comment, controllerName: 'item']}"/>
+        <g:render template="/communication/templates/comment"
+                model="${[object: item, comment: comment, controllerName: 'item', currentProfile: currentProfile]}"/>
       </li>
     </g:each>
     <sec:ifLoggedIn>

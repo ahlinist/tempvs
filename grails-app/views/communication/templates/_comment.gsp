@@ -1,5 +1,4 @@
 <g:set var="profile" value="${comment.clubProfile ?: comment.userProfile}"/>
-<g:set var="currentProfile" value="${applicationContext.profileService.currentProfile}"/>
 <div style="border: 1px solid #000;">
   <g:if test="${editAllowed || profile == currentProfile}">
     <div class="pull-right">

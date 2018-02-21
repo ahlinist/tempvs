@@ -1,8 +1,6 @@
-<sec:ifLoggedIn>
-  <g:set var="currentUser" value="${applicationContext.userService.currentUser}"/>
-  <g:set var="currentProfile" value="${applicationContext.profileService.currentProfile}"/>
-  <g:set var="newFollowings" value="${applicationContext.followingService.newFollowingsCount}"/>
-</sec:ifLoggedIn>
+<g:set var="currentUser" value="${request.currentUser}"/>
+<g:set var="currentProfile" value="${request.currentProfile}"/>
+<g:set var="newFollowings" value="${request.newFollowingsCount}"/>
 
 <!DOCTYPE html>
 <html>

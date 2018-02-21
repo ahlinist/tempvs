@@ -19,6 +19,7 @@ class VerifyController {
 
     UserService userService
     VerifyService verifyService
+    UserInfoHelper userInfoHelper
     ProfileService profileService
     SpringSecurityService springSecurityService
 
@@ -80,7 +81,7 @@ class VerifyController {
             profile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)
 
             if (profile.validate()) {
-                profileService.currentProfile = profile
+                profileService.setCurrentProfile(profile)
                 return redirect(controller: 'profile', action: clazz.simpleName.uncapitalize(), id: profile.identifier)
             }
         }

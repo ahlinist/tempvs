@@ -4,6 +4,7 @@ import com.tempvs.ajax.AjaxResponseHelper
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.web.controllers.ControllerUnitTest
+import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
@@ -24,6 +25,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     def clubProfile = Mock ClubProfile
     def userService = Mock UserService
     def verifyService = Mock VerifyService
+    def userInfoHelper = Mock UserInfoHelper
     def emailVerification = Mock EmailVerification
     def ajaxResponseHelper = Mock AjaxResponseHelper
     def userPasswordCommand = Mock UserPasswordCommand
@@ -33,6 +35,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     def setup() {
         controller.userService = userService
         controller.verifyService = verifyService
+        controller.userInfoHelper = userInfoHelper
         controller.ajaxResponseHelper = ajaxResponseHelper
         controller.springSecurityService = springSecurityService
     }
@@ -45,7 +48,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         Map model = controller.edit()
 
         then:
-        1 * userService.currentUser >> user
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         0 * _
 
         and:
@@ -104,7 +107,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * userPasswordCommand.validate() >> Boolean.TRUE
         1 * userPasswordCommand.newPassword >> NEW_PASSWORD
         1 * springSecurityService.encodePassword(NEW_PASSWORD) >> NEW_PASSWORD
-        1 * userService.currentUser >> user
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * userService.editUserField(user, PASSWORD, NEW_PASSWORD) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE) >> json

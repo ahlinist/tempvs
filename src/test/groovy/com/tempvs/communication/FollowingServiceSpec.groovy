@@ -99,10 +99,9 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         Integer newFollowingsCount = 3
 
         when:
-        def result = service.getNewFollowingsCount()
+        def result = service.getNewFollowingsCount(followingUserProfile)
 
         then:
-        1 * profileService.currentProfile >> followingUserProfile
         1 * followingUserProfile.getProperty(CLASS) >> UserProfile
         1 * followingUserProfile.getProperty(ID) >> LONG_ONE
         1 * Following.countByProfileClassNameAndFollowingIdAndIsNew(UserProfile.name, LONG_ONE, Boolean.TRUE) >> newFollowingsCount

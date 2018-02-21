@@ -11,10 +11,8 @@ class CommentServiceSpec extends Specification implements ServiceUnitTest<Commen
     private static final String TEXT = 'text'
 
     def clubProfile = Mock ClubProfile
-    def profileService = Mock ProfileService
 
     def setup() {
-        service.profileService = profileService
     }
 
     def cleanup() {
@@ -22,10 +20,9 @@ class CommentServiceSpec extends Specification implements ServiceUnitTest<Commen
 
     void "Test createComment()"() {
         when:
-        def result = service.createComment(TEXT)
+        def result = service.createComment(TEXT, clubProfile)
 
         then:
-        1 * profileService.currentProfile >> clubProfile
         1 * clubProfile.asType(ClubProfile) >> clubProfile
         0 * _
 
