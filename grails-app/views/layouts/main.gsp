@@ -28,19 +28,22 @@
           </span>
           <span class="dropdown pull-left">
             <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-              ${currentProfile}
+              <g:set var="profileString" value="${currentProfile.toString()}"/>
+              ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu list-group">
               <li>
                 <g:link class="list-group-item disableable" controller="profile" action="switchProfile">
-                  ${currentUser.userProfile}
+                  <g:set var="profileString" value="${currentUser.userProfile.toString()}"/>
+                  ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
                 </g:link>
               </li>
               <g:each var="clubProfile" in="${currentUser.clubProfiles.findAll {it.active}}">
                 <li>
                   <g:link class="list-group-item disableable" controller="profile" action="switchProfile" id="${clubProfile.id}">
-                    ${clubProfile}
+                    <g:set var="profileString" value="${clubProfile.toString()}"/>
+                    ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
                   </g:link>
                 </li>
               </g:each>
