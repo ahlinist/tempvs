@@ -88,7 +88,7 @@ task wrapper(type: Wrapper) {
 }
 
 task stage() {
-    dependsOn clean, war
+    dependsOn clean, test, war
 }
 
 tasks.stage.doLast() {
