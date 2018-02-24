@@ -53,7 +53,7 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-remote-driver:3.6.0"
     testRuntime "org.seleniumhq.selenium:selenium-api:3.6.0"
     //custom dependencies
-    compile 'org.grails.plugins:spring-security-acl:3.2.0'
+    compile 'org.grails.plugins:spring-security-acl:3.2.1'
     compile "org.grails.plugins:mail:2.0.0.RC6"
     compile 'org.grails.plugins:quartz:2.0.9'
     compile 'org.mongodb:mongodb-driver:3.4.2'

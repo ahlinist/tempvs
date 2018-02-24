@@ -28,7 +28,7 @@ grails:
             authority:
                 className: com.tempvs.user.Role
             requestMap:
-                className: com.tempvs.user.Requestmap
+                className: com.tempvs.user.RequestMap
             interceptUrlMap:
                 - pattern: /auth/**
                   access:
