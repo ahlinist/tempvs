@@ -15,7 +15,6 @@ buildscript {
 version "0.1"
 group "tempvs"
 
-apply plugin: 'groovy'
 apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
@@ -89,7 +88,7 @@ task wrapper(type: Wrapper) {
 }
 
 task stage() {
-    dependsOn clean, compileTestGroovy, test, war
+    dependsOn clean, war
 }
 
 tasks.stage.doLast() {
@@ -99,9 +98,7 @@ tasks.stage.doLast() {
     delete fileTree(dir: "build/libs", exclude: "*.war")
 }
 
-compileTestGroovy.mustRunAfter clean
-test.mustRunAfter compileTestGroovy
-war.mustRunAfter test
+war.mustRunAfter clean
 
 task copyToLib(type: Copy) {
     into "$buildDir/server"
