@@ -4,6 +4,7 @@ deploy:
   provider: heroku
   api_key:
     secure: FrQE3sI8Wk+qoJzx75kFU8Ou43NQRmgDBxDaeJy1nP/aAx4/QniGgRRGDsGHXbWFzBXkInoAy6I84Kfi9oCLHpfDuC26NbrPzjxXq7S8eHLmGelI3emZD/oadXeMK4KRgSVz7mE3Y0siHDblSa3u3ClxH4k40gREBdSk6kyOS8P77mZVS0pmF7qTcAXA8/Hc3iWLsDEzbnSAE5weIW0hb2s0nFoD+UdrVVxf02uUoVGhYX3xDxe2zEb2A2h1xclsFk7eV/CWIvExdJxVJC86oNsR/rdVBEDdSmxdraotnSCqJ0bQy6Hl5OzxN5FCF5aZMz45UG2uI3W9ed16U8n2lTVYE70BhaFwhzUktuZfCbXefW76c3blpzcFBq36zS6vHwMEV0pWEfGCW/yXfhZGWfqp6KI2SUYJCSe50ZMeJAuAy21szHYBnIX5FrEjL7yp9L6HysuK7GclzonP1j61RnWUxtvKCUP6wmpSzANzQu82O/NL9ySUVqPrx8gJdpyuNxXZyCbrYWfaQECYq5xsB8eJge/EZ1Ul1b4s2Bn/4iFNdjCmzmF3/V/yhT9mLy+2cqEe5be/ms0Ppx6t1G5C/iquxVzITTrxnsdAzZKb7NCnh3VB+CC3jrvpkYZHbymeWhls6D6HQWykiwpd+komv0qddJaEQ/6VBOMm91JNECk=
-  app: tempvs
+  app:
+    master: tempvs-dev
   on:
     repo: ahlinist/tempvs
