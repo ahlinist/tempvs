@@ -3,4 +3,3 @@
     <g:message code="${g.message(code: value)}" />
   </span>
 </button>
-<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif" />

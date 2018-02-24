@@ -22,7 +22,6 @@ class AjaxTagLibSpec extends Specification implements TagLibUnitTest<AjaxTagLib>
     void "Test tempvs:ajaxSubmitButton"() {
         given:
         String submitButton = '<button name="submit-button" class="btn btn-light submit-button">'
-        String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
         def template = applyTemplate("<tempvs:ajaxSubmitButton value='${MESSAGE}' />")
@@ -30,19 +29,16 @@ class AjaxTagLibSpec extends Specification implements TagLibUnitTest<AjaxTagLib>
         then:
         template.contains submitButton
         template.contains MESSAGE
-        template.contains spinner
     }
 
     void "Test tempvs:ajaxLink"() {
         given:
         String event = "<span onclick=\"sendAjaxRequest(this, '${DELETE_ITEM_URL}', '${DELETE_METHOD}', '${SELECTOR}', getActions());\">"
-        String spinner = '<asset:image class="ajaxSpinner" style="display: none" src="spinner.gif"/>'
 
         when:
         def template = applyTemplate("<tempvs:ajaxLink controller=\"${ITEM}\" action=\"${DELETE_ITEM}\" id=\"${ID}\" method=\"${DELETE_METHOD}\" selector=\"${SELECTOR}\"/>")
 
         then:
-        template.contains spinner
         template.contains event
     }
 

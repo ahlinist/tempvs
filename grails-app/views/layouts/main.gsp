@@ -77,9 +77,6 @@
                 <span class="glyphicon glyphicon-search"></span>
               </button>
               <div class="dropdown-menu" style="width: 300px;">
-                <span class="col-sm-12 text-center">
-                  <asset:image class="ajaxSpinner" id="profile-search-spinner" style="display: none;" src="spinner.gif" />
-                </span>
                 <ul id="profile-search-result">
                 </ul>
                 <button id="load-more-button" class="btn btn-secondary col-sm-12" onclick="searchProfile(this, 10);">

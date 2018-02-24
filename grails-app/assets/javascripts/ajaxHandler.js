@@ -1,6 +1,7 @@
 function getActions() {
     function redirectAction(element, response){
         hideModals();
+        blockUI();
         window.location.href = response.location;
     }
 
@@ -62,7 +63,6 @@ function sendAjaxRequest(element, url, method, selector, actions) {
 }
 
 function processAjaxRequest(element, url, data, method, selector, actions) {
-    var spinner = element.querySelector('.ajaxSpinner');
     var submitButton = element.querySelector('.submit-button');
 
     $.ajax({
@@ -73,35 +73,31 @@ function processAjaxRequest(element, url, data, method, selector, actions) {
         processData: false,
         contentType: false,
         beforeSend: function() {
-            beforeSend(element, submitButton, spinner);
+            beforeSend(element, submitButton);
         },
         success: function(response) {
-            complete(submitButton, spinner);
+            complete(submitButton);
             actions[response.action](element, response, selector);
         },
         error: function() {
-            complete(submitButton, spinner);
+            complete(submitButton);
             actions.error(element, {success: false, message: "Something went wrong :("});
         }
     });
 };
 
-function beforeSend(element, submitButton, spinner) {
+function beforeSend(element, submitButton) {
+    blockUI();
+
     clearForm(element);
     
     if (submitButton) {
         submitButton.setAttribute("disabled", true);
-    } 
-
-    if (spinner) {
-        spinner.style.display = 'inline';
     }
 }
 
-function complete(submitButton, spinner) {
-    if (spinner) {
-        spinner.style.display = 'none';
-    }
+function complete(submitButton) {
+    unblockUI();
 
     if (submitButton) {
         submitButton.removeAttribute("disabled");
@@ -116,7 +112,6 @@ function createPopover(element, fieldEntry) {
     }
 
     field.classList.add('popped-over');
-    field.classList.add('bg-danger');
     field.setAttribute('data-placement','right');
     field.setAttribute('data-content', fieldEntry.message);
     field.setAttribute('data-html', true);

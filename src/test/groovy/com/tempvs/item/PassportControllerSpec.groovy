@@ -17,7 +17,6 @@ import spock.lang.Specification
 
 class PassportControllerSpec extends Specification implements ControllerUnitTest<PassportController> {
 
-    private static final String ONE = '1'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final Long LONG_THREE = 3L
@@ -97,10 +96,10 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         request.method = GET_METHOD
 
         when:
-        def result = controller.show(ONE)
+        def result = controller.show(LONG_ONE)
 
         then:
-        1 * passportService.getPassport(ONE) >> passport
+        1 * passportService.getPassport(LONG_ONE) >> passport
         1 * passport.clubProfile >> clubProfile
         1 * clubProfile.period >> period
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
@@ -238,6 +237,30 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
         1 * passport.clubProfile >> clubProfile
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test editQuantity()"() {
+        given:
+        request.method = POST_METHOD
+
+        when:
+        controller.editQuantity(LONG_ONE, LONG_TWO)
+
+        then:
+        1 * passportService.getItem2Passport(LONG_ONE) >> item2Passport
+        1 * passportService.editQuantity(item2Passport, LONG_TWO) >> item2Passport
+        1 * item2Passport.hasErrors() >> Boolean.FALSE
+        1 * item2Passport.passport >> passport
+        2 * item2Passport.item >> item
+        1 * item.period >> period
+        1 * item.type >> type
+        1 * itemService.getItemsByPeriod(period) >> [item]
+        1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

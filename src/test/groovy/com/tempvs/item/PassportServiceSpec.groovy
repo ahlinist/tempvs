@@ -8,7 +8,7 @@ import spock.lang.Specification
 
 class PassportServiceSpec extends Specification implements ServiceUnitTest<PassportService>, DomainUnitTest<Passport> {
 
-    private static final Long LONG_ID = 1L
+    private static final Long LONG_ONE = 1L
     private static final String DESCRIPTION = 'description'
     private static final String FIELD_VALUE = 'fieldValue'
 
@@ -18,24 +18,16 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
     def clubProfile = Mock ClubProfile
     def item2Passport = Mock Item2Passport
 
+    void setupSpec() {
+        mockDomain Item2Passport
+    }
+
     def setup() {
         GroovySpy(Passport, global: true)
         GroovySpy(Item2Passport, global: true)
     }
 
     def cleanup() {
-    }
-
-    void "Test getPassport()"() {
-        when:
-        def result = service.getPassport(LONG_ID)
-
-        then:
-        1 * Passport.get(LONG_ID) >> passport
-        0 * _
-
-        and:
-        result == passport
     }
 
     void "Test getItem2PassportRelations()"() {
@@ -73,19 +65,6 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
         and:
         result == passport
-    }
-
-    void "Test addItem()"() {
-        when:
-        def result = service.addItem(passport, item, 1)
-
-        then:
-        1 * new Item2Passport([item: item, passport: passport, quantity: 1]) >> item2Passport
-        1 * item2Passport.save() >> item2Passport
-        0 * _
-
-        and:
-        result == item2Passport
     }
 
     void "Test removeItem()"() {
@@ -133,5 +112,19 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
         and:
         result == passport
+    }
+
+    void "Test editQuantity()"() {
+        when:
+        def result = service.editQuantity(item2Passport, LONG_ONE)
+
+        then:
+        1 * item2Passport.quantity >> 0L
+        1 * item2Passport.setQuantity(LONG_ONE)
+        1 * item2Passport.save() >> item2Passport
+        0 * _
+
+        and:
+        result == item2Passport
     }
 }

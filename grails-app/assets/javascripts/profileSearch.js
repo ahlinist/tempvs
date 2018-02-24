@@ -4,7 +4,6 @@ function searchProfile(element, offset) {
     var searchProfileUrl;
     var loadMoreButton = document.querySelector('#load-more-button');
     var profileSearchBox = document.querySelector('#profile-search-box');
-    var profileSearchSpinner = document.querySelector('#profile-search-spinner');
     var profileSearchDropdown = document.querySelector('#profile-search-dropdown');
     var profileSearchButton = document.querySelector('#profile-search-button');
     var profileSearchResult = document.querySelector('#profile-search-result');
@@ -25,7 +24,6 @@ function searchProfile(element, offset) {
 
     loadMoreButton.disabled = true;
     profileSearchButton.disabled = true;
-    profileSearchSpinner.style.display = 'inline';
     profileSearchDropdown.classList.add('open');
 
     searchProfileUrl = '/profile/search?query=' + profileSearchBox.value + '&offset=' + profileSearchOffsetCounter;
@@ -50,7 +48,6 @@ function searchProfile(element, offset) {
     function recoverUI() {
         profileSearchButton.disabled = false;
         loadMoreButton.disabled = false;
-        profileSearchSpinner.style.display = 'none';
         window.addEventListener('click', eventListener);
     }
 

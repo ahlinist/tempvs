@@ -1,22 +1,32 @@
-<g:set var="passportId" value="${passport.id}"/>
 <div id="item-section">
+  <g:set var="passportId" value="${passport.id}"/>
   <ul>
     <g:each var="itemEntry" in="${itemMap}">
       <h4><g:message code="item.type.${itemEntry.key}.value"/>:</h4>
       <g:each var="item2Passport" in="${itemEntry.value}">
         <g:set var="item" value="${item2Passport.item}"/>
+        <g:set var="itemName" value="${item.name}"/>
         <g:set var="quantity" value="${item2Passport.quantity}"/>
         <g:set var="itemId" value="${item.id}"/>
         <li class="row" id="item-${itemId}">
-          <span class="btn btn-default pull-left" style="cursor:default;">${quantity} x </span>
+          <span class="pull-left" style="padding:5px;">
+            <g:if test="${editAllowed}">
+              <tempvs:ajaxLink controller="passport" action="editQuantity" params="${[item2PassportId: item2Passport.id, delta: -1]}" method="POST" selector="div#item-section" classes="glyphicon glyphicon-arrow-down"/>
+              <b>${quantity}</b>
+              <tempvs:ajaxLink controller="passport" action="editQuantity" params="${[item2PassportId: item2Passport.id, delta: 1]}" method="POST" selector="div#item-section" classes="glyphicon glyphicon-arrow-up"/>
+            </g:if>
+            <g:else>
+              <b>${quantity}</b>
+            </g:else>
+          </span>
           <g:link controller="item" action="show" id="${itemId}" class="btn btn-default col-sm-10">
-            ${item.name}
+            ${itemName}
           </g:link>
           <g:if test="${editAllowed}">
             <div class="pull-left">
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'passport.remove.item.button')}">
                 <tempvs:modalButton id="unlinkSource-${item.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
-                  <g:message code='passport.removeConfirmation.text' args="${[item.name]}"/>
+                  <g:message code='passport.removeConfirmation.text' args="${[itemName]}"/>
                   <br/>
                   <tempvs:ajaxLink controller="passport" action="removeItem" params="${[passportId: passportId, itemId: itemId]}" method="DELETE" selector="div#item-section" classes="btn btn-default">
                     <g:message code="yes"/>

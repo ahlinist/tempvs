@@ -34,6 +34,7 @@ class PassportController {
             deletePassport: 'DELETE',
             addComment: 'POST',
             deleteComment: 'DELETE',
+            editQuantity: 'POST',
     ]
 
     ItemService itemService
@@ -60,7 +61,7 @@ class PassportController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'passport', action: 'show', id: passport.id))
     }
 
-    def show(String id) {
+    def show(Long id) {
         Passport passport = passportService.getPassport id
 
         if (!passport) {
@@ -180,6 +181,27 @@ class PassportController {
         ]
 
         String template = groovyPageRenderer.render(template: '/passport/templates/comments', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def editQuantity(Long item2PassportId, Long delta) {
+        Item2Passport item2Passport = passportService.getItem2Passport(item2PassportId)
+        item2Passport = passportService.editQuantity(item2Passport, delta)
+
+        if (item2Passport.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(item2Passport))
+        }
+
+        Passport passport = item2Passport.passport
+
+        Map model = [
+                availableItems: itemService.getItemsByPeriod(item2Passport.item.period),
+                itemMap: composeItemMap(passport),
+                passport: passport,
+                editAllowed: Boolean.TRUE
+        ]
+
+        String template = groovyPageRenderer.render(template: '/passport/templates/itemSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

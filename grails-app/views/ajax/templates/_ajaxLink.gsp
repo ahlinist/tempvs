@@ -2,5 +2,4 @@
   <span class="${classes} submit-button">
     ${raw(body)}
   </span>
-  <asset:image class="ajaxSpinner" style="display: none" src="spinner.gif" />
 </span>

@@ -14,12 +14,10 @@ function waitForClickOut(fieldName, fieldType) {
     var inputSelector = '#' + fieldName + '-input';
     var textField = document.querySelector(textSelector);
     var inputField = document.querySelector(inputSelector);
-    var spinner = createSpinner();
     var pencil = createGlyph('pencil', '#AAA');
     pencil.addEventListener('click', function() { activateInput(fieldName); });
 
     function successAction() {
-        removeSpinner(spinner);
         var okGlyph = createGlyph('ok', 'green');
         textField.appendChild(okGlyph);
         
@@ -30,7 +28,6 @@ function waitForClickOut(fieldName, fieldType) {
     }
 
     function formMessageAction(element, response) {
-        removeSpinner(spinner);
         var field = document.querySelector(textSelector);
         field.classList.add('popped-over', response.success ? 'bg-success' : 'bg-danger');
         field.setAttribute('data-placement','right');
@@ -41,7 +38,6 @@ function waitForClickOut(fieldName, fieldType) {
     }
 
     function validationResponseAction(element, response) {
-        removeSpinner(spinner);
         var field = document.querySelector(textSelector);
         field.classList.add('popped-over', 'bg-danger');
         field.setAttribute('data-placement','right');
@@ -70,8 +66,6 @@ function waitForClickOut(fieldName, fieldType) {
                     var fieldValue = document.querySelector(inputSelector + ' > input').value
                     textField.innerHTML = fieldValue ? fieldValue : '- ';
                 }
-
-                textField.appendChild(spinner);
             }
         } 
     }
@@ -84,15 +78,4 @@ function createGlyph(type, color) {
     span.classList.add('glyphicon', 'glyphicon-' + type);
     span.style.color = color;
     return span;
-}
-
-function createSpinner() {
-    var img = document.createElement('img');
-    img.classList.add('ajaxSpinner');
-    img.src = '/assets/spinner.gif';
-    return img;
-}
-
-function removeSpinner(spinner) {
-    spinner.parentNode.removeChild(spinner);
 }

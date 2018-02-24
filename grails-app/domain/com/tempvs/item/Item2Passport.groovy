@@ -18,10 +18,6 @@ class Item2Passport implements BasePersistent {
         item unique: ['passport']
     }
 
-    static mapping = {
-        id composite: ['item', 'passport']
-    }
-
     int hashCode() {
         item.hashCode() * passport.hashCode() * quantity.hashCode()
     }

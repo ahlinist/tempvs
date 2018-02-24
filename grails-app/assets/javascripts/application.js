@@ -8,6 +8,9 @@
 //= require_tree .
 //= require_self
 
+var overlay = document.createElement('div');
+overlay.classList.add('overlay');
+
 $(function (){
     //preventing double clicking
     $('.disableable').click(function() {
@@ -28,4 +31,12 @@ $(function (){
 function hideModals() {
     $('.modal-backdrop').remove();
     $('.modal').modal('hide');
+}
+
+function blockUI() {
+    document.body.appendChild(overlay);
+}
+
+function unblockUI() {
+    document.body.removeChild(overlay);
 }
