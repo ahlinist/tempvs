@@ -47,6 +47,7 @@ class AjaxResponseHelperSpec extends Specification {
 
         and:
         result.target == [action: FORM_MESSAGE, message: SUCCESS_MESSAGE, success: Boolean.TRUE]
+        false
     }
 
     void "Check failed renderValidationResponse() for 1 arg"() {
