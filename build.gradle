@@ -98,7 +98,8 @@ tasks.stage.doLast() {
     delete fileTree(dir: "build/libs", exclude: "*.war")
 }
 
-war.mustRunAfter clean
+test.mustRunAfter clean
+war.mustRunAfter test
 
 task copyToLib(type: Copy) {
     into "$buildDir/server"
