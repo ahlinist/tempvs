@@ -1,5 +1,12 @@
 # tempvs
 [![Circle CI](https://circleci.com/gh/ahlinist/tempvs/tree/master.svg?&style=shield)](https://circleci.com/gh/ahlinist/tempvs/tree/master)
+
+A social network for interested in historical reenactment
+
+## Goal
+
+Make reenactor profiles easier to share/review/maintain.
+
 ## Getting started
 
 To get started you need:
@@ -10,22 +17,27 @@ To get started you need:
  * PostgreSQL 9.5.10
  * MongoDB 3.2
  
-## SMTP configuration
+### SMTP configuration
 SMTP-connection parameters are retrieved from env variables:
  * SMTP_HOST
  * SMTP_PORT
  * SMTP_USERNAME
  * SMTP_PASSWORD
  
-## DB configuration
+### DB configuration
 
-### PostgreSQL:
+#### PostgreSQL:
 Connection parameters are retrieved from env variables:
  * JDBC_DATABASE_USERNAME
  * JDBC_DATABASE_PASSWORD
  * JDBC_DATABASE_URL
 
-### MongoDB:
+#### MongoDB:
 Connection parameters are retrieved from env variables:
  * MONGODB_URI (mongodb://\<user\>:\<pass\>@\<host\>:\<port\>/\<db_name\>)
- 
+
+## Running installations
+### Dev
+http://dev.tempvs.club
+### Stage
+http://stage.tempvs.club
