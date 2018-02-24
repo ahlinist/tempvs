@@ -1,4 +1,3 @@
-<%@ page import="com.tempvs.periodization.Period"%>
 <div id="club-profile-list">
   <g:if test="${activeProfiles || inactiveProfiles}">
     <g:if test="${activeProfiles}">
@@ -66,7 +65,7 @@
         <tempvs:formField type="text" name="location" label="profile.location.label"/>
         <tempvs:formField type="text" name="profileId" label="profile.profileId.label"/>
         <tempvs:formField type="text" name="clubName" label="profile.clubName.label"/>
-        <tempvs:formField type="select" name="period" from="${Period.values()}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
+        <tempvs:formField type="select" name="period" from="${availablePeriods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
         <tempvs:ajaxSubmitButton value="clubProfile.create.button"/>
       </tempvs:ajaxForm>
     </tempvs:modalButton>

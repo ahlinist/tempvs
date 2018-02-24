@@ -1,4 +1,3 @@
-<%@ page import="com.tempvs.periodization.Period"%>
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,7 +8,7 @@
       <g:render template="/source/templates/navBar"/>
       <b><g:message code="source.period.list.title"/></b>:
       <ul>
-        <g:each in="${Period.values()}" var="period">
+        <g:each in="${availablePeriods}" var="period">
           <li class="row">
             <g:link action="period" id="${period.id}" class="btn btn-default col-sm-3">
               ${period.value}

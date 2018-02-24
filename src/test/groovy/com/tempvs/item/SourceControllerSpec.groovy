@@ -162,7 +162,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         0 * _
 
         and:
-        result == [sources: sources, period: period]
+        result == [sources: sources, period: period, availableTypes: Type.values()]
     }
 
     void "Test getSourcesByPeriod()"() {

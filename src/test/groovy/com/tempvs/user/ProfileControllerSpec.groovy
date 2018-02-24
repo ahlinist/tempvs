@@ -422,6 +422,11 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         2 * clubProfile.active >> Boolean.TRUE
         0 * _
 
-        result == [userProfile: userProfile, activeProfiles: [clubProfile], inactiveProfiles: []]
+        result == [
+                userProfile: userProfile,
+                activeProfiles: [clubProfile],
+                inactiveProfiles: [],
+                availablePeriods: Period.values(),
+        ]
     }
 }

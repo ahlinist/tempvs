@@ -6,6 +6,7 @@ import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.periodization.Period
 import com.tempvs.user.Profile
 import com.tempvs.user.ProfileService
 import com.tempvs.user.User
@@ -96,6 +97,8 @@ class ItemController {
                 [
                         user: user,
                         itemGroup: itemGroup,
+                        availableTypes: Type.values(),
+                        availablePeriods: Period.values(),
                         items: itemGroup.items.sort { it.id },
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,

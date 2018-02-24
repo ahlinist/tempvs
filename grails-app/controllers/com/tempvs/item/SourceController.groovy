@@ -49,14 +49,19 @@ class SourceController {
     AjaxResponseHelper ajaxResponseHelper
 
     def index() {
-
+        [availablePeriods: Period.values()]
     }
 
     Map period(String id) {
         if (id) {
             Period period = Period.valueOf(id.toUpperCase())
             List<Source> sources = sourceService.getSourcesByPeriod(period)
-            [sources: sources, period: period]
+
+            [
+                    sources: sources,
+                    period: period,
+                    availableTypes: Type.values(),
+            ]
         }
     }
 

@@ -6,6 +6,7 @@ import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.item.PassportService
+import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -202,7 +203,14 @@ class ProfileController {
 
         User user = clubProfile.user
         Collection<ClubProfile> clubProfiles = user.clubProfiles
-        Map model = [activeProfiles: clubProfiles.findAll {it.active}, inactiveProfiles: clubProfiles.findAll {!it.active}, editAllowed: Boolean.TRUE]
+
+        Map model = [
+                activeProfiles: clubProfiles.findAll {it.active},
+                inactiveProfiles: clubProfiles.findAll {!it.active},
+                availablePeriods: Period.values(),
+                editAllowed: Boolean.TRUE,
+        ]
+
         String template = groovyPageRenderer.render(template: '/profile/templates/clubProfileList', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -244,7 +252,12 @@ class ProfileController {
     def list() {
         User user = userInfoHelper.getCurrentUser(request)
         Collection<ClubProfile> clubProfiles = user.clubProfiles
-        [userProfile: user.userProfile, activeProfiles: clubProfiles.findAll {it.active}, inactiveProfiles: clubProfiles.findAll {!it.active}]
+        [
+                userProfile: user.userProfile,
+                activeProfiles: clubProfiles.findAll {it.active},
+                inactiveProfiles: clubProfiles.findAll {!it.active},
+                availablePeriods: Period.values(),
+        ]
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {

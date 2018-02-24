@@ -1,6 +1,3 @@
-<%@ page import="com.tempvs.item.Type"%>
-<%@ page import="com.tempvs.periodization.Period"%>
-
 <!DOCTYPE html>
 <html>
   <head>
