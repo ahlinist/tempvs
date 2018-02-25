@@ -7,10 +7,12 @@ import com.tempvs.user.UserInfoHelper
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import org.springframework.security.access.annotation.Secured
 
 /**
  * A controller that handles {@link Following}-related operations.
  */
+@Secured('isAuthenticated()')
 @GrailsCompileStatic
 class FollowingController {
 

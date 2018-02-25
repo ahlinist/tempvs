@@ -10,6 +10,7 @@ import com.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import org.springframework.security.access.annotation.Secured
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
 
@@ -17,6 +18,7 @@ import org.springframework.security.access.AccessDeniedException
  * Controller for managing {@link com.tempvs.user.UserProfile} and
  * {@link com.tempvs.user.ClubProfile}.
  */
+@Secured('isAuthenticated()')
 @GrailsCompileStatic
 class ProfileController {
 
@@ -68,6 +70,7 @@ class ProfileController {
         render([action: profiles ? REPLACE_ACTION : NO_ACTION, template: template] as JSON)
     }
 
+    @Secured('permitAll')
     def userProfile(String id) {
         if (!id) {
             UserProfile profile = userInfoHelper.getCurrentUser(request)?.userProfile
@@ -92,6 +95,7 @@ class ProfileController {
         ]
     }
 
+    @Secured('permitAll')
     def clubProfile(String id) {
         if (!id) {
             return redirect(controller: 'auth', action: 'index')

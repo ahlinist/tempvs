@@ -4,10 +4,12 @@ import com.tempvs.ajax.AjaxResponseHelper
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
+import org.springframework.security.access.annotation.Secured
 
 /**
  * Controller for managing {@link com.tempvs.user.User}-related instances.
  */
+@Secured('isAuthenticated()')
 @GrailsCompileStatic
 class UserController {
 
@@ -72,6 +74,7 @@ class UserController {
         }
     }
 
+    @Secured('permitAll')
     def register(RegistrationCommand command) {
         if (!command.validate()) {
             return render(ajaxResponseHelper.renderValidationResponse(command))

@@ -2,10 +2,12 @@ package com.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
+import org.springframework.security.access.annotation.Secured
 
 /**
  * Controller for managing {@link com.tempvs.user.EmailVerification} instances.
  */
+@Secured('permitAll')
 @GrailsCompileStatic
 class VerifyController {
 

@@ -12,10 +12,12 @@ import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.annotation.Secured
 
 /**
  * A controller that handles operations related to {@link com.tempvs.item.Passport}.
  */
+@Secured('isAuthenticated()')
 @GrailsCompileStatic
 class PassportController {
 
@@ -61,6 +63,7 @@ class PassportController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'passport', action: 'show', id: passport.id))
     }
 
+    @Secured('permitAll')
     def show(Long id) {
         Passport passport = passportService.getPassport id
 

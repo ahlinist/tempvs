@@ -13,7 +13,6 @@ grails:
             events: false
     plugin:
         springsecurity:
-            securityConfigType: InterceptUrlMap
             userLookup:
                 userDomainClassName: com.tempvs.user.User
                 usernamePropertyName: email
@@ -29,78 +28,26 @@ grails:
                 className: com.tempvs.user.Role
             requestMap:
                 className: com.tempvs.user.RequestMap
-            interceptUrlMap:
-                - pattern: /auth/**
-                  access:
-                      - permitAll
-                - pattern: /verify/**
-                  access:
-                      - permitAll
-                - pattern: /user/register/**
-                  access:
-                      - permitAll
-                - pattern: /profile/userProfile/**
-                  access:
-                      - permitAll
-                - pattern: /profile/clubProfile/**
-                  access:
-                      - permitAll
-                - pattern: /image/**
-                  access:
-                      - permitAll
-                - pattern: /item/stash/**
-                  access:
-                      - permitAll
-                - pattern: /item/group/**
-                  access:
-                      - permitAll
-                - pattern: /item/show/**
-                  access:
-                      - permitAll
-                - pattern: /source/index
-                  access:
-                      - permitAll
-                - pattern: /source/period/**
-                  access:
-                      - permitAll
-                - pattern: /source/show/**
-                  access:
-                      - permitAll
-                - pattern: /passport/show/**
-                  access:
-                      - permitAll
-                - pattern: /assets/**
-                  access:
-                      - permitAll
-                - pattern: /**/js/**
-                  access:
-                      - permitAll
-                - pattern: /**/css/**
-                  access:
-                      - permitAll
-                - pattern: /**/images/**
-                  access:
-                      - permitAll
-                - pattern: /**/favicon.ico
-                  access:
-                      - permitAll
-                - pattern: /**
-                  access:
-                      - isAuthenticated()
-#            filterChain:
-#                chainMap:
-#                    - pattern: /assets*//**//**
-#                      filters: none
-#                    - pattern: *//**//**//**//*js*//**//**
-#                      filters: none
-#                    - pattern: *//**//**//**//*css*//**//**
-#                      filters: none
-#                    - pattern: *//**//**//**//*images*//**//**
-#                      filters: none
-#                    - pattern: *//**//**//**//*favicon.ico
-#                      filters: none
-#                    - pattern: *//**//**
-#                      filters: JOINED_FILTERS
+            controllerAnnotations:
+                staticRules:
+                    - pattern: /assets/**
+                      access:
+                          - permitAll
+                    - pattern: /**/js/**
+                      access:
+                          - permitAll
+                    - pattern: /**/css/**
+                      access:
+                          - permitAll
+                    - pattern: /**/images/**
+                      access:
+                          - permitAll
+                    - pattern: /**/favicon.ico
+                      access:
+                          - permitAll
+                    - pattern: /**
+                      access:
+                          - isAuthenticated()
 info:
     app:
         name: '@info.app.name@'

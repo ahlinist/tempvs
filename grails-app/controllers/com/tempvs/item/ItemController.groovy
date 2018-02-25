@@ -17,10 +17,12 @@ import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.annotation.Secured
 
 /**
  * Controller that manages operations with {@link com.tempvs.item.Item}.
  */
+@Secured('isAuthenticated()')
 @GrailsCompileStatic
 class ItemController {
 
@@ -63,6 +65,7 @@ class ItemController {
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
 
+    @Secured('permitAll')
     def stash(Long id) {
         User user = id ? userService.getUser(id) : userInfoHelper.getCurrentUser(request)
 
@@ -87,6 +90,7 @@ class ItemController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: itemGroup.id))
     }
 
+    @Secured('permitAll')
     def group(Long id) {
         if (id) {
             ItemGroup itemGroup = itemService.getGroup id
@@ -141,6 +145,7 @@ class ItemController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
+    @Secured('permitAll')
     def show(Long id) {
         if (id) {
             Item item = itemService.getItem id

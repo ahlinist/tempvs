@@ -8,11 +8,13 @@ import com.tempvs.user.VerifyService
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
+import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.encoding.PasswordEncoder
 
 /**
  * Controller that manages {@link com.tempvs.user.User} registration and authorization.
  */
+@Secured('permitAll')
 @GrailsCompileStatic
 class AuthController {
 

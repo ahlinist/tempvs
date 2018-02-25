@@ -2,10 +2,12 @@ package com.tempvs.image
 
 import asset.pipeline.grails.AssetResourceLocator
 import grails.compiler.GrailsCompileStatic
+import org.springframework.security.access.annotation.Secured
 
 /**
  * Controller for {@link com.tempvs.image.Image} handling.
  */
+@Secured('permitAll')
 @GrailsCompileStatic
 class ImageController {
 

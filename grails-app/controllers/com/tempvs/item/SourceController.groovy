@@ -14,10 +14,12 @@ import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.annotation.Secured
 
 /**
  * Controller for {@link com.tempvs.item.Source} entities managing.
  */
+@Secured('isAuthenticated()')
 @GrailsCompileStatic
 class SourceController {
 
@@ -48,10 +50,12 @@ class SourceController {
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
 
+    @Secured('permitAll')
     def index() {
         [availablePeriods: Period.values()]
     }
 
+    @Secured('permitAll')
     Map period(String id) {
         if (id) {
             Period period = Period.valueOf(id.toUpperCase())
@@ -71,6 +75,7 @@ class SourceController {
         render(sources.collect { Source source -> [id: source.id, name: source.name]} as JSON)
     }
 
+    @Secured('permitAll')
     def show(Long id) {
         if (id) {
             Source source = sourceService.getSource id
