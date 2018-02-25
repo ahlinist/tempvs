@@ -10,8 +10,10 @@ import grails.validation.Validateable
 class LoginCommand implements Validateable {
     String email
     String password
+    Boolean remember
 
     static constraints = {
         email email: true
+        remember nullable: true
     }
 }

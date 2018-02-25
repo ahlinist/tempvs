@@ -13,8 +13,9 @@
 <div class="tab-content">
   <div id="login" class="tab-pane fade in active">
     <tempvs:ajaxForm controller="auth" action="login">
-      <tempvs:formField type="email" name="email" label="auth.email.label" />
-      <tempvs:formField type="password" name="password" label="auth.password.label" />
+      <tempvs:formField type="email" name="email" label="auth.email.label"/>
+      <tempvs:formField type="password" name="password" label="auth.password.label"/>
+      <tempvs:formField type="checkbox" name="remember" label="auth.remember.label"/>
       <tempvs:ajaxSubmitButton value="auth.login.button" />
     </tempvs:ajaxForm>
   </div>

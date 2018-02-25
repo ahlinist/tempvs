@@ -10,6 +10,7 @@ import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices
 
 /**
  * Controller that manages {@link com.tempvs.user.User} registration and authorization.
@@ -33,6 +34,7 @@ class AuthController {
     AjaxResponseHelper ajaxResponseHelper
     PasswordEncoder passwordEncoder
     LinkGenerator grailsLinkGenerator
+    TokenBasedRememberMeServices rememberMeServices
 
     def index() {
     }
@@ -42,18 +44,20 @@ class AuthController {
             return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
-        User user = userService.getUserByEmail(command.email)
+        String email = command.email
+        String password = command.password
+        User user = userService.getUserByEmail(email)
 
-        if (!user) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER))
-
-        }
-
-        if (!passwordEncoder.isPasswordValid(user.password, command.password, null)) {
+        if (!user || !passwordEncoder.isPasswordValid(user.password, password, null)) {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER))
         }
 
-        springSecurityService.reauthenticate(command.email, command.password)
+        springSecurityService.reauthenticate(email, password)
+
+        if (command.remember) {
+            rememberMeServices.onLoginSuccess(request, response, springSecurityService.authentication)
+        }
+
         String refererLink = request.getHeader(REFERER)
 
         if (refererLink.contains(AUTH_PATTERN)) {
@@ -81,6 +85,7 @@ class AuthController {
     }
 
     def logout() {
+        rememberMeServices.logout(request, response, null)
         session.invalidate()
         redirect uri: request.getHeader(REFERER)
     }

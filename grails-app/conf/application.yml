@@ -13,6 +13,8 @@ grails:
             events: false
     plugin:
         springsecurity:
+            rememberMe:
+                cookieName: tempvs_remember_me
             userLookup:
                 userDomainClassName: com.tempvs.user.User
                 usernamePropertyName: email
