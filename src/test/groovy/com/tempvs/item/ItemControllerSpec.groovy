@@ -6,6 +6,7 @@ import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
 import com.tempvs.user.User
 import com.tempvs.user.UserInfoHelper
@@ -22,7 +23,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
-    private static final String NAME = 'name'
     private static final String TEXT = 'text'
     private static final String POST_METHOD = 'POST'
     private static final String ITEM_URI = '/item/show'
@@ -31,7 +31,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     private static final String FIELD_NAME = 'fieldName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
-    private static final String DESCRIPTION = 'description'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
@@ -50,13 +49,13 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def userProfile = Mock UserProfile
     def itemService = Mock ItemService
     def item2Source = Mock Item2Source
-    def itemCommand = Mock ItemCommand
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
     def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadBean = Mock ImageUploadBean
+    def imageUploadCommand = Mock ImageUploadCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
@@ -228,11 +227,11 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         request.method = POST_METHOD
 
         when:
-        controller.createItem(itemCommand)
+        controller.createItem(item, imageUploadCommand)
 
         then:
-        1 * itemCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderValidationResponse(itemCommand) >> json
+        1 * item.validate() >> Boolean.FALSE
+        1 * ajaxResponseHelper.renderValidationResponse(item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -242,20 +241,14 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         request.method = POST_METHOD
 
         when:
-        controller.createItem(itemCommand)
+        controller.createItem(item, imageUploadCommand)
 
         then:
-        1 * itemCommand.validate() >> Boolean.TRUE
-        1 * itemCommand.source
-        1 * itemCommand.description >> DESCRIPTION
-        1 * itemCommand.errors
-        1 * itemCommand.itemGroup
-        1 * itemCommand.type
-        1 * itemCommand.period
-        1 * itemCommand.name >> NAME
-        2 * itemCommand.imageUploadBeans >> [imageUploadBean]
+        1 * item.validate() >> Boolean.TRUE
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
-        1 * itemService.updateItem(_ as Item, [image]) >> item
+        1 * item.setImages([image])
+        1 * itemService.saveItem(item) >> item
         1 * item.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as Item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -267,20 +260,14 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         request.method = POST_METHOD
 
         when:
-        controller.createItem(itemCommand)
+        controller.createItem(item, imageUploadCommand)
 
         then:
-        1 * itemCommand.validate() >> Boolean.TRUE
-        1 * itemCommand.source
-        1 * itemCommand.description >> DESCRIPTION
-        1 * itemCommand.errors
-        1 * itemCommand.itemGroup
-        1 * itemCommand.type
-        1 * itemCommand.period >> period
-        1 * itemCommand.name >> NAME
-        2 * itemCommand.imageUploadBeans >> [imageUploadBean]
+        1 * item.validate() >> Boolean.TRUE
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
-        1 * itemService.updateItem(_ as Item, [image]) >> item
+        1 * item.setImages([image])
+        1 * itemService.saveItem(item) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
@@ -428,7 +415,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         then:
         1 * itemService.getItem(LONG_ONE) >> item
         1 * imageService.uploadImage(imageUploadBean, ITEM_COLLECTION) >> image
-        1 * itemService.updateItem(item, [image]) >> item
+        1 * item.addToImages(image)
+        1 * itemService.saveItem(item) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.images >> [image]
         1 * groovyPageRenderer.render(_ as Map)

@@ -6,6 +6,7 @@ import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
 import com.tempvs.user.Profile
 import com.tempvs.user.ProfileService
@@ -111,13 +112,13 @@ class ItemController {
         }
     }
 
-    def createItem(ItemCommand command) {
-        if (!command.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(command))
+    def createItem(Item item, ImageUploadCommand command) {
+        if (!item.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        List<Image> images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
-        Item item = itemService.updateItem(command.properties as Item, images)
+        item.images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
+        item = itemService.saveItem(item)
 
         if (item.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(item))
@@ -204,7 +205,8 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        item = itemService.updateItem(item, [image])
+        item.addToImages(image)
+        item = itemService.saveItem(item)
 
         if (item.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(item))

@@ -93,14 +93,10 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     }
 
     void "Test updateItem()"() {
-        given:
-        List<Image> images = [image, image]
-
         when:
-        def result = service.updateItem(item, images)
+        def result = service.saveItem(item)
 
         then:
-        2 * item.addToImages(image)
         1 * item.save() >> item
         0 * _
 

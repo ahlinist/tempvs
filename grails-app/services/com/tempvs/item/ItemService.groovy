@@ -66,13 +66,7 @@ class ItemService {
     }
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
-    Item updateItem(Item item, List<Image> images = []) {
-        images.each { Image image ->
-            if (image) {
-                item.addToImages(image)
-            }
-        }
-
+    Item saveItem(Item item) {
         item.save()
         item
     }
