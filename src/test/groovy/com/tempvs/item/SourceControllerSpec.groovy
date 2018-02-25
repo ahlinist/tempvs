@@ -6,6 +6,7 @@ import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
 import com.tempvs.user.UserInfoHelper
 import com.tempvs.user.UserProfile
@@ -30,7 +31,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String SHOW_URI = '/source/show'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
-    private static final String DESCRIPTION = 'description'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String PERIOD_URI = '/source/period'
     private static final String REPLACE_ACTION = 'replaceElement'
@@ -41,9 +41,9 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def source = Mock Source
     def comment = Mock Comment
     def userProfile = Mock UserProfile
-    def sourceCommand = Mock SourceCommand
     def imageUploadBean = Mock ImageUploadBean
     def groovyPageRenderer = Mock PageRenderer
+    def imageUploadCommand = Mock ImageUploadCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def imageService = Mock ImageService
@@ -92,18 +92,14 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
 
         when:
-        controller.createSource(sourceCommand)
+        controller.createSource(source, imageUploadCommand)
 
         then:
-        1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceCommand.description >> DESCRIPTION
-        1 * sourceCommand.errors
-        1 * sourceCommand.type
-        1 * sourceCommand.period >> period
-        1 * sourceCommand.name >> NAME
-        2 * sourceCommand.imageUploadBeans >> [imageUploadBean]
+        1 * source.validate() >> Boolean.TRUE
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
-        1 * sourceService.updateSource(_ as Source, [image]) >> source
+        1 * source.setImages([image])
+        1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.id >> SourceControllerSpec.LONG_ONE
         1 * ajaxResponseHelper.renderRedirect("${SHOW_URI}/${SourceControllerSpec.LONG_ONE}") >> json
@@ -117,20 +113,16 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         request.method = POST_METHOD
 
         when:
-        controller.createSource(sourceCommand)
+        controller.createSource(source, imageUploadCommand)
 
         then:
-        1 * sourceCommand.validate() >> Boolean.TRUE
-        1 * sourceCommand.description
-        1 * sourceCommand.errors
-        1 * sourceCommand.type
-        1 * sourceCommand.period
-        1 * sourceCommand.name
-        2 * sourceCommand.imageUploadBeans >> [imageUploadBean]
+        1 * source.validate() >> Boolean.TRUE
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
-        1 * sourceService.updateSource(_ as Source, [image]) >> source
+        1 * source.setImages([image])
+        1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseHelper.renderValidationResponse(_ as Source) >> json
+        1 * ajaxResponseHelper.renderValidationResponse(source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -140,11 +132,11 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         request.method = POST_METHOD
 
         when:
-        controller.createSource(sourceCommand)
+        controller.createSource(source, imageUploadCommand)
 
         then:
-        1 * sourceCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderValidationResponse(sourceCommand) >> json
+        1 * source.validate() >> Boolean.FALSE
+        1 * ajaxResponseHelper.renderValidationResponse(source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -207,7 +199,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION) >> image
-        1 * sourceService.updateSource(source, [image]) >> source
+        1 * source.addToImages(image)
+        1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
         1 * groovyPageRenderer.render(_ as Map)

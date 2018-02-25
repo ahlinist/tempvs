@@ -69,15 +69,11 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         result == source
     }
 
-    void "Test updateSource()"() {
-        given:
-        List<Image> images = [image, image]
-
+    void "Test saveSource()"() {
         when:
-        def result = service.updateSource(source, images)
+        def result = service.saveSource(source)
 
         then:
-        2 * source.addToImages(image)
         1 * source.save() >> source
         0 * _
 

@@ -46,13 +46,7 @@ class SourceService {
         source
     }
 
-    Source updateSource(Source source, List<Image> images = []) {
-        images.each { Image image ->
-            if (image) {
-                source.addToImages image
-            }
-        }
-
+    Source saveSource(Source source) {
         source.save()
         source
     }

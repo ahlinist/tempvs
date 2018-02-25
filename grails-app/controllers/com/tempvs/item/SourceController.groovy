@@ -6,6 +6,7 @@ import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
+import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
 import com.tempvs.user.Profile
 import com.tempvs.user.UserInfoHelper
@@ -83,13 +84,13 @@ class SourceController {
         }
     }
 
-    def createSource(SourceCommand command) {
-        if (!command.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(command))
+    def createSource(Source source, ImageUploadCommand command) {
+        if (!source.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        List<Image> images = imageService.uploadImages(command.imageUploadBeans, SOURCE_COLLECTION)
-        Source source = sourceService.updateSource(command.properties as Source, images)
+        source.images = imageService.uploadImages(command.imageUploadBeans, SOURCE_COLLECTION)
+        source = sourceService.saveSource(source)
 
         if (source.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(source))
@@ -156,7 +157,8 @@ class SourceController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        source = sourceService.updateSource(source, [image])
+        source.addToImages(image)
+        source = sourceService.saveSource(source)
 
         if (source.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(source))
