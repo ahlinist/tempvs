@@ -97,13 +97,12 @@ class ProfileService {
         }
     }
 
-    Profile createProfile(Profile profile, Image avatar) {
+    Profile createProfile(Profile profile) {
         if (!isProfileEmailUnique(profile, profile.profileEmail)) {
             profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)
             return profile
         }
 
-        profile.avatar = avatar
         profile.save()
         profile
     }

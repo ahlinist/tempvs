@@ -130,15 +130,15 @@ class ProfileController {
         redirect uri: request.getHeader(REFERER)
     }
 
-    def createClubProfile(ClubProfileCommand command) {
-        if (!command.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(command))
+    def createClubProfile(ClubProfile clubProfile, ImageUploadBean imageUploadBean) {
+        clubProfile.user = userInfoHelper.getCurrentUser(request)
+
+        if (!clubProfile.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(clubProfile))
         }
 
-        Image avatar = imageService.uploadImage(command.imageUploadBean, AVATAR_COLLECTION)
-
-        ClubProfile clubProfile = (command.properties + [user: userInfoHelper.getCurrentUser(request)]) as ClubProfile
-        Profile profile = profileService.createProfile(clubProfile, avatar)
+        clubProfile.avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+        Profile profile = profileService.createProfile(clubProfile)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))

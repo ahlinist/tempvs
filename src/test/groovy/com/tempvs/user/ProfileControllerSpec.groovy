@@ -52,7 +52,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def clubProfile = Mock ClubProfile
     def imageUploadBean = Mock ImageUploadBean
     def emailVerification = Mock EmailVerification
-    def clubProfileCommand = Mock ClubProfileCommand
 
     def userService = Mock UserService
     def imageService = Mock ImageService
@@ -218,16 +217,18 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         response.redirectedUrl == PROFILE_URL
     }
 
-    void "Test createClubProfile() against invalid command"() {
+    void "Test createClubProfile() against invalid input"() {
         given:
         request.method = POST_METHOD
 
         when:
-        controller.createClubProfile(clubProfileCommand)
+        controller.createClubProfile(clubProfile, imageUploadBean)
 
         then:
-        1 * clubProfileCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderValidationResponse(clubProfileCommand) >> json
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * clubProfile.setUser(user)
+        1 * clubProfile.validate() >> Boolean.FALSE
+        1 * ajaxResponseHelper.renderValidationResponse(clubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -237,22 +238,15 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         request.method = POST_METHOD
 
         when:
-        controller.createClubProfile(clubProfileCommand)
+        controller.createClubProfile(clubProfile, imageUploadBean)
 
         then:
-        1 * clubProfileCommand.validate() >> Boolean.TRUE
-        2 * clubProfileCommand.imageUploadBean >> imageUploadBean
-        1 * clubProfileCommand.getErrors()
-        1 * clubProfileCommand.getLastName()
-        1 * clubProfileCommand.getPeriod()
-        1 * clubProfileCommand.getProfileId()
-        1 * clubProfileCommand.getLocation()
-        1 * clubProfileCommand.getNickName()
-        1 * clubProfileCommand.getFirstName() >> FIRST_NAME
-        1 * clubProfileCommand.getClubName()
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * clubProfile.setUser(user)
+        1 * clubProfile.validate() >> Boolean.TRUE
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
+        1 * clubProfile.setAvatar(image)
+        1 * profileService.createProfile(_ as ClubProfile) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as ClubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -264,22 +258,15 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         request.method = POST_METHOD
 
         when: 'Command valid. Profile created.'
-        controller.createClubProfile(clubProfileCommand)
+        controller.createClubProfile(clubProfile, imageUploadBean)
 
         then:
-        1 * clubProfileCommand.validate() >> Boolean.TRUE
-        2 * clubProfileCommand.imageUploadBean >> imageUploadBean
-        1 * clubProfileCommand.getErrors()
-        1 * clubProfileCommand.getLastName()
-        1 * clubProfileCommand.getPeriod() >> period
-        1 * clubProfileCommand.getProfileId()
-        1 * clubProfileCommand.getLocation()
-        1 * clubProfileCommand.getNickName()
-        1 * clubProfileCommand.getFirstName() >> FIRST_NAME
-        1 * clubProfileCommand.getClubName()
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * clubProfile.setUser(user)
+        1 * clubProfile.validate() >> Boolean.TRUE
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * profileService.createProfile(_ as ClubProfile, image) >> clubProfile
+        1 * clubProfile.setAvatar(image)
+        1 * profileService.createProfile(_ as ClubProfile) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileService.setCurrentProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID
