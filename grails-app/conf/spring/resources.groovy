@@ -2,6 +2,7 @@ import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.mongodb.GridFSFactory
 import com.tempvs.mongodb.MongoImageDAO
 import com.tempvs.user.UserInfoHelper
+import com.tempvs.user.UserPasswordEncoderListener
 import org.grails.plugins.web.taglib.ValidationTagLib
 
 beans = {
@@ -19,4 +20,5 @@ beans = {
 
     gridFSFactory(GridFSFactory)
     validationTagLib(ValidationTagLib)
+    userPasswordEncoderListener(UserPasswordEncoderListener)
 }

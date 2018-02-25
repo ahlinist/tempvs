@@ -129,11 +129,10 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         2 * registrationCommand.emailVerification >> emailVerification
         1 * registrationCommand.errors
         1 * registrationCommand.lastName
-        2 * registrationCommand.password >> PASSWORD
+        1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
         1 * registrationCommand.firstName
         1 * emailVerification.email >> EMAIL
-        1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
         1 * userService.register(_ as User, _ as UserProfile) >> user
         1 * user.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(user) >> json
@@ -155,11 +154,10 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         2 * registrationCommand.emailVerification >> emailVerification
         1 * registrationCommand.errors
         1 * registrationCommand.lastName
-        2 * registrationCommand.password >> PASSWORD
+        1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
         1 * registrationCommand.firstName
         1 * emailVerification.email >> EMAIL
-        1 * springSecurityService.encodePassword(PASSWORD) >> PASSWORD
         1 * userService.register(_ as User, _ as UserProfile) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(EMAIL)

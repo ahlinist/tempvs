@@ -81,7 +81,6 @@ class UserController {
         String email = emailVerification.email
         Map properties = command.properties
         properties.email = email
-        properties.password = springSecurityService.encodePassword(command.password)
         User user = userService.register(properties as User, properties as UserProfile)
 
         if (user.hasErrors()) {
