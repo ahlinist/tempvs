@@ -26,7 +26,6 @@ class AuthControllerSpec extends Specification implements ControllerUnitTest<Aut
     private static final String PASSWORD = 'password'
     private static final String LOGIN_PAGE_URI = '/auth/index'
     private static final String PROFILE_PAGE_URI = '/profile'
-    private static final String REGISTER_ACTION = 'registration'
     private static final String NO_SUCH_USER_CODE = 'auth.login.noSuchUser.message'
 
     def user = Mock User
