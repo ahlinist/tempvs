@@ -57,7 +57,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadBean = Mock ImageUploadBean
-    def itemGroupCommand = Mock ItemGroupCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
@@ -123,13 +122,13 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         request.method = POST_METHOD
 
         when:
-        controller.createGroup(itemGroupCommand)
+        controller.createGroup(itemGroup)
 
         then:
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * itemGroupCommand.setUser(user)
-        1 * itemGroupCommand.validate() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderValidationResponse(itemGroupCommand) >> json
+        1 * itemGroup.setUser(user)
+        1 * itemGroup.validate() >> Boolean.FALSE
+        1 * ajaxResponseHelper.renderValidationResponse(itemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -139,17 +138,13 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         request.method = POST_METHOD
 
         when:
-        controller.createGroup(itemGroupCommand)
+        controller.createGroup(itemGroup)
 
         then:
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * itemGroupCommand.setUser(user)
-        1 * itemGroupCommand.validate() >> Boolean.TRUE
-        1 * itemGroupCommand.name
-        1 * itemGroupCommand.description
-        1 * itemGroupCommand.errors
-        1 * itemGroupCommand.user
-        1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
+        1 * itemGroup.setUser(user)
+        1 * itemGroup.validate() >> Boolean.TRUE
+        1 * itemService.createGroup(itemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as ItemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -161,17 +156,13 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         request.method = POST_METHOD
 
         when:
-        controller.createGroup(itemGroupCommand)
+        controller.createGroup(itemGroup)
 
         then:
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * itemGroupCommand.setUser(user)
-        1 * itemGroupCommand.validate() >> Boolean.TRUE
-        1 * itemGroupCommand.name >> NAME
-        1 * itemGroupCommand.description
-        1 * itemGroupCommand.errors
-        1 * itemGroupCommand.user
-        1 * itemService.createGroup(_ as ItemGroup) >> itemGroup
+        1 * itemGroup.setUser(user)
+        1 * itemGroup.validate() >> Boolean.TRUE
+        1 * itemService.createGroup(itemGroup) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
         1 * itemGroup.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json

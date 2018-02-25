@@ -74,14 +74,14 @@ class ItemController {
         }
     }
 
-    def createGroup(ItemGroupCommand command) {
-        command.user = userInfoHelper.getCurrentUser(request)
+    def createGroup(ItemGroup itemGroup) {
+        itemGroup.user = userInfoHelper.getCurrentUser(request)
 
-        if (!command.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(command))
+        if (!itemGroup.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(itemGroup))
         }
 
-        ItemGroup itemGroup = itemService.createGroup(command.properties as ItemGroup)
+        itemGroup = itemService.createGroup(itemGroup)
 
         if (itemGroup.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(itemGroup))
