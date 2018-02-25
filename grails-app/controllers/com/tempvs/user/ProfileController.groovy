@@ -256,10 +256,11 @@ class ProfileController {
     def list() {
         User user = userInfoHelper.getCurrentUser(request)
         Collection<ClubProfile> clubProfiles = user.clubProfiles
+
         [
                 userProfile: user.userProfile,
-                activeProfiles: clubProfiles.findAll {it.active},
-                inactiveProfiles: clubProfiles.findAll {!it.active},
+                activeProfiles: clubProfiles.findAll { it.active },
+                inactiveProfiles: clubProfiles.findAll { !it.active },
                 availablePeriods: Period.values(),
         ]
     }
