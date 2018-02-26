@@ -225,6 +225,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.createClubProfile(clubProfile, imageUploadBean)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * clubProfile.setUser(user)
         1 * clubProfile.validate() >> Boolean.FALSE
@@ -241,6 +242,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.createClubProfile(clubProfile, imageUploadBean)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * clubProfile.setUser(user)
         1 * clubProfile.validate() >> Boolean.TRUE
@@ -261,6 +263,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.createClubProfile(clubProfile, imageUploadBean)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         1 * clubProfile.setUser(user)
         1 * clubProfile.validate() >> Boolean.TRUE
@@ -385,6 +388,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.uploadAvatar(imageUploadBean)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
         1 * userProfile.avatar >> image
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image

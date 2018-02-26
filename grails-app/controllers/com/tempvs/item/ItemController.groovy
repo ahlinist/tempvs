@@ -113,11 +113,17 @@ class ItemController {
     }
 
     def createItem(Item item, ImageUploadCommand command) {
+        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
+
+        if (!imageUploadBeans.every { it.validate() }) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
+        }
+
         if (!item.validate()) {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        item.images = imageService.uploadImages(command.imageUploadBeans, ITEM_COLLECTION)
+        item.images = imageService.uploadImages(imageUploadBeans, ITEM_COLLECTION)
         item = itemService.saveItem(item)
 
         if (item.hasErrors()) {
@@ -198,6 +204,10 @@ class ItemController {
     }
 
     def addImage(ImageUploadBean imageUploadBean) {
+        if (!imageUploadBean.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
+        }
+
         Item item = itemService.getItem params.itemId as Long
         Image image = imageService.uploadImage(imageUploadBean, ITEM_COLLECTION)
 

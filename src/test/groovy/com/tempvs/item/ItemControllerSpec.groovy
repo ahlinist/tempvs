@@ -230,6 +230,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createItem(item, imageUploadCommand)
 
         then:
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * item.validate() >> Boolean.FALSE
         1 * ajaxResponseHelper.renderValidationResponse(item) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -244,6 +246,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createItem(item, imageUploadCommand)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * item.validate() >> Boolean.TRUE
         1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
@@ -263,6 +266,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createItem(item, imageUploadCommand)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * item.validate() >> Boolean.TRUE
         1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
@@ -413,6 +417,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.addImage(imageUploadBean)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * itemService.getItem(LONG_ONE) >> item
         1 * imageService.uploadImage(imageUploadBean, ITEM_COLLECTION) >> image
         1 * item.addToImages(image)

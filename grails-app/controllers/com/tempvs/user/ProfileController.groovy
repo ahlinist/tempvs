@@ -131,6 +131,10 @@ class ProfileController {
     }
 
     def createClubProfile(ClubProfile clubProfile, ImageUploadBean imageUploadBean) {
+        if (!imageUploadBean.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
+        }
+
         clubProfile.user = userInfoHelper.getCurrentUser(request)
 
         if (!clubProfile.validate()) {
@@ -242,6 +246,10 @@ class ProfileController {
     }
 
     def uploadAvatar(ImageUploadBean imageUploadBean) {
+        if (!imageUploadBean.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
+        }
+
         Profile profile = userInfoHelper.getCurrentProfile(request)
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
         Profile persistedProfile = profileService.uploadAvatar(profile, avatar)

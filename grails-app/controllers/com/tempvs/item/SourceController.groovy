@@ -85,11 +85,17 @@ class SourceController {
     }
 
     def createSource(Source source, ImageUploadCommand command) {
+        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
+
+        if (!imageUploadBeans.every { it.validate() }) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
+        }
+
         if (!source.validate()) {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        source.images = imageService.uploadImages(command.imageUploadBeans, SOURCE_COLLECTION)
+        source.images = imageService.uploadImages(imageUploadBeans, SOURCE_COLLECTION)
         source = sourceService.saveSource(source)
 
         if (source.hasErrors()) {
@@ -150,6 +156,10 @@ class SourceController {
     }
 
     def addImage(ImageUploadBean imageUploadBean) {
+        if (!imageUploadBean.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
+        }
+
         Source source = sourceService.getSource params.sourceId as Long
         Image image = imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION)
 

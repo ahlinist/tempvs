@@ -95,6 +95,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.createSource(source, imageUploadCommand)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * source.validate() >> Boolean.TRUE
         1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
@@ -116,6 +117,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.createSource(source, imageUploadCommand)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * source.validate() >> Boolean.TRUE
         1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
@@ -135,6 +137,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.createSource(source, imageUploadCommand)
 
         then:
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * source.validate() >> Boolean.FALSE
         1 * ajaxResponseHelper.renderValidationResponse(source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -197,6 +201,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.addImage(imageUploadBean)
 
         then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION) >> image
         1 * source.addToImages(image)
