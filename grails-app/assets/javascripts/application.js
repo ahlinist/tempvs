@@ -26,6 +26,11 @@ $(function (){
             hideModals();
         }
     });
+
+    //hide tooltip when modal is shown
+    $('.modal').on('shown.bs.modal', function (e) {
+        $('[data-toggle="tooltip"]').tooltip('hide');
+    });
 });
 
 function hideModals() {
