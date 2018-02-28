@@ -84,9 +84,9 @@
                 </button>
               </div>
             </span>
-            <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.logout.tooltip')}">
+            <span class="pull-right">
               <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
-                <span class="glyphicon glyphicon-log-out"></span>
+                <g:message code="auth.logout.button"/>
               </g:link>
             </span>
           </span>
@@ -102,8 +102,8 @@
           </span>
         </sec:ifLoggedIn>
         <sec:ifNotLoggedIn>
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'auth.link.tooltip')}">
-            <tempvs:modalButton id="loginForm" classes="glyphicon glyphicon-log-in">
+          <span class="pull-right">
+            <tempvs:modalButton id="loginForm" message="${g.message(code: 'auth.login.signup.button')}">
               <g:render template="/auth/templates/loginForm"/>
             </tempvs:modalButton>
           </span>
