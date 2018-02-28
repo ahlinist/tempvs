@@ -113,6 +113,7 @@ function createPopover(element, fieldEntry) {
 
     field.classList.add('popped-over');
     field.setAttribute('data-placement','right');
+    field.setAttribute('data-container','body');
     field.setAttribute('data-content', fieldEntry.message);
     field.setAttribute('data-html', true);
 }
