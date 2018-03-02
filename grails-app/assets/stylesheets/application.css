@@ -100,3 +100,8 @@ select:disabled {
     right: 0;
     top: 0;
 }
+
+.modal-dialog {
+    width: inherit;
+    max-width: 600px;
+}
