@@ -14,7 +14,11 @@
           <br/>
           <g:message code="auth.greetings.message"/>
           <br/>
-          <g:message code="auth.enlist.message" args="${[g.message(code:'auth.loginIcon.markup')]}"/>
+          <g:message code="auth.enlist.message.start"/>
+          <tempvs:modalButton id="loginForm" message="${g.message(code: 'auth.login.signup.button')}">
+            <g:render template="/auth/templates/loginForm"/>
+          </tempvs:modalButton>
+          <g:message code="auth.enlist.message.end"/>
         </div>
       </div>
       <div class="col-sm-3">
