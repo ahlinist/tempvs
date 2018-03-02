@@ -11,10 +11,23 @@
 var overlay = document.createElement('div');
 overlay.classList.add('overlay');
 
+function blockUI() {
+    document.body.appendChild(overlay);
+}
+
+function unblockUI() {
+    document.body.removeChild(overlay);
+}
+
 $(function (){
     //preventing double clicking
     $('.disableable').click(function() {
         $(this).attr("disabled", true);
+    });
+
+    $('body').click(function() {
+        $('.popped-over').popover('hide');
+        $('[data-toggle="tooltip"]').tooltip('hide');
     });
 
     //enabling tooltips for glyphiconed buttons
@@ -36,12 +49,4 @@ $(function (){
 function hideModals() {
     $('.modal-backdrop').remove();
     $('.modal').modal('hide');
-}
-
-function blockUI() {
-    document.body.appendChild(overlay);
-}
-
-function unblockUI() {
-    document.body.removeChild(overlay);
 }
