@@ -14,7 +14,7 @@
               <g:each var="profile" in="${newFollowingProfiles}">
                 <g:set var="profileId" value="${profile.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName}" id="${profileId}" style="background-color: #99FFCC;">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName - 'Profile'}" id="${profileId}" style="background-color: #99FFCC;">
                     ${profile}
                   </g:link>
                 </li>
@@ -27,7 +27,7 @@
               <g:each var="profile" in="${followingProfiles}">
                 <g:set var="profileId" value="${profile.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName}" id="${profileId}">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName - 'Profile'}" id="${profileId}">
                     ${profile}
                   </g:link>
                 </li>
@@ -49,7 +49,7 @@
               <g:each var="profile" in="${newFollowerProfiles}">
                 <g:set var="profileId" value="${profile.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName}" id="${profileId}" style="background-color: #99FFCC;">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName - 'Profile'}" id="${profileId}" style="background-color: #99FFCC;">
                     ${profile}
                   </g:link>
                 </li>
@@ -62,7 +62,7 @@
               <g:each var="profile" in="${followerProfiles}">
                 <g:set var="profileId" value="${profile.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName}" id="${profileId}">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.class.simpleName - 'Profile'}" id="${profileId}">
                     ${profile}
                   </g:link>
                 </li>

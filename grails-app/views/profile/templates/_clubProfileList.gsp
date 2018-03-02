@@ -8,7 +8,7 @@
         <g:each var="clubProfile" in="${activeProfiles}">
           <g:set var="clubProfileId" value="${clubProfile.id}"/>
           <li class="row" id="clubProfile-${clubProfileId}">
-            <g:link class="btn btn-default col-sm-10" controller="profile" action="clubProfile" id="${clubProfileId}">
+            <g:link class="btn btn-default col-sm-10" controller="profile" action="club" id="${clubProfileId}">
               ${clubProfile}
             </g:link>
             <span class="pull-left">
@@ -33,7 +33,7 @@
         <g:each var="clubProfile" in="${inactiveProfiles}">
           <g:set var="clubProfileId" value="${clubProfile.id}"/>
           <li class="row" id="clubProfile-${clubProfileId}">
-            <g:link class="btn btn-default col-sm-10" controller="profile" action="clubProfile" id="${clubProfileId}">
+            <g:link class="btn btn-default col-sm-10" controller="profile" action="club" id="${clubProfileId}">
               ${clubProfile}
             </g:link>
             <span class="pull-left">

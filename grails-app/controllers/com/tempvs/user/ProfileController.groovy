@@ -60,7 +60,7 @@ class ProfileController {
 
     def index() {
         Profile profile = userInfoHelper.getCurrentProfile(request)
-        redirect action: "${profile.class.simpleName.uncapitalize()}", id: profile.identifier
+        redirect action: "${profile.class.simpleName - 'Profile'}", id: profile.identifier
     }
 
     def search(String query, Integer offset) {
@@ -71,7 +71,7 @@ class ProfileController {
     }
 
     @Secured('permitAll')
-    def userProfile(String id) {
+    def user(String id) {
         if (!id) {
             UserProfile profile = userInfoHelper.getCurrentUser(request)?.userProfile
             return redirect(profile ? [action: 'userProfile', id: profile.identifier] : [controller: 'auth', action: 'index'])
@@ -96,7 +96,7 @@ class ProfileController {
     }
 
     @Secured('permitAll')
-    def clubProfile(String id) {
+    def club(String id) {
         if (!id) {
             return redirect(controller: 'auth', action: 'index')
         }

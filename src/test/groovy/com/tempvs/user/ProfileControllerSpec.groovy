@@ -28,7 +28,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
-    private static final String FIRST_NAME = 'firstName'
     private static final String AUTH_URL = '/auth/index'
     private static final String FIELD_NAME = 'fieldName'
     private static final String IDENTIFIER = 'identifier'
@@ -38,7 +37,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final String PROFILE_URL = '/profile/index'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
-    private static final String USER_PROFILE_PAGE_URI = '/profile/userProfile'
+    private static final String USER_PROFILE_PAGE_URI = '/profile/user'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
 
@@ -110,9 +109,9 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         response.json.action == REPLACE_ACTION
     }
 
-    void "Test userProfile()"() {
+    void "Test user()"() {
         when: 'No id given'
-        controller.userProfile()
+        controller.user()
 
         then:
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
@@ -125,7 +124,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         when: 'Id given'
         params.id = ONE
-        def result = controller.userProfile()
+        def result = controller.user()
 
         then:
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
@@ -141,9 +140,9 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         result == [profile: userProfile, user: user, id: IDENTIFIER, editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
     }
 
-    void "Test clubProfile() for non-existent profile"() {
+    void "Test club() for non-existent profile"() {
         when:
-        controller.clubProfile()
+        controller.club()
 
         then:
         0 * _
@@ -153,7 +152,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         when: 'Id given'
         params.id = ONE
-        def result = controller.clubProfile()
+        def result = controller.club()
 
         then: 'For non-existing profile'
         1 * profileService.getProfile(ClubProfile.class, ONE) >> null
@@ -163,12 +162,12 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         result == [id: ONE, notFoundMessage: NO_SUCH_PROFILE]
     }
 
-    void "Test clubProfile()"() {
+    void "Test club()"() {
         given:
         params.id = ONE
 
         when:
-        def result = controller.clubProfile()
+        def result = controller.club()
 
         then: 'For non-existing profile'
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
