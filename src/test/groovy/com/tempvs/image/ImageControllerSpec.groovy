@@ -9,7 +9,7 @@ class ImageControllerSpec extends Specification implements ControllerUnitTest<Im
 
     private static final String ID = 'id'
     private static final String COLLECTION = 'collection'
-    private static final String DEFAULT_IMAGE = 'defaultImage.jpg'
+    private static final String DEFAULT_IMAGE = 'default_image.gif'
 
     def resource = Mock(Resource)
     def imageService = Mock(ImageService)

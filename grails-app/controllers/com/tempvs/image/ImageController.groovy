@@ -11,7 +11,7 @@ import org.springframework.security.access.annotation.Secured
 @GrailsCompileStatic
 class ImageController {
 
-    private static final String DEFAULT_IMAGE = 'defaultImage.jpg'
+    private static final String DEFAULT_IMAGE = 'default_image.gif'
 
     static allowedMethods = [get: 'GET']
 
