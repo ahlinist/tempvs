@@ -11,6 +11,7 @@ class RegistrationCommand implements Validateable {
 
     String firstName
     String lastName
+    String profileId
     String password
     String confirmPassword
     EmailVerification emailVerification
@@ -24,5 +25,6 @@ class RegistrationCommand implements Validateable {
 
         firstName size: 0..35
         lastName size: 0..35
+        profileId matches: /^(?=.*[a-zA-Z])[a-zA-Z0-9.-_]+$/, nullable: true
     }
 }

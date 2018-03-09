@@ -128,10 +128,11 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * registrationCommand.validate() >> Boolean.TRUE
         2 * registrationCommand.emailVerification >> emailVerification
         1 * registrationCommand.errors
+        1 * registrationCommand.firstName
         1 * registrationCommand.lastName
+        1 * registrationCommand.profileId
         1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
-        1 * registrationCommand.firstName
         1 * emailVerification.email >> EMAIL
         1 * userService.register(_ as User, _ as UserProfile) >> user
         1 * user.hasErrors() >> Boolean.TRUE
@@ -153,10 +154,11 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * registrationCommand.validate() >> Boolean.TRUE
         2 * registrationCommand.emailVerification >> emailVerification
         1 * registrationCommand.errors
+        1 * registrationCommand.firstName
         1 * registrationCommand.lastName
+        1 * registrationCommand.profileId
         1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
-        1 * registrationCommand.firstName
         1 * emailVerification.email >> EMAIL
         1 * userService.register(_ as User, _ as UserProfile) >> user
         1 * user.hasErrors() >> Boolean.FALSE
