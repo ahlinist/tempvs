@@ -149,7 +149,7 @@ class ProfileController {
         }
 
         profileService.setCurrentProfile(profile)
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'clubProfile', id: profile.id))
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: profile.id))
     }
 
     def editProfileField() {

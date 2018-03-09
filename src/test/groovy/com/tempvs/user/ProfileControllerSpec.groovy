@@ -36,7 +36,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final String AVATAR_COLLECTION = 'avatar'
     private static final String PROFILE_URL = '/profile/index'
     private static final String REPLACE_ACTION = 'replaceElement'
-    private static final String CLUB_PROFILE_URL = '/profile/clubProfile'
+    private static final String CLUB_PROFILE_URL = '/profile/club'
     private static final String USER_PROFILE_PAGE_URI = '/profile/user'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
