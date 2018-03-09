@@ -14,11 +14,18 @@
           <br/>
           <g:message code="auth.greetings.message"/>
           <br/>
-          <g:message code="auth.enlist.message.start"/>
-          <tempvs:modalButton id="loginForm" message="${g.message(code: 'auth.login.signup.button')}">
-            <g:render template="/auth/templates/loginForm"/>
-          </tempvs:modalButton>
-          <g:message code="auth.enlist.message.end"/>
+          <sec:ifNotLoggedIn>
+            <g:message code="auth.enlist.message.start"/>
+            <tempvs:modalButton id="loginForm" message="${g.message(code: 'auth.login.signup.button')}">
+              <g:render template="/auth/templates/loginForm"/>
+            </tempvs:modalButton>
+            <g:message code="auth.enlist.message.end"/>
+          </sec:ifNotLoggedIn>
+          <sec:ifLoggedIn>
+            <g:message code="auth.logout.message.start"/>
+            <g:render template="/auth/templates/logoutButton"/>
+            <g:message code="auth.logout.message.end"/>
+          </sec:ifLoggedIn>
         </div>
       </div>
       <div class="col-sm-3">

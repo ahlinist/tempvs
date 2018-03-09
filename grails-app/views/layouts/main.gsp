@@ -85,9 +85,7 @@
               </div>
             </span>
             <span class="pull-right">
-              <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
-                <g:message code="auth.logout.button"/>
-              </g:link>
+              <g:render template="/auth/templates/logoutButton"/>
             </span>
           </span>
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">

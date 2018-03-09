@@ -15,7 +15,7 @@ class UserInfoInterceptor {
 
     UserInfoInterceptor() {
         matchAll()
-                .excludes(controller: ~/(auth|image|verify)/)
+                .excludes(controller: ~/(image|verify)/)
                 .excludes(controller: 'item', action: ~/(deleteImage|deleteItem|deleteGroup|addImage|editItemField|editItemGroupField|linkSource|unlinkSource)/)
                 .excludes(controller: 'passport', action: ~/(editPassportField|addItem|removeItem|deletePassport)/)
                 .excludes(controller: 'source', action: ~/(getSourcesByPeriod|editSourceField|deleteImage|deleteSource|addImage|deleteComment)/)
