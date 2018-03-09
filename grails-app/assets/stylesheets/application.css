@@ -105,3 +105,11 @@ select:disabled {
     width: inherit;
     max-width: 600px;
 }
+
+[hidden] {
+    display: none !important;
+}
+
+label {
+     overflow: hidden;
+}

@@ -50,3 +50,10 @@ function hideModals() {
     $('.modal-backdrop').remove();
     $('.modal').modal('hide');
 }
+
+function setFileUploadPlaceholder(element) {
+    //cutting off "fakepath"
+    var fileName = element.value.split(/(\\|\/)/g).pop();
+    var placeholder = element.parentNode.querySelector(".placeholder");
+    placeholder.innerHTML = "<b>" + fileName + "</b>";
+}
