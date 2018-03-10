@@ -1,28 +1,11 @@
-<script>
-  var count = 0;
-  var container = ".${fieldName}-container"
-
-  function createFields() {
-    count++;
-    var imageField = cloneField(".image").insertAfter($('hr:last'));
-    var imageInfoField = cloneField(".imageInfo").insertAfter($(imageField));
-    $(document.createElement('hr')).insertAfter($(imageInfoField));
-  }
-
-  function cloneField(fieldCls) {
-    var fieldValue = "${fieldName}[" + count + "]" + fieldCls;
-    var section = $(fieldCls + ':last').clone();
-    $(section).find("input").attr('name', fieldValue).attr('id', fieldValue).val('');
-    $(section).find("label").attr('for', fieldValue);
-    return section;
-  }
-</script>
 <div class="${fieldName}-container">
-  <tempvs:formField classes="image" type="file" name="${fieldName}[0].image" label="${imageLabel}" />
-  <tempvs:formField classes="imageInfo" type="text" name="${fieldName}[0].imageInfo" label="${infoLabel}" />
-  <hr/>
+  <tempvs:formField classes="image hidden" type="file" name=" " label="${imageLabel}" />
+  <tempvs:formField classes="imageInfo hidden" type="text" name=" " label="${infoLabel}" />
 </div>
 <div class="row">
-  <span class="btn btn-default glyphicon glyphicon-plus pull-right" data-toggle="tooltip"
-      data-placement="bottom" title="${g.message(code: 'image.addImage.tooltip')}" onclick="createFields();"></span>
+  <span class="btn btn-default glyphicon glyphicon-plus pull-right" onclick="imageUploader.createFields('${fieldName}');">Add image</span>
 </div>
+
+<script>
+  imageUploader.count['${fieldName}'] = 0;
+</script>
