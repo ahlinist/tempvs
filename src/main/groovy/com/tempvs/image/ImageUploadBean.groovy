@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile
 import grails.validation.Validateable
 
 /**
- * A bean for uploading multipartFiles along with their text descriptions.
+ * A bean for uploading {@link org.springframework.web.multipart.MultipartFile} collections with their short descriptions.
  */
 @GrailsCompileStatic
 class ImageUploadBean implements Validateable {
@@ -18,7 +18,7 @@ class ImageUploadBean implements Validateable {
     static constraints = {
         imageInfo nullable: true, size: 0..255
         image validator: { MultipartFile image ->
-            image.contentType in CONTENT_TYPES
+            !image.empty ? image.contentType in CONTENT_TYPES : Boolean.TRUE
         }
     }
 }

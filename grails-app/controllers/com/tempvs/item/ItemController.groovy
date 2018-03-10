@@ -115,7 +115,7 @@ class ItemController {
     def createItem(Item item, ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
-        if (!imageUploadBeans.every { it.validate() }) {
+        if (imageUploadBeans && !imageUploadBeans.every { it.validate() }) {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
         }
 
