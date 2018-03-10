@@ -3,7 +3,9 @@
   <tempvs:formField classes="imageInfo hidden" type="text" name=" " label="${infoLabel}" />
 </div>
 <div class="row">
-  <span class="btn btn-default glyphicon glyphicon-plus pull-right" onclick="imageUploader.createFields('${fieldName}');">Add image</span>
+  <span class="btn btn-default pull-right" onclick="imageUploader.createFields('${fieldName}');">
+    <g:message code="image.uploader.add.button"/>
+  </span>
 </div>
 
 <script>
