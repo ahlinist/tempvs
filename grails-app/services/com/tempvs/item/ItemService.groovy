@@ -96,10 +96,6 @@ class ItemService {
 
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item deleteImage(Item item, Image image) {
-        if (!item.images.contains(image)) {
-            throw new AccessDeniedException('Item does not contain the given image.')
-        }
-
         item.removeFromImages(image)
         imageService.deleteImage(image)
         item.save()

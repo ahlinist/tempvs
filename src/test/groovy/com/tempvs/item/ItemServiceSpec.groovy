@@ -140,7 +140,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         def result = service.deleteImage(item, image)
 
         then:
-        1 * item.images >> images
         1 * item.removeFromImages(image)
         1 * imageService.deleteImage(image)
         1 * item.save() >> item

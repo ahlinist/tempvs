@@ -12,7 +12,7 @@ class ItemGroup implements BasePersistent {
 
     String name
     String description
-    Collection<Item> items
+    List<Item> items
 
     static hasMany = [items: Item]
     static belongsTo = [user: User]

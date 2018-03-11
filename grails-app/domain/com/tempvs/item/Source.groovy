@@ -16,7 +16,7 @@ class Source implements BasePersistent {
     String description
     Type type
     Period period
-    Collection<Image> images
+    List<Image> images
     List<Comment> comments
 
     static constraints = {

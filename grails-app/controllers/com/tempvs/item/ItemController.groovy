@@ -208,7 +208,7 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        Item item = itemService.getItem params.itemId as Long
+        Item item = itemService.getItem(params.itemId as Long)
         Image image = imageService.uploadImage(imageUploadBean, ITEM_COLLECTION)
 
         if (!item || !image) {
