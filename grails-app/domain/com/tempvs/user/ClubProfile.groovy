@@ -13,7 +13,7 @@ class ClubProfile extends Profile {
     String nickName
     String clubName
     Period period
-    List<Passport> passports
+    Collection<Passport> passports
 
     static belongsTo = [user: User]
     static hasMany = [passports: Passport]
