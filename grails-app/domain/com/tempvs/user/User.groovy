@@ -23,8 +23,8 @@ class User implements BasePersistent {
     Date lastActive = new Date()
     Class currentProfileClass
     Long currentProfileId
-    List<ClubProfile> clubProfiles
-    List<ItemGroup> itemGroups
+    Collection<ClubProfile> clubProfiles
+    Collection<ItemGroup> itemGroups
 
     transient Profile currentProfile
 
