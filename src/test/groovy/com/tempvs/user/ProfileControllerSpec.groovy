@@ -181,7 +181,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
 
         and:
-        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport] as Set, editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
+        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport], editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
     }
 
     void "Test switchProfile() being logged in without id"() {

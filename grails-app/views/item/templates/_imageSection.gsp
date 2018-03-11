@@ -8,7 +8,7 @@
         <div class="panel-heading">
           <h4 class="panel-title">
             <a data-toggle="collapse" href="#imageCollapse">
-              <g:message code="item.image.edit.collapse.title"/>
+              <g:message code="image.edit.collapse.title"/>
               <span class="caret"></span>
             </a>
           </h4>
@@ -25,9 +25,9 @@
                 <div class="col-sm-4">
                 </div>
                 <div class="col-sm-4">
-                  <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.deleteImage.button')}">
+                  <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'image.delete.button')}">
                     <tempvs:modalButton id="deleteItemImage-${image.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
-                      <g:message code='item.imageDeleteConfirmation.text'/>
+                      <g:message code='image.delete.confirmation.text'/>
                       <br/>
                       <tempvs:ajaxLink controller="item" action="deleteImage" params="${[itemId: itemId, imageId: imageId]}" method="DELETE" selector="div#image-section" classes="btn btn-default">
                         <g:message code="yes"/>
@@ -36,7 +36,7 @@
                     </tempvs:modalButton>
                   </span>
                   <g:if test="${imageInfo}">
-                    <b><g:message code="item.imageInfo.label"/></b>:
+                    <b><g:message code="image.info.label"/></b>:
                     <p>${imageInfo}</p>
                   </g:if>
                 </div>
@@ -45,8 +45,8 @@
             <li class="list-group-item row">
               <div class="row">
                 <tempvs:ajaxForm controller="item" action="addImage" selector="div#image-section">
-                  <tempvs:formField type="file" name="imageUploadBean.image" label="item.image.label" />
-                  <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="item.imageInfo.label" />
+                  <tempvs:formField type="file" name="imageUploadBean.image" label="image.label" />
+                  <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="image.info.label" />
                   <input type="hidden" name="itemId" value="${itemId}"/>
                   <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
                 </tempvs:ajaxForm>

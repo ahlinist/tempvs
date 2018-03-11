@@ -27,7 +27,7 @@
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.createSource.tooltip')}">
               <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-plus">
                 <tempvs:ajaxForm action="createSource">
-                  <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="source.image.label" infoLabel="source.imageInfo.label"/>
+                  <tempvs:imageUploader fieldName="imageUploadBeans"/>
                   <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
                   <tempvs:formField type="select" name="type" from="${availableTypes}" optionKey="key" optionValue="value" label="item.type.dropdown.label"/>
                   <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" />

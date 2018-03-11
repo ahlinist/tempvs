@@ -3,6 +3,10 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.communication.Comment
 import com.tempvs.communication.CommentService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
+import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
 import com.tempvs.user.ClubProfile
 import com.tempvs.user.ProfileService
@@ -29,18 +33,23 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     private static final String SUCCESS_ACTION = 'success'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String REPLACE_ACTION = 'replaceElement'
+    private static final String PASSPORT_COLLECTION = 'passport'
 
     def json = Mock JSON
     def user = Mock User
     def item = Mock Item
+    def image = Mock Image
     def comment = Mock Comment
     def type = GroovyMock Type
     def passport = Mock Passport
     def period = GroovyMock Period
     def clubProfile = Mock ClubProfile
     def item2Passport = Mock Item2Passport
+    def imageUploadBean = Mock ImageUploadBean
+    def imageUploadCommand = Mock ImageUploadCommand
 
     def itemService = Mock ItemService
+    def imageService = Mock ImageService
     def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
     def profileService = Mock ProfileService
@@ -51,6 +60,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
     def setup() {
         controller.itemService = itemService
+        controller.imageService = imageService
         controller.profileService = profileService
         controller.userInfoHelper = userInfoHelper
         controller.commentService = commentService
@@ -77,13 +87,18 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         request.method = POST_METHOD
 
         when:
-        controller.createPassport(passport)
+        controller.createPassport(passport, imageUploadCommand)
 
         then:
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
         1 * clubProfile.asType(ClubProfile) >> clubProfile
         1 * passport.setClubProfile(clubProfile)
-        1 * passportService.createPassport(passport) >> passport
+        1 * passport.validate() >> Boolean.TRUE
+        1 * imageService.uploadImages([imageUploadBean], PASSPORT_COLLECTION) >> [image]
+        1 * passport.setImages([image])
+        1 * passportService.savePassport(passport) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect(_) >> json
@@ -107,10 +122,12 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * item.type >> type
         1 * itemService.getItemsByPeriod(period) >> [item, item]
         1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
+        1 * passport.images >> [image]
         0 * _
 
         and:
         result == [
+                images: [image],
                 clubProfile: clubProfile,
                 passport: passport,
                 itemMap: [(type): [item2Passport]],
@@ -261,6 +278,49 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * item.type >> type
         1 * itemService.getItemsByPeriod(period) >> [item]
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test addImage()"() {
+        given:
+        params.passportId = LONG_ONE
+        request.method = POST_METHOD
+
+        when:
+        controller.addImage(imageUploadBean)
+
+        then:
+        1 * imageUploadBean.validate() >> Boolean.TRUE
+        1 * passportService.getPassport(LONG_ONE) >> passport
+        1 * imageService.uploadImage(imageUploadBean, PASSPORT_COLLECTION) >> image
+        1 * passport.addToImages(image)
+        1 * passportService.savePassport(passport) >> passport
+        1 * passport.hasErrors() >> Boolean.FALSE
+        1 * passport.images >> [image]
+        1 * groovyPageRenderer.render(_ as Map)
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test deleteImage()"() {
+        given:
+        request.method = DELETE_METHOD
+
+        when:
+        controller.deleteImage(LONG_ONE, LONG_TWO)
+
+        then:
+        1 * passportService.getPassport(LONG_ONE) >> passport
+        1 * imageService.getImage(LONG_TWO) >> image
+        1 * passportService.deleteImage(passport, image) >> passport
+        1 * passport.hasErrors() >> Boolean.FALSE
+        1 * passport.images >> [image]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

@@ -20,7 +20,6 @@
                 <tempvs:ajaxForm action="createGroup">
                   <tempvs:formField type="text" name="name" label="item.group.name.label" />
                   <tempvs:formField type="text" name="description" label="item.group.description.label" />
-                  <input type="hidden" name="groupId"/>
                   <tempvs:ajaxSubmitButton value="item.createGroup.button" />
                 </tempvs:ajaxForm>
               </tempvs:modalButton>

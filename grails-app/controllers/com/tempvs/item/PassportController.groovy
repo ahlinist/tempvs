@@ -3,6 +3,10 @@ package com.tempvs.item
 import com.tempvs.ajax.AjaxResponseHelper
 import com.tempvs.communication.Comment
 import com.tempvs.communication.CommentService
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
+import com.tempvs.image.ImageUploadBean
+import com.tempvs.image.ImageUploadCommand
 import com.tempvs.user.ClubProfile
 import com.tempvs.user.Profile
 import com.tempvs.user.ProfileService
@@ -23,6 +27,7 @@ class PassportController {
 
     private static final String NO_ACTION = 'none'
     private static final String SUCCESS_ACTION = 'success'
+    private static final String PASSPORT_COLLECTION = 'passport'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String NO_SUCH_PASSPORT = 'passport.noSuchPassport.message'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
@@ -35,11 +40,14 @@ class PassportController {
             removeItem: 'DELETE',
             deletePassport: 'DELETE',
             addComment: 'POST',
+            addImage: 'POST',
             deleteComment: 'DELETE',
+            deleteImage: 'DELETE',
             editQuantity: 'POST',
     ]
 
     ItemService itemService
+    ImageService imageService
     UserInfoHelper userInfoHelper
     CommentService commentService
     ProfileService profileService
@@ -52,9 +60,22 @@ class PassportController {
         redirect controller: 'profile'
     }
 
-    def createPassport(Passport passport) {
+    def createPassport(Passport passport, ImageUploadCommand command) {
+        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
+
+        if (imageUploadBeans && !imageUploadBeans.every { it.validate() }) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
+        }
+
         passport.clubProfile = userInfoHelper.getCurrentProfile(request) as ClubProfile
-        passport = passportService.createPassport(passport)
+
+        if (!passport.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(passport))
+        }
+
+        passport.images = imageService.uploadImages(imageUploadBeans, PASSPORT_COLLECTION)
+
+        passport = passportService.savePassport(passport)
 
         if (passport.hasErrors()) {
             return ajaxResponseHelper.renderValidationResponse(passport)
@@ -74,8 +95,9 @@ class PassportController {
         ClubProfile clubProfile = passport.clubProfile
 
         [
-                clubProfile: clubProfile,
                 passport: passport,
+                images: passport.images,
+                clubProfile: clubProfile,
                 itemMap: composeItemMap(passport),
                 availableItems: itemService.getItemsByPeriod(clubProfile.period),
                 editAllowed: clubProfile == userInfoHelper.getCurrentProfile(request),
@@ -205,6 +227,49 @@ class PassportController {
         ]
 
         String template = groovyPageRenderer.render(template: '/passport/templates/itemSection', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def addImage(ImageUploadBean imageUploadBean) {
+        if (!imageUploadBean.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
+        }
+
+        Passport passport = passportService.getPassport(params.passportId as Long)
+        Image image = imageService.uploadImage(imageUploadBean, PASSPORT_COLLECTION)
+
+        if (!passport || !image) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        passport.addToImages(image)
+        passport = passportService.savePassport(passport)
+
+        if (passport.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(passport))
+        }
+
+        Map model = [images: passport.images, passportId: params.passportId, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/passport/templates/imageSection', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def deleteImage(Long passportId, Long imageId) {
+        Passport passport = passportService.getPassport passportId
+        Image image = imageService.getImage imageId
+
+        if (!passport || !image) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        passport = passportService.deleteImage(passport, image)
+
+        if (passport.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(passport))
+        }
+
+        Map model = [images: passport.images, passportId: passportId, editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/passport/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

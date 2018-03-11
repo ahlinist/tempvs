@@ -29,7 +29,9 @@
             <g:render template="/source/templates/comments"/>
           </div>
         </div>
-        <g:render template="/source/templates/imageSection" model="${[sourceId: sourceId]}"/>
+        <div class="row">
+          <g:render template="/source/templates/imageSection" model="${[sourceId: sourceId]}"/>
+        </div>
       </g:if>
       <g:else>
         <g:message code="source.notFound.message"/>

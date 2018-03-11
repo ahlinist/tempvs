@@ -27,7 +27,7 @@
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'item.createItem.tooltip')}">
               <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">
                 <tempvs:ajaxForm action="createItem">
-                  <tempvs:imageUploader fieldName="imageUploadBeans" imageLabel="item.image.label" infoLabel="item.imageInfo.label"/>
+                  <tempvs:imageUploader fieldName="imageUploadBeans"/>
                   <tempvs:formField type="text" name="name" label="item.name.label" />
                   <tempvs:formField type="text" name="description" label="item.description.label" />
                   <tempvs:formField type="select" name="type" from="${availableTypes}" optionKey="key" optionValue="value" label="item.type.dropdown.label"/>

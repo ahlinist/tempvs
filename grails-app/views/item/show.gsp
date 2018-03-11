@@ -28,7 +28,9 @@
           <g:render template="/item/templates/comments"/>
         </div>
       </div>
-      <g:render template="/item/templates/imageSection" model="${[itemId: itemId]}"/>
+      <div class="row">
+        <g:render template="/item/templates/imageSection" model="${[itemId: itemId]}"/>
+      </div>
     </g:if>
     <g:else>
       <g:message code="item.notFound.message"/>

@@ -1,6 +1,6 @@
 <g:if test="${clubProfile}">
   <span class="pull-left">
-    <g:link controller="profile" action="clubProfile" id="${clubProfile.id}">
+    <g:link controller="profile" action="club" id="${clubProfile.id}">
       <u>
         ${clubProfile}
       </u>

@@ -24,6 +24,9 @@
           <g:render template="/passport/templates/comments"/>
         </div>
       </div>
+      <div class="row">
+        <g:render template="/passport/templates/imageSection" model="${[passportId: passportId]}"/>
+      </div>
     </g:if>
     <g:else>
       <g:message code="${notFoundMessage}" args="${[id]}" />

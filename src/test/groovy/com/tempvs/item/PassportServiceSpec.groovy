@@ -1,6 +1,8 @@
 package com.tempvs.item
 
 import com.tempvs.communication.Comment
+import com.tempvs.image.Image
+import com.tempvs.image.ImageService
 import com.tempvs.user.ClubProfile
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
@@ -13,9 +15,11 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
     private static final String FIELD_VALUE = 'fieldValue'
 
     def item = Mock Item
+    def image = Mock Image
     def comment = Mock Comment
     def passport = Mock Passport
     def clubProfile = Mock ClubProfile
+    def imageService = Mock ImageService
     def item2Passport = Mock Item2Passport
 
     void setupSpec() {
@@ -23,6 +27,8 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
     }
 
     def setup() {
+        service.imageService = imageService
+
         GroovySpy(Passport, global: true)
         GroovySpy(Item2Passport, global: true)
     }
@@ -44,7 +50,7 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
     void "Test createPassport()"() {
         when:
-        def result = service.createPassport(passport)
+        def result = service.savePassport(passport)
 
         then:
         1 * passport.save() >> passport
@@ -126,5 +132,19 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
         and:
         result == item2Passport
+    }
+
+    void "Test deleteImage()"() {
+        when:
+        def result = service.deleteImage(passport, image)
+
+        then:
+        1 * passport.removeFromImages(image) >> passport
+        1 * imageService.deleteImage(image)
+        1 * passport.save()
+        0 * _
+
+        and:
+        result == passport
     }
 }
