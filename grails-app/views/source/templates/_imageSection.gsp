@@ -1,6 +1,6 @@
 <div id="image-section">
   <div class="row">
-    <tempvs:carousel images="${images}" orientation="horizontal" styles="min-height: 25vw; max-height: 25vw;"/>
+    <tempvs:modalCarousel images="${images}" orientation="horizontal" styles="min-height: 25vw; max-height: 25vw;"/>
   </div>
   <sec:ifLoggedIn>
     <div class="panel-group">

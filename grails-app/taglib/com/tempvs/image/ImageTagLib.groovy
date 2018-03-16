@@ -11,22 +11,26 @@ class ImageTagLib {
 
     LinkGenerator grailsLinkGenerator
 
-    String image = { Map attrs ->
+    String image = { Map attrs, Closure body ->
         Image image = attrs.image
         String classes = "${image?.collection} ${attrs.orientation ?: 'vertical'} center-block"
         String link = grailsLinkGenerator.link(controller: 'image', action: 'get', id: image?.objectId, params: [collection: image?.collection])
-        out << render(template: '/image/templates/image', model: [src: link, classes: classes, alt: image?.imageInfo, styles: attrs.styles])
+        out << render(template: '/image/templates/image', model: [src: link, classes: classes, alt: image?.imageInfo, styles: attrs.styles, body: body()])
     }
 
     String modalImage = { Map attrs, Closure body ->
         out << render(template: '/image/templates/modalImage', model: attrs + [body: body()])
     }
 
-    String imageUploader = { Map attrs ->
-        out << render(template: '/image/templates/imageUploader', model: attrs)
+    String imageUploader = { Map attrs, Closure body ->
+        out << render(template: '/image/templates/imageUploader', model: attrs + [body: body()])
     }
 
-    String carousel = { Map attrs ->
-        out << render(template: '/image/templates/carousel', model: attrs)
+    String carousel = { Map attrs, Closure body ->
+        out << render(template: '/image/templates/carousel', model: attrs + [body: body()])
+    }
+
+    String modalCarousel = { Map attrs, Closure body ->
+        out << render(template: '/image/templates/modalCarousel', model: attrs + [body: body()])
     }
 }
