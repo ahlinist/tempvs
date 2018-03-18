@@ -410,7 +410,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
     void "Test addImage()"() {
         given:
-        params.itemId = LONG_ONE
+        params.objectId = LONG_ONE
         request.method = POST_METHOD
 
         when:

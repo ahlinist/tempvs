@@ -8,6 +8,7 @@ import com.tempvs.image.ImageService
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
+import com.tempvs.user.User
 import com.tempvs.user.UserInfoHelper
 import com.tempvs.user.UserProfile
 import grails.converters.JSON
@@ -36,6 +37,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String REPLACE_ACTION = 'replaceElement'
 
     def json = Mock JSON
+    def user = Mock User
     def image = Mock Image
     def period = Period.XIX
     def source = Mock Source
@@ -80,10 +82,11 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * source.period >> period
         1 * source.images >> [image]
+        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
         0 * _
 
         and:
-        result == [source: source, period: period, images: [image]]
+        result == [source: source, period: period, images: [image], editAllowed: Boolean.TRUE]
     }
 
     void "Test createSource()"() {
@@ -194,7 +197,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
     void "Test addImage()"() {
         given:
-        params.sourceId = LONG_ONE
+        params.objectId = LONG_ONE
         request.method = POST_METHOD
 
         when:

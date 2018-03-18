@@ -80,7 +80,7 @@ class SourceController {
     def show(Long id) {
         if (id) {
             Source source = sourceService.getSource id
-            [source: source, period: source?.period, images: source?.images]
+            [source: source, period: source?.period, images: source?.images, editAllowed: userInfoHelper.getCurrentUser(request) != null]
         }
     }
 
@@ -121,8 +121,8 @@ class SourceController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    def deleteImage(Long sourceId, Long imageId) {
-        Source source = sourceService.getSource sourceId
+    def deleteImage(Long objectId, Long imageId) {
+        Source source = sourceService.getSource objectId
         Image image = imageService.getImage imageId
 
         if (!source || !image) {
@@ -135,8 +135,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [images: source.images, sourceId: sourceId, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/source/templates/imageSection', model: model)
+        Map model = [images: source.images, objectId: objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -160,7 +160,7 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        Source source = sourceService.getSource params.sourceId as Long
+        Source source = sourceService.getSource params.objectId as Long
         Image image = imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION)
 
         if (!source || !image) {
@@ -174,8 +174,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [images: source.images, sourceId: params.sourceId, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/source/templates/imageSection', model: model)
+        Map model = [images: source.images, objectId: params.objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

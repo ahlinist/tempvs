@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="row">
-          <g:render template="/source/templates/imageSection" model="${[sourceId: sourceId]}"/>
+          <g:render template="/image/templates/imageSection" model="${[objectId: sourceId]}"/>
         </div>
       </g:if>
       <g:else>

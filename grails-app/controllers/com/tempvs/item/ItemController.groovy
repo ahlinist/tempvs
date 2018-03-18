@@ -133,8 +133,8 @@ class ItemController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'show', id: item.id))
     }
 
-    def deleteImage(Long itemId, Long imageId) {
-        Item item = itemService.getItem itemId
+    def deleteImage(Long objectId, Long imageId) {
+        Item item = itemService.getItem objectId
         Image image = imageService.getImage imageId
 
         if (!item || !image) {
@@ -147,8 +147,8 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, itemId: itemId, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/item/templates/imageSection', model: model)
+        Map model = [images: item.images, objectId: objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -208,7 +208,7 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        Item item = itemService.getItem(params.itemId as Long)
+        Item item = itemService.getItem(params.objectId as Long)
         Image image = imageService.uploadImage(imageUploadBean, ITEM_COLLECTION)
 
         if (!item || !image) {
@@ -222,8 +222,8 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, itemId: params.itemId, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/item/templates/imageSection', model: model)
+        Map model = [images: item.images, objectId: params.objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

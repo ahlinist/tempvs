@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="row">
-        <g:render template="/passport/templates/imageSection" model="${[passportId: passportId]}"/>
+        <g:render template="/image/templates/imageSection" model="${[objectId: passportId]}"/>
       </div>
     </g:if>
     <g:else>

@@ -287,7 +287,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
     void "Test addImage()"() {
         given:
-        params.passportId = LONG_ONE
+        params.objectId = LONG_ONE
         request.method = POST_METHOD
 
         when:

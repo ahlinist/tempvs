@@ -235,7 +235,7 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        Passport passport = passportService.getPassport(params.passportId as Long)
+        Passport passport = passportService.getPassport(params.objectId as Long)
         Image image = imageService.uploadImage(imageUploadBean, PASSPORT_COLLECTION)
 
         if (!passport || !image) {
@@ -249,13 +249,13 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [images: passport.images, passportId: params.passportId, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/passport/templates/imageSection', model: model)
+        Map model = [images: passport.images, objectId: params.objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def deleteImage(Long passportId, Long imageId) {
-        Passport passport = passportService.getPassport passportId
+    def deleteImage(Long objectId, Long imageId) {
+        Passport passport = passportService.getPassport objectId
         Image image = imageService.getImage imageId
 
         if (!passport || !image) {
@@ -268,8 +268,8 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [images: passport.images, passportId: passportId, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/passport/templates/imageSection', model: model)
+        Map model = [images: passport.images, objectId: objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
+        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
