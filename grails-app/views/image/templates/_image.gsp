@@ -1,1 +1,1 @@
-<img style="${styles}" class="${classes}" src="${src}" alt="${alt}"/>
+<img id="${id}" class="${classes}" style="${styles}" src="${src}" alt="${alt}"/>

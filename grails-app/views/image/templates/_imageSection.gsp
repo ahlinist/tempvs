@@ -42,16 +42,6 @@
                 </div>
               </li>
             </g:each>
-            <li class="list-group-item row">
-              <div class="row">
-                <tempvs:ajaxForm controller="${controllerName}" action="addImage" selector="div#image-section">
-                  <tempvs:formField type="file" name="imageUploadBean.image" label="image.label" />
-                  <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="image.info.label" />
-                  <input type="hidden" name="objectId" value="${objectId}"/>
-                  <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
-                </tempvs:ajaxForm>
-              </div>
-            </li>
           </ul>
         </div>
       </div>
