@@ -5,6 +5,7 @@ import com.tempvs.communication.Comment
 import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageTagLib
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
@@ -25,6 +26,7 @@ import org.springframework.security.access.annotation.Secured
 class SourceController {
 
     private static final String NO_ACTION = 'none'
+    private static final String HORIZONTAL = 'horizontal'
     private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String REPLACE_ACTION = 'replaceElement'
@@ -43,6 +45,7 @@ class SourceController {
             deleteComment: 'DELETE',
     ]
 
+    ImageTagLib imageTagLib
     ImageService imageService
     SourceService sourceService
     UserInfoHelper userInfoHelper
@@ -135,8 +138,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [images: source.images, objectId: objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
+        Map model = [images: source.images, orientation: HORIZONTAL, objectId: objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
+        String template = imageTagLib.modalCarousel(model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -174,8 +177,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [images: source.images, objectId: params.objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
+        Map model = [images: source.images, orientation: HORIZONTAL, objectId: params.objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
+        String template = imageTagLib.modalCarousel(model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

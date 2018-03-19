@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="row">
-        <g:render template="/image/templates/imageSection" model="${[objectId: passportId]}"/>
+        <tempvs:modalCarousel images="${images}" orientation="horizontal" objectId="${passportId}"/>
       </div>
     </g:if>
     <g:else>

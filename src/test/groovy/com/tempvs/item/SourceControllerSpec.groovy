@@ -5,6 +5,7 @@ import com.tempvs.communication.Comment
 import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageTagLib
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
@@ -52,9 +53,11 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def sourceService = Mock SourceService
     def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
+    def imageTagLib = Mock ImageTagLib
 
     def setup() {
         controller.imageService = imageService
+        controller.imageTagLib = imageTagLib
         controller.sourceService = sourceService
         controller.userInfoHelper = userInfoHelper
         controller.commentService = commentService
@@ -211,7 +214,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * imageTagLib.modalCarousel(_ as Map)
         0 * _
 
         and:
@@ -250,7 +253,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * imageTagLib.modalCarousel(_ as Map)
         0 * _
 
         and:

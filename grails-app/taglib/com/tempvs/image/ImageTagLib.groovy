@@ -1,11 +1,13 @@
 package com.tempvs.image
 
+import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 
 /**
  * {@link com.tempvs.image.ImageBean} handling taglib.
  */
 class ImageTagLib {
+
     static defaultEncodeAs = [taglib:'raw']
     static namespace = 'tempvs'
 
@@ -30,7 +32,8 @@ class ImageTagLib {
         out << render(template: '/image/templates/carousel', model: attrs + [body: body()])
     }
 
-    String modalCarousel = { Map attrs, Closure body ->
-        out << render(template: '/image/templates/modalCarousel', model: attrs + [body: body()])
+    String modalCarousel = { Map attrs ->
+        String slideMapping = attrs.images.collectEntries { [(attrs.images.indexOf(it)): it.id] } as JSON
+        out << render(template: '/image/templates/modalCarousel', model: attrs + [slideMapping: slideMapping])
     }
 }

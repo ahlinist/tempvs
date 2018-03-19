@@ -12,7 +12,7 @@
     </g:elseif>
     <g:elseif test="${type == 'file'}">
       <label class="btn btn-default col-sm-12">
-          <span class="placeholder"><i><g:message code="image.uploader.choose.file.placeholder"/></i></span>
+          <span class="placeholder"><i><g:message code="image.uploader.select.file.placeholder"/></i></span>
           <input type="file" name="${name}" hidden onchange="setFileUploadPlaceholder(this);">
       </label>
     </g:elseif>

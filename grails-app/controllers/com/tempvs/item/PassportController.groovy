@@ -5,6 +5,7 @@ import com.tempvs.communication.Comment
 import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageTagLib
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.image.ImageUploadCommand
 import com.tempvs.user.ClubProfile
@@ -26,6 +27,7 @@ import org.springframework.security.access.annotation.Secured
 class PassportController {
 
     private static final String NO_ACTION = 'none'
+    private static final String HORIZONTAL = 'horizontal'
     private static final String SUCCESS_ACTION = 'success'
     private static final String PASSPORT_COLLECTION = 'passport'
     private static final String REPLACE_ACTION = 'replaceElement'
@@ -46,6 +48,7 @@ class PassportController {
             editQuantity: 'POST',
     ]
 
+    ImageTagLib imageTagLib
     ItemService itemService
     ImageService imageService
     UserInfoHelper userInfoHelper
@@ -249,8 +252,8 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [images: passport.images, objectId: params.objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
+        Map model = [images: passport.images, orientation: HORIZONTAL, objectId: params.objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
+        String template = imageTagLib.modalCarousel(model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -268,8 +271,8 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [images: passport.images, objectId: objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/image/templates/imageSection', model: model)
+        Map model = [images: passport.images, orientation: HORIZONTAL, objectId: objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
+        String template = imageTagLib.modalCarousel(model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

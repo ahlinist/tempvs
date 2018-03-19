@@ -28,8 +28,8 @@
           <g:render template="/item/templates/comments"/>
         </div>
       </div>
-      <div class="row">
-        <g:render template="/image/templates/imageSection" model="${[objectId: itemId]}"/>
+      <div class="row" id="modal-carousel">
+        <tempvs:modalCarousel images="${images}" orientation="horizontal" objectId="${itemId}"/>
       </div>
     </g:if>
     <g:else>

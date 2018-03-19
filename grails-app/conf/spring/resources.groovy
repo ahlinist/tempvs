@@ -1,4 +1,5 @@
 import com.tempvs.ajax.AjaxResponseHelper
+import com.tempvs.image.ImageTagLib
 import com.tempvs.mongodb.GridFSFactory
 import com.tempvs.mongodb.MongoImageDAO
 import com.tempvs.user.UserInfoHelper
@@ -16,6 +17,10 @@ beans = {
 
     userInfoHelper(UserInfoHelper) {
         profileService = ref("profileService")
+    }
+
+    imageTagLib(ImageTagLib) {
+        ref("grailsLinkGenerator")
     }
 
     gridFSFactory(GridFSFactory)

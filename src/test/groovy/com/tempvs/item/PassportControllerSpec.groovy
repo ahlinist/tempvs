@@ -5,6 +5,7 @@ import com.tempvs.communication.Comment
 import com.tempvs.communication.CommentService
 import com.tempvs.image.Image
 import com.tempvs.image.ImageService
+import com.tempvs.image.ImageTagLib
 import com.tempvs.image.ImageUploadBean
 import com.tempvs.image.ImageUploadCommand
 import com.tempvs.periodization.Period
@@ -49,6 +50,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def imageUploadCommand = Mock ImageUploadCommand
 
     def itemService = Mock ItemService
+    def imageTagLib = Mock ImageTagLib
     def imageService = Mock ImageService
     def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
@@ -57,9 +59,9 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def groovyPageRenderer = Mock PageRenderer
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
-
     def setup() {
         controller.itemService = itemService
+        controller.imageTagLib = imageTagLib
         controller.imageService = imageService
         controller.profileService = profileService
         controller.userInfoHelper = userInfoHelper
@@ -301,7 +303,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.savePassport(passport) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.images >> [image]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * imageTagLib.modalCarousel(_ as Map)
         0 * _
 
         and:
@@ -321,7 +323,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.deleteImage(passport, image) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.images >> [image]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * imageTagLib.modalCarousel(_ as Map)
         0 * _
 
         and:

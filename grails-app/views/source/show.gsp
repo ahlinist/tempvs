@@ -30,7 +30,7 @@
           </div>
         </div>
         <div class="row">
-          <g:render template="/image/templates/imageSection" model="${[objectId: sourceId]}"/>
+          <tempvs:modalCarousel images="${images}" orientation="horizontal" objectId="${sourceId}"/>
         </div>
       </g:if>
       <g:else>

@@ -1,6 +1,5 @@
 package com.tempvs.image
 
-import com.tempvs.common.CommonTagLib
 import grails.testing.web.taglib.TagLibUnitTest
 import spock.lang.Specification
 
@@ -22,11 +21,8 @@ class ImageTagLibSpec extends Specification implements TagLibUnitTest<ImageTagLi
     }
 
     void "Test image()"() {
-        given:
-        Map properties = [image: image]
-
         when:
-        String result = tagLib.image(properties)
+        String result = tagLib.image([image: image])
 
         then:
         2 * image.collection >> COLLECTION
