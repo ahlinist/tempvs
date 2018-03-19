@@ -19,18 +19,20 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-sm-6 ajax-form">
-            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.name.label"/>
-            <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.description.label"/>
-            <tempvs:ajaxSmartForm type="text" value="${source.type.value}" label="item.type.dropdown.label" editAllowed="${false}"/>
-            <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
-          </div>
           <div class="col-sm-6">
+            <div class="ajax-form">
+              <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.name.label"/>
+              <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.description.label"/>
+              <tempvs:ajaxSmartForm type="text" value="${source.type.value}" label="item.type.dropdown.label" editAllowed="${false}"/>
+              <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
+            </div>
             <g:render template="/source/templates/comments"/>
           </div>
-        </div>
-        <div class="row">
-          <tempvs:modalCarousel images="${images}" orientation="horizontal" objectId="${sourceId}"/>
+          <div class="col-sm-6">
+            <div id="modal-carousel">
+              <tempvs:modalCarousel images="${images}" objectId="${itemId}"/>
+            </div>
+          </div>
         </div>
       </g:if>
       <g:else>

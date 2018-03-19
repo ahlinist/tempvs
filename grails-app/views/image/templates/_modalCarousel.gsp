@@ -1,7 +1,7 @@
 <g:if test="${images}">
   <span type="button" class="btn" data-toggle="modal" data-target="#modal-${images.hashCode()}" data-local="#carousel-${images.hashCode()}" onclick="modalCarousel.init(${slideMapping})">
     <g:set var="image" value="${images.first()}"/>
-    <tempvs:image id="image-${image.id}" image="${image}" orientation="${orientation}" styles="min-height: 25vw; max-height: 25vw;"/>
+    <tempvs:image id="image-${image.id}" image="${image}" orientation="${orientation}"/>
   </span>
 
   <div class="modal fade" id="modal-${images.hashCode()}" tabindex="-1" role="dialog">

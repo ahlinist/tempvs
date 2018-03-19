@@ -16,16 +16,14 @@
             <tempvs:ajaxSmartForm type="text" action="editPassportField" name="name" value="${passport.name}" objectId="${passportId}" label="passport.name.label"/>
             <tempvs:ajaxSmartForm type="text" action="editPassportField" name="description" value="${passport.description}" objectId="${passportId}" label="passport.description.label"/>
           </div>
-          <div>
-            <g:render template="/passport/templates/itemSection"/>
-          </div>
-        </div>
-        <div class="col-sm-6">
+          <g:render template="/passport/templates/itemSection"/>
           <g:render template="/passport/templates/comments"/>
         </div>
-      </div>
-      <div class="row">
-        <tempvs:modalCarousel images="${images}" orientation="horizontal" objectId="${passportId}"/>
+        <div class="col-sm-6">
+          <div id="modal-carousel">
+            <tempvs:modalCarousel images="${images}" objectId="${passportId}"/>
+          </div>
+        </div>
       </div>
     </g:if>
     <g:else>
