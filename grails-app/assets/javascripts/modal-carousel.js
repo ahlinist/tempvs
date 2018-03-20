@@ -9,6 +9,8 @@ var modalCarousel = {
         });
     },
     deleteImage: function(button, controller, objectId) {
+        $('.carousel').off('slide.bs.carousel');
+        hideModals();
         var imageId = modalCarousel.slideMapping[modalCarousel.currentSlide];
         var url = '/' + controller + '/deleteImage?objectId=' + objectId + '&imageId=' + imageId;
         sendAjaxRequest(button, url, 'DELETE', '#modal-carousel', getActions());

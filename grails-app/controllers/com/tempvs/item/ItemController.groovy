@@ -29,7 +29,6 @@ import org.springframework.security.access.annotation.Secured
 class ItemController {
 
     private static final String NO_ACTION = 'none'
-    private static final String HORIZONTAL = 'horizontal'
     private static final String ITEM_COLLECTION = 'item'
     private static final String SUCCESS_ACTION = 'success'
     private static final String REPLACE_ACTION = 'replaceElement'
@@ -150,7 +149,7 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, orientation: HORIZONTAL, objectId: objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        Map model = [images: item.images, objectId: objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
         String template = imageTagLib.modalCarousel(model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -225,7 +224,7 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, orientation: HORIZONTAL, objectId: params.objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        Map model = [images: item.images, objectId: params.objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
         String template = imageTagLib.modalCarousel(model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

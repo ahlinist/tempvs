@@ -74,7 +74,7 @@
             <tempvs:formField type="file" name="imageUploadBean.image" label="image.label" />
             <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="image.info.label" />
             <input type="hidden" name="objectId" value="${objectId}"/>
-            <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk"/>
+            <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk" onclick="\$('.carousel').off('slide.bs.carousel');"/>
           </tempvs:ajaxForm>
         </div>
       </div>
