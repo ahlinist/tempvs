@@ -18,6 +18,7 @@ import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
 class PassportControllerSpec extends Specification implements ControllerUnitTest<PassportController> {
@@ -48,6 +49,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def item2Passport = Mock Item2Passport
     def imageUploadBean = Mock ImageUploadBean
     def imageUploadCommand = Mock ImageUploadCommand
+    def multipartFile = Mock GrailsMockMultipartFile
 
     def itemService = Mock ItemService
     def imageTagLib = Mock ImageTagLib
@@ -287,18 +289,21 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         response.json.action == REPLACE_ACTION
     }
 
-    void "Test addImage()"() {
+    void "Test addImages()"() {
         given:
         params.objectId = LONG_ONE
         request.method = POST_METHOD
 
         when:
-        controller.addImage(imageUploadBean)
+        controller.addImages(imageUploadCommand)
 
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
+        1 * imageUploadBean.image >> multipartFile
+        1 * multipartFile.empty >> Boolean.FALSE
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * imageService.uploadImages([imageUploadBean], PASSPORT_COLLECTION) >> [image]
         1 * passportService.getPassport(LONG_ONE) >> passport
-        1 * imageService.uploadImage(imageUploadBean, PASSPORT_COLLECTION) >> image
         1 * passport.addToImages(image)
         1 * passportService.savePassport(passport) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE

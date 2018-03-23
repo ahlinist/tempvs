@@ -18,6 +18,7 @@ import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
 class ItemControllerSpec extends Specification implements ControllerUnitTest<ItemController> {
@@ -59,6 +60,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def imageUploadBean = Mock ImageUploadBean
     def imageUploadCommand = Mock ImageUploadCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
+    def multipartFile = Mock GrailsMockMultipartFile
 
     def setup() {
         controller.userService = userService
@@ -411,18 +413,21 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         response.json.action == REPLACE_ACTION
     }
 
-    void "Test addImage()"() {
+    void "Test addImages()"() {
         given:
         params.objectId = LONG_ONE
         request.method = POST_METHOD
 
         when:
-        controller.addImage(imageUploadBean)
+        controller.addImages(imageUploadCommand)
 
         then:
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * imageUploadBean.image >> multipartFile
+        1 * multipartFile.empty >> Boolean.FALSE
         1 * imageUploadBean.validate() >> Boolean.TRUE
+        1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * imageService.uploadImage(imageUploadBean, ITEM_COLLECTION) >> image
         1 * item.addToImages(image)
         1 * itemService.saveItem(item) >> item
         1 * item.hasErrors() >> Boolean.FALSE

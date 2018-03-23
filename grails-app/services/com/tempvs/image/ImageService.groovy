@@ -53,7 +53,7 @@ class ImageService {
     }
 
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
-        imageUploadBeans?.collect { ImageUploadBean imageUploadBean ->
+        imageUploadBeans?.findResults { ImageUploadBean imageUploadBean ->
             uploadImage(imageUploadBean, collection)
         }
     }

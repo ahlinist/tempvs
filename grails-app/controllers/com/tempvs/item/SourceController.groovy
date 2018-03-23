@@ -41,6 +41,7 @@ class SourceController {
             deleteImage: 'DELETE',
             deleteSource: 'DELETE',
             addComment: 'POST',
+            addImages: 'POST',
             deleteComment: 'DELETE',
     ]
 
@@ -157,19 +158,25 @@ class SourceController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def addImage(ImageUploadBean imageUploadBean) {
-        if (!imageUploadBean.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
-        }
+    def addImages(ImageUploadCommand command) {
+        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
-        Source source = sourceService.getSource params.objectId as Long
-        Image image = imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION)
-
-        if (!source || !image) {
+        if (!imageUploadBeans || imageUploadBeans.every { it.image.empty }) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        source.addToImages(image)
+        if (!imageUploadBeans.every { it.validate() }) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
+        }
+
+        Source source = sourceService.getSource params.objectId as Long
+        List<Image> images = imageService.uploadImages(imageUploadBeans, SOURCE_COLLECTION)
+
+        if (!source || !images) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        images.each { Image image -> source.addToImages(image)}
         source = sourceService.saveSource(source)
 
         if (source.hasErrors()) {

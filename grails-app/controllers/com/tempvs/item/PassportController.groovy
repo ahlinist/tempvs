@@ -41,7 +41,7 @@ class PassportController {
             removeItem: 'DELETE',
             deletePassport: 'DELETE',
             addComment: 'POST',
-            addImage: 'POST',
+            addImages: 'POST',
             deleteComment: 'DELETE',
             deleteImage: 'DELETE',
             editQuantity: 'POST',
@@ -232,19 +232,25 @@ class PassportController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def addImage(ImageUploadBean imageUploadBean) {
-        if (!imageUploadBean.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
-        }
+    def addImages(ImageUploadCommand command) {
+        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
-        Passport passport = passportService.getPassport(params.objectId as Long)
-        Image image = imageService.uploadImage(imageUploadBean, PASSPORT_COLLECTION)
-
-        if (!passport || !image) {
+        if (!imageUploadBeans || imageUploadBeans.every { it.image.empty }) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        passport.addToImages(image)
+        if (!imageUploadBeans.every { it.validate() }) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
+        }
+
+        Passport passport = passportService.getPassport(params.objectId as Long)
+        List<Image> images = imageService.uploadImages(imageUploadBeans, PASSPORT_COLLECTION)
+
+        if (!passport || !images) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        images.each { Image image -> passport.addToImages(image) }
         passport = passportService.savePassport(passport)
 
         if (passport.hasErrors()) {

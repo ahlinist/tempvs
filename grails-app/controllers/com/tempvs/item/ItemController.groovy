@@ -48,7 +48,7 @@ class ItemController {
             deleteItem: 'DELETE',
             deleteGroup: 'DELETE',
             editItemField: 'POST',
-            addImage: 'POST',
+            addImages: 'POST',
             deleteImage: 'DELETE',
             addSource: 'POST',
             deleteSource: 'DELETE',
@@ -205,19 +205,25 @@ class ItemController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def addImage(ImageUploadBean imageUploadBean) {
-        if (!imageUploadBean.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
-        }
+    def addImages(ImageUploadCommand command) {
+        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
-        Item item = itemService.getItem(params.objectId as Long)
-        Image image = imageService.uploadImage(imageUploadBean, ITEM_COLLECTION)
-
-        if (!item || !image) {
+        if (!imageUploadBeans || imageUploadBeans.every { it.image.empty }) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        item.addToImages(image)
+        if (!imageUploadBeans.every { it.validate() }) {
+            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
+        }
+
+        Item item = itemService.getItem(params.objectId as Long)
+        List<Image> images = imageService.uploadImages(imageUploadBeans, ITEM_COLLECTION)
+
+        if (!item || !images) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        images.each { Image image -> item.addToImages(image) }
         item = itemService.saveItem(item)
 
         if (item.hasErrors()) {

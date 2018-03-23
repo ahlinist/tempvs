@@ -17,6 +17,7 @@ import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
 class SourceControllerSpec extends Specification implements ControllerUnitTest<SourceController> {
@@ -48,6 +49,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadCommand = Mock ImageUploadCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
+    def multipartFile = Mock GrailsMockMultipartFile
 
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
@@ -198,18 +200,21 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         response.json.action == SUCCESS_ACTION
     }
 
-    void "Test addImage()"() {
+    void "Test addImages()"() {
         given:
         params.objectId = LONG_ONE
         request.method = POST_METHOD
 
         when:
-        controller.addImage(imageUploadBean)
+        controller.addImages(imageUploadCommand)
 
         then:
+        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
+        1 * imageUploadBean.image >> multipartFile
+        1 * multipartFile.empty >> Boolean.FALSE
         1 * imageUploadBean.validate() >> Boolean.TRUE
+        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * imageService.uploadImage(imageUploadBean, SOURCE_COLLECTION) >> image
         1 * source.addToImages(image)
         1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
