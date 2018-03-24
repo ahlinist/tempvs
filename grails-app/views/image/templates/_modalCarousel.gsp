@@ -73,7 +73,7 @@
         <div id="addImageCollapse" class="panel-collapse collapse">
           <div class="row">
             <tempvs:ajaxForm controller="${controllerName}" action="addImages" selector="div#modal-carousel">
-              <tempvs:imageUploader fieldName="imageUploadBeans"/>
+              <tempvs:imageUploader fieldName="imageUploadBeans" min="1"/>
               <input type="hidden" name="objectId" value="${objectId}"/>
               <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk" onclick="\$('.carousel').off('slide.bs.carousel');"/>
             </tempvs:ajaxForm>

@@ -3,11 +3,11 @@
   <tempvs:formField classes="imageInfo hidden" type="text" name=" " label="image.info.label" />
 </div>
 <div class="row">
-  <span class="btn btn-default pull-right" onclick="imageUploader.createFields('${fieldName}');">
+  <span class="btn btn-default pull-right ${fieldName}-image-uploader-add-button" onclick="imageUploader.createFields('${fieldName}');">
     <g:message code="image.uploader.add.button"/>
   </span>
 </div>
 
 <script>
-  imageUploader.count['${fieldName}'] = 0;
+  imageUploader.init("${fieldName}", "${min}", "${max}");
 </script>
