@@ -2,6 +2,7 @@
   <g:if test="${images}">
     <span type="button" class="btn" data-toggle="modal" data-target="#modal-${images.hashCode()}" data-local="#carousel-${images.hashCode()}" onclick="modalCarousel.init(${slideMapping})">
       <g:set var="image" value="${images.first()}"/>
+      <span class="badge badge-notify" style="position: absolute; right:15px; top:0px;">${images.size()}</span>
       <tempvs:image id="image-${image.id}" image="${image}" orientation="${orientation}"/>
     </span>
 
