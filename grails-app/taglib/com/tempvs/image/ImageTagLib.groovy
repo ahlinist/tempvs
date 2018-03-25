@@ -20,8 +20,7 @@ class ImageTagLib {
     String image = { Map attrs, Closure body ->
         Image image = attrs.image as Image
         String styles = attrs.styles as String
-        String orientation = attrs.orientation as String
-        String classes = "${image?.collection} ${orientation ?: 'vertical'} center-block"
+        String classes = "${image?.collection} center-block"
         String link = grailsLinkGenerator.link(controller: 'image', action: 'get', id: image?.objectId, params: [collection: image?.collection])
         Map model = [template: '/image/templates/image', model: [src: link, classes: classes, alt: image?.imageInfo, styles: styles, body: body()]]
         out << groovyPageRenderer.render(model)

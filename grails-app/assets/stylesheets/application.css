@@ -35,11 +35,7 @@ a:hover {
     border: 4px #eee groove;
 }
 
-img.horizontal {
-    margin: 0 auto;
-}
-
-img.vertical {
+img {
     max-width: 100%;
 }
 
