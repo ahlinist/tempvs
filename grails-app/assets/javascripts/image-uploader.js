@@ -3,8 +3,8 @@ var imageUploader = {
         max: {},
         count: {},
         init: function(fieldName, min, max) {
-            imageUploader.min[fieldName] = min || 0;
-            imageUploader.max[fieldName] = max || Infinity;
+            imageUploader.min[fieldName] = parseInt(min) || 0;
+            imageUploader.max[fieldName] = parseInt(max) === 0 ? 0 : (parseInt(max) || Infinity);
             imageUploader.count[fieldName] = 0;
 
             for (var i = 0; i < min; i++) {
@@ -20,9 +20,9 @@ var imageUploader = {
                 imageUploader.count[fieldName]++;
             }
 
-            if (imageUploader.count[fieldName] === imageUploader.max[fieldName]) {
+            if (imageUploader.count[fieldName] >= imageUploader.max[fieldName]) {
                 var addButton = document.querySelector('.' + fieldName + '-image-uploader-add-button');
-                addButton.parentNode.removeChild(addButton);
+                addButton.classList.add('hidden');
             }
         },
         cloneField: function(container, fieldClass, fieldName) {
