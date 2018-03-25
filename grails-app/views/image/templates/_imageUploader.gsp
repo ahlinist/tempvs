@@ -1,4 +1,4 @@
-<div class="${fieldName}-container">
+<div class="${fieldName}-mock-container">
   <tempvs:formField classes="image hidden" type="file" name=" " label="image.label" />
   <tempvs:formField classes="imageInfo hidden" type="text" name=" " label="image.info.label" />
 </div>

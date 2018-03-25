@@ -1,4 +1,5 @@
 <div id="modal-carousel">
+  <g:set var="min" value="1"/>
   <g:if test="${images}">
     <div class="text-right">
       <span type="button" class="btn" data-toggle="modal" data-target="#modal-${images.hashCode()}" data-local="#carousel-${images.hashCode()}" onclick="modalCarousel.init(${slideMapping})">
@@ -65,7 +66,7 @@
       <div class="panel panel-default">
         <div class="panel-heading">
           <h4 class="panel-title">
-            <a data-toggle="collapse" href="#addImageCollapse">
+            <a data-toggle="collapse" href="#addImageCollapse" onclick="imageUploader.init('imageUploadBeans', ${min});">
               <g:message code="image.add.collapse.title"/>
               <span class="caret"></span>
             </a>
@@ -74,7 +75,7 @@
         <div id="addImageCollapse" class="panel-collapse collapse">
           <div class="row">
             <tempvs:ajaxForm controller="${controllerName}" action="addImages" selector="div#modal-carousel">
-              <tempvs:imageUploader fieldName="imageUploadBeans" min="1"/>
+              <tempvs:imageUploader fieldName="imageUploadBeans" min="${min}"/>
               <input type="hidden" name="objectId" value="${objectId}"/>
               <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk" onclick="\$('.carousel').off('slide.bs.carousel');"/>
             </tempvs:ajaxForm>
