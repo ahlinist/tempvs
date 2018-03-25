@@ -1,4 +1,4 @@
-<div class="row ${name}-wrapper">
+<div class="row">
   <div class="col-sm-5">
     <label for="fieldValue"><g:message code="${label}" /></label>
   </div>
