@@ -1,1 +1,0 @@
-<span class="${classes}" minutes="${minutes}">${value}</span>
