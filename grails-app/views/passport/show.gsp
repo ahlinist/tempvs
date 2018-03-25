@@ -20,7 +20,7 @@
           <g:render template="/passport/templates/comments"/>
         </div>
         <div class="col-sm-6">
-          <tempvs:modalCarousel images="${images}" objectId="${passportId}"/>
+          <tempvs:modalCarousel images="${images}" objectId="${passportId}" controllerName="${controllerName}" editAllowed="${editAllowed}"/>
         </div>
       </div>
     </g:if>

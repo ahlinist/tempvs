@@ -29,7 +29,7 @@
             <g:render template="/source/templates/comments"/>
           </div>
           <div class="col-sm-6">
-            <tempvs:modalCarousel images="${images}" objectId="${sourceId}"/>
+            <tempvs:modalCarousel images="${images}" objectId="${sourceId}" controllerName="${controllerName}" editAllowed="${editAllowed}"/>
           </div>
         </div>
       </g:if>
