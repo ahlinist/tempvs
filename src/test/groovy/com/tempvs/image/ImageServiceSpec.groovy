@@ -2,6 +2,7 @@ package com.tempvs.image
 
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
+import org.grails.datastore.gorm.GormStaticApi
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
 
@@ -18,11 +19,12 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
     def imageDAO = Mock ImageDAO
     def imageBean = Mock ImageBean
     def imageUploadBean = Mock ImageUploadBean
+    def gormStaticApi = Mock GormStaticApi
     def multipartFile = new MockMultipartFile('1234567', "1234567" as byte[])
 
 
     def setup() {
-        GroovyMock(Image, global: true)
+        GroovySpy(Image, global: true)
 
         service.imageDAO = imageDAO
     }
@@ -35,7 +37,8 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         def result = service.getImage(LONG_ID)
 
         then:
-        1 * Image.get(LONG_ID) >> image
+        1 * Image.currentGormStaticApi() >> gormStaticApi
+        1 * gormStaticApi.get(LONG_ID) >> image
         0 * _
 
         and:
@@ -102,39 +105,25 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
 
     void "Test uploadImage()"() {
         when:
-        def result = service.uploadImage(imageUploadBean, COLLECTION)
+        service.uploadImage(imageUploadBean, COLLECTION)
 
         then:
         1 * imageUploadBean.image >> multipartFile
-        1 * new Image() >> image
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.setObjectId(ID)
-        1 * image.setCollection(COLLECTION)
-        1 * image.setImageInfo(IMAGE_INFO)
         0 * _
-
-        and:
-        result == image
     }
 
     void "Test uploadImages()"() {
         when:
-        def result = service.uploadImages([imageUploadBean], COLLECTION)
+        service.uploadImages([imageUploadBean], COLLECTION)
 
         then:
         1 * imageUploadBean.image >> multipartFile
-        1 * new Image() >> image
         1 * imageDAO.create(_ as ByteArrayInputStream, COLLECTION) >> imageBean
         1 * imageBean.id >> ID
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * image.setObjectId(ID)
-        1 * image.setCollection(COLLECTION)
-        1 * image.setImageInfo(IMAGE_INFO)
         0 * _
-
-        and:
-        result == [image]
     }
 }
