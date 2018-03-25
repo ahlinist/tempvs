@@ -4,6 +4,7 @@ import com.tempvs.ajax.AjaxResponseHelper
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
+import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
 /**
@@ -93,5 +94,13 @@ class UserController {
         springSecurityService.reauthenticate(email)
         emailVerification.delete(flush: true)
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
+    }
+
+    def accessDeniedThrown(AccessDeniedException exception) {
+        if (request.xhr) {
+            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+        } else {
+            redirect grailsLinkGenerator.link(controller: 'auth')
+        }
     }
 }
