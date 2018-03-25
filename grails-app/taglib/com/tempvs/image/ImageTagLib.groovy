@@ -31,8 +31,8 @@ class ImageTagLib {
         out << groovyPageRenderer.render(template: '/image/templates/modalImage', model: attrs + [body: body()])
     }
 
-    String imageUploader = { Map attrs, Closure body ->
-        out << groovyPageRenderer.render(template: '/image/templates/imageUploader', model: attrs + [body: body()])
+    String imageUploader = { Map attrs ->
+        out << groovyPageRenderer.render(template: '/image/templates/imageUploader', model: attrs)
     }
 
     String modalCarousel = { Map attrs ->
