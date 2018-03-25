@@ -19,10 +19,7 @@ beans = {
         profileService = ref("profileService")
     }
 
-    imageTagLib(ImageTagLib) {
-        ref("grailsLinkGenerator")
-    }
-
+    imageTagLib(ImageTagLib)
     gridFSFactory(GridFSFactory)
     validationTagLib(ValidationTagLib)
     userPasswordEncoderListener(UserPasswordEncoderListener)
