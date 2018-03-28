@@ -16,20 +16,20 @@ grails:
             rememberMe:
                 cookieName: tempvs_remember_me
             userLookup:
-                userDomainClassName: com.tempvs.user.User
+                userDomainClassName: club.tempvs.user.User
                 usernamePropertyName: email
                 passwordPropertyName: password
-                authorityJoinClassName: com.tempvs.user.UserRole
+                authorityJoinClassName: club.tempvs.user.UserRole
             auth:
                 loginFormUrl: /auth/index
             failureHandler:
                 defaultFailureUrl: /auth/index
             successHandler:
-                defaultTargetUrl: /profile/userProfile/
+                defaultTargetUrl: /profile/user/
             authority:
-                className: com.tempvs.user.Role
+                className: club.tempvs.user.Role
             requestMap:
-                className: com.tempvs.user.RequestMap
+                className: club.tempvs.user.RequestMap
             controllerAnnotations:
                 staticRules:
                     - pattern: /assets/**

@@ -1,9 +1,9 @@
-import com.tempvs.ajax.AjaxResponseHelper
-import com.tempvs.image.ImageTagLib
-import com.tempvs.mongodb.GridFSFactory
-import com.tempvs.mongodb.MongoImageDAO
-import com.tempvs.user.UserInfoHelper
-import com.tempvs.user.UserPasswordEncoderListener
+import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.image.ImageTagLib
+import club.tempvs.mongodb.GridFSFactory
+import club.tempvs.mongodb.MongoImageDAO
+import club.tempvs.user.UserInfoHelper
+import club.tempvs.user.UserPasswordEncoderListener
 import org.grails.plugins.web.taglib.ValidationTagLib
 
 beans = {
