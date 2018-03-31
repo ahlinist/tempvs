@@ -5,11 +5,11 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.user.ClubProfile
 import grails.compiler.GrailsCompileStatic
-import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.annotation.Propagation
 
 /**
  * Handles the operations related to {@link Passport}.
@@ -34,7 +34,7 @@ class PassportService {
         Item2Passport.findAllByPassport(passport)
     }
 
-    @NotTransactional
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     Passport validatePassport(Passport passport, ClubProfile clubProfile) {
         passport.clubProfile = clubProfile
         clubProfile.addToPassports(passport)

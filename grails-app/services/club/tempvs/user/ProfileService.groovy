@@ -5,10 +5,10 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
-import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.transaction.annotation.Propagation
 
 /**
  * Service for managing {@link UserProfile} and {@link ClubProfile}.
@@ -95,7 +95,7 @@ class ProfileService {
         }
     }
 
-    @NotTransactional
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     ClubProfile validateClubProfile(ClubProfile clubProfile, User user) {
         clubProfile.user = user
         user.addToClubProfiles(clubProfile)
