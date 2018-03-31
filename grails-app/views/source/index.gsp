@@ -8,7 +8,7 @@
       <g:render template="/source/templates/navBar"/>
       <b><g:message code="source.period.list.title"/></b>:
       <ul>
-        <g:each in="${availablePeriods}" var="period">
+        <g:each in="${periods}" var="period">
           <li class="row">
             <g:link action="period" id="${period.id}" class="btn btn-default col-sm-3">
               ${period.value}

@@ -56,7 +56,7 @@ class SourceController {
 
     @Secured('permitAll')
     def index() {
-        [availablePeriods: Period.values()]
+        [periods: Period.values()]
     }
 
     @Secured('permitAll')
@@ -68,7 +68,8 @@ class SourceController {
             [
                     sources: sources,
                     period: period,
-                    availableTypes: ItemType.values(),
+                    itemTypes: ItemType.values(),
+                    sourceTypes: SourceType.values(),
             ]
         }
     }

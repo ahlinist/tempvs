@@ -201,8 +201,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 user: user,
                 items: items,
                 userProfile: userProfile,
-                availableTypes: ItemType.values(),
-                availablePeriods: Period.values(),
+                itemTypes: ItemType.values(),
+                periods: Period.values(),
                 editAllowed: Boolean.TRUE,
         ]
     }

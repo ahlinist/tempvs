@@ -1,13 +1,11 @@
 package club.tempvs.image
 
 import grails.compiler.GrailsCompileStatic
-import grails.gorm.transactions.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 /**
  * A service that manages {@link ImageBean}-related operations.
  */
-@Transactional
 @GrailsCompileStatic
 class ImageService {
 

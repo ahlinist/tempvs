@@ -30,8 +30,8 @@
                   <tempvs:imageUploader fieldName="imageUploadBeans"/>
                   <tempvs:formField type="text" name="name" label="item.name.label" />
                   <tempvs:formField type="text" name="description" label="item.description.label" />
-                  <tempvs:formField type="select" name="itemType" from="${availableTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label"/>
-                  <tempvs:formField type="select" name="period" from="${availablePeriods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
+                  <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label"/>
+                  <tempvs:formField type="select" name="period" from="${periods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
                   <input type="hidden" name="itemGroup" value="${itemGroupId}"/>
                   <tempvs:ajaxSubmitButton value="item.createItem.button"/>
                 </tempvs:ajaxForm>

@@ -9,8 +9,9 @@ class SourceSpec extends Specification implements DomainUnitTest<Source> {
     private static final String NAME = 'name'
     private static final String DESCRIPTION = 'description'
 
-    def itemType = GroovyMock ItemType
     def period = GroovyMock Period
+    def itemType = GroovyMock ItemType
+    def sourceType = GroovyMock SourceType
 
     def setup() {
     }
@@ -31,9 +32,9 @@ class SourceSpec extends Specification implements DomainUnitTest<Source> {
 
     void "Test successful Source creation"() {
         expect:
-        new Source(name: NAME, period: period, itemType: itemType).validate()
+        new Source(name: NAME, period: period, itemType: itemType, sourceType: sourceType).validate()
 
         and:
-        new Source(name: NAME,  period: period, itemType: itemType, description: DESCRIPTION).validate()
+        new Source(name: NAME,  period: period, itemType: itemType, sourceType: sourceType, description: DESCRIPTION).validate()
     }
 }

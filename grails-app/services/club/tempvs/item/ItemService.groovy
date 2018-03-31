@@ -18,7 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class ItemService {
 
-    private static final String TYPE_FIELD = 'itemType'
+    private static final String ITEM_TYPE_FIELD = 'itemType'
     private static final String PERIOD_FIELD = 'period'
     private static final String ITEM_GROUP = 'itemGroup'
 
@@ -77,7 +77,7 @@ class ItemService {
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item editItemField(Item item, String fieldName, String fieldValue) {
-        if (fieldName in [PERIOD_FIELD, ITEM_GROUP, TYPE_FIELD]) {
+        if (fieldName in [PERIOD_FIELD, ITEM_GROUP, ITEM_TYPE_FIELD]) {
             throw new AccessDeniedException('Operation not supported.')
         } else {
             item."${fieldName}" = fieldValue

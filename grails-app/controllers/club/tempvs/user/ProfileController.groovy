@@ -214,7 +214,7 @@ class ProfileController {
         Map model = [
                 activeProfiles: clubProfiles.findAll {it.active},
                 inactiveProfiles: clubProfiles.findAll {!it.active},
-                availablePeriods: Period.values(),
+                periods: Period.values(),
                 editAllowed: Boolean.TRUE,
         ]
 
@@ -268,7 +268,7 @@ class ProfileController {
                 userProfile: user.userProfile,
                 activeProfiles: clubProfiles.findAll { it.active },
                 inactiveProfiles: clubProfiles.findAll { !it.active },
-                availablePeriods: Period.values(),
+                periods: Period.values(),
         ]
     }
 

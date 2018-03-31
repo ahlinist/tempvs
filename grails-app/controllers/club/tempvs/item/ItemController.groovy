@@ -99,8 +99,8 @@ class ItemController {
                 [
                         user: user,
                         itemGroup: itemGroup,
-                        availableTypes: ItemType.values(),
-                        availablePeriods: Period.values(),
+                        itemTypes: ItemType.values(),
+                        periods: Period.values(),
                         items: itemGroup.items.sort { it.id },
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
