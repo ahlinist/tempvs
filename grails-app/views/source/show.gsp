@@ -23,7 +23,7 @@
             <div class="ajax-form">
               <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.name.label"/>
               <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.description.label"/>
-              <tempvs:ajaxSmartForm type="text" value="${source.type.value}" label="item.type.dropdown.label" editAllowed="${false}"/>
+              <tempvs:ajaxSmartForm type="text" value="${source.itemType.value}" label="item.itemType.dropdown.label" editAllowed="${false}"/>
               <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
             </div>
             <g:render template="/source/templates/comments"/>

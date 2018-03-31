@@ -9,7 +9,7 @@ import static grails.util.Holders.applicationContext
  * Enum that represents item type.
  */
 @CompileStatic
-enum Type {
+enum ItemType {
     CLOTHING,
     FOOTWEAR,
     HOUSEHOLD,
@@ -26,10 +26,10 @@ enum Type {
     }
 
     String getValue() {
-        applicationContext.getMessage("item.type.${this.name()}.value", null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage("item.itemType.${this.name()}.value", null, this.name(), LocaleContextHolder.locale)
     }
 
     String getDescription() {
-        applicationContext.getMessage("item.type.${this.name()}.description", null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage("item.itemType.${this.name()}.description", null, this.name(), LocaleContextHolder.locale)
     }
 }

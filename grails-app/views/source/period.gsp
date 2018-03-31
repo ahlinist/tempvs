@@ -29,7 +29,7 @@
                 <tempvs:ajaxForm action="createSource">
                   <tempvs:imageUploader fieldName="imageUploadBeans"/>
                   <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
-                  <tempvs:formField type="select" name="type" from="${availableTypes}" optionKey="key" optionValue="value" label="item.type.dropdown.label"/>
+                  <tempvs:formField type="select" name="itemType" from="${availableTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label"/>
                   <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" />
                   <tempvs:formField type="text" name="description" value="${source?.description}" label="source.description.label" />
                   <input type="hidden" name="period" value="${period?.key}"/>

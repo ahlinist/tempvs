@@ -15,7 +15,7 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
 
     def image = Mock Image
     def source = Mock Source
-    def type = GroovyMock Type
+    def itemType = GroovyMock ItemType
     def comment = Mock Comment
     def period = GroovyMock Period
     def item2Source = Mock Item2Source
@@ -44,12 +44,12 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         result == [source]
     }
 
-    void "Test getSourcesByPeriodAndType()"() {
+    void "Test getSourcesByPeriodAndItemType()"() {
         when:
-        def result = service.getSourcesByPeriodAndType(period, type)
+        def result = service.getSourcesByPeriodAndItemType(period, itemType)
 
         then:
-        1 * Source.findAllByPeriodAndType(period, type) >> [source]
+        1 * Source.findAllByPeriodAndItemType(period, itemType) >> [source]
         0 * _
 
         and:

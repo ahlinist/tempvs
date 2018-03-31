@@ -42,7 +42,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def json = Mock JSON
     def item = Mock Item
     def image = Mock Image
-    def type = GroovyMock Type
+    def itemType = GroovyMock ItemType
     def period = GroovyMock Period
     def source = Mock Source
     def comment = Mock Comment
@@ -201,7 +201,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 user: user,
                 items: items,
                 userProfile: userProfile,
-                availableTypes: Type.values(),
+                availableTypes: ItemType.values(),
                 availablePeriods: Period.values(),
                 editAllowed: Boolean.TRUE,
         ]
@@ -304,14 +304,14 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.getItem(LONG_ONE) >> item
         1 * item.itemGroup >> itemGroup
         1 * item.period >> period
-        1 * item.type >> type
+        1 * item.itemType >> itemType
         1 * item.images >> [image]
         1 * itemGroup.user >> user
         1 * user.userProfile >> userProfile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * item.sources >> [source]
-        1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
+        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
         0 * _
 
         and:
@@ -466,9 +466,9 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.linkSource(item, source) >> item2Source
         1 * item2Source.hasErrors() >> Boolean.FALSE
         1 * item.period >> period
-        1 * item.type >> type
+        1 * item.itemType >> itemType
         1 * item.sources >> [source]
-        1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
+        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -488,9 +488,9 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * itemService.unlinkSource(item, source)
         1 * item.period >> period
-        1 * item.type >> type
+        1 * item.itemType >> itemType
         1 * item.sources >> [source]
-        1 * sourceService.getSourcesByPeriodAndType(period, type) >> [source]
+        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

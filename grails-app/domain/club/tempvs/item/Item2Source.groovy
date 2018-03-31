@@ -14,7 +14,7 @@ class Item2Source implements BasePersistent {
 
     static constraints = {
         source unique: ['item'], validator: { Source source, Item2Source item2Source ->
-            source.type == item2Source.item.type
+            source.itemType == item2Source.item.itemType
         }
         item validator: { Item item, Item2Source item2Source ->
             item.period == item2Source.source.period

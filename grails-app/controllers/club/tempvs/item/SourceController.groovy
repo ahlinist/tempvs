@@ -1,9 +1,5 @@
 package club.tempvs.item
 
-import club.tempvs.image.Image
-import club.tempvs.image.ImageUploadCommand
-import club.tempvs.periodization.Period
-import club.tempvs.user.Profile
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
@@ -72,7 +68,7 @@ class SourceController {
             [
                     sources: sources,
                     period: period,
-                    availableTypes: Type.values(),
+                    availableTypes: ItemType.values(),
             ]
         }
     }
@@ -94,7 +90,7 @@ class SourceController {
     def createSource(Source source, ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
-        if (!imageUploadBeans.every { it.validate() }) {
+        if (imageUploadBeans && !imageUploadBeans.every { it.validate() }) {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
         }
 

@@ -14,7 +14,7 @@ class Source implements BasePersistent {
 
     String name
     String description
-    Type type
+    ItemType itemType
     Period period
     List<Image> images
     List<Comment> comments

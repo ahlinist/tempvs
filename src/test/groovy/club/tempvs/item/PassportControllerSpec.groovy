@@ -42,7 +42,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def item = Mock Item
     def image = Mock Image
     def comment = Mock Comment
-    def type = GroovyMock Type
+    def itemType = GroovyMock ItemType
     def passport = Mock Passport
     def period = GroovyMock Period
     def clubProfile = Mock ClubProfile
@@ -121,7 +121,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * clubProfile.period >> period
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * item2Passport.item >> item
-        1 * item.type >> type
+        1 * item.itemType >> itemType
         1 * itemService.getItemsByPeriod(period) >> [item, item]
         1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
         1 * passport.images >> [image]
@@ -132,7 +132,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
                 images: [image],
                 clubProfile: clubProfile,
                 passport: passport,
-                itemMap: [(type): [item2Passport]],
+                itemMap: [(itemType): [item2Passport]],
                 availableItems: [item, item],
                 editAllowed: Boolean.TRUE,
         ]
@@ -169,7 +169,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * item2Passport.hasErrors() >> Boolean.FALSE
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * item2Passport.item >> item
-        1 * item.type >> type
+        1 * item.itemType >> itemType
         1 * item.period >> period
         1 * itemService.getItemsByPeriod(period) >> [item]
         1 * groovyPageRenderer.render(_ as Map)
@@ -192,7 +192,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.removeItem(passport, item)
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * item2Passport.item >> item
-        1 * item.type >> type
+        1 * item.itemType >> itemType
         1 * item.period >> period
         1 * itemService.getItemsByPeriod(period) >> [item]
         1 * groovyPageRenderer.render(_ as Map)
@@ -277,7 +277,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * item2Passport.passport >> passport
         2 * item2Passport.item >> item
         1 * item.period >> period
-        1 * item.type >> type
+        1 * item.itemType >> itemType
         1 * itemService.getItemsByPeriod(period) >> [item]
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * groovyPageRenderer.render(_ as Map)

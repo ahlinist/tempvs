@@ -18,7 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class ItemService {
 
-    private static final String TYPE_FIELD = 'type'
+    private static final String TYPE_FIELD = 'itemType'
     private static final String PERIOD_FIELD = 'period'
     private static final String ITEM_GROUP = 'itemGroup'
 

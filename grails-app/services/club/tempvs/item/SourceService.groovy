@@ -30,8 +30,8 @@ class SourceService {
         Source.findAllByPeriod period
     }
 
-    List<Source> getSourcesByPeriodAndType(Period period, Type type) {
-        Source.findAllByPeriodAndType period, type
+    List<Source> getSourcesByPeriodAndItemType(Period period, ItemType itemType) {
+        Source.findAllByPeriodAndItemType period, itemType
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)

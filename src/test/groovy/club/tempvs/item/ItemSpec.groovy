@@ -13,7 +13,7 @@ class ItemSpec extends Specification implements DomainUnitTest<Item> {
 
     def image = Mock Image
     def source = Mock Source
-    def type = GroovyMock Type
+    def itemType = GroovyMock ItemType
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
     def item2Source = Mock Item2Source
@@ -51,7 +51,7 @@ class ItemSpec extends Specification implements DomainUnitTest<Item> {
         domain.name = NAME
         domain.itemGroup = itemGroup
         domain.period = period
-        domain.type = type
+        domain.itemType = itemType
 
         expect:
         domain.validate()
@@ -64,7 +64,7 @@ class ItemSpec extends Specification implements DomainUnitTest<Item> {
         domain.images = [image]
         domain.itemGroup = itemGroup
         domain.period = period
-        domain.type = type
+        domain.itemType = itemType
 
         expect:
         domain.validate()

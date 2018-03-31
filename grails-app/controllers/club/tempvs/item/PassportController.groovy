@@ -1,12 +1,5 @@
 package club.tempvs.item
 
-import club.tempvs.image.Image
-import club.tempvs.image.ImageService
-import club.tempvs.image.ImageUploadBean
-import club.tempvs.image.ImageUploadCommand
-import club.tempvs.user.ClubProfile
-import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
@@ -296,7 +289,7 @@ class PassportController {
         }
     }
 
-    private Map<Type,List<Item2Passport>> composeItemMap(Passport passport) {
-        passportService.getItem2PassportRelations(passport).groupBy {it.item.type}
+    private Map<ItemType,List<Item2Passport>> composeItemMap(Passport passport) {
+        passportService.getItem2PassportRelations(passport).groupBy {it.item.itemType}
     }
 }

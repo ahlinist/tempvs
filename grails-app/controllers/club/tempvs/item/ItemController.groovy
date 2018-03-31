@@ -1,10 +1,5 @@
 package club.tempvs.item
 
-import club.tempvs.image.Image
-import club.tempvs.image.ImageUploadCommand
-import club.tempvs.periodization.Period
-import club.tempvs.user.Profile
-import club.tempvs.user.User
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
@@ -104,7 +99,7 @@ class ItemController {
                 [
                         user: user,
                         itemGroup: itemGroup,
-                        availableTypes: Type.values(),
+                        availableTypes: ItemType.values(),
                         availablePeriods: Period.values(),
                         items: itemGroup.items.sort { it.id },
                         userProfile: user.userProfile,
@@ -171,7 +166,7 @@ class ItemController {
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
                         sources: item.sources,
-                        availableSources: sourceService.getSourcesByPeriodAndType(item.period, item.type),
+                        availableSources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
                 ]
             }
         }
@@ -281,7 +276,7 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item2Source))
         }
 
-        List<Source> availableSources = sourceService.getSourcesByPeriodAndType(item.period, item.type)
+        List<Source> availableSources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
         Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
@@ -296,7 +291,7 @@ class ItemController {
         }
 
         itemService.unlinkSource(item, source)
-        List<Source> availableSources = sourceService.getSourcesByPeriodAndType(item.period, item.type)
+        List<Source> availableSources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
         Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
