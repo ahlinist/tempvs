@@ -7,7 +7,6 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.item.Passport
-import club.tempvs.item.PassportService
 import club.tempvs.periodization.Period
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -57,7 +56,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def verifyService = Mock VerifyService
     def profileService = Mock ProfileService
     def userInfoHelper = Mock UserInfoHelper
-    def passportService = Mock PassportService
     def groovyPageRenderer = Mock PageRenderer
     def followingService = Mock FollowingService
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -68,7 +66,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.verifyService = verifyService
         controller.userInfoHelper = userInfoHelper
         controller.profileService = profileService
-        controller.passportService = passportService
         controller.followingService = followingService
         controller.ajaxResponseHelper = ajaxResponseHelper
         controller.groovyPageRenderer = groovyPageRenderer

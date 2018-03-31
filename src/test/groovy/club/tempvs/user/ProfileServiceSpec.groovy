@@ -2,7 +2,6 @@ package club.tempvs.user
 
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.item.PassportService
 import grails.orm.HibernateCriteriaBuilder
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
@@ -27,7 +26,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def clubProfile = Mock ClubProfile
     def userProfile = Mock UserProfile
     def imageService = Mock ImageService
-    def passportService = Mock PassportService
 
     def setup() {
         GroovySpy(ClubProfile, global: true)
@@ -35,7 +33,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         service.userService = userService
         service.imageService = imageService
-        service.passportService = passportService
     }
 
     def cleanup() {
