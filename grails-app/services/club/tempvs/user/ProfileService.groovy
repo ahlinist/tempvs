@@ -3,7 +3,6 @@ package club.tempvs.user
 import club.tempvs.communication.Following
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.item.PassportService
 import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
@@ -24,7 +23,6 @@ class ProfileService {
 
     UserService userService
     ImageService imageService
-    PassportService passportService
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     public <T> T getProfile(Class<T> clazz, id) {

@@ -1,14 +1,10 @@
 package club.tempvs.user
 
-import club.tempvs.communication.FollowingService
-import club.tempvs.image.Image
-import club.tempvs.item.PassportService
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.communication.FollowingService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
-import club.tempvs.item.PassportService
 import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
@@ -54,7 +50,6 @@ class ProfileController {
     ImageService imageService
     VerifyService verifyService
     ProfileService profileService
-    PassportService passportService
     PageRenderer groovyPageRenderer
     UserInfoHelper userInfoHelper
     FollowingService followingService
