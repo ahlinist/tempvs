@@ -53,9 +53,11 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
 
     void "Test createGroup()"() {
         when:
-        def result = service.createGroup(itemGroup)
+        def result = service.createGroup(itemGroup, user)
 
         then:
+        1 * itemGroup.setUser(user)
+        1 * user.addToItemGroups(itemGroup)
         1 * itemGroup.save() >> itemGroup
         0 * _
 

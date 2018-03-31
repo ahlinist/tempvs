@@ -4,6 +4,7 @@ import club.tempvs.communication.Comment
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.periodization.Period
+import club.tempvs.user.User
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
 import groovy.transform.TypeCheckingMode
@@ -35,8 +36,10 @@ class ItemService {
         Item.findAllByPeriod(period)
     }
 
-    @PreAuthorize('#itemGroup.user.email == authentication.name')
-    ItemGroup createGroup(ItemGroup itemGroup) {
+    @PreAuthorize('#user.email == authentication.name')
+    ItemGroup createGroup(ItemGroup itemGroup, User user) {
+        itemGroup.user = user
+        user.addToItemGroups(itemGroup)
         itemGroup.save()
         itemGroup
     }

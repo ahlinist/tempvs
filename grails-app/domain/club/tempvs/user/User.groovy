@@ -24,7 +24,7 @@ class User implements BasePersistent {
     Class currentProfileClass
     Long currentProfileId
     List<ClubProfile> clubProfiles
-    Collection<ItemGroup> itemGroups
+    List<ItemGroup> itemGroups
 
     transient Profile currentProfile
 

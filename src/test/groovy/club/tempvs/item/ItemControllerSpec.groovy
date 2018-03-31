@@ -121,22 +121,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         result == [itemGroups: [itemGroup], user: user, userProfile: userProfile, editAllowed: true]
     }
 
-    void "Test createGroup() against invalid command"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.createGroup(itemGroup)
-
-        then:
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * itemGroup.setUser(user)
-        1 * itemGroup.validate() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderValidationResponse(itemGroup) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
     void "Test createGroup() against invalid group"() {
         given:
         request.method = POST_METHOD
@@ -146,9 +130,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * itemGroup.setUser(user)
-        1 * itemGroup.validate() >> Boolean.TRUE
-        1 * itemService.createGroup(itemGroup) >> itemGroup
+        1 * itemService.createGroup(itemGroup, user) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as ItemGroup) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -164,9 +146,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * itemGroup.setUser(user)
-        1 * itemGroup.validate() >> Boolean.TRUE
-        1 * itemService.createGroup(itemGroup) >> itemGroup
+        1 * itemService.createGroup(itemGroup, user) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
         1 * itemGroup.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
