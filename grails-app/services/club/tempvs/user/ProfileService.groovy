@@ -5,6 +5,7 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
+import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
@@ -94,14 +95,24 @@ class ProfileService {
         }
     }
 
-    Profile createProfile(Profile profile) {
-        if (!isProfileEmailUnique(profile, profile.profileEmail)) {
-            profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)
-            return profile
+    @NotTransactional
+    ClubProfile validateClubProfile(ClubProfile clubProfile, User user) {
+        clubProfile.user = user
+        user.addToClubProfiles(clubProfile)
+        clubProfile.validate()
+
+        if (!isProfileEmailUnique(clubProfile, clubProfile.profileEmail)) {
+            clubProfile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [clubProfile.profileEmail] as Object[], EMAIL_USED_CODE)
         }
 
-        profile.save()
-        profile
+        clubProfile
+    }
+
+    @PreAuthorize('#clubProfile.user.email == authentication.name')
+    ClubProfile createClubProfile(ClubProfile clubProfile, Image avatar) {
+        clubProfile.avatar = avatar
+        clubProfile.save()
+        clubProfile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')

@@ -104,12 +104,27 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         0 * _
     }
 
-    void "Test createProfile()"() {
+    void "Test validateClubProfile()"() {
         when:
-        def result = service.createProfile(clubProfile)
+        def result = service.validateClubProfile(clubProfile, user)
 
         then:
+        1 * clubProfile.setUser(user)
+        1 * user.addToClubProfiles(clubProfile)
+        1 * clubProfile.validate() >> clubProfile
         1 * clubProfile.profileEmail
+        0 * _
+
+        and:
+        result == clubProfile
+    }
+
+    void "Test createClubProfile()"() {
+        when:
+        def result = service.createClubProfile(clubProfile, image)
+
+        then:
+        1 * clubProfile.setAvatar(image)
         1 * clubProfile.save() >> clubProfile
         0 * _
 

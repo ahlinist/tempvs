@@ -223,8 +223,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * clubProfile.setUser(user)
-        1 * clubProfile.validate() >> Boolean.FALSE
+        1 * profileService.validateClubProfile(clubProfile, user) >> clubProfile
+        1 * clubProfile.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(clubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -240,11 +240,10 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * clubProfile.setUser(user)
-        1 * clubProfile.validate() >> Boolean.TRUE
+        1 * profileService.validateClubProfile(clubProfile, user) >> clubProfile
+        1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * clubProfile.setAvatar(image)
-        1 * profileService.createProfile(_ as ClubProfile) >> clubProfile
+        1 * profileService.createClubProfile(clubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as ClubProfile) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -261,11 +260,10 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * clubProfile.setUser(user)
-        1 * clubProfile.validate() >> Boolean.TRUE
+        1 * profileService.validateClubProfile(clubProfile, user) >> clubProfile
+        1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * clubProfile.setAvatar(image)
-        1 * profileService.createProfile(_ as ClubProfile) >> clubProfile
+        1 * profileService.createClubProfile(clubProfile, image) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileService.setCurrentProfile(clubProfile)
         1 * clubProfile.id >> LONG_ID

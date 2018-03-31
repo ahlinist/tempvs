@@ -133,21 +133,22 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        clubProfile.user = userInfoHelper.getCurrentUser(request)
+        User user = userInfoHelper.getCurrentUser(request)
+        clubProfile = profileService.validateClubProfile(clubProfile, user)
 
-        if (!clubProfile.validate()) {
+        if (clubProfile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(clubProfile))
         }
 
-        clubProfile.avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
-        Profile profile = profileService.createProfile(clubProfile)
+        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+        clubProfile = profileService.createClubProfile(clubProfile, avatar)
 
-        if (profile.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(profile))
+        if (clubProfile.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(clubProfile))
         }
 
-        profileService.setCurrentProfile(profile)
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: profile.id))
+        profileService.setCurrentProfile(clubProfile)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: clubProfile.id))
     }
 
     def editProfileField() {
