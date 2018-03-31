@@ -74,14 +74,14 @@ class PassportController {
         passport = passportService.validatePassport(passport, clubProfile)
 
         if (passport.hasErrors()) {
-            return ajaxResponseHelper.renderValidationResponse(passport)
+            return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
         List<Image> images = imageService.uploadImages(imageUploadBeans, PASSPORT_COLLECTION)
         passport = passportService.createPassport(passport, images)
 
         if (passport.hasErrors()) {
-            return ajaxResponseHelper.renderValidationResponse(passport)
+            return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'passport', action: 'show', id: passport.id))
