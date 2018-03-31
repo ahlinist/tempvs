@@ -50,6 +50,21 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
     void "Test createPassport()"() {
         when:
+        def result = service.createPassport(passport, clubProfile, [image])
+
+        then:
+        1 * passport.setClubProfile(clubProfile)
+        1 * clubProfile.addToPassports(passport)
+        1 * passport.setImages([image])
+        1 * passport.save() >> passport
+        0 * _
+
+        and:
+        result == passport
+    }
+
+    void "Test savePassport()"() {
+        when:
         def result = service.savePassport(passport)
 
         then:

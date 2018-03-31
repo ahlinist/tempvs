@@ -3,6 +3,7 @@ package club.tempvs.item
 import club.tempvs.communication.Comment
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
+import club.tempvs.user.ClubProfile
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
 import groovy.transform.TypeCheckingMode
@@ -30,6 +31,15 @@ class PassportService {
 
     List<Item2Passport> getItem2PassportRelations(Passport passport) {
         Item2Passport.findAllByPassport(passport)
+    }
+
+    @PreAuthorize('#clubProfile.user.email == authentication.name')
+    Passport createPassport(Passport passport, ClubProfile clubProfile, List<Image> images) {
+        passport.clubProfile = clubProfile
+        passport.images = images
+        clubProfile.addToPassports(passport)
+        passport.save()
+        passport
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
