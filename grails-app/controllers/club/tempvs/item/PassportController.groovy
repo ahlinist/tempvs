@@ -70,6 +70,7 @@ class PassportController {
         }
 
         ClubProfile clubProfile = userInfoHelper.getCurrentProfile(request) as ClubProfile
+        clubProfile.merge()
         passport = passportService.validatePassport(passport, clubProfile)
 
         if (passport.hasErrors()) {
