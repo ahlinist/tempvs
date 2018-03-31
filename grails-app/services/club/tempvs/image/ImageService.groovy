@@ -25,7 +25,7 @@ class ImageService {
         imageDAO.delete(image?.collection, image?.objectId)
     }
 
-    void deleteImages(Collection<Image> images) {
+    void deleteImages(List<Image> images) {
         images.each { deleteImage(it) }
     }
 

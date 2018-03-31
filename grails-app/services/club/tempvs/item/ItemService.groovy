@@ -51,14 +51,14 @@ class ItemService {
 
     @PreAuthorize('#itemGroup.user.email == authentication.name')
     void deleteGroup(ItemGroup itemGroup) {
-        Collection<Item> items = itemGroup.items
+        List<Item> items = itemGroup.items
 
         if (items) {
             List<Item2Passport> item2Passports = Item2Passport.findAllByItemInList(items)
             item2Passports*.delete()
             List<Item2Source> item2Sources = Item2Source.findAllByItemInList(items)
             item2Sources*.delete()
-            Collection<Image> images = items*.images?.flatten() as Collection<Image>
+            List<Image> images = items*.images?.flatten() as List<Image>
             imageService.deleteImages(images)
         }
 
