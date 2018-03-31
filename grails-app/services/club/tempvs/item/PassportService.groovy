@@ -5,6 +5,7 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.user.ClubProfile
 import grails.compiler.GrailsCompileStatic
+import grails.gorm.transactions.NotTransactional
 import grails.gorm.transactions.Transactional
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.AccessDeniedException
@@ -33,11 +34,17 @@ class PassportService {
         Item2Passport.findAllByPassport(passport)
     }
 
-    @PreAuthorize('#clubProfile.user.email == authentication.name')
-    Passport createPassport(Passport passport, ClubProfile clubProfile, List<Image> images) {
+    @NotTransactional
+    Passport validatePassport(Passport passport, ClubProfile clubProfile) {
         passport.clubProfile = clubProfile
-        passport.images = images
         clubProfile.addToPassports(passport)
+        passport.validate()
+        passport
+    }
+
+    @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
+    Passport createPassport(Passport passport, List<Image> images) {
+        passport.images = images
         passport.save()
         passport
     }

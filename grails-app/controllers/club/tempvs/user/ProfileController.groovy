@@ -209,7 +209,7 @@ class ProfileController {
         }
 
         User user = clubProfile.user
-        Collection<ClubProfile> clubProfiles = user.clubProfiles
+        List<ClubProfile> clubProfiles = user.clubProfiles
 
         Map model = [
                 activeProfiles: clubProfiles.findAll {it.active},
@@ -262,7 +262,7 @@ class ProfileController {
 
     def list() {
         User user = userInfoHelper.getCurrentUser(request)
-        Collection<ClubProfile> clubProfiles = user.clubProfiles
+        List<ClubProfile> clubProfiles = user.clubProfiles
 
         [
                 userProfile: user.userProfile,

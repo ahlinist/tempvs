@@ -77,8 +77,14 @@ class PassportController {
         }
 
         ClubProfile clubProfile = userInfoHelper.getCurrentProfile(request) as ClubProfile
+        passport = passportService.validatePassport(passport, clubProfile)
+
+        if (passport.hasErrors()) {
+            return ajaxResponseHelper.renderValidationResponse(passport)
+        }
+
         List<Image> images = imageService.uploadImages(imageUploadBeans, PASSPORT_COLLECTION)
-        passport = passportService.createPassport(passport, clubProfile, images)
+        passport = passportService.createPassport(passport, images)
 
         if (passport.hasErrors()) {
             return ajaxResponseHelper.renderValidationResponse(passport)
