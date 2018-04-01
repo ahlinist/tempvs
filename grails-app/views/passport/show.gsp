@@ -17,10 +17,10 @@
             <tempvs:ajaxSmartForm type="text" action="editPassportField" name="description" value="${passport.description}" objectId="${passportId}" label="passport.description.label"/>
           </div>
           <g:render template="/passport/templates/itemSection"/>
-          <g:render template="/passport/templates/comments"/>
+          <g:render template="/communication/templates/comments" model="${[controllerName: 'passport', object: passport, objectId: passportId]}"/>
         </div>
         <div class="col-sm-6">
-          <tempvs:modalCarousel images="${images}" objectId="${passportId}" controllerName="${controllerName}" editAllowed="${editAllowed}"/>
+          <tempvs:modalCarousel images="${images}" objectId="${passportId}" controllerName="passport" editAllowed="${editAllowed}"/>
         </div>
       </div>
     </g:if>

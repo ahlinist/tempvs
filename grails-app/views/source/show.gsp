@@ -27,10 +27,10 @@
               <tempvs:ajaxSmartForm type="text" value="${source.sourceType.value}" label="source.sourceType.dropdown.label" editAllowed="${false}"/>
               <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
             </div>
-            <g:render template="/source/templates/comments"/>
+            <g:render template="/communication/templates/comments" model="${[controllerName: 'source', object: source, objectId: sourceId]}"/>
           </div>
           <div class="col-sm-6">
-            <tempvs:modalCarousel images="${images}" objectId="${sourceId}" controllerName="${controllerName}" editAllowed="${editAllowed}"/>
+            <tempvs:modalCarousel images="${images}" objectId="${sourceId}" controllerName="source" editAllowed="${editAllowed}"/>
           </div>
         </div>
       </g:if>

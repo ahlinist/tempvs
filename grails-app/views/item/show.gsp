@@ -23,7 +23,7 @@
         </div>
         <div class="col-sm-6">
           <tempvs:modalCarousel images="${images}" objectId="${itemId}" controllerName="${controllerName}" editAllowed="${editAllowed}"/>
-          <g:render template="/item/templates/comments"/>
+          <g:render template="/communication/templates/comments" model="${[controllerName: 'item', object: item, objectId: itemId]}"/>
         </div>
       </div>
     </g:if>

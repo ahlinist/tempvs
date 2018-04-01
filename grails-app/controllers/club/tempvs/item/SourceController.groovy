@@ -84,7 +84,13 @@ class SourceController {
     def show(Long id) {
         if (id) {
             Source source = sourceService.getSource id
-            [source: source, period: source?.period, images: source?.images, editAllowed: userInfoHelper.getCurrentUser(request) != null]
+
+            [
+                    source: source,
+                    period: source?.period,
+                    images: source?.images,
+                    editAllowed: userInfoHelper.getCurrentUser(request) != null,
+            ]
         }
     }
 
@@ -189,8 +195,8 @@ class SourceController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def addComment(Long sourceId, String text) {
-        Source source = sourceService.getSource sourceId
+    def addComment(Long objectId, String text) {
+        Source source = sourceService.getSource objectId
 
         if (!source || !text) {
             return render([action: NO_ACTION] as JSON)
@@ -204,8 +210,14 @@ class SourceController {
             ajaxResponseHelper.renderValidationResponse(comment)
         }
 
-        Map model = [source: source, currentProfile: profile]
-        String template = groovyPageRenderer.render(template: '/source/templates/comments', model: model)
+        Map model = [
+                object: source,
+                objectId: objectId,
+                controllerName: 'source',
+                editAllowed: Boolean.TRUE,
+        ]
+
+        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -223,8 +235,14 @@ class SourceController {
             ajaxResponseHelper.renderValidationResponse(source)
         }
 
-        Map model = [source: source]
-        String template = groovyPageRenderer.render(template: '/source/templates/comments', model: model)
+        Map model = [
+                object: source,
+                objectId: objectId,
+                controllerName: 'source',
+                editAllowed: Boolean.TRUE,
+        ]
+
+        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

@@ -543,7 +543,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemGroup.user >> user
         1 * user.id >> LONG_TWO
         1 * userService.currentUserId >> LONG_TWO
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

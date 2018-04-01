@@ -308,8 +308,8 @@ class ItemController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def addComment(Long itemId, String text) {
-        Item item = itemService.getItem itemId
+    def addComment(Long objectId, String text) {
+        Item item = itemService.getItem objectId
 
         if (!item || !text) {
             return render([action: NO_ACTION] as JSON)
@@ -323,8 +323,14 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [item: item, currentProfile: profile, editAllowed: item.itemGroup.user.id == userService.currentUserId,]
-        String template = groovyPageRenderer.render(template: '/item/templates/comments', model: model)
+        Map model = [
+                object: item,
+                objectId: objectId,
+                controllerName: 'item',
+                editAllowed: item.itemGroup.user.id == userService.currentUserId,
+        ]
+
+        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -343,12 +349,13 @@ class ItemController {
         }
 
         Map model = [
-                item: item,
-                currentProfile: userInfoHelper.getCurrentProfile(request),
+                object: item,
+                objectId: objectId,
+                controllerName: 'item',
                 editAllowed: item.itemGroup.user.id == userService.currentUserId,
         ]
 
-        String template = groovyPageRenderer.render(template: '/item/templates/comments', model: model)
+        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

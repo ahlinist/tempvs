@@ -166,8 +166,8 @@ class PassportController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def addComment(Long passportId, String text) {
-        Passport passport = passportService.getPassport passportId
+    def addComment(Long objectId, String text) {
+        Passport passport = passportService.getPassport objectId
 
         if (!passport || !text) {
             return render([action: NO_ACTION] as JSON)
@@ -181,8 +181,14 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(comment))
         }
 
-        Map model = [passport: passport, currentProfile: profile, editAllowed: passport.clubProfile == profile,]
-        String template = groovyPageRenderer.render(template: '/passport/templates/comments', model: model)
+        Map model = [
+                object: passport,
+                objectId: objectId,
+                controllerName: 'passport',
+                editAllowed: passport.clubProfile == profile,
+        ]
+
+        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -194,7 +200,6 @@ class PassportController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Profile profile = userInfoHelper.getCurrentProfile(request)
         passport = passportService.deleteComment(passport, comment)
 
         if (passport.hasErrors()) {
@@ -202,12 +207,13 @@ class PassportController {
         }
 
         Map model = [
-                passport: passport,
-                currentProfile: profile,
-                editAllowed: passport.clubProfile == profile,
+                object: passport,
+                objectId: objectId,
+                controllerName: 'passport',
+                editAllowed: passport.clubProfile == userInfoHelper.getCurrentProfile(request),
         ]
 
-        String template = groovyPageRenderer.render(template: '/passport/templates/comments', model: model)
+        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
