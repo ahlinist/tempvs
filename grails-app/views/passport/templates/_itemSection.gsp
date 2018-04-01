@@ -2,7 +2,7 @@
   <g:set var="passportId" value="${passport.id}"/>
   <ul>
     <g:each var="itemEntry" in="${itemMap}">
-      <h4><g:message code="item.type.${itemEntry.key}.value"/>:</h4>
+      <h4><g:message code="item.itemType.${itemEntry.key}.value"/>:</h4>
       <g:each var="item2Passport" in="${itemEntry.value}">
         <g:set var="item" value="${item2Passport.item}"/>
         <g:set var="itemName" value="${item.name}"/>
