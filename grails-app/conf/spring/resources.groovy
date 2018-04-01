@@ -15,10 +15,7 @@ beans = {
         gridFSFactory = ref("gridFSFactory")
     }
 
-    userInfoHelper(UserInfoHelper) {
-        profileService = ref("profileService")
-    }
-
+    userInfoHelper(UserInfoHelper)
     imageTagLib(ImageTagLib)
     gridFSFactory(GridFSFactory)
     validationTagLib(ValidationTagLib)
