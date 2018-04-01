@@ -98,7 +98,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
         1 * clubProfile.asType(ClubProfile) >> clubProfile
-        1 * clubProfile.merge()
         1 * passportService.validatePassport(passport, clubProfile) >> passport
         1 * imageService.uploadImages([imageUploadBean], PASSPORT_COLLECTION) >> [image]
         1 * passportService.createPassport(passport, [image]) >> passport
