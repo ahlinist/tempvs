@@ -323,7 +323,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 editAllowed: Boolean.TRUE,
                 images: [image],
                 sources: [source],
-                availableSources: [source],
         ]
     }
 

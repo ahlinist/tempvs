@@ -19,12 +19,11 @@
             <tempvs:ajaxSmartForm type="text" value="${item.itemType.value}" label="item.itemType.dropdown.label" editAllowed="${false}"/>
             <tempvs:ajaxSmartForm type="text" value="${period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
           </div>
-          <g:render template="/item/templates/comments"/>
+          <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
         </div>
         <div class="col-sm-6">
           <tempvs:modalCarousel images="${images}" objectId="${itemId}" controllerName="${controllerName}" editAllowed="${editAllowed}"/>
-          <b><g:message code="item.sources.label"/></b>
-          <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
+          <g:render template="/item/templates/comments"/>
         </div>
       </div>
     </g:if>

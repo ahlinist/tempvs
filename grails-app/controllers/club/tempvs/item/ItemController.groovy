@@ -166,7 +166,7 @@ class ItemController {
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
                         sources: item.sources,
-                        availableSources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
+                        sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
                 ]
             }
         }
@@ -276,8 +276,8 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item2Source))
         }
 
-        List<Source> availableSources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
-        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
+        List<Source> sources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
+        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, sources: sources]
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -291,8 +291,8 @@ class ItemController {
         }
 
         itemService.unlinkSource(item, source)
-        List<Source> availableSources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
-        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, availableSources: availableSources]
+        List<Source> sources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
+        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, sources: sources]
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
