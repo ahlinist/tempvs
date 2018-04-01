@@ -1,27 +1,30 @@
 <div id="linkedSources">
   <h2><g:message code="item.sources.label"/></h2>
   <ul>
-    <g:each var="source" in="${sources}">
-      <g:set var="sourceId" value="${source.id}"/>
-      <li class="row" id="source-${sourceId}">
-        <g:link controller="source" action="show" id="${sourceId}" class="btn btn-default col-sm-10">
-          ${source.name}
-        </g:link>
-        <g:if test="${editAllowed}">
-          <div class="pull-left">
-            <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.unlink.button')}">
-              <tempvs:modalButton id="unlinkSource-${sourceId}" size="modal-sm" classes="glyphicon glyphicon-trash">
-                <g:message code='source.unlinkConfirmation.text' args="${[source.name]}"/>
-                <br/>
-                <tempvs:ajaxLink controller="item" action="unlinkSource" params="${[itemId: itemId, sourceId: source.id]}" method="DELETE" selector="div#linkedSources" classes="btn btn-default">
-                  <g:message code="yes"/>
-                </tempvs:ajaxLink>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-              </tempvs:modalButton>
-            </span>
-          </div>
-        </g:if>
-      </li>
+    <g:each var="sourceEntry" in="${sourceMap}">
+      <h4><g:message code="source.sourceType.${sourceEntry.key}.value"/>:</h4>
+      <g:each var="source" in="${sourceEntry.value}">
+        <g:set var="sourceId" value="${source.id}"/>
+        <li class="row" id="source-${sourceId}">
+          <g:link controller="source" action="show" id="${sourceId}" class="btn btn-default col-sm-10">
+            ${source.name}
+          </g:link>
+          <g:if test="${editAllowed}">
+            <div class="pull-left">
+              <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.unlink.button')}">
+                <tempvs:modalButton id="unlinkSource-${sourceId}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                  <g:message code='source.unlinkConfirmation.text' args="${[source.name]}"/>
+                  <br/>
+                  <tempvs:ajaxLink controller="item" action="unlinkSource" params="${[itemId: itemId, sourceId: source.id]}" method="DELETE" selector="div#linkedSources" classes="btn btn-default">
+                    <g:message code="yes"/>
+                  </tempvs:ajaxLink>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                </tempvs:modalButton>
+              </span>
+            </div>
+          </g:if>
+        </li>
+      </g:each>
     </g:each>
     <g:if test="${editAllowed}">
       <div class="panel-group">

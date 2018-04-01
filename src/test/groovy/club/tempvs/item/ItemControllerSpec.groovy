@@ -42,25 +42,27 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def json = Mock JSON
     def item = Mock Item
     def image = Mock Image
-    def itemType = GroovyMock ItemType
-    def period = GroovyMock Period
     def source = Mock Source
     def comment = Mock Comment
+    def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
-    def userService = Mock UserService
     def userProfile = Mock UserProfile
-    def itemService = Mock ItemService
     def item2Source = Mock Item2Source
     def imageTagLib = Mock ImageTagLib
+    def itemType = GroovyMock ItemType
+    def sourceType = GroovyMock SourceType
+    def imageUploadBean = Mock ImageUploadBean
+    def multipartFile = Mock GrailsMockMultipartFile
+
+    def itemService = Mock ItemService
+    def userService = Mock UserService
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
     def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
-    def imageUploadBean = Mock ImageUploadBean
     def imageUploadCommand = Mock ImageUploadCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
-    def multipartFile = Mock GrailsMockMultipartFile
 
     def setup() {
         controller.userService = userService
@@ -311,6 +313,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * item.sources >> [source]
+        1 * source.sourceType >> sourceType
         1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
         0 * _
 
@@ -323,6 +326,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 editAllowed: Boolean.TRUE,
                 images: [image],
                 sources: [source],
+                sourceMap: [(sourceType): [source]],
         ]
     }
 
@@ -467,6 +471,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.period >> period
         1 * item.itemType >> itemType
         1 * item.sources >> [source]
+        1 * source.sourceType >> sourceType
         1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
@@ -489,6 +494,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.period >> period
         1 * item.itemType >> itemType
         1 * item.sources >> [source]
+        1 * source.sourceType >> sourceType
         1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _

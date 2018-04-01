@@ -165,7 +165,7 @@ class ItemController {
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
-                        sources: item.sources,
+                        sourceMap: composeSourceMap(item.sources),
                         sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
                 ]
             }
@@ -276,8 +276,13 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item2Source))
         }
 
-        List<Source> sources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
-        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, sources: sources]
+        Map model = [
+                sourceMap: composeSourceMap(item.sources),
+                itemId: itemId,
+                editAllowed: Boolean.TRUE,
+                sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
+        ]
+
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -291,8 +296,14 @@ class ItemController {
         }
 
         itemService.unlinkSource(item, source)
-        List<Source> sources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType)
-        Map model = [sources: item.sources, itemId: itemId, editAllowed: Boolean.TRUE, sources: sources]
+
+        Map model = [
+                sourceMap: composeSourceMap(item.sources),
+                itemId: itemId,
+                editAllowed: Boolean.TRUE,
+                sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
+        ]
+
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -346,6 +357,12 @@ class ItemController {
             render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect(controller: 'auth')
+        }
+    }
+
+    private Map<SourceType, List<Source>> composeSourceMap(List<Source> sources) {
+        sources.groupBy { Source source ->
+            source.sourceType
         }
     }
 }
