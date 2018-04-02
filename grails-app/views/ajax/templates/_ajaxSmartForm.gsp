@@ -15,7 +15,7 @@
                 optionKey="${optionKey}" optionValue="${optionValue}" disabled="${disabled}"/>
           </g:if>
           <g:else>
-            <g:field class="col-sm-12 tempvs-form-field" type="text" name="fieldValue" value="${value}"/>
+            <g:field class="col-sm-12 tempvs-form-field" type="text" name="fieldValue" value="${value}" autocomplete="off"/>
           </g:else>
         </span>
         <input type="hidden" name="objectId" value="${objectId}"/>
