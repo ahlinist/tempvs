@@ -1,35 +1,45 @@
 var smartformHandler = {
-    activateInput: function(fieldName) {
-        document.getElementById(fieldName + '-text').classList.add('hidden');
-        document.getElementById(fieldName + '-input').classList.remove('hidden');
-    },
-    createGlyph: function(type, color) {
-        var span = document.createElement('span');
-        span.classList.add('glyphicon', 'glyphicon-' + type);
-        span.style.color = color;
-        return span;
-    },
-    waitForClickOut: function(fieldName, fieldType) {
-        var inputSelector = '#' + fieldName + '-input';
-        var inputField = document.querySelector(inputSelector);
+    activateInput: function(initiator, fieldName, fieldType) {
+        var inputWrapper = document.querySelector('#' + fieldName + '-input');
         var textField = document.querySelector('#' + fieldName + '-text');
-        var pencil = smartformHandler.createGlyph('pencil', '#AAA');
+        var pencil = createGlyph('pencil', '#AAA');
 
-        var submitFormEventListener = function(event) {
-            if(!event.target.closest(inputSelector)) {
-                if(!!(inputField.offsetWidth || inputField.offsetHeight || inputField.getClientRects().length)) {
-                    submitAjaxForm(document.forms[fieldName + '-form'], null, actions);
-                    window.removeEventListener("click", submitFormEventListener);
-                    inputField.classList.add('hidden');
-                    textField.classList.remove('hidden');
+        var clickOutEventListener = function(event) {
+            if(event.target !== inputWrapper.querySelector('input') && event.target !== initiator) {
+                submitSmartForm();
+            }
+        }
 
-                    if (fieldType === 'select') {
-                        var select = document.querySelector(inputSelector + ' > select');
-                        textField.innerHTML = select.options[select.selectedIndex].innerHTML + ' ';
-                    } else {
-                        var fieldValue = document.querySelector(inputSelector + ' > input').value
-                        textField.innerHTML = fieldValue ? fieldValue : '- ';
-                    }
+        var keyPressEventListener = function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                submitSmartForm();
+            }
+
+            if (event.key === 'Escape') {
+                inputWrapper.classList.add('hidden');
+                textField.classList.remove('hidden');
+                var textFieldValue = textField.textContent.trim()
+                inputWrapper.querySelector('input').value = textFieldValue ? textFieldValue : '- ';
+                window.removeEventListener("click", clickOutEventListener);
+                window.removeEventListener("keydown", keyPressEventListener);
+            }
+        }
+
+        function submitSmartForm() {
+            if(!!(inputWrapper.offsetWidth || inputWrapper.offsetHeight || inputWrapper.getClientRects().length)) {
+                submitAjaxForm(document.forms[fieldName + '-form'], null, actions);
+                window.removeEventListener("click", clickOutEventListener);
+                window.removeEventListener("keydown", keyPressEventListener);
+                inputWrapper.classList.add('hidden');
+                textField.classList.remove('hidden');
+
+                if (fieldType === 'select') {
+                    var select = inputWrapper.querySelector('select');
+                    textField.innerHTML = select.options[select.selectedIndex].innerHTML + ' ';
+                } else {
+                    var fieldValue = inputWrapper.querySelector('input').value
+                    textField.innerHTML = fieldValue ? fieldValue : '- ';
                 }
             }
         }
@@ -41,7 +51,7 @@ var smartformHandler = {
         };
 
         function successAction() {
-            var okGlyph = smartformHandler.createGlyph('ok', 'green');
+            var okGlyph = createGlyph('ok', 'green');
             textField.appendChild(okGlyph);
 
             setTimeout(function() {
@@ -68,10 +78,21 @@ var smartformHandler = {
             textField.appendChild(pencil);
         }
 
+        function createGlyph(type, color) {
+            var span = document.createElement('span');
+            span.classList.add('glyphicon', 'glyphicon-' + type);
+            span.style.color = color;
+            return span;
+        }
+
+        textField.classList.add('hidden');
+        inputWrapper.classList.remove('hidden');
+
         pencil.addEventListener('click', function() {
-            smartformHandler.activateInput(fieldName);
+            smartformHandler.activateInput(pencil, fieldName, fieldType);
         });
 
-        window.addEventListener("click", submitFormEventListener);
-    }
+        window.addEventListener("click", clickOutEventListener);
+        window.addEventListener("keydown", keyPressEventListener);
+    },
 };
