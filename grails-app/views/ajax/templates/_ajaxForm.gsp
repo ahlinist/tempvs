@@ -1,3 +1,4 @@
-<g:form controller="${controller}" action="${action}" onsubmit="submitAjaxForm(this, '${selector}', getActions()); return false;" class="ajax-form">
+<g:form controller="${controller}" action="${action}" class="ajax-form"
+    onsubmit="ajaxHandler.processAjaxRequest(this, this.action, new FormData(this), 'POST', '${selector}', ajaxHandler.actions); return false;">
   ${raw(body)}
 </g:form>

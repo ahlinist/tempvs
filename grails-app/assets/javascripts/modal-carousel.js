@@ -13,6 +13,6 @@ var modalCarousel = {
         hideModals();
         var imageId = modalCarousel.slideMapping[modalCarousel.currentSlide];
         var url = '/' + controller + '/deleteImage?objectId=' + objectId + '&imageId=' + imageId;
-        sendAjaxRequest(button, url, 'DELETE', '#modal-carousel', getActions());
+        ajaxHandler.processAjaxRequest(button, url, '', 'DELETE', '#modal-carousel', ajaxHandler.actions);
     }
 };

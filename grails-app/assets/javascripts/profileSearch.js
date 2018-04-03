@@ -27,7 +27,7 @@ function searchProfile(element, offset) {
     profileSearchDropdown.classList.add('open');
 
     searchProfileUrl = '/profile/search?query=' + profileSearchBox.value + '&offset=' + profileSearchOffsetCounter;
-    sendAjaxRequest(element, searchProfileUrl, 'GET', '#profile-search-result', actions);
+    ajaxHandler.processAjaxRequest(element, searchProfileUrl, '', 'GET', '#profile-search-result', actions);
 
     function error(element, response) {
         recoverUI();
