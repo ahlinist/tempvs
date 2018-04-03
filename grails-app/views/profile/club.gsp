@@ -26,7 +26,7 @@
           <g:render template="/profile/templates/identity"/>
         </div>
         <div class="col-sm-5 ajax-form">
-          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="firstName" value="${profile.firstName}" label="profile.firstName.label" editAllowed="${editAllowed && active}"/>
+          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="firstName" value="${profile.firstName}" label="profile.firstName.label" editAllowed="${editAllowed && active}" mandatory="${true}"/>
           <tempvs:ajaxSmartForm type="text" action="editProfileField" name="lastName" value="${profile.lastName}" label="profile.lastName.label" editAllowed="${editAllowed && active}"/>
           <tempvs:ajaxSmartForm type="text" action="editProfileField" name="nickName" value="${profile.nickName}" label="profile.nickName.label" editAllowed="${editAllowed && active}"/>
           <tempvs:ajaxSmartForm type="text" action="editProfileField" name="profileId" value="${profile.profileId}" label="profile.profileId.label" editAllowed="${editAllowed && active}"/>
