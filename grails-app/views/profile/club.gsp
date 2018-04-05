@@ -43,7 +43,7 @@
               <tempvs:modalButton id="createPassport" classes="glyphicon glyphicon-plus">
                 <tempvs:ajaxForm controller="passport" action="createPassport">
                   <tempvs:imageUploader fieldName="imageUploadBeans"/>
-                  <tempvs:formField type="text" name="name" label="passport.name.label"/>
+                  <tempvs:formField type="text" name="name" label="passport.name.label" mandatory="${true}"/>
                   <tempvs:formField type="text" name="description" label="passport.description.label"/>
                   <tempvs:ajaxSubmitButton value="passport.create.button"/>
                 </tempvs:ajaxForm>

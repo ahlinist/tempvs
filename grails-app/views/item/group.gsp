@@ -28,10 +28,10 @@
               <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">
                 <tempvs:ajaxForm action="createItem">
                   <tempvs:imageUploader fieldName="imageUploadBeans"/>
-                  <tempvs:formField type="text" name="name" label="item.name.label" />
+                  <tempvs:formField type="text" name="name" label="item.name.label" mandatory="${true}"/>
                   <tempvs:formField type="text" name="description" label="item.description.label" />
-                  <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label"/>
-                  <tempvs:formField type="select" name="period" from="${periods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
+                  <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label" mandatory="${true}"/>
+                  <tempvs:formField type="select" name="period" from="${periods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label" mandatory="${true}"/>
                   <input type="hidden" name="itemGroup" value="${itemGroupId}"/>
                   <tempvs:ajaxSubmitButton value="item.createItem.button"/>
                 </tempvs:ajaxForm>

@@ -18,7 +18,7 @@
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'item.createGroup.tooltip')}">
               <tempvs:modalButton id="createGroup" classes="glyphicon glyphicon-plus">
                 <tempvs:ajaxForm action="createGroup">
-                  <tempvs:formField type="text" name="name" label="item.group.name.label" />
+                  <tempvs:formField type="text" name="name" label="item.group.name.label" mandatory="${true}"/>
                   <tempvs:formField type="text" name="description" label="item.group.description.label" />
                   <tempvs:ajaxSubmitButton value="item.createGroup.button" />
                 </tempvs:ajaxForm>

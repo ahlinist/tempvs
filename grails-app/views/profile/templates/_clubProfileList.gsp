@@ -59,13 +59,13 @@
       <tempvs:ajaxForm controller="profile" action="createClubProfile">
         <tempvs:formField type="file" name="imageUploadBean.image" label="profile.avatar.label"/>
         <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="profile.avatarInfo.label"/>
-        <tempvs:formField type="text" name="firstName" label="profile.firstName.label"/>
+        <tempvs:formField type="text" name="firstName" label="profile.firstName.label" mandatory="${true}"/>
         <tempvs:formField type="text" name="lastName" label="profile.lastName.label"/>
         <tempvs:formField type="text" name="nickName" label="profile.nickName.label"/>
         <tempvs:formField type="text" name="location" label="profile.location.label"/>
         <tempvs:formField type="text" name="profileId" label="profile.profileId.label"/>
         <tempvs:formField type="text" name="clubName" label="profile.clubName.label"/>
-        <tempvs:formField type="select" name="period" from="${periods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label"/>
+        <tempvs:formField type="select" name="period" from="${periods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label" mandatory="${true}"/>
         <tempvs:ajaxSubmitButton value="clubProfile.create.button"/>
       </tempvs:ajaxForm>
     </tempvs:modalButton>

@@ -49,52 +49,70 @@ var ajaxHandler = {
         none: function() {},
     },
     processAjaxRequest: function(element, url, data, method, selector, actions) {
+        clearForm(element);
         var submitButton = element.querySelector('.submit-button');
 
-        $.ajax({
-            url: url,
-            method: method,
-            data: data,
-            dataType: 'json',
-            processData: false,
-            contentType: false,
-            beforeSend: function() {
-                beforeSend(element, submitButton);
-            },
-            success: function(response) {
-                complete(submitButton);
-                actions[response.action](element, response, selector);
-            },
-            error: function() {
-                complete(submitButton);
-                actions.formMessageAction(element, {success: false, message: "Something went wrong :("});
+        if (validateForm(element)) {
+            $.ajax({
+                url: url,
+                method: method,
+                data: data,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                beforeSend: function() {
+                    blockUI();
+
+                    if (submitButton) {
+                        submitButton.setAttribute("disabled", true);
+                    }
+                },
+                success: function(response) {
+                    complete(submitButton);
+                    actions[response.action](element, response, selector);
+                },
+                error: function() {
+                    complete(submitButton);
+                    actions.formMessageAction(element, {success: false, message: "Something went wrong :("});
+                }
+            });
+        }
+
+        function validateForm(form) {
+            var isValid = true;
+            var mandatoryFields = form.getElementsByClassName('mandatory');
+
+            for (var i = 0; i < mandatoryFields.length; i++) {
+                var field = mandatoryFields[i];
+
+                if (!field.value) {
+                    field.classList.add('bg-danger');
+                    isValid = false;
+                }
             }
-        });
 
-        function beforeSend(element, submitButton) {
-            var popover = element.querySelector('.popped-over');
-            var formMessage = element.querySelector('.form-message');
-            var bgDanger = element.querySelector('.bg-danger');
+            return isValid;
+        }
 
-            if (popover) {
+        function clearForm(element) {
+            var popovers = element.getElementsByClassName('popped-over');
+            var formMessages = element.getElementsByClassName('form-message');
+            var bgDangers = element.getElementsByClassName('bg-danger');
+
+            for (i = popovers.length - 1; i >= 0 ; i++) {
+                var popover = popovers[i];
                 popover.classList.remove('popped-over');
                 popover.removeAttribute('data-placement');
                 popover.removeAttribute('data-content');
                 $(popover).popover('hide');
             }
 
-            if (formMessage) {
-                formMessage.remove();
+            for (j = formMessages.length - 1; j >= 0 ; j++) {
+                formMessages[j].remove();
             }
 
-            if (bgDanger) {
-                bgDanger.classList.remove('bg-danger');
-            }
-
-            blockUI();
-
-            if (submitButton) {
-                submitButton.setAttribute("disabled", true);
+            for (k = bgDangers.length - 1; k >= 0; k--) {
+                bgDangers[k].classList.remove('bg-danger');
             }
         }
 
