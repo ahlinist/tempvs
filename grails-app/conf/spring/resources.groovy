@@ -2,7 +2,6 @@ import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.image.ImageTagLib
 import club.tempvs.mongodb.GridFSFactory
 import club.tempvs.mongodb.MongoImageDAO
-import club.tempvs.user.UserInfoHelper
 import club.tempvs.user.UserPasswordEncoderListener
 import org.grails.plugins.web.taglib.ValidationTagLib
 
@@ -15,7 +14,6 @@ beans = {
         gridFSFactory = ref("gridFSFactory")
     }
 
-    userInfoHelper(UserInfoHelper)
     imageTagLib(ImageTagLib)
     gridFSFactory(GridFSFactory)
     validationTagLib(ValidationTagLib)

@@ -10,7 +10,8 @@ import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
-import club.tempvs.user.UserInfoHelper
+import club.tempvs.user.ProfileService
+import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -45,10 +46,11 @@ class SourceController {
             deleteComment: 'DELETE',
     ]
 
+    UserService userService
     ImageTagLib imageTagLib
     ImageService imageService
     SourceService sourceService
-    UserInfoHelper userInfoHelper
+    ProfileService profileService
     CommentService commentService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
@@ -89,7 +91,7 @@ class SourceController {
                     source: source,
                     period: source?.period,
                     images: source?.images,
-                    editAllowed: userInfoHelper.getCurrentUser(request) != null,
+                    editAllowed: userService.currentUserId != null,
             ]
         }
     }
@@ -202,7 +204,7 @@ class SourceController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Profile profile = profileService.currentProfile
         Comment comment = commentService.createComment(text, profile)
         source = sourceService.addComment(source, comment)
 
@@ -223,9 +225,9 @@ class SourceController {
 
     def deleteComment(Long objectId, Long commentId) {
         Source source = sourceService.getSource objectId
-        Comment comment = commentService.getComment commentId
+        Comment comment = commentService.loadComment commentId
 
-        if (!source || !comment) {
+        if (!source) {
             return render([action: NO_ACTION] as JSON)
         }
 

@@ -9,14 +9,13 @@ import club.tempvs.image.ImageTagLib
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
+import club.tempvs.user.ProfileService
 import club.tempvs.user.User
-import club.tempvs.user.UserInfoHelper
 import club.tempvs.user.UserProfile
 import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
@@ -58,7 +57,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def userService = Mock UserService
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
-    def userInfoHelper = Mock UserInfoHelper
+    def profileService = Mock ProfileService
     def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadCommand = Mock ImageUploadCommand
@@ -70,7 +69,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.imageTagLib = imageTagLib
         controller.imageService = imageService
         controller.sourceService = sourceService
-        controller.userInfoHelper = userInfoHelper
+        controller.profileService = profileService
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -84,7 +83,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         def result = controller.stash()
 
         then:
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * user.itemGroups >> [itemGroup]
         1 * user.userProfile >> userProfile
         0 * _
@@ -131,7 +130,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroup)
 
         then:
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * itemService.createGroup(itemGroup, user) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(_ as ItemGroup) >> json
@@ -147,7 +146,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.createGroup(itemGroup)
 
         then:
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * itemService.createGroup(itemGroup, user) >> itemGroup
         1 * itemGroup.hasErrors() >> Boolean.FALSE
         1 * itemGroup.id >> LONG_ONE
@@ -512,7 +511,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * commentService.createComment(TEXT, userProfile) >> comment
         1 * item.hasErrors() >> Boolean.FALSE
         1 * itemService.addComment(item, comment) >> item
@@ -536,7 +535,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * commentService.getComment(LONG_TWO) >> comment
+        1 * commentService.loadComment(LONG_TWO) >> comment
         1 * itemService.deleteComment(item, comment) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.itemGroup >> itemGroup

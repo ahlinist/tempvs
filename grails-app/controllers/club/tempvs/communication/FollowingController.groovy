@@ -3,10 +3,6 @@ package club.tempvs.communication
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
-import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
-import club.tempvs.user.UserInfoHelper
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -31,13 +27,12 @@ class FollowingController {
     static defaultAction = 'show'
 
     ProfileService profileService
-    UserInfoHelper userInfoHelper
     PageRenderer groovyPageRenderer
     FollowingService followingService
     AjaxResponseHelper ajaxResponseHelper
 
     def show() {
-        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Profile profile = profileService.currentProfile
         List<Following> followers = followingService.getFollowers(profile)
         List<Following> followings = followingService.getFollowings(profile)
         List<Following> newFollowers = followers.findAll {it.isNew}
@@ -54,7 +49,7 @@ class FollowingController {
     }
 
     def follow(String profileClassName, Long profileId) {
-        Profile followerProfile = userInfoHelper.getCurrentProfile(request)
+        Profile followerProfile = profileService.currentProfile
         Profile followingProfile = profileService.getProfile(Class.forName(profileClassName), profileId) as Profile
 
         if (!followingProfile) {
@@ -74,7 +69,7 @@ class FollowingController {
     }
 
     def unfollow(String profileClassName, Long profileId) {
-        Profile followerProfile = userInfoHelper.getCurrentProfile(request)
+        Profile followerProfile = profileService.currentProfile
         Profile followingProfile = profileService.getProfile(Class.forName(profileClassName), profileId) as Profile
 
         if (!followingProfile) {

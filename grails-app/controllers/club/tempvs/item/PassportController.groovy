@@ -11,7 +11,6 @@ import club.tempvs.image.ImageUploadCommand
 import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
-import club.tempvs.user.UserInfoHelper
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -50,7 +49,6 @@ class PassportController {
     ImageTagLib imageTagLib
     ItemService itemService
     ImageService imageService
-    UserInfoHelper userInfoHelper
     CommentService commentService
     ProfileService profileService
     PassportService passportService
@@ -69,7 +67,7 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
         }
 
-        ClubProfile clubProfile = userInfoHelper.getCurrentProfile(request) as ClubProfile
+        ClubProfile clubProfile = profileService.currentProfile as ClubProfile
         passport = passportService.validatePassport(passport, clubProfile)
 
         if (passport.hasErrors()) {
@@ -102,7 +100,7 @@ class PassportController {
                 clubProfile: clubProfile,
                 itemMap: composeItemMap(passport),
                 availableItems: itemService.getItemsByPeriod(clubProfile.period),
-                editAllowed: clubProfile == userInfoHelper.getCurrentProfile(request),
+                editAllowed: clubProfile == profileService.currentProfile,
         ]
     }
 
@@ -173,7 +171,7 @@ class PassportController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Profile profile = profileService.currentProfile
         Comment comment = commentService.createComment(text, profile)
         passport = passportService.addComment(passport, comment)
 
@@ -194,9 +192,9 @@ class PassportController {
 
     def deleteComment(Long objectId, Long commentId) {
         Passport passport = passportService.getPassport objectId
-        Comment comment = commentService.getComment commentId
+        Comment comment = commentService.loadComment commentId
 
-        if (! passport || !comment) {
+        if (! passport) {
             return render([action: NO_ACTION] as JSON)
         }
 
@@ -210,7 +208,7 @@ class PassportController {
                 object: passport,
                 objectId: objectId,
                 controllerName: 'passport',
-                editAllowed: passport.clubProfile == userInfoHelper.getCurrentProfile(request),
+                editAllowed: passport.clubProfile == profileService.currentProfile,
         ]
 
         String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)

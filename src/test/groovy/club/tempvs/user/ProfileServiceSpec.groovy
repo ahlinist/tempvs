@@ -96,7 +96,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         service.setCurrentProfile(clubProfile)
 
         then:
-        1 * clubProfile.user >> user
+        1 * userService.currentUser >> user
         1 * clubProfile.id >> LONG_ONE
         1 * user.setCurrentProfileClass(_ as Class)
         1 * user.setCurrentProfileId(LONG_ONE)

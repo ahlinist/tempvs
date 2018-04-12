@@ -21,7 +21,6 @@ class VerifyController {
 
     UserService userService
     VerifyService verifyService
-    UserInfoHelper userInfoHelper
     ProfileService profileService
     SpringSecurityService springSecurityService
 

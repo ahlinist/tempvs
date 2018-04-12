@@ -3,11 +3,9 @@ package club.tempvs.communication
 import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
-import club.tempvs.user.UserInfoHelper
 import club.tempvs.user.UserProfile
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import spock.lang.Specification
 
 class FollowingControllerSpec extends Specification implements ControllerUnitTest<FollowingController> {
@@ -22,13 +20,11 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
     def followerClubProfile = Mock ClubProfile
     def followingClubProfile = Mock ClubProfile
 
-    def userInfoHelper = Mock UserInfoHelper
     def profileService = Mock ProfileService
     def groovyPageRenderer = Mock PageRenderer
     def followingService = Mock FollowingService
 
     def setup() {
-        controller.userInfoHelper = userInfoHelper
         controller.profileService = profileService
         controller.followingService = followingService
         controller.groovyPageRenderer = groovyPageRenderer
@@ -46,7 +42,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         def result = controller.show()
 
         then:
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * followingService.getFollowers(userProfile) >> [following]
         1 * followingService.getFollowings(userProfile) >> [following]
         2 * following.isNew >> Boolean.FALSE
@@ -71,7 +67,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         controller.follow()
 
         then:
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> followerClubProfile
+        1 * profileService.currentProfile >> followerClubProfile
         1 * profileService.getProfile(ClubProfile, LONG_ONE) >> followingClubProfile
         1 * followingClubProfile.asType(Profile) >> followingClubProfile
         1 * followingService.createFollowing(followerClubProfile, followingClubProfile) >> following
@@ -95,7 +91,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         controller.unfollow()
 
         then:
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> followerClubProfile
+        1 * profileService.currentProfile >> followerClubProfile
         1 * profileService.getProfile(ClubProfile, LONG_ONE) >> followingClubProfile
         1 * followingClubProfile.asType(Profile) >> followingClubProfile
         1 * followingService.deleteFollowing(followerClubProfile, followingClubProfile)

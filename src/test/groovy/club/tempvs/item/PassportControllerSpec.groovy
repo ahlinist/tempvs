@@ -12,11 +12,9 @@ import club.tempvs.periodization.Period
 import club.tempvs.user.ClubProfile
 import club.tempvs.user.ProfileService
 import club.tempvs.user.User
-import club.tempvs.user.UserInfoHelper
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
@@ -54,7 +52,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def itemService = Mock ItemService
     def imageTagLib = Mock ImageTagLib
     def imageService = Mock ImageService
-    def userInfoHelper = Mock UserInfoHelper
     def commentService = Mock CommentService
     def profileService = Mock ProfileService
     def passportService = Mock PassportService
@@ -66,7 +63,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         controller.imageTagLib = imageTagLib
         controller.imageService = imageService
         controller.profileService = profileService
-        controller.userInfoHelper = userInfoHelper
         controller.commentService = commentService
         controller.passportService = passportService
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -96,7 +92,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         then:
         1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         1 * clubProfile.asType(ClubProfile) >> clubProfile
         1 * passportService.validatePassport(passport, clubProfile) >> passport
         1 * imageService.uploadImages([imageUploadBean], PASSPORT_COLLECTION) >> [image]
@@ -123,7 +119,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * item2Passport.item >> item
         1 * item.itemType >> itemType
         1 * itemService.getItemsByPeriod(period) >> [item, item]
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         1 * passport.images >> [image]
         0 * _
 
@@ -230,7 +226,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         1 * commentService.createComment(TEXT, clubProfile) >> comment
         1 * passportService.addComment(passport, comment) >> passport
         1 * comment.hasErrors() >> Boolean.FALSE
@@ -251,10 +247,10 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
-        1 * commentService.getComment(LONG_TWO) >> comment
+        1 * commentService.loadComment(LONG_TWO) >> comment
         1 * passportService.deleteComment(passport, comment) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         1 * passport.clubProfile >> clubProfile
         1 * groovyPageRenderer.render(_ as Map)
         0 * _

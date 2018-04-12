@@ -12,7 +12,6 @@ import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import club.tempvs.user.User
-import club.tempvs.user.UserInfoHelper
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
@@ -61,7 +60,6 @@ class ItemController {
     UserService userService
     ImageService imageService
     SourceService sourceService
-    UserInfoHelper userInfoHelper
     CommentService commentService
     ProfileService profileService
     PageRenderer groovyPageRenderer
@@ -70,7 +68,7 @@ class ItemController {
 
     @Secured('permitAll')
     def stash(Long id) {
-        User user = id ? userService.getUser(id) : userInfoHelper.getCurrentUser(request)
+        User user = id ? userService.getUser(id) : userService.currentUser
 
         if (user) {
             [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE]
@@ -78,7 +76,7 @@ class ItemController {
     }
 
     def createGroup(ItemGroup itemGroup) {
-        User user = userInfoHelper.getCurrentUser(request)
+        User user = userService.currentUser
         itemGroup = itemService.createGroup(itemGroup, user)
 
         if (itemGroup.hasErrors()) {
@@ -315,7 +313,7 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Profile profile = profileService.currentProfile
         Comment comment = commentService.createComment(text, profile)
         item = itemService.addComment(item, comment)
 
@@ -336,9 +334,9 @@ class ItemController {
 
     def deleteComment(Long objectId, Long commentId) {
         Item item = itemService.getItem objectId
-        Comment comment = commentService.getComment commentId
+        Comment comment = commentService.loadComment commentId
 
-        if (!item || !comment) {
+        if (!item) {
             return render([action: NO_ACTION] as JSON)
         }
 

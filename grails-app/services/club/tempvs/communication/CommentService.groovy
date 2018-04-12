@@ -11,7 +11,11 @@ import grails.gorm.transactions.Transactional
 class CommentService {
 
     Comment getComment(Long id) {
-        Comment.get(id)
+        Comment.get id
+    }
+
+    Comment loadComment(Long id) {
+        Comment.load id
     }
 
     Comment createComment(String text, Profile profile) {

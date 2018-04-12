@@ -6,6 +6,7 @@ import club.tempvs.image.ImageService
 import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
+import grails.web.mapping.LinkGenerator
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.transaction.annotation.Propagation
@@ -24,6 +25,8 @@ class ProfileService {
 
     UserService userService
     ImageService imageService
+    LinkGenerator grailsLinkGenerator
+
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     public <T> T getProfile(Class<T> clazz, id) {
@@ -47,6 +50,37 @@ class ProfileService {
         followings.collect { Following following ->
             Class.forName(following.profileClassName).get(following.followerId)
         }
+    }
+
+    Profile getCurrentProfile() {
+        userService.currentUser?.currentProfile
+    }
+
+    @PreAuthorize('#profile.user.email == authentication.name')
+    void setCurrentProfile(Profile profile) {
+        User user = userService.currentUser
+
+        if (user) {
+            user.currentProfileClass = profile?.class
+            user.currentProfileId = profile?.id
+            user.save(flush: true)
+        }
+    }
+
+    Map<String, String> getProfileDropdown() {
+        Map result = [:]
+        User user = userService.currentUser
+        String userProfileString = user.userProfile.toString()
+        String normalizedUserProfileString = userProfileString.size() <= 30 ? userProfileString : userProfileString[0..29] + '...'
+        result[(normalizedUserProfileString)] = grailsLinkGenerator.link(controller: 'profile', action: 'switchProfile')
+
+        user.clubProfiles.each { ClubProfile clubProfile ->
+            String clubProfileString = clubProfile.toString()
+            String normalizedClubProfileString = clubProfileString.size() <= 30 ? clubProfileString : clubProfileString[0..29] + '...'
+            result[(normalizedClubProfileString)] = grailsLinkGenerator.link(controller: 'profile', action: 'switchProfile', id: clubProfile.id)
+        }
+
+        return result
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
@@ -82,16 +116,6 @@ class ProfileService {
                     }
                 }
             }
-        }
-    }
-
-    void setCurrentProfile(Profile profile) {
-        User user = profile.user
-
-        if (user) {
-            user.currentProfileClass = profile?.class
-            user.currentProfileId = profile?.id
-            user.save(flush: true)
         }
     }
 

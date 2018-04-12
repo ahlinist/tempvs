@@ -1,6 +1,9 @@
-<g:set var="currentUser" value="${request.currentUser}"/>
-<g:set var="currentProfile" value="${request.currentProfile}"/>
-<g:set var="newFollowings" value="${request.newFollowingsCount}"/>
+<sec:ifLoggedIn>
+  <g:set var="profileService" value="${applicationContext.profileService}"/>
+  <g:set var="currentProfile" value="${profileService.currentProfile}"/>
+  <g:set var="profileDropdown" value="${profileService.profileDropdown}"/>
+  <g:set var="newFollowings" value="${applicationContext.followingService.getNewFollowingsCount(currentProfile)}"/>
+</sec:ifLoggedIn>
 
 <!DOCTYPE html>
 <html>
@@ -33,18 +36,11 @@
               <span class="caret"></span>
             </button>
             <ul class="dropdown-menu list-group">
-              <li>
-                <g:link class="list-group-item disableable" controller="profile" action="switchProfile">
-                  <g:set var="profileString" value="${currentUser.userProfile.toString()}"/>
-                  ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
-                </g:link>
-              </li>
-              <g:each var="clubProfile" in="${currentUser.clubProfiles.findAll {it.active}}">
+              <g:each var="profileDropdownEntry" in="${profileDropdown}">
                 <li>
-                  <g:link class="list-group-item disableable" controller="profile" action="switchProfile" id="${clubProfile.id}">
-                    <g:set var="profileString" value="${clubProfile.toString()}"/>
-                    ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
-                  </g:link>
+                  <a class="list-group-item disableable" href="${profileDropdownEntry.value}">
+                    ${profileDropdownEntry.key}
+                  </a>
                 </li>
               </g:each>
             </ul>

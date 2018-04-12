@@ -9,13 +9,13 @@ import club.tempvs.image.ImageTagLib
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
+import club.tempvs.user.ProfileService
 import club.tempvs.user.User
-import club.tempvs.user.UserInfoHelper
 import club.tempvs.user.UserProfile
+import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
@@ -51,17 +51,19 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def ajaxResponseHelper = Mock AjaxResponseHelper
     def multipartFile = Mock GrailsMockMultipartFile
 
+    def userService = Mock UserService
+    def imageTagLib = Mock ImageTagLib
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
-    def userInfoHelper = Mock UserInfoHelper
+    def profileService = Mock ProfileService
     def commentService = Mock CommentService
-    def imageTagLib = Mock ImageTagLib
 
     def setup() {
+        controller.userService = userService
         controller.imageService = imageService
         controller.imageTagLib = imageTagLib
         controller.sourceService = sourceService
-        controller.userInfoHelper = userInfoHelper
+        controller.profileService = profileService
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -87,7 +89,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * source.period >> period
         1 * source.images >> [image]
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUserId >> LONG_TWO
         0 * _
 
         and:
@@ -110,8 +112,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * source.setImages([image])
         1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
-        1 * source.id >> SourceControllerSpec.LONG_ONE
-        1 * ajaxResponseHelper.renderRedirect("${SHOW_URI}/${SourceControllerSpec.LONG_ONE}") >> json
+        1 * source.id >> LONG_ONE
+        1 * ajaxResponseHelper.renderRedirect("${SHOW_URI}/${LONG_ONE}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -274,7 +276,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * commentService.createComment(TEXT, userProfile) >> comment
         1 * comment.hasErrors() >> Boolean.FALSE
         1 * sourceService.addComment(source, comment) >> source
@@ -294,7 +296,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * commentService.getComment(LONG_TWO) >> comment
+        1 * commentService.loadComment(LONG_TWO) >> comment
         1 * sourceService.deleteComment(source, comment) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)

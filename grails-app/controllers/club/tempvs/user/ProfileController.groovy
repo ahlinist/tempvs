@@ -51,18 +51,17 @@ class ProfileController {
     VerifyService verifyService
     ProfileService profileService
     PageRenderer groovyPageRenderer
-    UserInfoHelper userInfoHelper
     FollowingService followingService
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
 
     def index() {
-        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Profile profile = profileService.currentProfile
         redirect action: "${profile.class.simpleName - 'Profile'}", id: profile.identifier
     }
 
     def search(String query, Integer offset) {
-        List<Profile> profiles = profileService.searchProfiles(userInfoHelper.getCurrentProfile(request), query, offset)
+        List<Profile> profiles = profileService.searchProfiles(profileService.currentProfile, query, offset)
         Map model = [profiles: profiles]
         String template = groovyPageRenderer.render(template: '/profile/templates/profileSearchResult', model: model)
         render([action: profiles ? REPLACE_ACTION : NO_ACTION, template: template] as JSON)
@@ -70,26 +69,30 @@ class ProfileController {
 
     @Secured('permitAll')
     def user(String id) {
+        UserProfile userProfile
+        Profile currentProfile = profileService.currentProfile
+
         if (!id) {
-            UserProfile profile = userInfoHelper.getCurrentUser(request)?.userProfile
-            return redirect(profile ? [action: 'userProfile', id: profile.identifier] : [controller: 'auth', action: 'index'])
+            return redirect(currentProfile ? [action: 'userProfile', id: currentProfile.identifier] : [controller: 'auth', action: 'index'])
         }
 
-        UserProfile userProfile = profileService.getProfile(UserProfile, id)
+        if ((currentProfile.class == UserProfile) && (currentProfile.id == id)) {
+            userProfile = currentProfile as UserProfile
+        } else {
+            userProfile = profileService.getProfile(UserProfile, id)
+        }
 
         if (!userProfile) {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
-        Profile profile = userInfoHelper.getCurrentProfile(request)
-
         [
                 profile: userProfile,
                 user: userProfile.user,
                 id: userProfile.identifier,
-                editAllowed: profile == userProfile,
-                mayBeFollowed: followingService.mayBeFollowed(profile, userProfile),
-                isFollowed: followingService.getFollowing(profile, userProfile) as Boolean,
+                editAllowed: currentProfile == userProfile,
+                mayBeFollowed: followingService.mayBeFollowed(currentProfile, userProfile),
+                isFollowed: followingService.getFollowing(currentProfile, userProfile) as Boolean,
         ]
     }
 
@@ -99,30 +102,36 @@ class ProfileController {
             return redirect(controller: 'auth', action: 'index')
         }
 
-        ClubProfile clubProfile = profileService.getProfile(ClubProfile, id)
+        ClubProfile clubProfile
+        Profile currentProfile = profileService.currentProfile
+
+        if ((currentProfile.class == ClubProfile) && (currentProfile.id == id)) {
+            clubProfile = currentProfile as ClubProfile
+        } else {
+            clubProfile = profileService.getProfile(ClubProfile, id)
+        }
 
         if (!clubProfile) {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
-
-        Profile profile = userInfoHelper.getCurrentProfile(request)
 
         [
                 profile: clubProfile,
                 user: clubProfile.user,
                 id: clubProfile.identifier,
                 passports: clubProfile.passports,
-                editAllowed: profile == clubProfile,
-                mayBeFollowed: followingService.mayBeFollowed(profile, clubProfile),
-                isFollowed: followingService.getFollowing(profile, clubProfile) as Boolean,
+                editAllowed: currentProfile == clubProfile,
+                mayBeFollowed: followingService.mayBeFollowed(currentProfile, clubProfile),
+                isFollowed: followingService.getFollowing(currentProfile, clubProfile) as Boolean,
         ]
     }
 
     def switchProfile(Long id) {
-        Profile profile = id ? profileService.getProfile(ClubProfile, id) : userInfoHelper.getCurrentUser(request)?.userProfile
+        User currentUser = userService.currentUser
+        Profile profile = id ? currentUser?.clubProfiles?.find { it.id == id } : currentUser?.userProfile
 
         if (profile.active) {
-            profileService.setCurrentProfile(profile)
+            profileService.currentProfile = profile
         }
 
         redirect uri: request.getHeader(REFERER)
@@ -133,7 +142,7 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        User user = userInfoHelper.getCurrentUser(request)
+        User user = userService.currentUser
         clubProfile = profileService.validateClubProfile(clubProfile, user)
 
         if (clubProfile.hasErrors()) {
@@ -147,13 +156,12 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(clubProfile))
         }
 
-        profileService.setCurrentProfile(clubProfile)
+        profileService.currentProfile = clubProfile
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: clubProfile.id))
     }
 
     def editProfileField() {
-        Profile currentProfile = userInfoHelper.getCurrentProfile(request)
-        Profile profile = profileService.editProfileField(currentProfile, params.fieldName as String, params.fieldValue as String)
+        Profile profile = profileService.editProfileField(profileService.currentProfile, params.fieldName as String, params.fieldValue as String)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
@@ -164,7 +172,7 @@ class ProfileController {
 
     def editProfileEmail() {
         String email = params.fieldValue
-        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Profile profile = profileService.currentProfile
 
         if (email) {
             Map properties = [
@@ -198,8 +206,8 @@ class ProfileController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        if (userInfoHelper.getCurrentProfile(request) == clubProfile) {
-            profileService.setCurrentProfile(null)
+        if (profileService.currentProfile == clubProfile) {
+            profileService.currentProfile = null
         }
 
         Profile profile = profileService.deactivateProfile(clubProfile)
@@ -249,7 +257,7 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        Profile profile = userInfoHelper.getCurrentProfile(request)
+        Profile profile = profileService.currentProfile
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
         Profile persistedProfile = profileService.uploadAvatar(profile, avatar)
 
@@ -261,7 +269,7 @@ class ProfileController {
     }
 
     def list() {
-        User user = userInfoHelper.getCurrentUser(request)
+        User user = userService.currentUser
         List<ClubProfile> clubProfiles = user.clubProfiles
 
         [

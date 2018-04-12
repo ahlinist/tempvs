@@ -12,7 +12,6 @@ import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockHttpServletRequest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
@@ -55,7 +54,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def imageService = Mock ImageService
     def verifyService = Mock VerifyService
     def profileService = Mock ProfileService
-    def userInfoHelper = Mock UserInfoHelper
     def groovyPageRenderer = Mock PageRenderer
     def followingService = Mock FollowingService
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -64,7 +62,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.userService = userService
         controller.imageService = imageService
         controller.verifyService = verifyService
-        controller.userInfoHelper = userInfoHelper
         controller.profileService = profileService
         controller.followingService = followingService
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -79,7 +76,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.index()
 
         then:
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.identifier >> IDENTIFIER
         0 * _
 
@@ -97,7 +94,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.search()
 
         then:
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * profileService.searchProfiles(userProfile, QUERY, OFFSET) >> [userProfile]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
@@ -111,8 +108,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.user()
 
         then:
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
-        1 * user.userProfile  >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.identifier >> IDENTIFIER
         0 * _
 
@@ -124,10 +120,10 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         def result = controller.user()
 
         then:
+        1 * profileService.currentProfile >> userProfile
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
         1 * userProfile.user >> user
         1 * userProfile.identifier >> IDENTIFIER
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
         1 * followingService.mayBeFollowed(userProfile, userProfile) >> Boolean.TRUE
         1 * followingService.getFollowing(userProfile, userProfile) >> following
         1 * following.asType(Boolean) >> Boolean.TRUE
@@ -152,6 +148,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         def result = controller.club()
 
         then: 'For non-existing profile'
+        1 * profileService.currentProfile >> clubProfile
         1 * profileService.getProfile(ClubProfile.class, ONE) >> null
         0 * _
 
@@ -170,7 +167,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
         1 * clubProfile.user >> user
         1 * clubProfile.identifier >> IDENTIFIER
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> clubProfile
+        1 * profileService.currentProfile >> clubProfile
         1 * clubProfile.passports >> [passport]
         1 * followingService.mayBeFollowed(clubProfile, clubProfile) >> Boolean.TRUE
         1 * followingService.getFollowing(clubProfile, clubProfile) >> following
@@ -186,7 +183,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.switchProfile()
 
         then:
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
         1 * userProfile.active >> Boolean.TRUE
         1 * profileService.setCurrentProfile(userProfile)
@@ -204,9 +201,11 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.switchProfile()
 
         then:
-        1 * profileService.getProfile(_, LONG_ID) >> userProfile
-        1 * userProfile.active >> Boolean.TRUE
-        1 * profileService.setCurrentProfile(userProfile)
+        1 * userService.currentUser >> user
+        1 * user.clubProfiles >> [clubProfile]
+        1 * clubProfile.id >> LONG_ID
+        1 * clubProfile.active >> Boolean.TRUE
+        1 * profileService.setCurrentProfile(clubProfile)
         0 * _
 
         and:
@@ -222,7 +221,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * profileService.validateClubProfile(clubProfile, user) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(clubProfile) >> json
@@ -239,7 +238,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * profileService.validateClubProfile(clubProfile, user) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
@@ -259,7 +258,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * profileService.validateClubProfile(clubProfile, user) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
@@ -282,7 +281,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.editProfileField()
 
         then:
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * profileService.editProfileField(userProfile, FIELD_NAME, FIELD_VALUE) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         0 * _
@@ -300,7 +299,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.editProfileEmail()
 
         then:
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.id >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
@@ -324,7 +323,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * user.clubProfiles >> [clubProfile]
         1 * profileService.deactivateProfile(clubProfile) >> clubProfile
         1 * clubProfile.hasErrors() >> Boolean.FALSE
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.equals(clubProfile) >> Boolean.FALSE
         2 * clubProfile.active >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
@@ -383,7 +382,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * userInfoHelper.getCurrentProfile(_ as GrailsMockHttpServletRequest) >> userProfile
+        1 * profileService.currentProfile >> userProfile
         1 * userProfile.avatar >> image
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * profileService.uploadAvatar(userProfile, image) >> userProfile
@@ -401,7 +400,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         def result = controller.list()
 
         then:
-        1 * userInfoHelper.getCurrentUser(_ as GrailsMockHttpServletRequest) >> user
+        1 * userService.currentUser >> user
         1 * user.userProfile >> userProfile
         1 * user.clubProfiles >> [clubProfile]
         2 * clubProfile.active >> Boolean.TRUE
