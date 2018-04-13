@@ -32,7 +32,8 @@ var smartformHandler = {
         function submitSmartForm() {
             if(!!(inputWrapper.offsetWidth || inputWrapper.offsetHeight || inputWrapper.getClientRects().length)) {
                 if (validateForm()) {
-                    ajaxHandler.processAjaxRequest(form, form.action, new FormData(form), 'POST', null, actions);
+                    var isValid = true;
+                    ajaxHandler.processAjaxRequest(form, form.action, new FormData(form), 'POST', null, actions, isValid);
 
                     if (fieldType === 'select') {
                         textWrapper.innerHTML = select.options[select.selectedIndex].innerHTML + ' ';

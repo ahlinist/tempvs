@@ -48,11 +48,11 @@ var ajaxHandler = {
         },
         none: function() {},
     },
-    processAjaxRequest: function(element, url, data, method, selector, actions) {
+    processAjaxRequest: function(element, url, data, method, selector, actions, isValid) {
         clearForm(element);
         var submitButton = element.querySelector('.submit-button');
 
-        if (validateForm(element)) {
+        if (isValid || validateForm(element)) {
             $.ajax({
                 url: url,
                 method: method,
