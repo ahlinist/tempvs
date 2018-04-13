@@ -20,7 +20,7 @@
           </g:if>
           <div>
             <tempvs:image image="${profile.avatar}" styles="max-width: 45px; float: left;"/>
-            <g:link controller="profile" action="${profile.class}" id="${profile.id}" class="btn btn-default">
+            <g:link controller="profile" action="${profile.class.simpleName - 'Profile'}" id="${profile.id}" class="btn btn-default">
               ${profile}
             </g:link>
           </div>
