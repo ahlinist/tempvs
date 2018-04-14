@@ -60,17 +60,16 @@ class UserController {
     }
 
     def updatePassword(UserPasswordCommand command) {
-        if (command.validate()) {
-            String password = springSecurityService.encodePassword(command.newPassword)
-            User user = userService.editUserField(userService.currentUser, PASSWORD, password)
+        if (!command.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(command))
+        }
 
-            if (!user.hasErrors()) {
-                render ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE)
-            } else {
-                render ajaxResponseHelper.renderValidationResponse(user)
-            }
+        User user = userService.editUserField(userService.currentUser, PASSWORD, command.newPassword)
+
+        if (!user.hasErrors()) {
+            render ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE)
         } else {
-            render ajaxResponseHelper.renderValidationResponse(command)
+            render ajaxResponseHelper.renderValidationResponse(user)
         }
     }
 

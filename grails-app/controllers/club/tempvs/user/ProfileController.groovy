@@ -76,7 +76,7 @@ class ProfileController {
             return redirect(currentProfile ? [action: 'userProfile', id: currentProfile.identifier] : [controller: 'auth', action: 'index'])
         }
 
-        if ((currentProfile.class == UserProfile) && (currentProfile.id == id)) {
+        if ((currentProfile?.class == UserProfile) && (currentProfile?.id == id)) {
             userProfile = currentProfile as UserProfile
         } else {
             userProfile = profileService.getProfile(UserProfile, id)

@@ -39,13 +39,6 @@ class UserService {
         }
     }
 
-    String getCurrentUserPassword() {
-        if (springSecurityService.loggedIn) {
-            GrailsUser grailsUser = springSecurityService.principal as GrailsUser
-            grailsUser.password as String
-        }
-    }
-
     User getUserByEmail(String email) {
         User.findByEmail(email)
     }

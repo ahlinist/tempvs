@@ -21,7 +21,7 @@ class UserPasswordCommand implements Validateable {
         newPassword size: 0..35
 
         currentPassword validator: { String password, UserPasswordCommand command ->
-            command.passwordEncoder.isPasswordValid(command.userService.currentUserPassword, password, null)
+            command.passwordEncoder.isPasswordValid(command.userService.currentUser?.password, password, null)
         }
 
         repeatNewPassword validator: { String repeatNewPassword, UserPasswordCommand command ->

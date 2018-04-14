@@ -103,7 +103,6 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         then:
         1 * userPasswordCommand.validate() >> Boolean.TRUE
         1 * userPasswordCommand.newPassword >> NEW_PASSWORD
-        1 * springSecurityService.encodePassword(NEW_PASSWORD) >> NEW_PASSWORD
         1 * userService.currentUser >> user
         1 * userService.editUserField(user, PASSWORD, NEW_PASSWORD) >> user
         1 * user.hasErrors() >> Boolean.FALSE
