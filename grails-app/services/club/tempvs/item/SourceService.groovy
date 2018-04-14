@@ -27,6 +27,10 @@ class SourceService {
         Source.get id
     }
 
+    Source loadSource(Long id) {
+        Source.load id
+    }
+
     List<Source> getSourcesByPeriod(Period period) {
         Source.findAllByPeriod period
     }

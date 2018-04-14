@@ -274,7 +274,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * imageService.getImage(LONG_TWO) >> image
+        1 * imageService.loadImage(LONG_TWO) >> image
         1 * itemService.deleteImage(item, image) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.images >> [image]
@@ -464,7 +464,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * sourceService.getSource(LONG_ONE) >> source
+        1 * sourceService.loadSource(LONG_ONE) >> source
         1 * itemService.linkSource(item, source) >> item2Source
         1 * item2Source.hasErrors() >> Boolean.FALSE
         1 * item.period >> period
@@ -488,7 +488,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * sourceService.getSource(LONG_ONE) >> source
+        1 * sourceService.loadSource(LONG_ONE) >> source
         1 * itemService.unlinkSource(item, source)
         1 * item.period >> period
         1 * item.itemType >> itemType

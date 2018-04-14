@@ -130,9 +130,9 @@ class ItemController {
 
     def deleteImage(Long objectId, Long imageId) {
         Item item = itemService.getItem objectId
-        Image image = imageService.getImage imageId
+        Image image = imageService.loadImage imageId
 
-        if (!item || !image) {
+        if (!item) {
             return render([action: NO_ACTION] as JSON)
         }
 
@@ -262,9 +262,9 @@ class ItemController {
 
     def linkSource(Long itemId, Long sourceId) {
         Item item = itemService.getItem itemId
-        Source source = sourceService.getSource sourceId
+        Source source = sourceService.loadSource sourceId
 
-        if (!item || !source) {
+        if (!item) {
             return render([action: NO_ACTION] as JSON)
         }
 
@@ -287,9 +287,9 @@ class ItemController {
 
     def unlinkSource(Long itemId, Long sourceId) {
         Item item = itemService.getItem itemId
-        Source source = sourceService.getSource sourceId
+        Source source = sourceService.loadSource sourceId
 
-        if (!item || !source) {
+        if (!item) {
             return render([action: NO_ACTION] as JSON)
         }
 

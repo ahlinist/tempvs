@@ -318,7 +318,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
-        1 * imageService.getImage(LONG_TWO) >> image
+        1 * imageService.loadImage(LONG_TWO) >> image
         1 * passportService.deleteImage(passport, image) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.images >> [image]

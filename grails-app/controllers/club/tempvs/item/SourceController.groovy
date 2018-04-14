@@ -135,9 +135,9 @@ class SourceController {
 
     def deleteImage(Long objectId, Long imageId) {
         Source source = sourceService.getSource objectId
-        Image image = imageService.getImage imageId
+        Image image = imageService.loadImage imageId
 
-        if (!source || !image) {
+        if (!source) {
             return render([action: NO_ACTION] as JSON)
         }
 

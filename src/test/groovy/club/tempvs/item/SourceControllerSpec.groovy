@@ -256,7 +256,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * imageService.getImage(LONG_TWO) >> image
+        1 * imageService.loadImage(LONG_TWO) >> image
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]

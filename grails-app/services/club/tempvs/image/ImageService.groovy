@@ -15,6 +15,10 @@ class ImageService {
         Image.get id
     }
 
+    Image loadImage(Long id) {
+        Image.load id
+    }
+
     byte[] getImageBytes(String collection, String objectId) {
         imageDAO.get(collection, objectId)?.bytes
     }
