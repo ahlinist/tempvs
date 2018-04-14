@@ -4,6 +4,7 @@ import club.tempvs.mongodb.GridFSFactory
 import club.tempvs.mongodb.MongoImageDAO
 import club.tempvs.user.UserPasswordEncoderListener
 import org.grails.plugins.web.taglib.ValidationTagLib
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
 beans = {
     ajaxResponseHelper(AjaxResponseHelper) {
@@ -14,6 +15,7 @@ beans = {
         gridFSFactory = ref("gridFSFactory")
     }
 
+    passwordEncoder(BCryptPasswordEncoder)
     imageTagLib(ImageTagLib)
     gridFSFactory(GridFSFactory)
     validationTagLib(ValidationTagLib)

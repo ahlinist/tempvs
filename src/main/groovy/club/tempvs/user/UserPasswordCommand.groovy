@@ -2,7 +2,7 @@ package club.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
 import grails.validation.Validateable
-import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 
 /**
  * Command object for {@link User}'s password update.
@@ -21,7 +21,7 @@ class UserPasswordCommand implements Validateable {
         newPassword size: 0..35
 
         currentPassword validator: { String password, UserPasswordCommand command ->
-            command.passwordEncoder.isPasswordValid(command.userService.currentUser?.password, password, null)
+            command.passwordEncoder.matches(password, command.userService.currentUser?.password)
         }
 
         repeatNewPassword validator: { String repeatNewPassword, UserPasswordCommand command ->

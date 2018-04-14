@@ -9,7 +9,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.annotation.Secured
-import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices
 
 /**
@@ -48,7 +48,7 @@ class AuthController {
         String password = command.password
         User user = userService.getUserByEmail(email)
 
-        if (!user || !passwordEncoder.isPasswordValid(user.password, password, null)) {
+        if (!user || !passwordEncoder.matches(password, user.password)) {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, NO_SUCH_USER))
         }
 

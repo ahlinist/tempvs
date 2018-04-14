@@ -1,6 +1,6 @@
 package club.tempvs.user
 
-import org.springframework.security.authentication.encoding.PasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Specification
 
 /**
@@ -45,7 +45,7 @@ class UserPasswordCommandSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * user.password >> PASSWORD
-        1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
+        1 * passwordEncoder.matches(CURRENT_PASSWORD, PASSWORD) >> Boolean.TRUE
         0 * _
 
         and:
@@ -68,7 +68,7 @@ class UserPasswordCommandSpec extends Specification {
         then:
         1 * userService.currentUser >> user
         1 * user.password >> PASSWORD
-        1 * passwordEncoder.isPasswordValid(PASSWORD, CURRENT_PASSWORD, null) >> Boolean.TRUE
+        1 * passwordEncoder.matches(CURRENT_PASSWORD, PASSWORD) >> Boolean.TRUE
         0 * _
 
         and:
