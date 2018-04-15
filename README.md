@@ -12,7 +12,7 @@ Make reenactor profiles easier to share/review/maintain.
 To get started you need:
  * Java 1.8
  * Groovy 2.4.11
- * Grails 3.3.2
+ * Grails 3.3.4
  * Gradle 4.4.1
  * PostgreSQL 9.5.10
  * MongoDB 3.2
@@ -41,3 +41,5 @@ Connection parameters are retrieved from env variables:
 http://dev.tempvs.club
 ### Stage
 http://stage.tempvs.club
+### Prod
+http://tempvs.club
