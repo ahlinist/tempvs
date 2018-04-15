@@ -151,7 +151,7 @@ dataSource:
 environments:
     development:
         dataSource:
-            dbCreate: update
+            dbCreate: none
             url: ${JDBC_DATABASE_URL}?sslmode=require
     test:
         dataSource:
@@ -159,7 +159,7 @@ environments:
             url: ${JDBC_DATABASE_URL}?sslmode=require
     production:
         dataSource:
-            dbCreate: update
+            dbCreate: none
             url: ${JDBC_DATABASE_URL}?sslmode=require
             properties:
                 jmxEnabled: true
@@ -179,3 +179,8 @@ environments:
                 testOnReturn: false
                 jdbcInterceptors: ConnectionState
                 defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
+grails:
+    plugin:
+        databasemigration:
+            updateOnStart: true
+            updateOnStartFileNames: changelog.groovy
