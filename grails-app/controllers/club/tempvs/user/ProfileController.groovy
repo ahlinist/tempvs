@@ -105,7 +105,7 @@ class ProfileController {
         ClubProfile clubProfile
         Profile currentProfile = profileService.currentProfile
 
-        if ((currentProfile.class == ClubProfile) && (currentProfile.id == id)) {
+        if ((currentProfile?.class == ClubProfile) && (currentProfile?.id == id)) {
             clubProfile = currentProfile as ClubProfile
         } else {
             clubProfile = profileService.getProfile(ClubProfile, id)
