@@ -1,0 +1,45 @@
+{
+  "name": "tempvs",
+  "scripts": {
+  },
+  "env": {
+    "JDBC_DATABASE_PASSWORD": {
+      "required": true
+    },
+    "JDBC_DATABASE_URL": {
+      "required": true
+    },
+    "JDBC_DATABASE_USERNAME": {
+      "required": true
+    },
+    "MONGODB_URI": {
+      "required": true
+    },
+    "SMTP_HOST": {
+      "required": true
+    },
+    "SMTP_PASSWORD": {
+      "required": true
+    },
+    "SMTP_PORT": {
+      "required": true
+    },
+    "SMTP_USERNAME": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "mongolab",
+    "heroku-postgresql"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/gradle"
+    }
+  ]
+}
