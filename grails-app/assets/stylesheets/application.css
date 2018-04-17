@@ -19,6 +19,10 @@
     border-radius: 0 !important;
 }
 
+h1 {
+    text-align: center;
+}
+
 a {
     color: #333;
     text-decoration: none;

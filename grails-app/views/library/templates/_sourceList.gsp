@@ -14,7 +14,7 @@
                 <tempvs:modalButton id="deleteSource-${source.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
                   <g:message code='source.deleteConfirmation.text' args="${[sourceName]}"/>
                   <br/>
-                  <tempvs:ajaxLink controller="source" action="deleteSource" id="${sourceId}" params="[period: period.key]" method="DELETE" selector="div#source-list" classes="btn btn-default">
+                  <tempvs:ajaxLink controller="source" action="deleteSource" id="${sourceId}" method="DELETE" selector="div#source-list" classes="btn btn-default">
                     <g:message code="yes"/>
                   </tempvs:ajaxLink>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>

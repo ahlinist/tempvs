@@ -27,6 +27,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
     private static final String TEXT = 'text'
+    private static final String GET_METHOD = 'GET'
     private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
@@ -36,19 +37,18 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String PERIOD_URI = '/source/period'
+    private static final String LIBRARY_URI = '/library'
     private static final String REPLACE_ACTION = 'replaceElement'
 
     def json = Mock JSON
     def user = Mock User
     def image = Mock Image
-    def period = Period.OTHER
     def source = Mock Source
     def comment = Mock Comment
+    def period = Period.OTHER
     def userProfile = Mock UserProfile
     def imageUploadBean = Mock ImageUploadBean
-    def groovyPageRenderer = Mock PageRenderer
     def imageUploadCommand = Mock ImageUploadCommand
-    def ajaxResponseHelper = Mock AjaxResponseHelper
     def multipartFile = Mock GrailsMockMultipartFile
 
     def userService = Mock UserService
@@ -57,6 +57,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def sourceService = Mock SourceService
     def profileService = Mock ProfileService
     def commentService = Mock CommentService
+    def groovyPageRenderer = Mock PageRenderer
+    def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
         controller.userService = userService
@@ -73,12 +75,14 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     }
 
     void "Test index()"() {
+        given:
+        request.method = GET_METHOD
+
         when:
         controller.index()
 
         then:
-        !response.redirectedUrl
-        !controller.modelAndView
+        response.redirectedUrl.contains LIBRARY_URI
     }
 
     void "Test show()"() {
@@ -153,22 +157,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * ajaxResponseHelper.renderValidationResponse(source) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-    }
-
-    void "Test period()"() {
-        given:
-        params.id = period.id
-        List<Source> sources = [source]
-
-        when:
-        def result = controller.period()
-
-        then:
-        1 * sourceService.getSourcesByPeriod(period) >> sources
-        0 * _
-
-        and:
-        result == [sources: sources, period: period, itemTypes: ItemType.values(), sourceTypes: SourceType.values()]
     }
 
     void "Test getSourcesByPeriod()"() {

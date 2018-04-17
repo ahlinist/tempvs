@@ -6,27 +6,27 @@
 <html>
     <head>
       <meta name="layout" content="main"/>
-      <title>Tempvs - ${period?.id ?: g.message(code: 'source.period.title')}</title>
+      <title>Tempvs - ${period?.value ?: g.message(code: 'library.period.title')}</title>
     </head>
     <body>
       <g:if test="${period}">
         <div class="row">
           <div class="col-sm-8">
-            <g:render template="/source/templates/navBar" model="${[period]}"/>
+            <g:render template="/library/templates/navBar" model="${[period]}"/>
           </div>
         </div>
         <div class="row">
           <div class="col-sm-12">
-            <b><g:message code="periodization.period.value.label"/>:</b> ${period.value}
+            <h1>${period.value}</h1>
           </div>
         </div>
-        <b><g:message code="source.list.label"/></b>:
-        <g:render template="/source/templates/sourceList"/>
+        <b><g:message code="library.source.list.label"/></b>:
+        <g:render template="/library/templates/sourceList"/>
         <div>
           <g:if test="${editAllowed}">
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.createSource.tooltip')}">
               <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-plus">
-                <tempvs:ajaxForm action="createSource">
+                <tempvs:ajaxForm controller="source" action="createSource">
                   <tempvs:imageUploader fieldName="imageUploadBeans"/>
                   <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
                   <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label" mandatory="${true}"/>

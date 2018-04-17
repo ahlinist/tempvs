@@ -25,7 +25,7 @@
       <header>
         <sec:ifLoggedIn>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="profile">
+            <g:link class="btn btn-secondary disableable" controller="profile" action=" ">
               <span class="glyphicon glyphicon-user"></span>
             </g:link>
           </span>
@@ -89,8 +89,8 @@
               <span class="glyphicon glyphicon-cog"></span>
             </g:link>
           </span>
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.library.tooltip')}">
-            <g:link class="btn btn-default disableable pull-right" controller="source">
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'library.tooltip')}">
+            <g:link class="btn btn-default disableable pull-right" controller="library" action=" ">
               <span class="glyphicon glyphicon-book"></span>
             </g:link>
           </span>

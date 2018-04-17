@@ -2,17 +2,21 @@
 <html>
     <head>
       <meta name="layout" content="main"/>
-      <title>Tempvs - <g:message code="source.library.title"/></title>
+      <title>Tempvs - <g:message code="library.title"/></title>
     </head>
     <body>
-      <g:render template="/source/templates/navBar"/>
-      <h1 class="text-center"><g:message code="periodization.list.title"/></h1>
+      <div class="row">
+        <div class="col-sm-8">
+          <g:render template="/library/templates/navBar"/>
+        </div>
+      </div>
+      <h1><g:message code="periodization.list.title"/></h1>
       <div class="row">
         <div class="col-sm-2"></div>
         <ul class="col-sm-8">
           <g:each in="${periods}" var="period">
             <li class="row">
-              <g:link action="period" id="${period.id}" class="btn btn-default col-sm-12" style="white-space: normal;">
+              <g:link controller="library" action="period" id="${period.id}" class="btn btn-default col-sm-12" style="white-space: normal;">
                 <div class="col-sm-2">
                   <asset:image src="periodization/${period.id}.jpg"/>
                 </div>

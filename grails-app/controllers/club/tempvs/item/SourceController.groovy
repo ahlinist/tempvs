@@ -34,7 +34,6 @@ class SourceController {
 
     static allowedMethods = [
             index: 'GET',
-            period: 'GET',
             getSourcesByPeriod: 'GET',
             show: 'GET',
             createSource: 'POST',
@@ -58,22 +57,7 @@ class SourceController {
 
     @Secured('permitAll')
     def index() {
-        [periods: Period.values()]
-    }
-
-    @Secured('permitAll')
-    Map period(String id) {
-        if (id) {
-            Period period = Period.valueOf(id.toUpperCase())
-            List<Source> sources = sourceService.getSourcesByPeriod(period)
-
-            [
-                    sources: sources,
-                    period: period,
-                    itemTypes: ItemType.values(),
-                    sourceTypes: SourceType.values(),
-            ]
-        }
+        redirect controller: 'library'
     }
 
     def getSourcesByPeriod(String id) {
@@ -163,7 +147,7 @@ class SourceController {
         sourceService.deleteSource source
         List<Source> sources = sourceService.getSourcesByPeriod(period)
         Map model = [sources: sources, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/source/templates/sourceList', model: model)
+        String template = groovyPageRenderer.render(template: '/library/templates/sourceList', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

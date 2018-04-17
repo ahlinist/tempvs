@@ -13,7 +13,7 @@
         <g:set var="sourceId" value="${source.id}"/>
         <div class="row">
           <div class="col-sm-8">
-            <g:render template="/source/templates/navBar" model="${[period, source]}"/>
+            <g:render template="/library/templates/navBar" model="${[period, source]}"/>
           </div>
           <div class="col-sm-4">
           </div>
