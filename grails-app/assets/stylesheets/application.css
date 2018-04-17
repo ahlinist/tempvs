@@ -113,3 +113,18 @@ select:disabled {
 label {
      overflow: hidden;
 }
+
+header {
+    background-color: #fff;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+main {
+    margin-bottom: 35px;
+}
+
+footer {
+    background-color: #fff;
+    height: 35px;
+}
