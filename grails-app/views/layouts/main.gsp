@@ -21,7 +21,7 @@
     <g:layoutHead/>
   </head>
   <body class="container">
-    <header class="row navbar navbar-fixed-top">
+    <header class="row">
       <sec:ifLoggedIn>
         <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.tooltip')}">
           <g:link class="btn btn-secondary disableable" controller="profile" action=" ">
