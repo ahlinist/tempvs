@@ -13,8 +13,10 @@ enum Period {
     ANCIENT,
     ANTIQUITY,
     MEDIEVAL,
-    MODERN,
-    XIX,
+    DISCOVERY,
+    EMPERIALISM,
+    WWI,
+    WWII,
     CONTEMPORARY,
     OTHER
 

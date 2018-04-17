@@ -41,7 +41,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def json = Mock JSON
     def user = Mock User
     def image = Mock Image
-    def period = Period.XIX
+    def period = Period.OTHER
     def source = Mock Source
     def comment = Mock Comment
     def userProfile = Mock UserProfile
