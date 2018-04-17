@@ -101,8 +101,8 @@
           </tempvs:modalButton>
         </span>
       </sec:ifNotLoggedIn>
-      <hr/>
     </header>
+    <hr/>
     <main>
       <g:layoutBody/>
     </main>
