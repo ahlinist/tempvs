@@ -18,14 +18,14 @@
             <li class="row">
               <g:link controller="library" action="period" id="${period.id}" class="btn btn-default col-sm-12" style="white-space: normal;">
                 <div class="col-sm-2">
-                  <asset:image src="periodization/${period.id}.jpg"/>
+                  <asset:image src="periodization/thumbnails/${period.id}.jpg"/>
                 </div>
                 <div class="col-sm-10">
                   <b>
                     <p class="pull-left">${period.value}</p>
                   </b>
                   <br/>
-                  <p style="text-align: justify;">${period.description}</p>
+                  <p style="text-align: justify;">${period.shortDescription}</p>
                 </div>
               </g:link>
             </li>

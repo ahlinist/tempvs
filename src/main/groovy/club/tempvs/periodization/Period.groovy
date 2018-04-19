@@ -13,8 +13,8 @@ enum Period {
     ANCIENT,
     ANTIQUITY,
     MEDIEVAL,
-    DISCOVERY,
-    EMPERIALISM,
+    RENAISSANCE,
+    MODERN,
     WWI,
     WWII,
     CONTEMPORARY,
@@ -32,7 +32,11 @@ enum Period {
         applicationContext.getMessage("periodization.${this.name()}.value", null, this.name(), LocaleContextHolder.locale)
     }
 
-    String getDescription() {
-        applicationContext.getMessage("periodization.${this.name()}.description", null, this.name(), LocaleContextHolder.locale)
+    String getShortDescription() {
+        applicationContext.getMessage("periodization.${this.name()}.short.description", null, this.name(), LocaleContextHolder.locale)
+    }
+
+    String getLongDescription() {
+        applicationContext.getMessage("periodization.${this.name()}.long.description", null, this.name(), LocaleContextHolder.locale)
     }
 }

@@ -15,12 +15,13 @@
             <g:render template="/library/templates/navBar" model="${[period]}"/>
           </div>
         </div>
+        <h1>${period.value}</h1>
         <div class="row">
-          <div class="col-sm-12">
-            <h1>${period.value}</h1>
+          <div class="col-sm-3">
+            <asset:image src="periodization/${period.id}.jpg"/>
           </div>
         </div>
-        <b><g:message code="library.source.list.label"/></b>:
+        <h1><g:message code="library.source.list.label"/></h1>
         <g:render template="/library/templates/sourceList"/>
         <div>
           <g:if test="${editAllowed}">
