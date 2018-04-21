@@ -12,7 +12,9 @@ import org.springframework.context.i18n.LocaleContextHolder
 enum Period {
     ANCIENT,
     ANTIQUITY,
-    MEDIEVAL,
+    EARLY_MIDDLE_AGES,
+    HIGH_MIDDLE_AGES,
+    LATE_MIDDLE_AGES,
     RENAISSANCE,
     MODERN,
     WWI,
