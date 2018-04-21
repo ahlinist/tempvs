@@ -83,7 +83,7 @@ class VerifyController {
 
             if (profile.validate()) {
                 profileService.setCurrentProfile(profile)
-                return redirect(controller: 'profile', action: clazz.simpleName.uncapitalize(), id: profile.identifier)
+                return redirect(controller: 'profile', action: profile.shortName, id: profile.identifier)
             }
         }
 

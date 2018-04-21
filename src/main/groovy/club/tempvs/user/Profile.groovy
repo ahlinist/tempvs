@@ -28,6 +28,10 @@ abstract class Profile implements BasePersistent {
         profileId ?: id as String
     }
 
+    String getShortName() {
+        this.class.simpleName.uncapitalize() - 'Profile'
+    }
+
     @Override
     String toString() {
         "${firstName} ${lastName}"

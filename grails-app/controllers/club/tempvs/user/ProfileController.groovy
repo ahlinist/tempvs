@@ -57,7 +57,7 @@ class ProfileController {
 
     def index() {
         Profile profile = profileService.currentProfile
-        redirect action: "${profile.class.simpleName - 'Profile'}", id: profile.identifier
+        redirect action: "${profile.shortName}", id: profile.identifier
     }
 
     def search(String query, Integer offset) {

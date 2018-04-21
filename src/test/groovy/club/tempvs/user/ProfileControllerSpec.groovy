@@ -35,7 +35,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final String PROFILE_URL = '/profile/index'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String CLUB_PROFILE_URL = '/profile/club'
-    private static final String USER_PROFILE_PAGE_URI = '/profile/user'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
 
@@ -77,11 +76,12 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.currentProfile >> userProfile
+        1 * userProfile.shortName >> 'user'
         1 * userProfile.identifier >> IDENTIFIER
         0 * _
 
         and:
-        response.redirectedUrl.contains USER_PROFILE_PAGE_URI
+        response.redirectedUrl.contains '/profile/user'
     }
 
     void "Test search()"() {
