@@ -25,7 +25,7 @@
                     <p class="pull-left">${period.value}</p>
                   </b>
                   <br/>
-                  <p style="text-align: justify;">${period.shortDescription}</p>
+                  <p style="text-align: justify;"><g:message code="periodization.${period.id}.short.description"/></p>
                 </div>
               </g:link>
             </li>

@@ -31,14 +31,6 @@ enum Period {
     }
 
     String getValue() {
-        applicationContext.getMessage("periodization.${this.name()}.value", null, this.name(), LocaleContextHolder.locale)
-    }
-
-    String getShortDescription() {
-        applicationContext.getMessage("periodization.${this.name()}.short.description", null, this.name(), LocaleContextHolder.locale)
-    }
-
-    String getLongDescription() {
-        applicationContext.getMessage("periodization.${this.name()}.long.description", null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage("periodization.${this.id}.value", null, this.name(), LocaleContextHolder.locale)
     }
 }

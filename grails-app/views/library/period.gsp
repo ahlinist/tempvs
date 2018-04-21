@@ -20,6 +20,9 @@
           <div class="col-sm-3">
             <asset:image src="periodization/${period.id}.jpg"/>
           </div>
+          <div style="text-align: justify; text-justify: inter-word;">
+            <g:message code="periodization.${period.id}.long.description"/>
+          </div>
         </div>
         <h1><g:message code="library.source.list.label"/></h1>
         <g:render template="/library/templates/sourceList"/>
