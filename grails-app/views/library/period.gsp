@@ -24,26 +24,57 @@
             <g:message code="periodization.${period.id}.long.description"/>
           </div>
         </div>
-        <h1><g:message code="library.source.list.label"/></h1>
-        <g:render template="/library/templates/sourceList"/>
-        <div>
-          <g:if test="${editAllowed}">
-            <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.createSource.tooltip')}">
-              <tempvs:modalButton id="sourceForm" classes="glyphicon glyphicon-plus">
-                <tempvs:ajaxForm controller="source" action="createSource">
-                  <tempvs:imageUploader fieldName="imageUploadBeans"/>
-                  <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
-                  <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label" mandatory="${true}"/>
-                  <tempvs:formField type="select" name="sourceType" from="${sourceTypes}" optionKey="key" optionValue="value" label="source.sourceType.dropdown.label" mandatory="${true}"/>
-                  <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" mandatory="${true}"/>
-                  <tempvs:formField type="text" name="description" value="${source?.description}" label="source.description.label" />
-                  <input type="hidden" name="period" value="${period?.key}"/>
-                  <input type="hidden" name="sourceId" value="${source?.id}"/>
-                  <tempvs:ajaxSubmitButton value="source.createSource.button" />
-                </tempvs:ajaxForm>
-              </tempvs:modalButton>
-            </span>
-          </g:if>
+        <div class="row">
+          <h1><g:message code="library.source.list.label"/></h1>
+          <g:each var="sourceType" in="${sourceTypes}">
+            <g:set var="groupedSources" value="${sources.findAll {it.sourceType == sourceType}}"/>
+            <div class="col-sm-3">
+              <h2><g:message code="source.sourceType.${sourceType.id}.value"/></h2>
+              <div>
+                <g:if test="${groupedSources}">
+                  <ul>
+                    <g:each in="${groupedSources}" var="source">
+                      <g:set var="sourceId" value="${source.id}"/>
+                      <g:set var="sourceName" value="${source.name}"/>
+                      <li class="row" id="source-${sourceId}">
+                        <g:link controller="source" action="show" id="${sourceId}" class="btn btn-default col-sm-12">
+                          ${sourceName}
+                        </g:link>
+                      </li>
+                    </g:each>
+                  </ul>
+                </g:if>
+                <g:else>
+                  <div class="text-center">
+                    <i><g:message code="source.sourceType.list.empty"/></i>
+                  </div>
+                </g:else>
+              </div>
+            </div>
+          </g:each>
+        </div>
+        <div class="row">
+          <br/>
+          <hr/>
+          <div class="pull-right">
+            <g:if test="${editAllowed}">
+              <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.create.tooltip')}">
+                <tempvs:modalButton id="sourceForm" message="source.add.button">
+                  <tempvs:ajaxForm controller="source" action="createSource">
+                    <tempvs:imageUploader fieldName="imageUploadBeans"/>
+                    <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
+                    <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label" mandatory="${true}"/>
+                    <tempvs:formField type="select" name="sourceType" from="${sourceTypes}" optionKey="key" optionValue="value" label="source.sourceType.dropdown.label" mandatory="${true}"/>
+                    <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" mandatory="${true}"/>
+                    <tempvs:formField type="text" name="description" value="${source?.description}" label="source.description.label" />
+                    <input type="hidden" name="period" value="${period?.key}"/>
+                    <input type="hidden" name="sourceId" value="${source?.id}"/>
+                    <tempvs:ajaxSubmitButton value="source.create.button" />
+                  </tempvs:ajaxForm>
+                </tempvs:modalButton>
+              </span>
+            </g:if>
+          </div>
         </div>
       </g:if>
       <g:else>

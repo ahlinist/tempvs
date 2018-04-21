@@ -32,7 +32,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
-    private static final String SHOW_URI = '/source/show'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
@@ -117,7 +116,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.id >> LONG_ONE
-        1 * ajaxResponseHelper.renderRedirect("${SHOW_URI}/${LONG_ONE}") >> json
+        1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -227,12 +226,9 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.getSource(LONG_ONE) >> source
         1 * source.period >> period
         1 * sourceService.deleteSource(source)
-        1 * sourceService.getSourcesByPeriod(period) >> [source]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 
     void "Test deleteImage()"() {

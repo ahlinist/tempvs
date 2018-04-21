@@ -16,6 +16,20 @@
             <g:render template="/library/templates/navBar" model="${[period, source]}"/>
           </div>
           <div class="col-sm-4">
+            <g:if test="${editAllowed}">
+              <div class="pull-right">
+                <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.delete.button')}">
+                  <tempvs:modalButton id="deleteSource-${source.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                    <g:message code='source.deleteConfirmation.text' args="${[source.name]}"/>
+                    <br/>
+                    <tempvs:ajaxLink controller="source" action="deleteSource" id="${sourceId}" method="DELETE" classes="btn btn-default">
+                      <g:message code="yes"/>
+                    </tempvs:ajaxLink>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                  </tempvs:modalButton>
+                </span>
+              </div>
+            </g:if>
           </div>
         </div>
         <div class="row">

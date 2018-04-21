@@ -21,10 +21,6 @@ enum SourceType {
     }
 
     String getValue() {
-        applicationContext.getMessage("source.sourceType.${this.name()}.value", null, this.name(), LocaleContextHolder.locale)
-    }
-
-    String getDescription() {
-        applicationContext.getMessage("source.sourceType.${this.name()}.description", null, this.name(), LocaleContextHolder.locale)
+        applicationContext.getMessage("source.sourceType.${this.id}.value", null, this.name(), LocaleContextHolder.locale)
     }
 }

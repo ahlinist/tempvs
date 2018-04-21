@@ -138,17 +138,13 @@ class SourceController {
 
     def deleteSource(Long id) {
         Source source = sourceService.getSource id
-        Period period = source.period
 
         if (!source) {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
         }
 
         sourceService.deleteSource source
-        List<Source> sources = sourceService.getSourcesByPeriod(period)
-        Map model = [sources: sources, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/library/templates/sourceList', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'library', action: 'period', id: source.period.id))
     }
 
     def addImages(ImageUploadCommand command) {
