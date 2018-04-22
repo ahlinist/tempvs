@@ -5,7 +5,6 @@ import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.image.ImageTagLib
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
@@ -55,7 +54,6 @@ class ItemController {
             deleteComment: 'DELETE',
     ]
 
-    ImageTagLib imageTagLib
     ItemService itemService
     UserService userService
     ImageService imageService
@@ -143,7 +141,7 @@ class ItemController {
         }
 
         Map model = [images: item.images, objectId: objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
-        String template = imageTagLib.modalCarousel(model)
+        String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -224,7 +222,7 @@ class ItemController {
         }
 
         Map model = [images: item.images, objectId: params.objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
-        String template = imageTagLib.modalCarousel(model)
+        String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

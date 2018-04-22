@@ -5,7 +5,6 @@ import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.image.ImageTagLib
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
@@ -50,7 +49,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def multipartFile = Mock GrailsMockMultipartFile
 
     def itemService = Mock ItemService
-    def imageTagLib = Mock ImageTagLib
     def imageService = Mock ImageService
     def commentService = Mock CommentService
     def profileService = Mock ProfileService
@@ -60,7 +58,6 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
     def setup() {
         controller.itemService = itemService
-        controller.imageTagLib = imageTagLib
         controller.imageService = imageService
         controller.profileService = profileService
         controller.commentService = commentService
@@ -302,7 +299,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.savePassport(passport) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.images >> [image]
-        1 * imageTagLib.modalCarousel(_ as Map)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
@@ -322,7 +319,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.deleteImage(passport, image) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.images >> [image]
-        1 * imageTagLib.modalCarousel(_ as Map)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:

@@ -22,7 +22,7 @@
           <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
         </div>
         <div class="col-sm-6">
-          <tempvs:modalCarousel images="${images}" objectId="${itemId}" controllerName="${controllerName}" editAllowed="${editAllowed}"/>
+          <g:render template="/image/templates/modalCarousel" model="${[objectId: itemId]}"/>
           <g:render template="/communication/templates/comments" model="${[controllerName: 'item', object: item, objectId: itemId]}"/>
         </div>
       </div>

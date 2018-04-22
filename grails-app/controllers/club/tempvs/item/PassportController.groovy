@@ -5,7 +5,6 @@ import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.image.ImageTagLib
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.user.ClubProfile
@@ -46,7 +45,6 @@ class PassportController {
             editQuantity: 'POST',
     ]
 
-    ImageTagLib imageTagLib
     ItemService itemService
     ImageService imageService
     CommentService commentService
@@ -262,7 +260,7 @@ class PassportController {
         }
 
         Map model = [images: passport.images, objectId: params.objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
-        String template = imageTagLib.modalCarousel(model)
+        String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
@@ -281,7 +279,7 @@ class PassportController {
         }
 
         Map model = [images: passport.images, objectId: objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
-        String template = imageTagLib.modalCarousel(model)
+        String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 

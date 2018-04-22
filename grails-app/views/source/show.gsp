@@ -44,7 +44,7 @@
             <g:render template="/communication/templates/comments" model="${[controllerName: 'source', object: source, objectId: sourceId]}"/>
           </div>
           <div class="col-sm-6">
-            <tempvs:modalCarousel images="${images}" objectId="${sourceId}" controllerName="source" editAllowed="${editAllowed}"/>
+            <g:render template="/image/templates/modalCarousel" model="${[objectId: sourceId]}"/>
           </div>
         </div>
       </g:if>

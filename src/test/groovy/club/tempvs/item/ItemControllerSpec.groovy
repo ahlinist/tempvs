@@ -5,7 +5,6 @@ import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.image.ImageTagLib
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
@@ -47,7 +46,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def itemGroup = Mock ItemGroup
     def userProfile = Mock UserProfile
     def item2Source = Mock Item2Source
-    def imageTagLib = Mock ImageTagLib
     def itemType = GroovyMock ItemType
     def sourceType = GroovyMock SourceType
     def imageUploadBean = Mock ImageUploadBean
@@ -66,7 +64,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def setup() {
         controller.userService = userService
         controller.itemService = itemService
-        controller.imageTagLib = imageTagLib
         controller.imageService = imageService
         controller.sourceService = sourceService
         controller.profileService = profileService
@@ -278,7 +275,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.deleteImage(item, image) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.images >> [image]
-        1 * imageTagLib.modalCarousel(_ as Map)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
@@ -414,7 +411,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.saveItem(item) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.images >> [image]
-        1 * imageTagLib.modalCarousel(_ as Map)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:

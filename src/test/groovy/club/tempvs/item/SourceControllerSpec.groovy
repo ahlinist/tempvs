@@ -5,7 +5,6 @@ import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.image.ImageTagLib
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
@@ -51,7 +50,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def multipartFile = Mock GrailsMockMultipartFile
 
     def userService = Mock UserService
-    def imageTagLib = Mock ImageTagLib
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
     def profileService = Mock ProfileService
@@ -62,7 +60,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def setup() {
         controller.userService = userService
         controller.imageService = imageService
-        controller.imageTagLib = imageTagLib
         controller.sourceService = sourceService
         controller.profileService = profileService
         controller.commentService = commentService
@@ -208,7 +205,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
-        1 * imageTagLib.modalCarousel(_ as Map)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:
@@ -244,7 +241,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
-        1 * imageTagLib.modalCarousel(_ as Map)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
         and:

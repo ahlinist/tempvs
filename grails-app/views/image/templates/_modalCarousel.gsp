@@ -1,3 +1,5 @@
+<%@ page import="grails.converters.JSON" %>
+<g:set var="slideMapping" value="${images.collectEntries { [(images.indexOf(it)): it.id] } as JSON}"/>
 <div id="modal-carousel">
   <g:set var="min" value="1"/>
   <g:if test="${images}">
@@ -5,7 +7,7 @@
       <span type="button" class="btn" data-toggle="modal" data-target="#modal-${images.hashCode()}" data-local="#carousel-${images.hashCode()}" onclick="modalCarousel.init(${slideMapping})">
         <g:set var="image" value="${images.first()}"/>
         <span class="badge badge-notify" style="position: absolute; right:15px; top:0px;">${images.size()}</span>
-        <tempvs:image id="image-${image.id}" image="${image}"/>
+        <g:render template="/image/templates/image" model="${[image: image]}"/>
       </span>
     </div>
     <div class="modal fade" id="modal-${images.hashCode()}" tabindex="-1" role="dialog">
@@ -40,7 +42,8 @@
                 <div class="carousel-inner">
                   <g:each in="${images}" var="image" status="i">
                     <div class="item ${i == 0 ? 'active' : ''}">
-                      <tempvs:image image="${image}" styles="height:90vh; max-width:90vw; width: auto;"/>
+                      <g:render template="/image/templates/image"
+                          model="${[image: image, styles: 'height:90vh; max-width:90vw; width: auto;']}"/>
                       <p class="text-center">${image.imageInfo}</p>
                     </div>
                   </g:each>
