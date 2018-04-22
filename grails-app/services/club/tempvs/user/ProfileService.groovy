@@ -74,10 +74,12 @@ class ProfileService {
         String normalizedUserProfileString = userProfileString.size() <= 30 ? userProfileString : userProfileString[0..29] + '...'
         result[(normalizedUserProfileString)] = grailsLinkGenerator.link(controller: 'profile', action: 'switchProfile')
 
-        user.clubProfiles.each { ClubProfile clubProfile ->
-            String clubProfileString = clubProfile.toString()
-            String normalizedClubProfileString = clubProfileString.size() <= 30 ? clubProfileString : clubProfileString[0..29] + '...'
-            result[(normalizedClubProfileString)] = grailsLinkGenerator.link(controller: 'profile', action: 'switchProfile', id: clubProfile.id)
+        for (ClubProfile clubProfile in user.clubProfiles) {
+            if (clubProfile.active) {
+                String clubProfileString = clubProfile.toString()
+                String normalizedClubProfileString = clubProfileString.size() <= 30 ? clubProfileString : clubProfileString[0..29] + '...'
+                result[(normalizedClubProfileString)] = grailsLinkGenerator.link(controller: 'profile', action: 'switchProfile', id: clubProfile.id)
+            }
         }
 
         return result
