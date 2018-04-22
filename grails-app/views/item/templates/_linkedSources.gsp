@@ -2,7 +2,7 @@
   <h2><g:message code="item.sources.label"/></h2>
   <ul>
     <g:each var="sourceEntry" in="${sourceMap}">
-      <h4><g:message code="source.sourceType.${sourceEntry.key}.value"/>:</h4>
+      <h4><g:message code="source.sourceType.${sourceEntry.key.id}.value"/>:</h4>
       <g:each var="source" in="${sourceEntry.value}">
         <g:set var="sourceId" value="${source.id}"/>
         <li class="row" id="source-${sourceId}">
