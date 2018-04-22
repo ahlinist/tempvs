@@ -1,6 +1,6 @@
 ${profile}
 <g:set var="avatar" value="${profile.avatar}"/>
-<tempvs:modalImage image="${avatar}">
+<g:render template="/image/templates/modalImage" model="${[image: avatar]}">
   <sec:ifLoggedIn>
     <g:if test="${editAllowed}">
       <g:if test="${avatar}">
@@ -26,5 +26,5 @@ ${profile}
       </span>
     </g:if>
   </sec:ifLoggedIn>
-</tempvs:modalImage>
+</g:render>
 <g:render template="/profile/templates/followButton"/>

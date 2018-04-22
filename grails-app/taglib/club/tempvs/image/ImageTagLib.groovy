@@ -26,14 +26,6 @@ class ImageTagLib {
         out << groovyPageRenderer.render(model)
     }
 
-    String modalImage = { Map attrs, Closure body ->
-        out << groovyPageRenderer.render(template: '/image/templates/modalImage', model: attrs + [body: body()])
-    }
-
-    String imageUploader = { Map attrs ->
-        out << groovyPageRenderer.render(template: '/image/templates/imageUploader', model: attrs)
-    }
-
     String modalCarousel = { Map attrs ->
         List<Image> images = attrs.images as List<Image>
         String slideMapping = images.collectEntries { [(images.indexOf(it)): it.id] } as JSON

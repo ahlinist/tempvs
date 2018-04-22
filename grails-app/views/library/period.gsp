@@ -61,7 +61,7 @@
               <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.create.tooltip')}">
                 <tempvs:modalButton id="sourceForm" message="source.add.button">
                   <tempvs:ajaxForm controller="source" action="createSource">
-                    <tempvs:imageUploader fieldName="imageUploadBeans"/>
+                    <g:render template="/image/templates/imageUploader"/>
                     <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
                     <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label" mandatory="${true}"/>
                     <tempvs:formField type="select" name="sourceType" from="${sourceTypes}" optionKey="key" optionValue="value" label="source.sourceType.dropdown.label" mandatory="${true}"/>

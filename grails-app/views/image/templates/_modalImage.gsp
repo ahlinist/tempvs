@@ -10,7 +10,7 @@
   <span class="modal-dialog" style="display: table; padding:0; margin-top:10px; min-width: 35vw; width:auto;">
     <span class="modal-content" style="display: table-row;">
       <span class="modal-header" style="z-index:90;  position:absolute; right:0px; padding: 0px; display: table-row;">
-        ${raw(body)}
+        ${raw(body())}
       </span>
       <span class="modal-body" style="padding: 0px; margin: 50% 0 50% 0;">
         <tempvs:image image="${image}" styles="height:90vh; max-width:90vw; width: auto;"/>
