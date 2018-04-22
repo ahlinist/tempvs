@@ -126,6 +126,7 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         1 * profileService.setCurrentProfile(userProfile)
         1 * userProfile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
+        1 * userProfile.shortName >> 'user'
         0 * _
 
         and:
@@ -155,6 +156,7 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         1 * profileService.setCurrentProfile(clubProfile)
         1 * clubProfile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
+        1 * clubProfile.shortName >> 'club'
         0 * _
 
         and:
