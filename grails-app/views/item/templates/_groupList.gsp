@@ -11,14 +11,15 @@
           <g:if test="${editAllowed}">
             <div class="pull-left">
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.group.delete.tooltip')}">
-                <tempvs:modalButton id="deleteGroup-${itemGroup.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'deleteGroup-' + itemGroupId, icon: 'glyphicon glyphicon-trash', size: 'modal-sm']}">
                   <g:message code='item.group.deleteConfirmation.text' args="${[itemGroupName]}"/>
                   <br/>
                   <tempvs:ajaxLink controller="item" action="deleteGroup" id="${itemGroupId}" method="DELETE" selector="div#group-list" classes="btn btn-default">
                     <g:message code="yes"/>
                   </tempvs:ajaxLink>
                   <button class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-                </tempvs:modalButton>
+                </g:render>
               </span>
             </div>
           </g:if>

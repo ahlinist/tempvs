@@ -7,14 +7,15 @@
           <g:if test="${editAllowed || profile == request.currentProfile}">
             <div class="pull-right">
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'comment.delete.button')}">
-                <tempvs:modalButton id="deleteComment-${comment.id}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'deleteComment' + comment.id, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='comment.deleteConfirmation.text'/>
                   <br/>
                   <tempvs:ajaxLink controller="${controllerName}" action="deleteComment" params="${[objectId: object.id, commentId: comment.id]}" method="DELETE" selector="div#comments" classes="btn btn-default">
                     <g:message code="yes"/>
                   </tempvs:ajaxLink>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-                </tempvs:modalButton>
+                </g:render>
               </span>
             </div>
           </g:if>
@@ -38,7 +39,7 @@
         <g:textArea name="text" rows="2" cols="10"/>
         <br/>
         <input type="hidden" name="objectId" value="${object.id}"/>
-        <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
+        <tempvs:ajaxSubmitButton value="comment.add.button"/>
       </tempvs:ajaxForm>
     </sec:ifLoggedIn>
   </ul>

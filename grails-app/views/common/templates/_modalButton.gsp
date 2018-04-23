@@ -1,4 +1,4 @@
-<button class="btn btn-default ${classes}" style="${styles}" data-toggle="modal" data-target="#${id}">
+<button class="btn btn-default ${icon}" style="${styles}" data-toggle="modal" data-target="#${id}">
   <g:message code="${message}"/>
 </button>
 
@@ -6,7 +6,7 @@
   <div class="modal-dialog ${size}">
     <div class="modal-content">
       <div class="modal-body">
-        ${raw(body)}
+        ${raw(body())}
       </div>
     </div>
   </div>

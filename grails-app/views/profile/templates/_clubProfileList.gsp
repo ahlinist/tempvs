@@ -12,14 +12,15 @@
               ${clubProfile}
             </g:link>
             <span class="pull-left">
-              <tempvs:modalButton id="deactivateProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-off">
+              <g:render template="/common/templates/modalButton"
+                  model="${[id: 'deactivateProfile' + clubProfileId, size: 'modal-sm', icon: 'glyphicon glyphicon-off']}">
                 <g:message code='profile.deactivateConfirmation.text' args="${[clubProfile]}"/>
                 <br/>
                 <tempvs:ajaxLink controller="profile" action="deactivateProfile" id="${clubProfileId}" method="POST" selector="div#club-profile-list" classes="btn btn-default">
                   <g:message code="yes"/>
                 </tempvs:ajaxLink>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-              </tempvs:modalButton>
+              </g:render>
             </span>
           </li>
         </g:each>
@@ -37,14 +38,15 @@
               ${clubProfile}
             </g:link>
             <span class="pull-left">
-              <tempvs:modalButton id="activateProfile-${clubProfileId}" size="modal-sm" classes="glyphicon glyphicon-play">
+              <g:render template="/common/templates/modalButton"
+                  model="${[id: 'activateProfile' + clubProfileId, size: 'modal-sm', icon: 'glyphicon glyphicon-play']}">
                 <g:message code='profile.activateConfirmation.text' args="${[clubProfile]}"/>
                 <br/>
                 <tempvs:ajaxLink controller="profile" action="activateProfile" id="${clubProfileId}" method="POST" classes="btn btn-default">
                   <g:message code="yes"/>
                 </tempvs:ajaxLink>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-              </tempvs:modalButton>
+              </g:render>
             </span>
           </li>
         </g:each>
@@ -55,7 +57,8 @@
     <i><g:message code="clubProfile.noProfiles.message"/></i>
   </g:else>
   <div>
-    <tempvs:modalButton id="createProfile" classes="fa fa-user-plus">
+    <g:render template="/common/templates/modalButton"
+        model="${[id: 'createProfile', icon: 'fa fa-user-plus']}">
       <tempvs:ajaxForm controller="profile" action="createClubProfile">
         <tempvs:formField type="file" name="imageUploadBean.image" label="profile.avatar.label"/>
         <tempvs:formField type="text" name="imageUploadBean.imageInfo" label="profile.avatarInfo.label"/>
@@ -68,6 +71,6 @@
         <tempvs:formField type="select" name="period" from="${periods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label" mandatory="${true}"/>
         <tempvs:ajaxSubmitButton value="clubProfile.create.button"/>
       </tempvs:ajaxForm>
-    </tempvs:modalButton>
+    </g:render>
   </div>
 </div>

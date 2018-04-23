@@ -25,14 +25,15 @@
           <g:if test="${editAllowed}">
             <div class="pull-left">
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'passport.remove.item.button')}">
-                <tempvs:modalButton id="unlinkSource-${item.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'unlinkSource' + itemId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='passport.removeConfirmation.text' args="${[itemName]}"/>
                   <br/>
                   <tempvs:ajaxLink controller="passport" action="removeItem" params="${[passportId: passportId, itemId: itemId]}" method="DELETE" selector="div#item-section" classes="btn btn-default">
                     <g:message code="yes"/>
                   </tempvs:ajaxLink>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-                </tempvs:modalButton>
+                </g:render>
               </span>
             </div>
           </g:if>
@@ -57,7 +58,7 @@
                       optionKey="id" optionValue="name"/>
             <input type="number" name="quantity" value="1" />
             <input type="hidden" name="passportId" value="${passportId}" />
-            <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-plus"/>
+            <tempvs:ajaxSubmitButton value="passport.add.item.button"/>
           </tempvs:ajaxForm>
         </div>
       </div>

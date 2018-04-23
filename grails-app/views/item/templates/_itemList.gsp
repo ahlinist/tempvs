@@ -8,14 +8,15 @@
         <g:if test="${editAllowed}">
           <div class="pull-left">
             <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.delete.button')}">
-              <tempvs:modalButton id="deleteItem-${item.hashCode()}" size="modal-sm" classes="glyphicon glyphicon-trash">
+              <g:render template="/common/templates/modalButton"
+                  model="${[id: 'deleteItem' + itemId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                 <g:message code='item.deleteConfirmation.text' args="${[itemName]}"/>
                 <br/>
                 <tempvs:ajaxLink controller="item" action="deleteItem" id="${itemId}" method="DELETE" selector="div#item-list" classes="btn btn-default">
                   <g:message code="yes"/>
                 </tempvs:ajaxLink>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-              </tempvs:modalButton>
+              </g:render>
             </span>
           </div>
         </g:if>

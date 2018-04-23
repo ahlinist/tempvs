@@ -16,7 +16,8 @@
           <div class="modal-header" style="z-index:90;  position:absolute; right:0px; padding: 0px; display: table-row;">
             <g:if test="${editAllowed}">
               <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'image.delete.tooltip')}">
-                <tempvs:modalButton id="deleteImage" size="modal-sm" classes="glyphicon glyphicon-trash">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'deleteImage', size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='image.delete.confirmation.text'/>
                   <br/>
                   <span class="btn btn-default submit-button" onclick="modalCarousel.deleteImage(this, '${controllerName}', '${objectId}');">
@@ -25,7 +26,7 @@
                     </span>
                   </span>
                   <button type="button" class="btn btn-default" onclick="$('#deleteImage').modal('hide');"><g:message code="no"/></button>
-                </tempvs:modalButton>
+                </g:render>
               </span>
             </g:if>
           </div>
@@ -80,7 +81,7 @@
             <tempvs:ajaxForm controller="${controllerName}" action="addImages" selector="div#modal-carousel">
               <g:render template="/image/templates/imageUploader" model="${[min: min]}"/>
               <input type="hidden" name="objectId" value="${objectId}"/>
-              <tempvs:ajaxSubmitButton icon="glyphicon glyphicon-floppy-disk" onclick="\$('.carousel').off('slide.bs.carousel');"/>
+              <tempvs:ajaxSubmitButton value="images.upload.button" onclick="\$('.carousel').off('slide.bs.carousel');"/>
             </tempvs:ajaxForm>
           </div>
         </div>

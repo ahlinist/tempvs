@@ -96,9 +96,10 @@
       </sec:ifLoggedIn>
       <sec:ifNotLoggedIn>
         <span class="pull-right">
-          <tempvs:modalButton id="loginForm" message="${g.message(code: 'auth.login.signup.button')}">
+          <g:render template="/common/templates/modalButton"
+              model="${[id: 'loginForm', message: g.message(code: 'auth.login.signup.button')]}">
             <g:render template="/auth/templates/loginForm"/>
-          </tempvs:modalButton>
+          </g:render>
         </span>
       </sec:ifNotLoggedIn>
     </header>

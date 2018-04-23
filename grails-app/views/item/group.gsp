@@ -25,7 +25,8 @@
         <g:if test="${editAllowed}">
           <span class="row">
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'item.createItem.tooltip')}">
-              <tempvs:modalButton id="itemForm" classes="glyphicon glyphicon-plus">
+              <g:render template="/common/templates/modalButton"
+                  model="${[id: 'itemForm', icon: 'glyphicon glyphicon-plus']}">
                 <tempvs:ajaxForm action="createItem">
                   <g:render template="/image/templates/imageUploader"/>
                   <tempvs:formField type="text" name="name" label="item.name.label" mandatory="${true}"/>
@@ -35,7 +36,7 @@
                   <input type="hidden" name="itemGroup" value="${itemGroupId}"/>
                   <tempvs:ajaxSubmitButton value="item.createItem.button"/>
                 </tempvs:ajaxForm>
-              </tempvs:modalButton>
+              </g:render>
             </span>
           </span>
         </g:if>

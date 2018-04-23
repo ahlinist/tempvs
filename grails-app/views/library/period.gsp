@@ -59,7 +59,8 @@
           <div class="pull-right">
             <g:if test="${editAllowed}">
               <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.create.tooltip')}">
-                <tempvs:modalButton id="sourceForm" message="source.add.button">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'sourceForm', message: 'source.add.button']}">
                   <tempvs:ajaxForm controller="source" action="createSource">
                     <g:render template="/image/templates/imageUploader"/>
                     <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
@@ -71,7 +72,7 @@
                     <input type="hidden" name="sourceId" value="${source?.id}"/>
                     <tempvs:ajaxSubmitButton value="source.create.button" />
                   </tempvs:ajaxForm>
-                </tempvs:modalButton>
+                </g:render>
               </span>
             </g:if>
           </div>
