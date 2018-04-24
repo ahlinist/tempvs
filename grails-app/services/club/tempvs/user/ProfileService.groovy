@@ -56,7 +56,7 @@ class ProfileService {
         userService.currentUser?.currentProfile
     }
 
-    @PreAuthorize('#profile.user.email == authentication.name')
+    @PreAuthorize('(#profile == null) or (#profile.user.email == authentication.name)')
     void setCurrentProfile(Profile profile) {
         User user = userService.currentUser
 
