@@ -205,7 +205,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
         1 * passport.clubProfile >> clubProfile
-        1 * passportService.deletePassport(passport)
+        1 * passportService.deletePassport(passport, clubProfile)
         1 * clubProfile.passports >> [passport]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _

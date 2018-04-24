@@ -112,12 +112,13 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
     void "Test deletePassport()"() {
         when:
-        service.deletePassport(passport)
+        service.deletePassport(passport, clubProfile)
 
         then:
         1 * Item2Passport.findByPassport(passport) >> item2Passport
         1 * item2Passport.delete()
-        1 * passport.delete()
+        1 * clubProfile.removeFromPassports(passport)
+        1 * clubProfile.save()
         0 * _
     }
 

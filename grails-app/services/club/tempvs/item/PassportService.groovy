@@ -81,9 +81,10 @@ class PassportService {
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
-    void deletePassport(Passport passport) {
+    void deletePassport(Passport passport, ClubProfile clubProfile) {
         Item2Passport.findByPassport(passport)?.delete()
-        passport.delete()
+        clubProfile.removeFromPassports(passport)
+        clubProfile.save()
     }
 
     Passport addComment(Passport passport, Comment comment) {

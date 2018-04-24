@@ -156,7 +156,7 @@ class PassportController {
     def deletePassport(Long id) {
         Passport passport = passportService.getPassport id
         ClubProfile clubProfile = passport.clubProfile
-        passportService.deletePassport(passport)
+        passportService.deletePassport(passport, clubProfile)
         Map model = [passports: clubProfile.passports, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/profile/templates/passportList', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
