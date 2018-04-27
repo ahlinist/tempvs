@@ -63,11 +63,11 @@
                     model="${[id: 'sourceForm', message: 'source.add.button']}">
                   <tempvs:ajaxForm controller="source" action="createSource">
                     <g:render template="/image/templates/imageUploader"/>
-                    <tempvs:formField type="text" name="fake-period" value="${period.value}" label="periodization.period.form.label" disabled="${true}"/>
-                    <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label" mandatory="${true}"/>
-                    <tempvs:formField type="select" name="sourceType" from="${sourceTypes}" optionKey="key" optionValue="value" label="source.sourceType.dropdown.label" mandatory="${true}"/>
-                    <tempvs:formField type="text" name="name" value="${source?.name}" label="source.name.label" mandatory="${true}"/>
-                    <tempvs:formField type="text" name="description" value="${source?.description}" label="source.description.label" />
+                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'fake-period', label: 'periodization.period.form.label', disabled: true, value: period.value]}"/>
+                    <g:render template="/common/templates/formField" model="${[type: 'select', name: 'itemType', label: 'item.itemType.dropdown.label', mandatory: true, from: itemTypes, optionKey: 'key', optionValue: 'value']}"/>
+                    <g:render template="/common/templates/formField" model="${[type: 'select', name: 'sourceType', label: 'source.sourceType.dropdown.label', mandatory: true, from: sourceTypes, optionKey: 'key', optionValue: 'value']}"/>
+                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'source.name.label', mandatory: true]}"/>
+                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'source.description.label']}"/>
                     <input type="hidden" name="period" value="${period?.key}"/>
                     <input type="hidden" name="sourceId" value="${source?.id}"/>
                     <tempvs:ajaxSubmitButton value="source.create.button" />

@@ -19,8 +19,8 @@
               <g:render template="/common/templates/modalButton"
                   model="${[id: 'createGroup', icon: 'glyphicon glyphicon-plus']}">
                 <tempvs:ajaxForm action="createGroup">
-                  <tempvs:formField type="text" name="name" label="item.group.name.label" mandatory="${true}"/>
-                  <tempvs:formField type="text" name="description" label="item.group.description.label" />
+                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'item.group.name.label', mandatory: true]}"/>
+                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'item.group.description.label']}"/>
                   <tempvs:ajaxSubmitButton value="item.createGroup.button" />
                 </tempvs:ajaxForm>
               </g:render>

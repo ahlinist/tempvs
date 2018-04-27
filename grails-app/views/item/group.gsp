@@ -29,10 +29,12 @@
                   model="${[id: 'itemForm', icon: 'glyphicon glyphicon-plus']}">
                 <tempvs:ajaxForm action="createItem">
                   <g:render template="/image/templates/imageUploader"/>
-                  <tempvs:formField type="text" name="name" label="item.name.label" mandatory="${true}"/>
-                  <tempvs:formField type="text" name="description" label="item.description.label" />
-                  <tempvs:formField type="select" name="itemType" from="${itemTypes}" optionKey="key" optionValue="value" label="item.itemType.dropdown.label" mandatory="${true}"/>
-                  <tempvs:formField type="select" name="period" from="${periods}" optionKey="key" optionValue="value" label="periodization.period.dropdown.label" mandatory="${true}"/>
+                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'item.name.label', mandatory: true]}"/>
+                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'item.description.label']}"/>
+                  <g:render template="/common/templates/formField"
+                      model="${[type: 'select', name: 'itemType', label: 'item.itemType.dropdown.label', mandatory: true, from: itemTypes, optionKey: 'key', optionValue: 'value']}"/>
+                  <g:render template="/common/templates/formField"
+                                        model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
                   <input type="hidden" name="itemGroup" value="${itemGroupId}"/>
                   <tempvs:ajaxSubmitButton value="item.createItem.button"/>
                 </tempvs:ajaxForm>

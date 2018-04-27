@@ -44,8 +44,8 @@
                   model="${[id: 'createPassport', icon: 'glyphicon glyphicon-plus']}">
                 <tempvs:ajaxForm controller="passport" action="createPassport">
                   <g:render template="/image/templates/imageUploader"/>
-                  <tempvs:formField type="text" name="name" label="passport.name.label" mandatory="${true}"/>
-                  <tempvs:formField type="text" name="description" label="passport.description.label"/>
+                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'passport.name.label', mandatory: true]}"/>
+                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'passport.description.label']}"/>
                   <tempvs:ajaxSubmitButton value="passport.create.button"/>
                 </tempvs:ajaxForm>
               </g:render>

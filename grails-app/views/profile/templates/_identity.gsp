@@ -20,8 +20,8 @@ ${profile}
         <g:render template="/common/templates/modalButton"
             model="${[id: 'uploadAvatar', icon: 'glyphicon glyphicon-picture']}">
           <tempvs:ajaxForm action="uploadAvatar">
-            <tempvs:formField type="file" name="image" label="profile.avatar.label" />
-            <tempvs:formField type="text" name="imageInfo" label="profile.avatarInfo.label" />
+            <g:render template="/common/templates/formField" model="${[type: 'file', name: 'image', label: 'profile.avatar.label']}"/>
+            <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageInfo', label: 'profile.avatarInfo.label']}"/>
             <tempvs:ajaxSubmitButton value="profile.updateAvatar.button" />
           </tempvs:ajaxForm>
         </g:render>
