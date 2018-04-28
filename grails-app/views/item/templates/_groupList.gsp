@@ -15,9 +15,10 @@
                     model="${[id: 'deleteGroup-' + itemGroupId, icon: 'glyphicon glyphicon-trash', size: 'modal-sm']}">
                   <g:message code='item.group.deleteConfirmation.text' args="${[itemGroupName]}"/>
                   <br/>
-                  <tempvs:ajaxLink controller="item" action="deleteGroup" id="${itemGroupId}" method="DELETE" selector="div#group-list" classes="btn btn-default">
+                  <g:render template="/ajax/templates/ajaxLink"
+                      model="${[controller: 'item', action: 'deleteGroup', id: itemGroupId, method: 'DELETE', selector: 'div#group-list', classes: 'btn btn-default']}">
                     <g:message code="yes"/>
-                  </tempvs:ajaxLink>
+                  </g:render>
                   <button class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </g:render>
               </span>

@@ -16,9 +16,10 @@
                     model="${[id: 'unlinkSource' + sourceId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='source.unlinkConfirmation.text' args="${[source.name]}"/>
                   <br/>
-                  <tempvs:ajaxLink controller="item" action="unlinkSource" params="${[itemId: itemId, sourceId: source.id]}" method="DELETE" selector="div#linkedSources" classes="btn btn-default">
+                  <g:render template="/ajax/templates/ajaxLink"
+                      model="${[controller: 'item', action: 'unlinkSource', params: [itemId: itemId, sourceId: source.id], method: 'DELETE', selector: 'div#linkedSources', classes: 'btn btn-default']}">
                     <g:message code="yes"/>
-                  </tempvs:ajaxLink>
+                  </g:render>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </g:render>
               </span>

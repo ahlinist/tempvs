@@ -23,9 +23,10 @@
                       model="${[id: 'deleteSource' + sourceId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                     <g:message code='source.deleteConfirmation.text' args="${[source.name]}"/>
                     <br/>
-                    <tempvs:ajaxLink controller="source" action="deleteSource" id="${sourceId}" method="DELETE" classes="btn btn-default">
+                    <g:render template="/ajax/templates/ajaxLink"
+                        model="${[controller: 'source', action: 'deleteSource', id: sourceId, method: 'DELETE', classes: 'btn btn-default']}">
                       <g:message code="yes"/>
-                    </tempvs:ajaxLink>
+                    </g:render>
                     <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                   </g:render>
                 </span>

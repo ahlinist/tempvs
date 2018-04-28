@@ -11,9 +11,11 @@
         <li class="row" id="item-${itemId}">
           <span class="pull-left" style="padding:5px;">
             <g:if test="${editAllowed}">
-              <tempvs:ajaxLink controller="passport" action="editQuantity" params="${[item2PassportId: item2Passport.id, delta: -1]}" method="POST" selector="div#item-section" classes="glyphicon glyphicon-arrow-down"/>
+              <g:render template="/ajax/templates/ajaxLink"
+                  model="${[controller: 'passport', action: 'editQuantity', params: [item2PassportId: item2Passport.id, delta: -1], method: 'POST', selector: 'div#item-section', classes: 'glyphicon glyphicon-arrow-down']}"/>
               <b>${quantity}</b>
-              <tempvs:ajaxLink controller="passport" action="editQuantity" params="${[item2PassportId: item2Passport.id, delta: 1]}" method="POST" selector="div#item-section" classes="glyphicon glyphicon-arrow-up"/>
+              <g:render template="/ajax/templates/ajaxLink"
+                  model="${[controller: 'passport', action: 'editQuantity', params: [item2PassportId: item2Passport.id, delta: 1], method: 'POST', selector: 'div#item-section', classes: 'glyphicon glyphicon-arrow-up']}"/>
             </g:if>
             <g:else>
               <b>${quantity}</b>
@@ -29,9 +31,10 @@
                     model="${[id: 'unlinkSource' + itemId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='passport.removeConfirmation.text' args="${[itemName]}"/>
                   <br/>
-                  <tempvs:ajaxLink controller="passport" action="removeItem" params="${[passportId: passportId, itemId: itemId]}" method="DELETE" selector="div#item-section" classes="btn btn-default">
+                  <g:render template="/ajax/templates/ajaxLink"
+                      model="${[controller: 'passport', action: 'removeItem', params: [passportId: passportId, itemId: itemId], method: 'DELETE', selector: 'div#item-section', classes: 'btn btn-default']}">
                     <g:message code="yes"/>
-                  </tempvs:ajaxLink>
+                  </g:render>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </g:render>
               </span>

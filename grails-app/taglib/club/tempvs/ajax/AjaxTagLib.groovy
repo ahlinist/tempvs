@@ -15,8 +15,4 @@ class AjaxTagLib {
     def ajaxSmartForm = { Map attrs, Closure body ->
         out << render(template: '/ajax/templates/ajaxSmartForm', model: attrs + [body: body()])
     }
-
-    def ajaxLink = { Map attrs, Closure body ->
-        out << render(template: '/ajax/templates/ajaxLink', model: attrs + [body: body()])
-    }
 }

@@ -9,9 +9,10 @@ ${profile}
               model="${[id: 'deleteAvatar', size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
             <g:message code='profile.avatar.deleteConfirmation.text'/>
             <br/>
-            <tempvs:ajaxLink controller="profile" action="deleteAvatar" params="${[profileClass: profile.class.name, profileId: profile.id]}" method="DELETE" classes="btn btn-default">
+            <g:render template="/ajax/templates/ajaxLink"
+                model="${[controller: 'profile', action: 'deleteAvatar', params: [profileClass: profile.class.name, profileId: profile.id], method: 'DELETE', classes: 'btn btn-default']}">
               <g:message code="yes"/>
-            </tempvs:ajaxLink>
+            </g:render>
             <button type="button" class="btn btn-default" onclick="$('#deleteAvatar').modal('hide');"><g:message code="no"/></button>
           </g:render>
         </span>

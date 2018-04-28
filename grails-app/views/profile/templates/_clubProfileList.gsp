@@ -16,9 +16,10 @@
                   model="${[id: 'deactivateProfile' + clubProfileId, size: 'modal-sm', icon: 'glyphicon glyphicon-off']}">
                 <g:message code='profile.deactivateConfirmation.text' args="${[clubProfile]}"/>
                 <br/>
-                <tempvs:ajaxLink controller="profile" action="deactivateProfile" id="${clubProfileId}" method="POST" selector="div#club-profile-list" classes="btn btn-default">
+                <g:render template="/ajax/templates/ajaxLink"
+                    model="${[controller: 'profile', action: 'deactivateProfile', id: clubProfileId, method: 'POST', selector: 'div#club-profile-list', classes: 'btn btn-default']}">
                   <g:message code="yes"/>
-                </tempvs:ajaxLink>
+                </g:render>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
               </g:render>
             </span>
@@ -42,9 +43,10 @@
                   model="${[id: 'activateProfile' + clubProfileId, size: 'modal-sm', icon: 'glyphicon glyphicon-play']}">
                 <g:message code='profile.activateConfirmation.text' args="${[clubProfile]}"/>
                 <br/>
-                <tempvs:ajaxLink controller="profile" action="activateProfile" id="${clubProfileId}" method="POST" classes="btn btn-default">
+                <g:render template="/ajax/templates/ajaxLink"
+                    model="${[controller: 'profile', action: 'activateProfile', id: clubProfileId, method: 'POST', classes: 'btn btn-default']}">
                   <g:message code="yes"/>
-                </tempvs:ajaxLink>
+                </g:render>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
               </g:render>
             </span>

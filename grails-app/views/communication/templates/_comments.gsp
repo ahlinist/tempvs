@@ -11,9 +11,10 @@
                     model="${[id: 'deleteComment' + comment.id, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='comment.deleteConfirmation.text'/>
                   <br/>
-                  <tempvs:ajaxLink controller="${controllerName}" action="deleteComment" params="${[objectId: object.id, commentId: comment.id]}" method="DELETE" selector="div#comments" classes="btn btn-default">
+                  <g:render template="/ajax/templates/ajaxLink"
+                      model="${[controller: controllerName, action: 'deleteComment', params: [objectId: object.id, commentId: comment.id], method: 'DELETE', selector: 'div#comments', classes: 'btn btn-default']}">
                     <g:message code="yes"/>
-                  </tempvs:ajaxLink>
+                  </g:render>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </g:render>
               </span>

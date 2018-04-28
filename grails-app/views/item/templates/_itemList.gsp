@@ -12,9 +12,10 @@
                   model="${[id: 'deleteItem' + itemId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                 <g:message code='item.deleteConfirmation.text' args="${[itemName]}"/>
                 <br/>
-                <tempvs:ajaxLink controller="item" action="deleteItem" id="${itemId}" method="DELETE" selector="div#item-list" classes="btn btn-default">
+                <g:render template="/ajax/templates/ajaxLink"
+                    model="${[controller: 'item', action: 'deleteItem', id: itemId, method: 'DELETE', selector: 'div#item-list', classes: 'btn btn-default']}">
                   <g:message code="yes"/>
-                </tempvs:ajaxLink>
+                </g:render>
                 <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
               </g:render>
             </span>
