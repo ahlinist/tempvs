@@ -44,7 +44,9 @@
                 <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${sources}" noSelection="${['':'-']}"
                           optionKey="id" optionValue="name"/>
                 <input type="hidden" name="itemId" value="${itemId}" />
-                <tempvs:ajaxSubmitButton value="item.add.source.button"/>
+                <g:render template="/ajax/templates/submitButton">
+                  <g:message code="item.add.source.button"/>
+                </g:render>
               </tempvs:ajaxForm>
             </li>
           </div>

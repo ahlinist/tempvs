@@ -69,7 +69,9 @@
         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'profileId', label: 'profile.profileId.label']}"/>
         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'clubName', label: 'profile.clubName.label']}"/>
         <g:render template="/common/templates/formField" model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
-        <tempvs:ajaxSubmitButton value="clubProfile.create.button"/>
+        <g:render template="/ajax/templates/submitButton">
+          <g:message code="clubProfile.create.button"/>
+        </g:render>
       </tempvs:ajaxForm>
     </g:render>
   </div>

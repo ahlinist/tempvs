@@ -46,7 +46,9 @@
                   <g:render template="/image/templates/imageUploader"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'passport.name.label', mandatory: true]}"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'passport.description.label']}"/>
-                  <tempvs:ajaxSubmitButton value="passport.create.button"/>
+                  <g:render template="/ajax/templates/submitButton">
+                    <g:message code="passport.create.button"/>
+                  </g:render>
                 </tempvs:ajaxForm>
               </g:render>
             </div>

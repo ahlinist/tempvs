@@ -70,7 +70,9 @@
                     <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'source.description.label']}"/>
                     <input type="hidden" name="period" value="${period?.key}"/>
                     <input type="hidden" name="sourceId" value="${source?.id}"/>
-                    <tempvs:ajaxSubmitButton value="source.create.button" />
+                    <g:render template="/ajax/templates/submitButton">
+                      <g:message code="source.create.button"/>
+                    </g:render>
                   </tempvs:ajaxForm>
                 </g:render>
               </span>

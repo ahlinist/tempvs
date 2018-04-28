@@ -22,7 +22,9 @@ ${profile}
           <tempvs:ajaxForm action="uploadAvatar">
             <g:render template="/common/templates/formField" model="${[type: 'file', name: 'image', label: 'profile.avatar.label']}"/>
             <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageInfo', label: 'profile.avatarInfo.label']}"/>
-            <tempvs:ajaxSubmitButton value="profile.updateAvatar.button" />
+            <g:render template="/ajax/templates/submitButton">
+              <g:message code="profile.updateAvatar.button"/>
+            </g:render>
           </tempvs:ajaxForm>
         </g:render>
       </span>

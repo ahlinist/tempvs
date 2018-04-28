@@ -15,7 +15,9 @@
           <g:render template="/common/templates/formField" model="${[type: 'password', name: 'currentPassword', label: 'user.edit.currentPassword.label', mandatory: true]}"/>
           <g:render template="/common/templates/formField" model="${[type: 'password', name: 'newPassword', label: 'user.edit.newPassword.label', mandatory: true]}"/>
           <g:render template="/common/templates/formField" model="${[type: 'password', name: 'repeatNewPassword', label: 'user.edit.repeatNewPassword.label', mandatory: true]}"/>
-          <tempvs:ajaxSubmitButton value="user.edit.password.button" />
+          <g:render template="/ajax/templates/submitButton">
+            <g:message code="user.edit.password.button"/>
+          </g:render>
         </tempvs:ajaxForm>
         <div class="col-sm-3"></div>
       </div>

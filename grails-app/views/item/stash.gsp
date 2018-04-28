@@ -21,7 +21,9 @@
                 <tempvs:ajaxForm action="createGroup">
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'item.group.name.label', mandatory: true]}"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'item.group.description.label']}"/>
-                  <tempvs:ajaxSubmitButton value="item.createGroup.button" />
+                  <g:render template="/ajax/templates/submitButton">
+                    <g:message code="item.createGroup.button"/>
+                  </g:render>
                 </tempvs:ajaxForm>
               </g:render>
             </span>

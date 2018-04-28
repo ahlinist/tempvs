@@ -19,8 +19,4 @@ class AjaxTagLib {
     def ajaxLink = { Map attrs, Closure body ->
         out << render(template: '/ajax/templates/ajaxLink', model: attrs + [body: body()])
     }
-
-    def ajaxSubmitButton = { Map attrs, Closure body ->
-        out << render(template: '/ajax/templates/submitButton', model: attrs + [body: body()])
-    }
 }

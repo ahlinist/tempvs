@@ -36,7 +36,9 @@
                   <g:render template="/common/templates/formField"
                                         model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
                   <input type="hidden" name="itemGroup" value="${itemGroupId}"/>
-                  <tempvs:ajaxSubmitButton value="item.createItem.button"/>
+                  <g:render template="/ajax/templates/submitButton">
+                    <g:message code="item.createItem.button"/>
+                  </g:render>
                 </tempvs:ajaxForm>
               </g:render>
             </span>

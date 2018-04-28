@@ -17,7 +17,9 @@
           <g:render template="/common/templates/formField" model="${[type: 'password', name: 'password', label: 'user.password.label', mandatory: true]}"/>
           <g:render template="/common/templates/formField" model="${[type: 'password', name: 'confirmPassword', label: 'user.confirmPassword.label', mandatory: true]}"/>
           <input type="hidden" name="emailVerification" value="${emailVerification.id}"/>
-          <tempvs:ajaxSubmitButton value="user.confirm.registration.button" />
+          <g:render template="/ajax/templates/submitButton">
+            <g:message code="user.confirm.registration.button"/>
+          </g:render>
         </tempvs:ajaxForm>
         <g:message code="user.confirm.registration.instructions"/>
       </div>

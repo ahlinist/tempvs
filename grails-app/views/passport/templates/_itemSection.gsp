@@ -58,7 +58,9 @@
                       optionKey="id" optionValue="name"/>
             <input type="number" name="quantity" value="1" />
             <input type="hidden" name="passportId" value="${passportId}" />
-            <tempvs:ajaxSubmitButton value="passport.add.item.button"/>
+            <g:render template="/ajax/templates/submitButton">
+              <g:message code="passport.add.item.button"/>
+            </g:render>
           </tempvs:ajaxForm>
         </div>
       </div>

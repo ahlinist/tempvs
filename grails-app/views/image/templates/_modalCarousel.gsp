@@ -81,7 +81,9 @@
             <tempvs:ajaxForm controller="${controllerName}" action="addImages" selector="div#modal-carousel">
               <g:render template="/image/templates/imageUploader" model="${[min: min]}"/>
               <input type="hidden" name="objectId" value="${objectId}"/>
-              <tempvs:ajaxSubmitButton value="images.upload.button" onclick="\$('.carousel').off('slide.bs.carousel');"/>
+              <g:render template="/ajax/templates/submitButton" model="${[onclick: '\$(".carousel").off("slide.bs.carousel");']}">
+                <g:message code="images.upload.button"/>
+              </g:render>
             </tempvs:ajaxForm>
           </div>
         </div>

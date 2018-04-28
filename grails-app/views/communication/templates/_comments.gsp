@@ -39,7 +39,9 @@
         <g:textArea name="text" rows="2" cols="10"/>
         <br/>
         <input type="hidden" name="objectId" value="${object.id}"/>
-        <tempvs:ajaxSubmitButton value="comment.add.button"/>
+        <g:render template="/ajax/templates/submitButton">
+          <g:message code="comment.add.button"/>
+        </g:render>
       </tempvs:ajaxForm>
     </sec:ifLoggedIn>
   </ul>
