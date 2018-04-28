@@ -20,13 +20,13 @@ ${profile}
       <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.editAvatar.tooltip')}">
         <g:render template="/common/templates/modalButton"
             model="${[id: 'uploadAvatar', icon: 'glyphicon glyphicon-picture']}">
-          <tempvs:ajaxForm action="uploadAvatar">
+          <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'profile', action: 'uploadAvatar']}">
             <g:render template="/common/templates/formField" model="${[type: 'file', name: 'image', label: 'profile.avatar.label']}"/>
             <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageInfo', label: 'profile.avatarInfo.label']}"/>
             <g:render template="/ajax/templates/submitButton">
               <g:message code="profile.updateAvatar.button"/>
             </g:render>
-          </tempvs:ajaxForm>
+          </g:render>
         </g:render>
       </span>
     </g:if>

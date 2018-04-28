@@ -36,14 +36,15 @@
       </li>
     </g:each>
     <sec:ifLoggedIn>
-      <tempvs:ajaxForm controller="${controllerName}" action="addComment" selector="div#comments">
+      <g:render template="/ajax/templates/ajaxForm"
+                    model="${[controller: controllerName, action: 'addComment', selector: 'div#comments']}">
         <g:textArea name="text" rows="2" cols="10"/>
         <br/>
         <input type="hidden" name="objectId" value="${object.id}"/>
         <g:render template="/ajax/templates/submitButton">
           <g:message code="comment.add.button"/>
         </g:render>
-      </tempvs:ajaxForm>
+      </g:render>
     </sec:ifLoggedIn>
   </ul>
 </div>

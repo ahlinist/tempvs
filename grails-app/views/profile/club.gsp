@@ -43,14 +43,14 @@
             <div>
               <g:render template="/common/templates/modalButton"
                   model="${[id: 'createPassport', icon: 'glyphicon glyphicon-plus']}">
-                <tempvs:ajaxForm controller="passport" action="createPassport">
+                <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'passport', action: 'createPassport']}">
                   <g:render template="/image/templates/imageUploader"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'passport.name.label', mandatory: true]}"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'passport.description.label']}"/>
                   <g:render template="/ajax/templates/submitButton">
                     <g:message code="passport.create.button"/>
                   </g:render>
-                </tempvs:ajaxForm>
+                </g:render>
               </g:render>
             </div>
           </g:if>

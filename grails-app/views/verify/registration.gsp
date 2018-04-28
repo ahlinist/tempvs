@@ -10,7 +10,7 @@
       </div>
       <div class="col-sm-6">
         <g:message code="user.confirm.registration.message" args="${[emailVerification.email]}"/>
-        <tempvs:ajaxForm controller="user" action="register">
+        <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'user', action: 'register']}">
           <g:render template="/common/templates/formField" model="${[type: 'text', name: 'firstName', label: 'profile.firstName.label', mandatory: true]}"/>
           <g:render template="/common/templates/formField" model="${[type: 'text', name: 'lastName', label: 'profile.lastName.label', mandatory: true]}"/>
           <g:render template="/common/templates/formField" model="${[type: 'text', name: 'profileId', label: 'profile.profileId.label']}"/>
@@ -20,7 +20,7 @@
           <g:render template="/ajax/templates/submitButton">
             <g:message code="user.confirm.registration.button"/>
           </g:render>
-        </tempvs:ajaxForm>
+        </g:render>
         <g:message code="user.confirm.registration.instructions"/>
       </div>
       <div class="col-sm-3">

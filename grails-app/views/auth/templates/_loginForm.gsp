@@ -12,21 +12,21 @@
 </ul>
 <div class="tab-content">
   <div id="login" class="tab-pane fade in active">
-    <tempvs:ajaxForm controller="auth" action="login">
+    <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'login']}">
       <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
       <g:render template="/common/templates/formField" model="${[type: 'password', name: 'password', label: 'auth.password.label', mandatory: true, editAllowed: true]}"/>
       <g:render template="/common/templates/formField" model="${[type: 'checkbox', name: 'remember', label: 'auth.remember.label']}"/>
       <g:render template="/ajax/templates/submitButton">
         <g:message code="auth.login.button"/>
       </g:render>
-    </tempvs:ajaxForm>
+    </g:render>
   </div>
   <div id="register" class="tab-pane fade">
-    <tempvs:ajaxForm controller="auth" action="register">
+    <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'register']}">
       <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
       <g:render template="/ajax/templates/submitButton">
         <g:message code="auth.request.registration.button"/>
       </g:render>
-    </tempvs:ajaxForm>
+    </g:render>
   </div>
 </div>

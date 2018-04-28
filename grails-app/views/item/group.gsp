@@ -27,7 +27,7 @@
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'item.createItem.tooltip')}">
               <g:render template="/common/templates/modalButton"
                   model="${[id: 'itemForm', icon: 'glyphicon glyphicon-plus']}">
-                <tempvs:ajaxForm action="createItem">
+                <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'item', action: 'createItem']}">
                   <g:render template="/image/templates/imageUploader"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'item.name.label', mandatory: true]}"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'item.description.label']}"/>
@@ -39,7 +39,7 @@
                   <g:render template="/ajax/templates/submitButton">
                     <g:message code="item.createItem.button"/>
                   </g:render>
-                </tempvs:ajaxForm>
+                </g:render>
               </g:render>
             </span>
           </span>

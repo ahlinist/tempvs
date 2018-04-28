@@ -78,13 +78,14 @@
         </div>
         <div id="addImageCollapse" class="panel-collapse collapse">
           <div class="row">
-            <tempvs:ajaxForm controller="${controllerName}" action="addImages" selector="div#modal-carousel">
+            <g:render template="/ajax/templates/ajaxForm"
+                model="${[controller: controllerName, action: 'addImages', selector: 'div#modal-carousel']}">
               <g:render template="/image/templates/imageUploader" model="${[min: min]}"/>
               <input type="hidden" name="objectId" value="${objectId}"/>
               <g:render template="/ajax/templates/submitButton" model="${[onclick: '\$(".carousel").off("slide.bs.carousel");']}">
                 <g:message code="images.upload.button"/>
               </g:render>
-            </tempvs:ajaxForm>
+            </g:render>
           </div>
         </div>
       </div>

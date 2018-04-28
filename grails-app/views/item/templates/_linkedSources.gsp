@@ -41,14 +41,15 @@
           </div>
           <div id="sourceCollapse" class="panel-collapse collapse">
             <li class="row">
-              <tempvs:ajaxForm controller="item" action="linkSource" selector="div#linkedSources">
+              <g:render template="/ajax/templates/ajaxForm"
+                  model="${[controller: 'item', action: 'linkSource', selector: 'div#linkedSources']}">
                 <g:select class="col-sm-12 tempvs-form-field" name="sourceId" from="${sources}" noSelection="${['':'-']}"
                           optionKey="id" optionValue="name"/>
                 <input type="hidden" name="itemId" value="${itemId}" />
                 <g:render template="/ajax/templates/submitButton">
                   <g:message code="item.add.source.button"/>
                 </g:render>
-              </tempvs:ajaxForm>
+              </g:render>
             </li>
           </div>
         </div>

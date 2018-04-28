@@ -61,7 +61,7 @@
   <div>
     <g:render template="/common/templates/modalButton"
         model="${[id: 'createProfile', icon: 'fa fa-user-plus']}">
-      <tempvs:ajaxForm controller="profile" action="createClubProfile">
+      <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'profile', action: 'createClubProfile']}">
         <g:render template="/common/templates/formField" model="${[type: 'file', name: 'imageUploadBean.image', label: 'profile.avatar.label']}"/>
         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageUploadBean.imageInfo', label: 'profile.avatarInfo.label']}"/>
         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'firstName', label: 'profile.firstName.label', mandatory: true]}"/>
@@ -74,7 +74,7 @@
         <g:render template="/ajax/templates/submitButton">
           <g:message code="clubProfile.create.button"/>
         </g:render>
-      </tempvs:ajaxForm>
+      </g:render>
     </g:render>
   </div>
 </div>

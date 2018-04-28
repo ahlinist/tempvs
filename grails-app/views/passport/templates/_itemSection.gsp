@@ -56,7 +56,8 @@
           </h4>
         </div>
         <div id="addItemCollapse" class="panel-collapse collapse">
-          <tempvs:ajaxForm controller="passport" action="addItem" selector="div#item-section">
+          <g:render template="/ajax/templates/ajaxForm"
+              model="${[controller: 'passport', action: 'addItem', selector: 'div#item-section']}">
             <g:select class="col-sm-12 tempvs-form-field" name="itemId" from="${availableItems}" noSelection="${['':'-']}"
                       optionKey="id" optionValue="name"/>
             <input type="number" name="quantity" value="1" />
@@ -64,7 +65,7 @@
             <g:render template="/ajax/templates/submitButton">
               <g:message code="passport.add.item.button"/>
             </g:render>
-          </tempvs:ajaxForm>
+          </g:render>
         </div>
       </div>
     </div>

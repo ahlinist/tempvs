@@ -18,13 +18,13 @@
             <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'item.createGroup.tooltip')}">
               <g:render template="/common/templates/modalButton"
                   model="${[id: 'createGroup', icon: 'glyphicon glyphicon-plus']}">
-                <tempvs:ajaxForm action="createGroup">
+                <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'item', action: 'createGroup']}">
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'item.group.name.label', mandatory: true]}"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'item.group.description.label']}"/>
                   <g:render template="/ajax/templates/submitButton">
                     <g:message code="item.createGroup.button"/>
                   </g:render>
-                </tempvs:ajaxForm>
+                </g:render>
               </g:render>
             </span>
           </span>

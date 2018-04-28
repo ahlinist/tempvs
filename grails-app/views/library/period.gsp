@@ -61,7 +61,7 @@
               <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.create.tooltip')}">
                 <g:render template="/common/templates/modalButton"
                     model="${[id: 'sourceForm', message: 'source.add.button']}">
-                  <tempvs:ajaxForm controller="source" action="createSource">
+                  <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'source', action: 'createSource']}">
                     <g:render template="/image/templates/imageUploader"/>
                     <g:render template="/common/templates/formField" model="${[type: 'text', name: 'fake-period', label: 'periodization.period.form.label', disabled: true, value: period.value]}"/>
                     <g:render template="/common/templates/formField" model="${[type: 'select', name: 'itemType', label: 'item.itemType.dropdown.label', mandatory: true, from: itemTypes, optionKey: 'key', optionValue: 'value']}"/>
@@ -73,7 +73,7 @@
                     <g:render template="/ajax/templates/submitButton">
                       <g:message code="source.create.button"/>
                     </g:render>
-                  </tempvs:ajaxForm>
+                  </g:render>
                 </g:render>
               </span>
             </g:if>
