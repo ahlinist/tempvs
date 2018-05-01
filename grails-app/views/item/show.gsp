@@ -14,10 +14,14 @@
       <div class="row">
         <div class="col-sm-6">
           <div class="ajax-form">
-            <tempvs:ajaxSmartForm type="text" action="editItemField" name="name" value="${item.name}" objectId="${itemId}" label="item.name.label" editAllowed="${editAllowed}" mandatory="${true}"/>
-            <tempvs:ajaxSmartForm type="text" action="editItemField" name="description" value="${item.description}" objectId="${itemId}" label="item.description.label" editAllowed="${editAllowed}"/>
-            <tempvs:ajaxSmartForm type="text" value="${item.itemType.value}" label="item.itemType.dropdown.label" editAllowed="${false}"/>
-            <tempvs:ajaxSmartForm type="text" value="${period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editItemField', name: 'name', value: item.name, objectId: itemId, label: 'item.name.label', editAllowed: editAllowed, mandatory: true]}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editItemField', name: 'description', value: item.description, objectId: itemId, label: 'item.description.label', editAllowed: editAllowed]}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', value: item.itemType.value, label: 'item.itemType.dropdown.label', editAllowed: false]}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', value: period.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
           </div>
           <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
         </div>

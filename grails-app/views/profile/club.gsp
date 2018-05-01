@@ -27,14 +27,22 @@
           <g:render template="/profile/templates/identity"/>
         </div>
         <div class="col-sm-5 ajax-form">
-          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="firstName" value="${profile.firstName}" label="profile.firstName.label" editAllowed="${editAllowed && active}" mandatory="${true}"/>
-          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="lastName" value="${profile.lastName}" label="profile.lastName.label" editAllowed="${editAllowed && active}"/>
-          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="nickName" value="${profile.nickName}" label="profile.nickName.label" editAllowed="${editAllowed && active}"/>
-          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="profileId" value="${profile.profileId}" label="profile.profileId.label" editAllowed="${editAllowed && active}"/>
-          <tempvs:ajaxSmartForm type="text" action="editProfileEmail" name="profileEmail" value="${profile.profileEmail}" label="profile.profileEmail.label" editAllowed="${editAllowed && active}"/>
-          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="location" value="${profile.location}" label="profile.location.label" editAllowed="${editAllowed && active}"/>
-          <tempvs:ajaxSmartForm type="text" action="editProfileField" name="clubName" value="${profile.clubName}" label="profile.clubName.label" editAllowed="${editAllowed && active}"/>
-          <tempvs:ajaxSmartForm type="select" action="editProfileField" name="period" value="${profile.period?.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'editProfileField', name: 'lastName', value: profile.lastName, label: 'profile.lastName.label']}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'editProfileField', name: 'nickName', value: profile.nickName, label: 'profile.nickName.label']}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'editProfileField', name: 'profileId', value: profile.profileId, label: 'profile.profileId.label']}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'editProfileField', name: 'profileEmail', value: profile.profileEmail, label: 'profile.profileEmail.label']}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'editProfileField', name: 'location', value: profile.location, label: 'profile.location.label']}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'editProfileField', name: 'clubName', value: profile.clubName, label: 'profile.clubName.label']}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', name: 'period', value: profile.period?.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
         </div>
         <div class="col-sm-4">
           <b><g:message code="passport.list.label"/></b>

@@ -115,12 +115,15 @@ class ProfileController {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
+        Boolean active = clubProfile.active
+
         [
                 profile: clubProfile,
                 user: clubProfile.user,
                 id: clubProfile.identifier,
                 passports: clubProfile.passports,
-                editAllowed: currentProfile == clubProfile,
+                active: active,
+                editAllowed: (currentProfile == clubProfile) && active,
                 mayBeFollowed: followingService.mayBeFollowed(currentProfile, clubProfile),
                 isFollowed: followingService.getFollowing(currentProfile, clubProfile) as Boolean,
         ]

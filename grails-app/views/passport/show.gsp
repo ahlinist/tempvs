@@ -13,8 +13,10 @@
       <div class="row">
         <div class="col-sm-6">
           <div class="ajax-form">
-            <tempvs:ajaxSmartForm type="text" action="editPassportField" name="name" value="${passport.name}" objectId="${passportId}" label="passport.name.label"/>
-            <tempvs:ajaxSmartForm type="text" action="editPassportField" name="description" value="${passport.description}" objectId="${passportId}" label="passport.description.label"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editPassportField', name: 'name', value: passport.name, objectId: passportId, label: 'passport.name.label', mandatory: true]}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editPassportField', name: 'description', value: passport.description, objectId: passportId, label: 'passport.description.label']}"/>
           </div>
           <g:render template="/passport/templates/itemSection"/>
           <g:render template="/communication/templates/comments" model="${[controllerName: 'passport', object: passport, objectId: passportId]}"/>

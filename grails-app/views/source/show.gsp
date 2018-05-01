@@ -37,11 +37,16 @@
         <div class="row">
           <div class="col-sm-6">
             <div class="ajax-form">
-              <tempvs:ajaxSmartForm type="text" action="editSourceField" name="name" value="${source.name}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.name.label" mandatory="${true}"/>
-              <tempvs:ajaxSmartForm type="text" action="editSourceField" name="description" value="${source.description}" objectId="${sourceId}" editAllowed="${canEditFields}" label="source.description.label"/>
-              <tempvs:ajaxSmartForm type="text" value="${source.itemType.value}" label="item.itemType.dropdown.label" editAllowed="${false}"/>
-              <tempvs:ajaxSmartForm type="text" value="${source.sourceType.value}" label="source.sourceType.dropdown.label" editAllowed="${false}"/>
-              <tempvs:ajaxSmartForm type="text" value="${source.period.value}" label="periodization.period.dropdown.label" editAllowed="${false}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editSourceField', name: 'name', value: source.name, objectId: sourceId, label: 'source.name.label', editAllowed: canEditFields, mandatory: true]}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editSourceField', name: 'description', value: source.description, objectId: sourceId, label: 'source.description.label', editAllowed: canEditFields]}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', value: source.itemType.value, label: 'item.itemType.dropdown.label', editAllowed: false]}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', value: source.sourceType.value, label: 'item.sourceType.dropdown.label', editAllowed: false]}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', value: source.period.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
             </div>
             <g:render template="/communication/templates/comments" model="${[controllerName: 'source', object: source, objectId: sourceId]}"/>
           </div>

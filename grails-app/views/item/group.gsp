@@ -13,8 +13,10 @@
         <div class="row">
           <div class="row">
             <div class="ajax-form">
-              <tempvs:ajaxSmartForm type="text" action="editItemGroupField" name="name" value="${itemGroup.name}" objectId="${itemGroupId}" label="item.group.name.label" editAllowed="${editAllowed}" mandatory="${true}"/>
-              <tempvs:ajaxSmartForm type="text" action="editItemGroupField" name="description" value="${itemGroup.description}" objectId="${itemGroupId}" label="item.group.description.label" editAllowed="${editAllowed}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editItemGroupField', name: 'name', value: itemGroup.name, objectId: itemGroupId, label: 'item.group.name.label', editAllowed: editAllowed, mandatory: true]}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editItemGroupField', name: 'description', value: itemGroup.description, objectId: itemGroupId, label: 'item.group.description.label', editAllowed: editAllowed]}"/>
             </div>
           </div>
           <div class="row">
@@ -34,7 +36,7 @@
                   <g:render template="/common/templates/formField"
                       model="${[type: 'select', name: 'itemType', label: 'item.itemType.dropdown.label', mandatory: true, from: itemTypes, optionKey: 'key', optionValue: 'value']}"/>
                   <g:render template="/common/templates/formField"
-                                        model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
+                      model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
                   <input type="hidden" name="itemGroup" value="${itemGroupId}"/>
                   <g:render template="/ajax/templates/submitButton">
                     <g:message code="item.createItem.button"/>

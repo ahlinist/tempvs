@@ -9,7 +9,8 @@
       <div class="col-sm-3"></div>
       <div class="col-sm-6">
         <div class="ajax-form">
-          <tempvs:ajaxSmartForm type="text" action="updateEmail" name="email" value="${user.email}" label="user.edit.email.label" editAllowed="${true}" mandatory="${true}"/>
+          <g:render template="/ajax/templates/ajaxSmartForm"
+              model="${[type: 'text', action: 'updateEmail', name: 'email', value: user.email, label: 'user.edit.email.label', editAllowed: true, mandatory: true]}"/>
         </div>
         <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'user', action: 'updatePassword']}">
           <g:render template="/common/templates/formField" model="${[type: 'password', name: 'currentPassword', label: 'user.edit.currentPassword.label', mandatory: true]}"/>
