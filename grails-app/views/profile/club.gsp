@@ -23,7 +23,8 @@
       </g:if>
       <div class="row">
         <div class="col-sm-3">
-          <g:render template="/profile/templates/identity"/>
+          ${profile}
+          <g:render template="/profile/templates/avatar"/>
         </div>
         <div class="col-sm-5 ajax-form">
           <g:render template="/ajax/templates/ajaxSmartForm"

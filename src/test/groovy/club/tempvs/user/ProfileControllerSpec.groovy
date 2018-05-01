@@ -388,8 +388,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
         1 * profileService.uploadAvatar(userProfile, image) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderRedirect(REFERER) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
+        1 * groovyPageRenderer.render(_ as Map)
         0 * _
     }
 
