@@ -172,10 +172,11 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * followingService.mayBeFollowed(clubProfile, clubProfile) >> Boolean.TRUE
         1 * followingService.getFollowing(clubProfile, clubProfile) >> following
         1 * following.asType(Boolean) >> Boolean.TRUE
+        1 * clubProfile.active >> Boolean.TRUE
         0 * _
 
         and:
-        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport], editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
+        result == [profile: clubProfile, user: user, id: IDENTIFIER, passports: [passport], active: Boolean.TRUE, editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
     }
 
     void "Test switchProfile() being logged in without id"() {

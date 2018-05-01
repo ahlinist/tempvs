@@ -8,7 +8,6 @@
   </head>
   <body>
     <g:if test="${profile}">
-      <g:set var="active" value="${profile.active}"/>
       <g:if test="${!active}">
         <div class="well">
           <div class="text-right">
