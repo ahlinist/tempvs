@@ -14,6 +14,7 @@ var ajaxHandler = {
             }
 
             $(element).modal('hide');
+            hideModals();
             document.querySelector('body').classList.remove('modal-open');
             container.innerHTML = response.template;
         },

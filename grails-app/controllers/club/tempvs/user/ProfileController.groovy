@@ -262,13 +262,15 @@ class ProfileController {
 
         Profile profile = profileService.currentProfile
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
-        Profile persistedProfile = profileService.uploadAvatar(profile, avatar)
+        profile = profileService.uploadAvatar(profile, avatar)
 
-        if (persistedProfile.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(persistedProfile))
+        if (profile.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
-        render ajaxResponseHelper.renderRedirect(request.getHeader(REFERER))
+        Map model = [profile: profile]
+        String template = groovyPageRenderer.render(template: '/profile/templates/avatar', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def list() {
