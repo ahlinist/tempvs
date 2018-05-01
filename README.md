@@ -37,8 +37,6 @@ Connection parameters are retrieved from env variables:
  * MONGODB_URI (mongodb://\<user\>:\<pass\>@\<host\>:\<port\>/\<db_name\>)
 
 ## Running installations
-### Dev
-http://dev.tempvs.club
 ### Stage
 http://stage.tempvs.club
 ### Prod
