@@ -44,7 +44,7 @@
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', value: source.itemType.value, label: 'item.itemType.dropdown.label', editAllowed: false]}"/>
               <g:render template="/ajax/templates/ajaxSmartForm"
-                  model="${[type: 'text', value: source.sourceType.value, label: 'item.sourceType.dropdown.label', editAllowed: false]}"/>
+                  model="${[type: 'text', value: source.sourceType.value, label: 'source.sourceType.dropdown.label', editAllowed: false]}"/>
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', value: source.period.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
             </div>
