@@ -12,7 +12,7 @@ Make reenactor profiles easier to share/review/maintain.
 To get started you need:
  * Java 1.8
  * Groovy 2.4.11
- * Grails 3.3.4
+ * Grails 3.3.5
  * Gradle 4.4.1
  * PostgreSQL 9.5.10
  * MongoDB 3.2
