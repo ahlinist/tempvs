@@ -36,6 +36,10 @@ Connection parameters are retrieved from env variables:
 Connection parameters are retrieved from env variables:
  * MONGODB_URI (mongodb://\<user\>:\<pass\>@\<host\>:\<port\>/\<db_name\>)
 
+#### Demodata population
+Demodata admin user retrieves it's password from the following env var:
+ * ADMIN_PASSWORD
+
 ## Running installations
 ### Stage
 http://stage.tempvs.club
