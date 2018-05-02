@@ -25,9 +25,7 @@
         <div class="col-sm-3">
           ${profile}
           <g:render template="/profile/templates/avatar"/>
-          <g:if test="${active}">
-            <g:render template="/profile/templates/followButton"/>
-          </g:if>
+          <g:render template="/profile/templates/followButton"/>
         </div>
         <div class="col-sm-5 ajax-form">
           <g:render template="/ajax/templates/ajaxSmartForm"

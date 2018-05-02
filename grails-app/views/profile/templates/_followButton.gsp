@@ -1,6 +1,6 @@
 <div id="followButton">
   <sec:ifLoggedIn>
-    <g:if test="${mayBeFollowed}">
+    <g:if test="${mayBeFollowed && profile.active}">
       <div style="border: 4px #eee groove; padding: 6px;" class="text-center" class="row">
         <g:set var="parameters" value="${[profileClassName: profile.class.name, profileId: profile.id]}"/>
         <g:if test="${isFollowed}">
