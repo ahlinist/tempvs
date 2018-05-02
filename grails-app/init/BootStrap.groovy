@@ -10,7 +10,7 @@ class BootStrap {
     private static final String ADMIN_EMAIL = 'admin@tempvs.club'
     private static final String ADMIN_FIRST_NAME = 'Tempvs'
     private static final String ADMIN_LAST_NAME = 'Admin'
-    private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD')
+    private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'pass'
 
     def init = { servletContext ->
         createAdminUser()
