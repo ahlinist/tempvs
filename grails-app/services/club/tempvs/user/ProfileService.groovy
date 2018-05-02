@@ -90,6 +90,7 @@ class ProfileService {
         profile.class.createCriteria().list (max: MAX_PROFILES_RETRIEVED, offset: offset) {
             if (profile instanceof UserProfile) {
                 ne('id', profile.id)
+                eq ('active', Boolean.TRUE)
 
                 if (query) {
                     or {
