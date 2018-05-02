@@ -49,4 +49,7 @@ databaseChangeLog = {
     include file: 'foreign-keys/user-role.groovy'
     include file: 'foreign-keys/acl-object-identity.groovy'
     include file: 'foreign-keys/acl-entry.groovy'
+
+    //updates
+    include file: 'updates/make-role-basepersistent.groovy'
 }
