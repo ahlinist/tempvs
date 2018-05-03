@@ -5,8 +5,8 @@ import club.tempvs.user.UserRole
 
 class BootStrap {
 
-    private static final String SCRIBE_ROLE = 'scribe'
-    private static final String ARCHIVARIUS_ROLE = 'archivarius'
+    private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
+    private static final String ROLE_ARCHIVARIUS = 'ROLE_ARCHIVARIUS'
     private static final String ADMIN_EMAIL = 'admin@tempvs.club'
     private static final String ADMIN_FIRST_NAME = 'Tempvs'
     private static final String ADMIN_LAST_NAME = 'Admin'
@@ -20,17 +20,17 @@ class BootStrap {
     }
 
     private void createAdminUser() {
-        Role archivarius = Role.findByAuthority(ARCHIVARIUS_ROLE)
-        Role scribe = Role.findByAuthority(SCRIBE_ROLE)
+        Role archivarius = Role.findByAuthority(ROLE_ARCHIVARIUS)
+        Role scribe = Role.findByAuthority(ROLE_SCRIBE)
         User admin = User.findByEmail(ADMIN_EMAIL)
         UserRole archivarius2admin = UserRole.findByUserAndRole(admin, archivarius)
 
         if (!archivarius) {
-            archivarius = new Role(authority: ARCHIVARIUS_ROLE).save()
+            archivarius = new Role(authority: ROLE_ARCHIVARIUS).save()
         }
 
         if (!scribe) {
-            scribe = new Role(authority: SCRIBE_ROLE).save()
+            scribe = new Role(authority: ROLE_SCRIBE).save()
         }
 
         if (!admin) {

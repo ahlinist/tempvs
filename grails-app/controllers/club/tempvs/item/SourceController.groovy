@@ -78,6 +78,7 @@ class SourceController {
         }
     }
 
+    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
     def createSource(Source source, ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
@@ -99,6 +100,7 @@ class SourceController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
     }
 
+    @Secured("hasRole('ROLE_ARCHIVARIUS')")
     def editSourceField(Long objectId, String fieldName, String fieldValue) {
         Source source = sourceService.getSource objectId
 
@@ -115,6 +117,7 @@ class SourceController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
+    @Secured("hasRole('ROLE_ARCHIVARIUS')")
     def deleteImage(Long objectId, Long imageId) {
         Source source = sourceService.getSource objectId
         Image image = imageService.loadImage imageId
@@ -134,6 +137,7 @@ class SourceController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
+    @Secured("hasRole('ROLE_ARCHIVARIUS')")
     def deleteSource(Long id) {
         Source source = sourceService.getSource id
 
@@ -145,6 +149,7 @@ class SourceController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'library', action: 'period', id: source.period.id))
     }
 
+    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
     def addImages(ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 

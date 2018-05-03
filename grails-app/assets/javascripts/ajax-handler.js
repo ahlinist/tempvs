@@ -72,9 +72,10 @@ var ajaxHandler = {
                     complete(submitButton);
                     actions[response.action](element, response, selector);
                 },
-                error: function() {
+                error: function(jqXHR, status) {
+                    var message = jqXHR.responseJSON.error || "Something went wrong :(";
                     complete(submitButton);
-                    actions.formMessageAction(element, {success: false, message: "Something went wrong :("});
+                    actions.formMessage(element, {success: false, message: message});
                 }
             });
         }
