@@ -1,3 +1,13 @@
+<sec:ifAnyGranted roles="ROLE_CONTRIBUTOR">
+  <g:set var="isContributor" value="${true}"/>
+</sec:ifAnyGranted>
+<sec:ifAnyGranted roles="ROLE_SCRIBE">
+  <g:set var="isScribe" value="${true}"/>
+</sec:ifAnyGranted>
+<sec:ifAnyGranted roles="ROLE_ARCHIVARIUS">
+  <g:set var="isArchivarius" value="${true}"/>
+</sec:ifAnyGranted>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -9,6 +19,28 @@
         <div class="col-sm-8">
           <g:render template="/library/templates/navBar"/>
         </div>
+      </div>
+      <div class="well">
+        <g:if test="${isArchivarius}">
+          <div class="text-center">
+            <g:message code="library.archivarius.welcome.message"/>
+          </div>
+        </g:if>
+        <g:elseif test="${isScribe}">
+          <div class="text-center">
+            <g:message code="library.scribe.welcome.message"/>
+          </div>
+        </g:elseif>
+        <g:elseif test="${isContributor}">
+          <div class="text-center">
+            <g:message code="library.contributor.welcome.message"/>
+          </div>
+        </g:elseif>
+        <g:else>
+          <div class="text-center">
+            <g:message code="library.guest.welcome.message"/>
+          </div>
+        </g:else>
       </div>
       <h1><g:message code="periodization.list.title"/></h1>
       <div class="row">
