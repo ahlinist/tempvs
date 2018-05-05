@@ -82,7 +82,7 @@ class SourceController {
         }
     }
 
-    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE','ROLE_CONTRIBUTOR')")
+    @Secured("hasRole('ROLE_CONTRIBUTOR')")
     def createSource(Source source, ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
@@ -104,7 +104,7 @@ class SourceController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
     }
 
-    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
+    @Secured("hasRole('ROLE_SCRIBE')")
     def editSourceField(Long objectId, String fieldName, String fieldValue) {
         Source source = sourceService.getSource objectId
 
@@ -121,7 +121,7 @@ class SourceController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
+    @Secured("hasRole('ROLE_SCRIBE')")
     def deleteImage(Long objectId, Long imageId) {
         Source source = sourceService.getSource objectId
         Image image = imageService.loadImage imageId
@@ -136,8 +136,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR,ROLE_SCRIBE,ROLE_ARCHIVARIUS')
-        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_ARCHIVARIUS')
+        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR')
+        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_SCRIBE')
 
         Map model = [
                 images: source.images,
@@ -163,7 +163,7 @@ class SourceController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'library', action: 'period', id: source.period.id))
     }
 
-    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE','ROLE_CONTRIBUTOR')")
+    @Secured("hasRole('ROLE_CONTRIBUTOR')")
     def addImages(ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
@@ -189,8 +189,8 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR,ROLE_SCRIBE,ROLE_ARCHIVARIUS')
-        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_ARCHIVARIUS')
+        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR')
+        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_SCRIBE')
 
         Map model = [
                 images: source.images,

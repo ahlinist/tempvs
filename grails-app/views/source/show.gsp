@@ -44,9 +44,9 @@
           <div class="col-sm-6">
             <div class="ajax-form">
               <g:render template="/ajax/templates/ajaxSmartForm"
-                  model="${[type: 'text', action: 'editSourceField', name: 'name', value: source.name, objectId: sourceId, label: 'source.name.label', editAllowed: isScribe || isArchivarius, mandatory: true]}"/>
+                  model="${[type: 'text', action: 'editSourceField', name: 'name', value: source.name, objectId: sourceId, label: 'source.name.label', editAllowed: isScribe, mandatory: true]}"/>
               <g:render template="/ajax/templates/ajaxSmartForm"
-                  model="${[type: 'text', action: 'editSourceField', name: 'description', value: source.description, objectId: sourceId, label: 'source.description.label', editAllowed: isScribe || isArchivarius]}"/>
+                  model="${[type: 'text', action: 'editSourceField', name: 'description', value: source.description, objectId: sourceId, label: 'source.description.label', editAllowed: isScribe]}"/>
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', value: source.itemType.value, label: 'item.itemType.dropdown.label', editAllowed: false]}"/>
               <g:render template="/ajax/templates/ajaxSmartForm"
@@ -57,7 +57,7 @@
             <g:render template="/communication/templates/comments" model="${[controllerName: 'source', object: source, objectId: sourceId]}"/>
           </div>
           <div class="col-sm-6">
-            <g:render template="/image/templates/modalCarousel" model="${[objectId: sourceId, addingAllowed: isContributor || isScribe || isArchivarius, deletingAllowed: isArchivarius]}"/>
+            <g:render template="/image/templates/modalCarousel" model="${[objectId: sourceId, addingAllowed: isContributor, deletingAllowed: isScribe]}"/>
           </div>
         </div>
       </g:if>
