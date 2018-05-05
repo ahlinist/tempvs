@@ -1,7 +1,3 @@
-<sec:ifLoggedIn>
-  <g:set var="editAllowed" value="${true}"/>
-</sec:ifLoggedIn>
-
 <!DOCTYPE html>
 <html>
     <head>
@@ -53,11 +49,11 @@
             </div>
           </g:each>
         </div>
-        <div class="row">
-          <br/>
-          <hr/>
-          <div class="pull-right">
-            <g:if test="${editAllowed}">
+        <sec:ifAnyGranted roles="ROLE_ARCHIVARIUS,ROLE_SCRIBE,ROLE_CONTRIBUTOR">
+          <div class="row">
+            <br/>
+            <hr/>
+            <div class="pull-right">
               <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.create.tooltip')}">
                 <g:render template="/common/templates/modalButton"
                     model="${[id: 'sourceForm', message: 'source.add.button']}">
@@ -76,9 +72,9 @@
                   </g:render>
                 </g:render>
               </span>
-            </g:if>
+            </div>
           </div>
-        </div>
+        </sec:ifAnyGranted>
       </g:if>
       <g:else>
         <g:message code="period.notFound.message"/>

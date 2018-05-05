@@ -140,7 +140,14 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, objectId: objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        Map model = [
+                images: item.images,
+                objectId: objectId,
+                controllerName: 'item',
+                addingAllowed: Boolean.TRUE,
+                deletingAllowed: Boolean.TRUE,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -221,7 +228,14 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, objectId: params.objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        Map model = [
+                images: item.images,
+                objectId: params.objectId,
+                controllerName: 'item',
+                addingAllowed: Boolean.TRUE,
+                deletingAllowed: Boolean.TRUE,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

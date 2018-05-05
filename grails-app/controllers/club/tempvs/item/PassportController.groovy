@@ -259,7 +259,14 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [images: passport.images, objectId: params.objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
+        Map model = [
+                images: passport.images,
+                objectId: params.objectId,
+                controllerName: 'passport',
+                addingAllowed: Boolean.TRUE,
+                deletingAllowed: Boolean.TRUE,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -278,7 +285,14 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(passport))
         }
 
-        Map model = [images: passport.images, objectId: objectId, controllerName: 'passport', editAllowed: Boolean.TRUE]
+        Map model = [
+                images: passport.images,
+                objectId: objectId,
+                controllerName: 'passport',
+                addingAllowed: Boolean.TRUE,
+                deletingAllowed: Boolean.TRUE,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

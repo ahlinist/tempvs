@@ -14,7 +14,9 @@ import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import grails.plugin.springsecurity.SecurityTagLib
 import grails.web.mapping.LinkGenerator
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -44,11 +46,13 @@ class SourceController {
             deleteComment: 'DELETE',
     ]
 
+
     UserService userService
     ImageService imageService
     SourceService sourceService
     ProfileService profileService
     CommentService commentService
+    SecurityTagLib securityTagLib
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
@@ -78,7 +82,7 @@ class SourceController {
         }
     }
 
-    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
+    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE','ROLE_CONTRIBUTOR')")
     def createSource(Source source, ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
@@ -100,7 +104,7 @@ class SourceController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
     }
 
-    @Secured("hasRole('ROLE_ARCHIVARIUS')")
+    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
     def editSourceField(Long objectId, String fieldName, String fieldValue) {
         Source source = sourceService.getSource objectId
 
@@ -117,7 +121,7 @@ class SourceController {
         render([action: SUCCESS_ACTION] as JSON)
     }
 
-    @Secured("hasRole('ROLE_ARCHIVARIUS')")
+    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
     def deleteImage(Long objectId, Long imageId) {
         Source source = sourceService.getSource objectId
         Image image = imageService.loadImage imageId
@@ -132,7 +136,17 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [images: source.images, objectId: objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
+        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR,ROLE_SCRIBE,ROLE_ARCHIVARIUS')
+        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_ARCHIVARIUS')
+
+        Map model = [
+                images: source.images,
+                objectId: objectId,
+                controllerName: 'source',
+                addingAllowed: addingAllowed,
+                deletingAllowed: deletingAllowed,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -149,7 +163,7 @@ class SourceController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'library', action: 'period', id: source.period.id))
     }
 
-    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE')")
+    @Secured("hasAnyRole('ROLE_ARCHIVARIUS','ROLE_SCRIBE','ROLE_CONTRIBUTOR')")
     def addImages(ImageUploadCommand command) {
         List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
 
@@ -175,7 +189,17 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Map model = [images: source.images, objectId: params.objectId, controllerName: 'source', editAllowed: Boolean.TRUE]
+        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR,ROLE_SCRIBE,ROLE_ARCHIVARIUS')
+        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_ARCHIVARIUS')
+
+        Map model = [
+                images: source.images,
+                objectId: params.objectId,
+                controllerName: 'source',
+                addingAllowed: addingAllowed,
+                deletingAllowed: deletingAllowed,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

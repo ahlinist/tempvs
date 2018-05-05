@@ -26,7 +26,8 @@
           <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
         </div>
         <div class="col-sm-6">
-          <g:render template="/image/templates/modalCarousel" model="${[objectId: itemId]}"/>
+          <g:render template="/image/templates/modalCarousel"
+              model="${[objectId: itemId, addingAllowed: editAllowed, deletingAllowed: editAllowed]}"/>
           <g:render template="/communication/templates/comments" model="${[controllerName: 'item', object: item, objectId: itemId]}"/>
         </div>
       </div>

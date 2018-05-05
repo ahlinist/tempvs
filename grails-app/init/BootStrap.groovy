@@ -7,6 +7,7 @@ class BootStrap {
 
     private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
     private static final String ROLE_ARCHIVARIUS = 'ROLE_ARCHIVARIUS'
+    private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
     private static final String ADMIN_EMAIL = 'admin@tempvs.club'
     private static final String ADMIN_FIRST_NAME = 'Tempvs'
     private static final String ADMIN_LAST_NAME = 'Admin'
@@ -22,6 +23,7 @@ class BootStrap {
     private void createAdminUser() {
         Role archivarius = Role.findByAuthority(ROLE_ARCHIVARIUS)
         Role scribe = Role.findByAuthority(ROLE_SCRIBE)
+        Role contributor = Role.findByAuthority(ROLE_CONTRIBUTOR)
         User admin = User.findByEmail(ADMIN_EMAIL)
         UserRole archivarius2admin = UserRole.findByUserAndRole(admin, archivarius)
 
@@ -31,6 +33,10 @@ class BootStrap {
 
         if (!scribe) {
             scribe = new Role(authority: ROLE_SCRIBE).save()
+        }
+
+        if (!contributor) {
+            contributor = new Role(authority: ROLE_CONTRIBUTOR).save()
         }
 
         if (!admin) {
