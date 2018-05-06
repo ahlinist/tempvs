@@ -30,6 +30,7 @@ databaseChangeLog = {
     include file: 'tables/acl-object-identity.groovy'
     include file: 'tables/acl-entry.groovy'
     include file: 'tables/acl-class.groovy'
+    include file: 'tables/rolerequest.groovy'
 
     //foreign keys
     include file: 'foreign-keys/club-profile.groovy'
@@ -49,7 +50,9 @@ databaseChangeLog = {
     include file: 'foreign-keys/user-role.groovy'
     include file: 'foreign-keys/acl-object-identity.groovy'
     include file: 'foreign-keys/acl-entry.groovy'
+    include file: 'foreign-keys/rolerequest.groovy'
 
     //updates
     include file: 'updates/make-role-basepersistent.groovy'
+    include file: 'updates/add-rolerequest-constraints.groovy'
 }
