@@ -39,7 +39,7 @@ var ajaxHandler = {
                 }
 
                 field.classList.add('popped-over');
-                field.setAttribute('data-placement','right');
+                field.setAttribute('data-placement','bottom');
                 field.setAttribute('data-container','body');
                 field.setAttribute('data-content', fieldEntry.message);
                 field.setAttribute('data-html', true);
@@ -101,7 +101,7 @@ var ajaxHandler = {
             var formMessages = element.getElementsByClassName('form-message');
             var bgDangers = element.getElementsByClassName('bg-danger');
 
-            for (i = popovers.length - 1; i >= 0 ; i++) {
+            for (i = popovers.length - 1; i >= 0 ; i--) {
                 var popover = popovers[i];
                 popover.classList.remove('popped-over');
                 popover.removeAttribute('data-placement');
@@ -109,7 +109,7 @@ var ajaxHandler = {
                 $(popover).popover('hide');
             }
 
-            for (j = formMessages.length - 1; j >= 0 ; j++) {
+            for (j = formMessages.length - 1; j >= 0 ; j--) {
                 formMessages[j].remove();
             }
 
