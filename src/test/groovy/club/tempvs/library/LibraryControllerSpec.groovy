@@ -9,10 +9,11 @@ import club.tempvs.user.Role
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.gsp.PageRenderer
+import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
 
-class LibraryControllerSpec extends Specification implements ControllerUnitTest<LibraryController> {
+class LibraryControllerSpec extends Specification implements ControllerUnitTest<LibraryController>, DataTest {
 
     private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
@@ -29,6 +30,9 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
     def libraryService = Mock LibraryService
     def groovyPageRenderer = Mock PageRenderer
 
+    Class<?>[] getDomainClassesToMock(){
+        return [RoleRequest] as Class[]
+    }
 
     def setup() {
         controller.userService = userService
@@ -105,5 +109,13 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
         1 * libraryService.deleteRoleRequest(user, role)
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
+    }
+
+    void "Test admin()"() {
+        given:
+        request.method = GET_METHOD
+
+        expect:
+        controller.admin() == [roleRequests: []]
     }
 }

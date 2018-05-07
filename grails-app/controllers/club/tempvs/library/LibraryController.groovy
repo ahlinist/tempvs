@@ -11,7 +11,9 @@ import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
+import grails.gorm.DetachedCriteria
 import grails.gsp.PageRenderer
+import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.annotation.Secured
 
 @GrailsCompileStatic
@@ -23,6 +25,7 @@ class LibraryController {
 
     static allowedMethods = [
             index: 'GET',
+            admin: 'GET',
             period: 'GET',
             requestRole: 'POST',
             cancelRoleRequest: 'DELETE',
@@ -68,6 +71,18 @@ class LibraryController {
         }
     }
 
+    @Secured('ROLE_ARCHIVARIUS')
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
+    Map admin() {
+        List<RoleRequest> roleRequests = RoleRequest.createCriteria().list {
+            role {
+                'in'("authority", LibraryRole.ROLE_CONTRIBUTOR*.toString())
+            }
+        } as List<RoleRequest>
+
+        [roleRequests: roleRequests]
+    }
+
     def requestRole(String id) {
         if (!LibraryRole.values().toString().contains(id)) {
             RoleRequest failedRoleRequest = new RoleRequest()
@@ -103,5 +118,4 @@ class LibraryController {
         String template = groovyPageRenderer.render(template: '/library/templates/welcome', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
-
 }

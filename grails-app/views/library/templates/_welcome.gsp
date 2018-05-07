@@ -13,6 +13,9 @@
     <g:if test="${isArchivarius}">
       <div class="text-center">
         <g:message code="library.archivarius.welcome.message"/>
+        <g:link controller="library" action="admin" class="btn btn-default pull-right">
+          <g:message code="library.admin.link"/>
+        </g:link>
       </div>
     </g:if>
     <g:elseif test="${isScribe}">

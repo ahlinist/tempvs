@@ -4,9 +4,6 @@ import club.tempvs.user.Role
 import club.tempvs.user.User
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
-import grails.testing.gorm.DataTest
-import grails.testing.gorm.DomainUnitTest
-import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
 @Mock(RoleRequest)
