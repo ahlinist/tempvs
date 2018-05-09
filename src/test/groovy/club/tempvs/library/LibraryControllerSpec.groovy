@@ -7,6 +7,7 @@ import club.tempvs.item.SourceType
 import club.tempvs.periodization.Period
 import club.tempvs.user.Role
 import club.tempvs.user.User
+import club.tempvs.user.UserRole
 import club.tempvs.user.UserService
 import grails.gsp.PageRenderer
 import grails.testing.gorm.DataTest
@@ -23,6 +24,7 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
     def role = Mock Role
     def source = Mock Source
     def period = Period.OTHER
+    def userRole = Mock UserRole
     def roleRequest = Mock RoleRequest
 
     def userService = Mock UserService
@@ -41,6 +43,7 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
         controller.groovyPageRenderer = groovyPageRenderer
 
         GroovySpy(Role, global:true)
+        GroovySpy(RoleRequest, global:true)
     }
 
     def cleanup() {
@@ -117,5 +120,34 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
 
         expect:
         controller.admin() == [roleRequests: []]
+    }
+
+    void "Test approveRoleRequest()"() {
+        given:
+        params.id = 1L
+        request.method = POST_METHOD
+
+        when:
+        controller.approveRoleRequest()
+
+        then:
+        1 * libraryService.getRoleRequest(1L) >> roleRequest
+        1 * libraryService.approveRoleRequest(roleRequest) >> userRole
+        1 * userRole.hasErrors() >> Boolean.FALSE
+        0 * _
+    }
+
+    void "Test rejectRoleRequest()"() {
+        given:
+        params.id = 1L
+        request.method = DELETE_METHOD
+
+        when:
+        controller.rejectRoleRequest()
+
+        then:
+        1 * libraryService.loadRoleRequest(1L) >> roleRequest
+        1 * libraryService.rejectRoleRequest(roleRequest)
+        0 * _
     }
 }

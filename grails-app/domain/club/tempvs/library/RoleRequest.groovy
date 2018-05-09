@@ -3,6 +3,7 @@ package club.tempvs.library
 import club.tempvs.domain.BasePersistent
 import club.tempvs.user.Role
 import club.tempvs.user.User
+import club.tempvs.user.UserRole
 import grails.compiler.GrailsCompileStatic
 
 /**
@@ -17,6 +18,10 @@ class RoleRequest implements BasePersistent {
     RoleRequest(User user, Role role) {
         this.user = user
         this.role = role
+    }
+
+    UserRole confirm() {
+        UserRole.create(user, role)
     }
 
     static constraints = {

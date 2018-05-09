@@ -2,6 +2,7 @@ package club.tempvs.library
 
 import club.tempvs.user.Role
 import club.tempvs.user.User
+import club.tempvs.user.UserRole
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import spock.lang.Specification
@@ -15,6 +16,7 @@ class LibraryServiceSpec extends Specification {
     }
 
     def role = Mock Role
+    def userRole = Mock UserRole
     def roleRequest = Mock RoleRequest
 
     def setup() {
@@ -35,6 +37,29 @@ class LibraryServiceSpec extends Specification {
 
         then:
         1 * RoleRequest.findByUserAndRole(user, role) >> roleRequest
+        1 * roleRequest.delete()
+        0 * _
+    }
+
+    void "Test approveRoleRequest()"() {
+        when:
+        def result = service.approveRoleRequest(roleRequest)
+
+        then:
+        1 * roleRequest.confirm() >> userRole
+        1 * userRole.save() >> userRole
+        1 * roleRequest.delete()
+        0 * _
+
+        and:
+        result == userRole
+    }
+
+    void "Test rejectRoleRequest()"() {
+        when:
+        service.rejectRoleRequest(roleRequest)
+
+        then:
         1 * roleRequest.delete()
         0 * _
     }

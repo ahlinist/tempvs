@@ -24,7 +24,8 @@
             <tbody>
               <g:each in="${roleRequests}" var="roleRequest">
                 <g:set var="userProfile" value="${roleRequest.user.userProfile}"/>
-                <tr>
+                <g:set var="roleRequestId" value="${roleRequest.id}"/>
+                <tr id="roleRequest-${roleRequestId}">
                   <td>
                     <g:link class="btn btn-default" controller="profile" action="user" id="${userProfile.id}">
                       ${userProfile}
@@ -34,8 +35,26 @@
                     <g:message code="library.role.${roleRequest.role.authority}"/>
                   </td>
                   <td>
-                    <span class="btn btn-default glyphicon glyphicon-ok" style="color: green; border-radius: 150px !important;"></span>
-                    <span class="btn btn-default glyphicon glyphicon-remove" style="color: red; border-radius: 150px !important;"></span>
+                    <g:render template="/common/templates/modalButton"
+                        model="${[id: 'roleRequestId' + roleRequestId, size: 'modal-sm', icon: 'glyphicon glyphicon-ok', styles: 'color: green; border-radius: 150px !important;']}">
+                      <g:message code='library.roleRequest.approve.text'/>
+                      <br/>
+                      <g:render template="/ajax/templates/ajaxLink"
+                          model="${[controller: 'library', action: 'approveRoleRequest', id: roleRequestId, method: 'POST', selector: 'tr#roleRequest-' + roleRequestId, classes: 'btn btn-default']}">
+                        <g:message code="yes"/>
+                      </g:render>
+                      <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                    </g:render>
+                    <g:render template="/common/templates/modalButton"
+                        model="${[id: 'roleRequestId' + roleRequestId, size: 'modal-sm', icon: 'glyphicon glyphicon-remove', styles: 'color: red; border-radius: 150px !important;']}">
+                      <g:message code='library.roleRequest.reject.text'/>
+                      <br/>
+                      <g:render template="/ajax/templates/ajaxLink"
+                          model="${[controller: 'library', action: 'rejectRoleRequest', id: roleRequestId, method: 'DELETE', selector: 'tr#roleRequest-' + roleRequestId, classes: 'btn btn-default']}">
+                        <g:message code="yes"/>
+                      </g:render>
+                      <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                    </g:render>
                   </td>
                 </tr>
               </g:each>

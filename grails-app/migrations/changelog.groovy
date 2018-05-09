@@ -55,4 +55,5 @@ databaseChangeLog = {
     //updates
     include file: 'updates/make-role-basepersistent.groovy'
     include file: 'updates/add-rolerequest-constraints.groovy'
+    include file: 'updates/make-userrole-basepersistent.groovy'
 }

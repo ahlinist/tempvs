@@ -8,10 +8,10 @@ import club.tempvs.item.SourceType
 import club.tempvs.periodization.Period
 import club.tempvs.user.Role
 import club.tempvs.user.User
+import club.tempvs.user.UserRole
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
-import grails.gorm.DetachedCriteria
 import grails.gsp.PageRenderer
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.annotation.Secured
@@ -20,6 +20,7 @@ import org.springframework.security.access.annotation.Secured
 @Secured('isAuthenticated()')
 class LibraryController {
 
+    private static final String NO_ACTION = 'none'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String OPERATION_NOT_SUPPORTED = 'library.wrong.role.message'
 
@@ -29,6 +30,8 @@ class LibraryController {
             period: 'GET',
             requestRole: 'POST',
             cancelRoleRequest: 'DELETE',
+            approveRoleRequest: 'POST',
+            rejectRoleRequest: 'DELETE',
     ]
 
     UserService userService
@@ -76,7 +79,7 @@ class LibraryController {
     Map admin() {
         List<RoleRequest> roleRequests = RoleRequest.createCriteria().list {
             role {
-                'in'("authority", LibraryRole.ROLE_CONTRIBUTOR*.toString())
+                'in'("authority", LibraryRole.values()*.toString())
             }
         } as List<RoleRequest>
 
@@ -117,5 +120,29 @@ class LibraryController {
         Map model = [contributorRequested: Boolean.FALSE, scribeRequested: Boolean.FALSE]
         String template = groovyPageRenderer.render(template: '/library/templates/welcome', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    @Secured('ROLE_ARCHIVARIUS')
+    def approveRoleRequest(Long id) {
+        RoleRequest roleRequest = libraryService.getRoleRequest id
+
+        if (!roleRequest) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        UserRole userRole = libraryService.approveRoleRequest(roleRequest)
+
+        if (userRole.hasErrors()) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        return render([action: REPLACE_ACTION, template: ''] as JSON)
+    }
+
+    @Secured('ROLE_ARCHIVARIUS')
+    def rejectRoleRequest(Long id) {
+        RoleRequest roleRequest = libraryService.loadRoleRequest id
+        libraryService.rejectRoleRequest(roleRequest)
+        return render([action: REPLACE_ACTION, template: ''] as JSON)
     }
 }

@@ -29,7 +29,7 @@ class BootStrap {
         Role contributor = Role.findByAuthority(ROLE_CONTRIBUTOR)
 
         if (!admin) {
-            new Role(authority: ROLE_ADMIN).save()
+            new Role(authority: ROLE_ADMIN).save(flush: true)
         }
 
         if (!archivarius) {
