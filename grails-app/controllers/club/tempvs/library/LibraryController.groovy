@@ -42,20 +42,33 @@ class LibraryController {
 
     @Secured('permitAll')
     Map index() {
+        String contributor = LibraryRole.ROLE_CONTRIBUTOR.toString()
+        String scribe = LibraryRole.ROLE_SCRIBE.toString()
         List<String> requestedAuthorities = []
+        List<String> obtainedAuthorities = []
 
         if (userService.loggedIn) {
+            Long currentUserId = userService.currentUserId
+
             List<RoleRequest> roleRequests = RoleRequest.withCriteria {
-                eq("user.id", userService.currentUserId)
+                eq("user.id", currentUserId)
             } as List<RoleRequest>
 
             requestedAuthorities = roleRequests.role.authority
+
+            List<UserRole> obtainedUserRoles = UserRole.withCriteria {
+                eq("user.id", currentUserId)
+            } as List<UserRole>
+
+            obtainedAuthorities = obtainedUserRoles.role.authority
         }
 
         [
                 periods: Period.values(),
-                contributorRequested: requestedAuthorities.contains(LibraryRole.ROLE_CONTRIBUTOR.toString()),
-                scribeRequested: requestedAuthorities.contains(LibraryRole.ROLE_SCRIBE.toString()),
+                contributorRequested: requestedAuthorities.contains(contributor),
+                contributorObtained: obtainedAuthorities.contains(contributor),
+                scribeRequested: requestedAuthorities.contains(scribe),
+                scribeObtained: obtainedAuthorities.contains(scribe),
         ]
     }
 

@@ -63,7 +63,14 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
         and:
         !response.redirectedUrl
         !controller.modelAndView
-        result == [periods: Period.values(), contributorRequested: Boolean.FALSE, scribeRequested: Boolean.FALSE]
+
+        result == [
+                periods: Period.values(),
+                contributorRequested: Boolean.FALSE,
+                contributorObtained: Boolean.FALSE,
+                scribeRequested: Boolean.FALSE,
+                scribeObtained: Boolean.FALSE,
+        ]
     }
 
     void "Test period()"() {
