@@ -182,11 +182,8 @@ class ItemController {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE))
         }
 
-        ItemGroup itemGroup = item.itemGroup
         itemService.deleteItem item
-        Map model = [items: itemGroup.items, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/item/templates/itemList', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: item.itemGroup.id))
     }
 
     def deleteGroup(Long id) {
