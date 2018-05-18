@@ -12,11 +12,27 @@
         <g:set var="itemGroupId" value="${itemGroup.id}"/>
         <div class="row">
           <div class="row">
-            <div class="ajax-form">
+            <div class="ajax-form col-sm-6">
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', action: 'editItemGroupField', name: 'name', value: itemGroup.name, objectId: itemGroupId, label: 'item.group.name.label', editAllowed: editAllowed, mandatory: true]}"/>
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', action: 'editItemGroupField', name: 'description', value: itemGroup.description, objectId: itemGroupId, label: 'item.group.description.label', editAllowed: editAllowed]}"/>
+            </div>
+            <div class="col-sm-6">
+              <g:if test="${editAllowed}">
+                <div class="pull-right">
+                  <g:render template="/common/templates/modalButton"
+                      model="${[id: 'deleteGroup-' + itemGroupId, message: 'item.group.delete.button', size: 'modal-sm']}">
+                    <g:message code='item.group.deleteConfirmation.text' args="${[itemGroup.name]}"/>
+                    <br/>
+                    <g:render template="/ajax/templates/ajaxLink"
+                        model="${[controller: 'item', action: 'deleteGroup', id: itemGroupId, method: 'DELETE', classes: 'btn btn-default']}">
+                      <g:message code="yes"/>
+                    </g:render>
+                    <button class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                  </g:render>
+                </div>
+              </g:if>
             </div>
           </div>
           <div class="row">

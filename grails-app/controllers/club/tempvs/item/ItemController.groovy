@@ -196,11 +196,8 @@ class ItemController {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE))
         }
 
-        User user = itemGroup.user
         itemService.deleteGroup itemGroup
-        Map model = [itemGroups: user.itemGroups, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/item/templates/groupList', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'stash'))
     }
 
     def addImages(ImageUploadCommand command) {

@@ -31,6 +31,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     private static final String FIELD_NAME = 'fieldName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
+    private static final String REDIRECT_ACTION = 'redirect'
     private static final String ITEM_GROUP_URI = '/item/group'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
@@ -382,14 +383,10 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getGroup(LONG_ONE) >> itemGroup
-        1 * itemGroup.user >> user
         1 * itemService.deleteGroup(itemGroup)
-        1 * user.itemGroups >> [itemGroup]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 
     void "Test addImages()"() {

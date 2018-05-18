@@ -73,7 +73,14 @@ var ajaxHandler = {
                     actions[response.action](element, response, selector);
                 },
                 error: function(jqXHR, status) {
-                    var message = jqXHR.responseJSON.error || "Something went wrong :(";
+                    var message;
+
+                    if (jqXHR.responseJSON) {
+                        message = jqXHR.responseJSON.error
+                    } else {
+                        message = "Something went wrong :(";
+                    }
+
                     complete(submitButton);
                     actions.formMessage(element, {success: false, message: message});
                 }
