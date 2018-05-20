@@ -12,7 +12,7 @@
           <div class="col-sm-3">
             ${profile}
             <g:render template="/profile/templates/avatar"/>
-            <div>
+            <div class="row">
               <g:link class="btn btn-default disableable col-sm-12" controller="item" action="stash" id="${user.id}">
                 <span class="pull-left">
                   <g:message code="item.stash.button"/>&nbsp;
