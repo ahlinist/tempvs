@@ -25,6 +25,16 @@
         <div class="col-sm-3">
           ${profile}
           <g:render template="/profile/templates/avatar"/>
+          <div>
+            <g:link class="btn btn-default disableable col-sm-12" controller="item" action="stash">
+              <span class="pull-left">
+                <g:message code="item.stash.button"/>&nbsp;
+              </span>
+              <span class="pull-right">
+                <span class="glyphicon glyphicon-tent text-right"></span>
+              </span>
+            </g:link>
+          </div>
           <g:render template="/profile/templates/followButton"/>
         </div>
         <div class="col-sm-5 ajax-form">

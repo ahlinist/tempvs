@@ -60,11 +60,6 @@
             </span>
           </g:link>
         </span>
-        <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">
-          <g:link class="btn btn-secondary disableable" controller="item" action="stash">
-            <span class="glyphicon glyphicon-tent"></span>
-          </g:link>
-        </span>
         <span>
           <span id="profile-search-dropdown" class="dropdown" style="margin:10px;">
             <input style="width: 300px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" id="profile-search-box" name="query"/>
