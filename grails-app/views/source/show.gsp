@@ -24,18 +24,16 @@
           <div class="col-sm-4">
             <g:if test="${isArchivarius}">
               <div class="pull-right">
-                <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.delete.button')}">
-                  <g:render template="/common/templates/modalButton"
-                      model="${[id: 'deleteSource' + sourceId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
-                    <g:message code='source.deleteConfirmation.text' args="${[source.name]}"/>
-                    <br/>
-                    <g:render template="/ajax/templates/ajaxLink"
-                        model="${[controller: 'source', action: 'deleteSource', id: sourceId, method: 'DELETE', classes: 'btn btn-default']}">
-                      <g:message code="yes"/>
-                    </g:render>
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'deleteSource' + sourceId, size: 'modal-sm', message: 'source.delete.button']}">
+                  <g:message code='source.deleteConfirmation.text' args="${[source.name]}"/>
+                  <br/>
+                  <g:render template="/ajax/templates/ajaxLink"
+                      model="${[controller: 'source', action: 'deleteSource', id: sourceId, method: 'DELETE', classes: 'btn btn-default']}">
+                    <g:message code="yes"/>
                   </g:render>
-                </span>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                </g:render>
               </div>
             </g:if>
           </div>
