@@ -21,6 +21,7 @@ class ClubProfile extends Profile {
     static mapping = {
         avatar cascade: 'all-delete-orphan'
         passports cascade: 'all-delete-orphan'
+        user lazy: false
     }
 
     static constraints = {

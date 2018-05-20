@@ -55,5 +55,6 @@ class User implements BasePersistent {
     static mapping = {
         table '`user`'
         password column: '`password`'
+        userProfile lazy: false
     }
 }

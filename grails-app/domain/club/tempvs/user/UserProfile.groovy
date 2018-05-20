@@ -12,6 +12,7 @@ class UserProfile extends Profile {
 
     static mapping = {
         avatar cascade: 'all-delete-orphan'
+        user lazy: false
     }
 
     static constraints = {
