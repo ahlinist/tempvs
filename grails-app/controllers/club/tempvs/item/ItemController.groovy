@@ -140,7 +140,14 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, objectId: objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        Map model = [
+                images: item.images,
+                objectId: objectId,
+                controllerName: 'item',
+                addingAllowed: Boolean.TRUE,
+                deletingAllowed: Boolean.TRUE,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -175,11 +182,8 @@ class ItemController {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_ITEM_FAILED_MESSAGE))
         }
 
-        ItemGroup itemGroup = item.itemGroup
         itemService.deleteItem item
-        Map model = [items: itemGroup.items, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/item/templates/itemList', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: item.itemGroup.id))
     }
 
     def deleteGroup(Long id) {
@@ -189,11 +193,8 @@ class ItemController {
             return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE))
         }
 
-        User user = itemGroup.user
         itemService.deleteGroup itemGroup
-        Map model = [itemGroups: user.itemGroups, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/item/templates/groupList', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'stash'))
     }
 
     def addImages(ImageUploadCommand command) {
@@ -221,7 +222,14 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item))
         }
 
-        Map model = [images: item.images, objectId: params.objectId, controllerName: 'item', editAllowed: Boolean.TRUE]
+        Map model = [
+                images: item.images,
+                objectId: params.objectId,
+                controllerName: 'item',
+                addingAllowed: Boolean.TRUE,
+                deletingAllowed: Boolean.TRUE,
+        ]
+
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

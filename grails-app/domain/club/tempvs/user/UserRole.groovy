@@ -1,5 +1,6 @@
 package club.tempvs.user
 
+import club.tempvs.domain.BasePersistent
 import grails.gorm.DetachedCriteria
 import groovy.transform.ToString
 
@@ -8,7 +9,7 @@ import grails.compiler.GrailsCompileStatic
 
 @GrailsCompileStatic
 @ToString(cache=true, includeNames=true, includePackage=false)
-class UserRole implements Serializable {
+class UserRole implements BasePersistent {
 
 	private static final long serialVersionUID = 1
 

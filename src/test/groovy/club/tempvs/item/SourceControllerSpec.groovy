@@ -14,6 +14,7 @@ import club.tempvs.user.UserProfile
 import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import grails.plugin.springsecurity.SecurityTagLib
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.grails.plugins.testing.GrailsMockMultipartFile
@@ -54,6 +55,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def sourceService = Mock SourceService
     def profileService = Mock ProfileService
     def commentService = Mock CommentService
+    def securityTagLib = Mock SecurityTagLib
     def groovyPageRenderer = Mock PageRenderer
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
@@ -65,6 +67,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
+        controller.securityTagLib = securityTagLib
     }
 
     def cleanup() {
@@ -205,6 +208,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
+        2 * securityTagLib.ifAnyGranted(_ as Map) >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -241,6 +245,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
+        2 * securityTagLib.ifAnyGranted(_ as Map) >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

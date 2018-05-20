@@ -10,6 +10,7 @@
           <g:render template="/library/templates/navBar"/>
         </div>
       </div>
+      <g:render template="/library/templates/welcome"/>
       <h1><g:message code="periodization.list.title"/></h1>
       <div class="row">
         <div class="col-sm-2"></div>

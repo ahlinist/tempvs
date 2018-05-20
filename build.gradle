@@ -44,6 +44,7 @@ dependencies {
     console "org.grails:grails-console"
     compile 'org.grails.plugins:converters:3.3.1'
     compile "com.bertramlabs.plugins:asset-pipeline-grails:2.14.8"
+    testCompile "org.grails:grails-test-mixins:3.3.0.RC1"
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-web-testing-support"
     testCompile "org.grails.plugins:geb:1.1.2"

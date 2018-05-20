@@ -22,7 +22,8 @@
           <g:render template="/communication/templates/comments" model="${[controllerName: 'passport', object: passport, objectId: passportId]}"/>
         </div>
         <div class="col-sm-6">
-          <g:render template="/image/templates/modalCarousel" model="${[objectId: passportId]}"/>
+          <g:render template="/image/templates/modalCarousel"
+              model="${[objectId: passportId, addingAllowed: editAllowed, deletingAllowed: editAllowed]}"/>
         </div>
       </div>
     </g:if>

@@ -13,6 +13,10 @@ grails:
             events: false
     plugin:
         springsecurity:
+            roleHierarchy:
+                ROLE_ADMIN > ROLE_ARCHIVARIUS
+                ROLE_ARCHIVARIUS > ROLE_SCRIBE
+                ROLE_SCRIBE > ROLE_CONTRIBUTOR
             rememberMe:
                 cookieName: tempvs_remember_me
             userLookup:

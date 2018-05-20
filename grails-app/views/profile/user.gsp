@@ -12,6 +12,7 @@
           <div class="col-sm-3">
             ${profile}
             <g:render template="/profile/templates/avatar"/>
+            <g:render template="/profile/templates/followButton"/>
           </div>
           <div class="col-sm-6 ajax-form">
             <g:render template="/ajax/templates/ajaxSmartForm"

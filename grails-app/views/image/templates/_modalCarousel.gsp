@@ -14,7 +14,7 @@
       <div class="modal-dialog" style="max-width: 90vw;">
         <div class="modal-content">
           <div class="modal-header" style="z-index:90;  position:absolute; right:0px; padding: 0px; display: table-row;">
-            <g:if test="${editAllowed}">
+            <g:if test="${deletingAllowed}">
               <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'image.delete.tooltip')}">
                 <g:render template="/common/templates/modalButton"
                     model="${[id: 'deleteImage', size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
@@ -65,7 +65,7 @@
       </div>
     </div>
   </g:if>
-  <g:if test="${editAllowed}">
+  <g:if test="${addingAllowed}">
     <div class="panel-group">
       <div class="panel panel-default">
         <div class="panel-heading">

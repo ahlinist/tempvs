@@ -24,6 +24,10 @@ class UserService {
         User.get id
     }
 
+    Boolean isLoggedIn() {
+        springSecurityService.loggedIn
+    }
+
     User getCurrentUser() {
         springSecurityService.currentUser as User
     }

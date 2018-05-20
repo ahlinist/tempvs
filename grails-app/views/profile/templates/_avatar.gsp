@@ -33,5 +33,4 @@
       </g:if>
     </sec:ifLoggedIn>
   </g:render>
-  <g:render template="/profile/templates/followButton"/>
 </div>
