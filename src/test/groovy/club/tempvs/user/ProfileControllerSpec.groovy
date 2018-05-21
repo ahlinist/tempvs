@@ -123,6 +123,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.currentProfile >> userProfile
         1 * profileService.getProfile(UserProfile.class, ONE) >> userProfile
         1 * userProfile.user >> user
+        1 * user.clubProfiles >> [clubProfile]
+        2 * clubProfile.active >> Boolean.TRUE
         1 * userProfile.identifier >> IDENTIFIER
         1 * followingService.mayBeFollowed(userProfile, userProfile) >> Boolean.TRUE
         1 * followingService.getFollowing(userProfile, userProfile) >> following
@@ -130,7 +132,17 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
 
         and:
-        result == [profile: userProfile, user: user, id: IDENTIFIER, editAllowed: Boolean.TRUE, mayBeFollowed: Boolean.TRUE, isFollowed: Boolean.TRUE]
+        result == [
+                profile: userProfile,
+                user: user,
+                id: IDENTIFIER,
+                editAllowed: Boolean.TRUE,
+                mayBeFollowed: Boolean.TRUE,
+                isFollowed: Boolean.TRUE,
+                activeProfiles: [clubProfile],
+                inactiveProfiles: [],
+                periods: Period.values(),
+        ]
     }
 
     void "Test club() for non-existent profile"() {
@@ -314,24 +326,20 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         given:
         params.id = ONE
         request.method = POST_METHOD
+        controller.request.addHeader('referer', REFERER)
 
         when:
         controller.deactivateProfile()
 
         then:
         1 * profileService.getProfile(ClubProfile.class, ONE) >> clubProfile
-        1 * clubProfile.user >> user
-        1 * user.clubProfiles >> [clubProfile]
-        1 * profileService.deactivateProfile(clubProfile) >> clubProfile
-        1 * clubProfile.hasErrors() >> Boolean.FALSE
         1 * profileService.currentProfile >> userProfile
         1 * userProfile.equals(clubProfile) >> Boolean.FALSE
-        2 * clubProfile.active >> Boolean.TRUE
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * profileService.deactivateProfile(clubProfile) >> clubProfile
+        1 * clubProfile.hasErrors() >> Boolean.FALSE
+        1 * ajaxResponseHelper.renderRedirect(REFERER) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 
     void "Test activateProfile()"() {
@@ -390,27 +398,5 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * userProfile.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
-    }
-
-    void "Test list()"() {
-        given:
-        request.method = GET_METHOD
-
-        when:
-        def result = controller.list()
-
-        then:
-        1 * userService.currentUser >> user
-        1 * user.userProfile >> userProfile
-        1 * user.clubProfiles >> [clubProfile]
-        2 * clubProfile.active >> Boolean.TRUE
-        0 * _
-
-        result == [
-                userProfile: userProfile,
-                activeProfiles: [clubProfile],
-                inactiveProfiles: [],
-                periods: Period.values(),
-        ]
     }
 }

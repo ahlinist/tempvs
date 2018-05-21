@@ -36,7 +36,6 @@ class ProfileController {
             userProfile: 'GET',
             clubProfile: 'GET',
             switchProfile: 'GET',
-            list: 'GET',
             createClubProfile: 'POST',
             editProfileField: 'POST',
             editProfileEmail: 'POST',
@@ -86,13 +85,19 @@ class ProfileController {
             return [id: id, notFoundMessage: NO_SUCH_PROFILE]
         }
 
+        User user = userProfile.user
+        List<ClubProfile> clubProfiles = user.clubProfiles
+
         [
                 profile: userProfile,
-                user: userProfile.user,
+                user: user,
                 id: userProfile.identifier,
                 editAllowed: currentProfile == userProfile,
                 mayBeFollowed: followingService.mayBeFollowed(currentProfile, userProfile),
                 isFollowed: followingService.getFollowing(currentProfile, userProfile) as Boolean,
+                activeProfiles: clubProfiles.findAll { it.active },
+                inactiveProfiles: clubProfiles.findAll { !it.active },
+                periods: Period.values(),
         ]
     }
 
@@ -219,18 +224,7 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
-        User user = clubProfile.user
-        List<ClubProfile> clubProfiles = user.clubProfiles
-
-        Map model = [
-                activeProfiles: clubProfiles.findAll {it.active},
-                inactiveProfiles: clubProfiles.findAll {!it.active},
-                periods: Period.values(),
-                editAllowed: Boolean.TRUE,
-        ]
-
-        String template = groovyPageRenderer.render(template: '/profile/templates/clubProfileList', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render ajaxResponseHelper.renderRedirect(request.getHeader(REFERER))
     }
 
     def activateProfile(String id) {
@@ -271,18 +265,6 @@ class ProfileController {
         Map model = [profile: profile]
         String template = groovyPageRenderer.render(template: '/profile/templates/avatar', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    def list() {
-        User user = userService.currentUser
-        List<ClubProfile> clubProfiles = user.clubProfiles
-
-        [
-                userProfile: user.userProfile,
-                activeProfiles: clubProfiles.findAll { it.active },
-                inactiveProfiles: clubProfiles.findAll { !it.active },
-                periods: Period.values(),
-        ]
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {

@@ -44,11 +44,6 @@
             </g:each>
           </ul>
         </span>
-        <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.list.tooltip')}">
-          <g:link class="btn btn-secondary disableable" controller="profile" action="list">
-            <span class="glyphicon glyphicon-th-list"></span>
-          </g:link>
-        </span>
         <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
           <g:link class="btn btn-secondary disableable" controller="following" action="show">
             <span class="fa fa-users">

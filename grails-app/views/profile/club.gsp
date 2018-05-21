@@ -22,38 +22,54 @@
         </div>
       </g:if>
       <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
           ${profile}
           <g:render template="/profile/templates/avatar"/>
-          <div class="row">
-            <g:link class="btn btn-default disableable col-sm-12" controller="item" action="stash" id="${user.id}">
-              <span class="pull-left">
-                <g:message code="item.stash.button"/>&nbsp;
-              </span>
-              <span class="pull-right">
-                <span class="glyphicon glyphicon-tent text-right"></span>
-              </span>
-            </g:link>
-          </div>
+          <g:if test="${editAllowed && active}">
+            <g:render template="/common/templates/modalButton"
+                model="${[id: 'deactivateProfile' + profile.id, size: 'modal-sm', message: 'profile.club.deactivate.button']}">
+              <g:message code='profile.deactivateConfirmation.text' args="${[profile]}"/>
+              <br/>
+              <g:render template="/ajax/templates/ajaxLink"
+                  model="${[controller: 'profile', action: 'deactivateProfile', id: profile.id, method: 'POST', classes: 'btn btn-default']}">
+                <g:message code="yes"/>
+              </g:render>
+              <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+            </g:render>
+          </g:if>
           <g:render template="/profile/templates/followButton"/>
         </div>
-        <div class="col-sm-5 ajax-form">
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', action: 'editProfileField', name: 'lastName', value: profile.lastName, label: 'profile.lastName.label']}"/>
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', action: 'editProfileField', name: 'nickName', value: profile.nickName, label: 'profile.nickName.label']}"/>
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', action: 'editProfileField', name: 'profileId', value: profile.profileId, label: 'profile.profileId.label']}"/>
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', action: 'editProfileField', name: 'profileEmail', value: profile.profileEmail, label: 'profile.profileEmail.label']}"/>
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', action: 'editProfileField', name: 'location', value: profile.location, label: 'profile.location.label']}"/>
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', action: 'editProfileField', name: 'clubName', value: profile.clubName, label: 'profile.clubName.label']}"/>
-          <g:render template="/ajax/templates/ajaxSmartForm"
-              model="${[type: 'text', name: 'period', value: profile.period?.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
+        <div class="col-sm-4">
+          <div class="ajax-form">
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editProfileField', name: 'lastName', value: profile.lastName, label: 'profile.lastName.label']}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editProfileField', name: 'nickName', value: profile.nickName, label: 'profile.nickName.label']}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editProfileField', name: 'profileId', value: profile.profileId, label: 'profile.profileId.label']}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editProfileField', name: 'profileEmail', value: profile.profileEmail, label: 'profile.profileEmail.label']}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editProfileField', name: 'location', value: profile.location, label: 'profile.location.label']}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', action: 'editProfileField', name: 'clubName', value: profile.clubName, label: 'profile.clubName.label']}"/>
+            <g:render template="/ajax/templates/ajaxSmartForm"
+                model="${[type: 'text', name: 'period', value: profile.period?.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
+          </div>
+          <div class="well well-sm">
+            <div class="row">
+              <div class="col-sm-5">
+                <b><g:message code="profile.user.link"/></b>
+              </div>
+              <div class="col-sm-7">
+                <g:link class="btn btn-default col-sm-12" controller="profile" action="user" id="${user.userProfile.id}">
+                  ${user.userProfile}
+                </g:link>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="col-sm-4">
           <b><g:message code="passport.list.label"/></b>
