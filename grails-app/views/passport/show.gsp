@@ -18,6 +18,22 @@
             <g:render template="/ajax/templates/ajaxSmartForm"
                 model="${[type: 'text', action: 'editPassportField', name: 'description', value: passport.description, objectId: passportId, label: 'passport.description.label']}"/>
           </div>
+          <g:if test="${editAllowed}">
+            <div class="row">
+              <div class="pull-right">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'deletePassport' + passportId, size: 'modal-sm', message: 'passport.delete.button']}">
+                  <g:message code='passport.deleteConfirmation.text' args="${[passport.name]}"/>
+                  <br/>
+                  <g:render template="/ajax/templates/ajaxLink"
+                      model="${[controller: 'passport', action: 'deletePassport', id: passportId, method: 'DELETE', classes: 'btn btn-default']}">
+                    <g:message code="yes"/>
+                  </g:render>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                </g:render>
+              </div>
+            </div>
+          </g:if>
           <g:render template="/passport/templates/itemSection"/>
           <g:render template="/communication/templates/comments" model="${[controllerName: 'passport', object: passport, objectId: passportId]}"/>
         </div>

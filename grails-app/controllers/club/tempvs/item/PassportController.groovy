@@ -157,9 +157,7 @@ class PassportController {
         Passport passport = passportService.getPassport id
         ClubProfile clubProfile = passport.clubProfile
         passportService.deletePassport(passport, clubProfile)
-        Map model = [passports: clubProfile.passports, editAllowed: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/profile/templates/passportList', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: clubProfile.id))
     }
 
     def addComment(Long objectId, String text) {

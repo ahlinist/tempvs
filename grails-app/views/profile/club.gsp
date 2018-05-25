@@ -70,11 +70,23 @@
         </div>
         <div class="col-sm-4">
           <b><g:message code="passport.list.label"/></b>
-          <g:render template="/profile/templates/passportList"/>
+          <g:if test="${passports}">
+            <ul>
+              <g:each var="passport" in="${passports}">
+                <g:set var="passportId" value="${passport.id}"/>
+                <g:set var="passportName" value="${passport.name}"/>
+                <li class="row" id="passport-${passportId}">
+                  <g:link class="btn btn-default col-sm-12" controller="passport" action="show" id="${passportId}"  data-toggle="tooltip" data-placement="bottom" title="${passport.description}">
+                    ${passportName}
+                  </g:link>
+                </li>
+              </g:each>
+            </ul>
+          </g:if>
           <g:if test="${editAllowed && active}">
             <div>
               <g:render template="/common/templates/modalButton"
-                  model="${[id: 'createPassport', icon: 'glyphicon glyphicon-plus']}">
+                  model="${[id: 'createPassport', message: 'passport.create.button']}">
                 <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'passport', action: 'createPassport']}">
                   <g:render template="/image/templates/imageUploader"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'passport.name.label', mandatory: true]}"/>

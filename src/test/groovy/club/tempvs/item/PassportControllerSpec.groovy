@@ -206,12 +206,10 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * passportService.getPassport(LONG_ONE) >> passport
         1 * passport.clubProfile >> clubProfile
         1 * passportService.deletePassport(passport, clubProfile)
-        1 * clubProfile.passports >> [passport]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * clubProfile.id >> LONG_ONE
+        1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 
     void "Test addComment()"() {
