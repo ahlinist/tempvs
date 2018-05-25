@@ -24,19 +24,19 @@
             </div>
             <g:render template="/profile/templates/followButton"/>
           </div>
-          <div class="col-sm-4 ajax-form">
-            <g:render template="/ajax/templates/ajaxSmartForm"
-                model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
-            <g:render template="/ajax/templates/ajaxSmartForm"
-                model="${[type: 'text', action: 'editProfileField', name: 'lastName', value: profile.lastName, label: 'profile.lastName.label', mandatory: true]}"/>
-            <g:render template="/ajax/templates/ajaxSmartForm"
-                model="${[type: 'text', action: 'editProfileField', name: 'profileId', value: profile.profileId, label: 'profile.profileId.label']}"/>
-            <g:render template="/ajax/templates/ajaxSmartForm"
-                model="${[type: 'text', action: 'editProfileEmail', name: 'profileEmail', value: profile.profileEmail, label: 'profile.profileEmail.label']}"/>
-            <g:render template="/ajax/templates/ajaxSmartForm"
-                model="${[type: 'text', action: 'editProfileField', name: 'location', value: profile.location, label: 'profile.location.label']}"/>
-          </div>
           <div class="col-sm-4">
+            <div class="ajax-form">
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editProfileField', name: 'lastName', value: profile.lastName, label: 'profile.lastName.label', mandatory: true]}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editProfileField', name: 'profileId', value: profile.profileId, label: 'profile.profileId.label']}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editProfileEmail', name: 'profileEmail', value: profile.profileEmail, label: 'profile.profileEmail.label']}"/>
+              <g:render template="/ajax/templates/ajaxSmartForm"
+                  model="${[type: 'text', action: 'editProfileField', name: 'location', value: profile.location, label: 'profile.location.label']}"/>
+            </div>
             <div id="club-profile-list">
               <g:if test="${activeProfiles || inactiveProfiles}">
                 <g:if test="${activeProfiles}">
@@ -75,7 +75,7 @@
               </g:else>
               <div>
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'createProfile', icon: 'fa fa-user-plus']}">
+                    model="${[id: 'createProfile', message: 'clubProfile.create.button']}">
                   <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'profile', action: 'createClubProfile']}">
                     <g:render template="/common/templates/formField" model="${[type: 'file', name: 'imageUploadBean.image', label: 'profile.avatar.label']}"/>
                     <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageUploadBean.imageInfo', label: 'profile.avatarInfo.label']}"/>
@@ -93,6 +93,9 @@
                 </g:render>
               </div>
             </div>
+          </div>
+          <div class="col-sm-4">
+
           </div>
         </div>
       </g:if>

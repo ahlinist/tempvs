@@ -58,17 +58,14 @@
             <g:render template="/ajax/templates/ajaxSmartForm"
                 model="${[type: 'text', name: 'period', value: profile.period?.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
           </div>
-          <div class="well well-sm">
-            <div class="row">
-              <div class="col-sm-5">
-                <b><g:message code="profile.user.link"/></b>
-              </div>
-              <div class="col-sm-7">
-                <g:link class="btn btn-default col-sm-12" controller="profile" action="user" id="${user.userProfile.id}">
-                  ${user.userProfile}
-                </g:link>
-              </div>
-            </div>
+          <div class="row">
+            <label>
+              <g:message code="profile.user.label"/>
+            </label>
+            <br/>
+            <g:link class="btn btn-default col-sm-12" controller="profile" action="user" id="${user.userProfile.id}">
+              ${user.userProfile}
+            </g:link>
           </div>
         </div>
         <div class="col-sm-4">
