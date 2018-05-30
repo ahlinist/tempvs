@@ -1,31 +1,40 @@
 package club.tempvs.user
 
-import grails.plugins.mail.MailService
+import club.tempvs.rest.RestCallService
+import club.tempvs.rest.RestResponse
+import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
+import grails.web.mapping.LinkGenerator
 import spock.lang.Specification
 
 class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyService>, DomainUnitTest<EmailVerification> {
 
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
-    private static String REGISTRATION_ACTION = 'registration'
+    private static final String REGISTRATION_ACTION = 'registration'
     private static final String VERIFICATION_CODE = 'verificationCode'
 
     def user = Mock User
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
-    def mailService = Mock MailService
     def userService = Mock UserService
+    def restResponse = Mock RestResponse
     def profileService = Mock ProfileService
+    def restCallService = Mock RestCallService
+    def groovyPageRenderer = Mock PageRenderer
+    def grailsLinkGenerator = Mock LinkGenerator
     def emailVerification = Mock EmailVerification
 
     def setup() {
         GroovySpy(EmailVerification, global: true)
 
-        service.mailService = mailService
+        service.restCallService = restCallService
         service.userService = userService
         service.profileService = profileService
+        service.groovyPageRenderer = groovyPageRenderer
+        service.grailsLinkGenerator = grailsLinkGenerator
     }
 
     def cleanup() {
@@ -64,11 +73,19 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
 
     void "Test sendEmailVerification()"() {
         when:
-        service.sendEmailVerification(emailVerification)
+        def result = service.sendEmailVerification(emailVerification)
 
         then:
-        1 * mailService.sendMail(_)
+        1 * grailsLinkGenerator.serverBaseURL >> "serverURL"
+        1 * groovyPageRenderer.render(_ as Map) >> [:]
+        1 * emailVerification.verificationCode
+        1 * emailVerification.action
+        1 * emailVerification.email
+        1 * restCallService.doPost(_ as String, _ as JSON, _ as Map) >> restResponse
         0 * _
+
+        and:
+        result == restResponse
     }
 
     void "Test isEmailUnique()"() {

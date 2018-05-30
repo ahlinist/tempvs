@@ -1,8 +1,12 @@
 package club.tempvs.user
 
+import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
-import grails.plugins.mail.MailService
+import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.gorm.transactions.Transactional
+import club.tempvs.rest.RestCallService
+import grails.web.mapping.LinkGenerator
 
 /**
  * A service that handles operations related to {@link EmailVerification}.
@@ -11,16 +15,22 @@ import grails.gorm.transactions.Transactional
 @GrailsCompileStatic
 class VerifyService {
 
-    private static String EMAIL_FIELD = 'email'
-    private static String EMAIL_ACTION = 'email'
-    private static String USER_PROFILE_ACTION = 'userProfile'
-    private static String CLUB_PROFILE_ACTION = 'clubProfile'
-    private static String REGISTRATION_ACTION = 'registration'
-    private static String EMAIL_USED_CODE = 'emailVerification.email.used.error'
+    private static final String EMAIL_FIELD = 'email'
+    private static final String EMAIL_ACTION = 'email'
+    private static final String USER_PROFILE_ACTION = 'userProfile'
+    private static final String CLUB_PROFILE_ACTION = 'clubProfile'
+    private static final String REGISTRATION_ACTION = 'registration'
+    private static final String EMAIL_USED_CODE = 'emailVerification.email.used.error'
+    private static final String EMAIL_SERVICE_URL = System.getenv('EMAIL_SERVICE_URL')
+    private static final String SEND_EMAIL_API_URI = '/api/send'
+    private static final String EMAIL_SECURITY_TOKEN = System.getenv('EMAIL_SECURITY_TOKEN')
 
     UserService userService
-    MailService mailService
     ProfileService profileService
+    RestCallService restCallService
+    PageRenderer groovyPageRenderer
+    LinkGenerator grailsLinkGenerator
+
 
     EmailVerification getVerification(String id) {
         EmailVerification.findByVerificationCode(id)
@@ -39,13 +49,15 @@ class VerifyService {
         emailVerification
     }
 
-    void sendEmailVerification(EmailVerification emailVerification) {
-        mailService.sendMail {
-            to emailVerification.email
-            from 'no-reply@tempvs.com'
-            subject 'Tempvs'
-            body(view: "/verify/emailTemplates/${emailVerification.action}", model: emailVerification.properties)
-        }
+    RestResponse sendEmailVerification(EmailVerification emailVerification) {
+        String serverUrl = grailsLinkGenerator.serverBaseURL
+        String verificationCode = emailVerification.verificationCode
+        String body = groovyPageRenderer.render(view: "/verify/emailTemplates/${emailVerification.action}",
+                model: [serverUrl: serverUrl, verificationCode: verificationCode])
+        JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
+        String emailServiceUrl = EMAIL_SERVICE_URL + SEND_EMAIL_API_URI
+        Map<String, String> headers = [token: EMAIL_SECURITY_TOKEN.encodeAsMD5() as String]
+        restCallService.doPost(emailServiceUrl, payload, headers)
     }
 
     Boolean isEmailUnique(String email, String action, Long instanceId) {

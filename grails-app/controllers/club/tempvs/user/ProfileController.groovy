@@ -6,6 +6,7 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.periodization.Period
+import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -29,6 +30,7 @@ class ProfileController {
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
     private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
+    private static final String EDIT_PROFILE_EMAIL_FAILED_MESSAGE = 'profileEmail.verification.failed.message'
 
     static allowedMethods = [
             index: 'GET',
@@ -182,28 +184,34 @@ class ProfileController {
         String email = params.fieldValue
         Profile profile = profileService.currentProfile
 
-        if (email) {
-            Map properties = [
-                    instanceId: profile.id,
-                    email: email,
-                    action: profile.class.simpleName.uncapitalize(),
-            ]
-
-            EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
-
-            if (!emailVerification.hasErrors()) {
-                verifyService.sendEmailVerification(emailVerification)
-            }
-
-            render ajaxResponseHelper.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_MESSAGE_SENT)
-        } else {
+        if (!email) {
             Profile persistedProfile = profileService.editProfileField(profile, PROFILE_EMAIL_FIELD, null)
 
             if (persistedProfile.hasErrors()) {
                 return render(ajaxResponseHelper.renderValidationResponse(persistedProfile))
             }
 
-            render([action: SUCCESS_ACTION] as JSON)
+            return render([action: SUCCESS_ACTION] as JSON)
+        }
+
+        Map properties = [
+                instanceId: profile.id,
+                email: email,
+                action: profile.class.simpleName.uncapitalize(),
+        ]
+
+        EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
+
+        if (emailVerification.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_FAILED_MESSAGE))
+        }
+
+        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
+
+        if (restResponse.statusCode == 200) {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.TRUE, EDIT_PROFILE_EMAIL_MESSAGE_SENT))
+        } else {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, EDIT_PROFILE_EMAIL_FAILED_MESSAGE))
         }
     }
 
