@@ -1,6 +1,7 @@
 package club.tempvs.auth
 
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.rest.RestResponse
 import club.tempvs.user.EmailVerification
 import club.tempvs.user.User
 import club.tempvs.user.UserService
@@ -74,14 +75,18 @@ class AuthController {
 
         Map properties = [action: REGISTRATION_ACTION, email: command.email]
         EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
-        String message = REGISTER_MESSAGE_NOT_SENT
 
-        if (!emailVerification.hasErrors()) {
-            verifyService.sendEmailVerification(emailVerification)
-            message = REGISTER_MESSAGE_SENT
+        if (emailVerification.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(emailVerification, REGISTER_MESSAGE_NOT_SENT))
         }
 
-        render ajaxResponseHelper.renderValidationResponse(emailVerification, message)
+        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
+
+        if (restResponse.statusCode == 200) {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.TRUE, REGISTER_MESSAGE_SENT))
+        } else {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, REGISTER_MESSAGE_NOT_SENT))
+        }
     }
 
     def logout() {

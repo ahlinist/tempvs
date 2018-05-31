@@ -14,9 +14,17 @@ class BootStrap {
     private static final String ADMIN_LAST_NAME = 'Admin'
     private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'adminPassword'
 
+    def restCallService
+
     def init = { servletContext ->
+        String emailServiceUrl = System.getenv("EMAIL_SERVICE_URL")
+
         createRoles()
         createAdminUser()
+
+        if (emailServiceUrl) {
+            restCallService.doGet(emailServiceUrl + "/api/ping")
+        }
     }
 
     def destroy = {

@@ -1,5 +1,6 @@
 package club.tempvs.auth
 
+import club.tempvs.rest.RestResponse
 import club.tempvs.user.EmailVerification
 import club.tempvs.user.User
 import club.tempvs.ajax.AjaxResponseHelper
@@ -32,6 +33,7 @@ class AuthControllerSpec extends Specification implements ControllerUnitTest<Aut
     def json = Mock JSON
     def userService = Mock UserService
     def loginCommand = Mock LoginCommand
+    def restResponse = Mock RestResponse
     def verifyService = Mock VerifyService
     def authentication = Mock Authentication
     def passwordEncoder = Mock PasswordEncoder
@@ -86,8 +88,9 @@ class AuthControllerSpec extends Specification implements ControllerUnitTest<Aut
         1 * requestRegistrationCommand.email >> EMAIL
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
-        1 * verifyService.sendEmailVerification(emailVerification)
-        1 * ajaxResponseHelper.renderValidationResponse(emailVerification, _ as String) >> json
+        1 * verifyService.sendEmailVerification(emailVerification) >> restResponse
+        1 * restResponse.statusCode >> 200
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, 'auth.register.sent.message') >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

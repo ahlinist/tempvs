@@ -1,6 +1,7 @@
 package club.tempvs.user
 
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
@@ -18,6 +19,7 @@ class UserController {
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
+    private static final String UPDATE_EMAIL_FAILED_MESSAGE = 'user.edit.email.verification.failed.message'
 
     static allowedMethods = [
             index: 'GET',
@@ -52,11 +54,17 @@ class UserController {
 
         EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
 
-        if (!emailVerification.hasErrors()) {
-            verifyService.sendEmailVerification(emailVerification)
+        if (emailVerification.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(emailVerification, UPDATE_EMAIL_FAILED_MESSAGE))
         }
 
-        render ajaxResponseHelper.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT)
+        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
+
+        if (restResponse.statusCode == 200) {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.TRUE, UPDATE_EMAIL_MESSAGE_SENT))
+        } else {
+            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, UPDATE_EMAIL_FAILED_MESSAGE))
+        }
     }
 
     def updatePassword(UserPasswordCommand command) {

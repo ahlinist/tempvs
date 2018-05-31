@@ -1,6 +1,7 @@
 package club.tempvs.user
 
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.rest.RestResponse
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.web.controllers.ControllerUnitTest
@@ -23,6 +24,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
     def userService = Mock UserService
+    def restResponse = Mock RestResponse
     def verifyService = Mock VerifyService
     def emailVerification = Mock EmailVerification
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -73,8 +75,9 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * userService.currentUserId >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
-        1 * verifyService.sendEmailVerification(emailVerification)
-        1 * ajaxResponseHelper.renderValidationResponse(emailVerification, UPDATE_EMAIL_MESSAGE_SENT) >> json
+        1 * verifyService.sendEmailVerification(emailVerification) >> restResponse
+        1 * restResponse.statusCode >> 200
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, 'user.edit.email.verification.sent.message') >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
