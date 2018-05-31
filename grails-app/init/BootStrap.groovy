@@ -17,11 +17,14 @@ class BootStrap {
     def restCallService
 
     def init = { servletContext ->
-        String emailServicePingUrl = System.getenv("EMAIL_SERVICE_URL") + "/api/ping"
+        String emailServiceUrl = System.getenv("EMAIL_SERVICE_URL")
 
         createRoles()
         createAdminUser()
-        restCallService.doGet(emailServicePingUrl)
+
+        if (emailServiceUrl) {
+            restCallService.doGet(emailServiceUrl + "/api/ping")
+        }
     }
 
     def destroy = {
