@@ -23,39 +23,41 @@
   <body class="container">
     <header class="row">
       <sec:ifLoggedIn>
-        <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.tooltip')}">
-          <g:link class="btn btn-secondary disableable" controller="profile" action=" ">
-            <span class="glyphicon glyphicon-user"></span>
-          </g:link>
-        </span>
-        <span class="dropdown pull-left">
-          <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-            <g:set var="profileString" value="${currentProfile.toString()}"/>
-            ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu list-group">
-            <g:each var="profileDropdownEntry" in="${profileDropdown}">
-              <li>
-                <a class="list-group-item disableable" href="${profileDropdownEntry.value}">
-                  ${profileDropdownEntry.key}
-                </a>
-              </li>
-            </g:each>
-          </ul>
-        </span>
-        <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
-          <g:link class="btn btn-secondary disableable" controller="following" action="show">
-            <span class="fa fa-users">
-              <g:if test="${newFollowings}">
-                <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
-                  ${newFollowings}
-                </span>
-              </g:if>
-            </span>
-          </g:link>
-        </span>
-        <span>
+        <div class="col-sm-4">
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.tooltip')}">
+            <g:link class="btn btn-secondary disableable" controller="profile" action=" ">
+              <span class="glyphicon glyphicon-user"></span>
+            </g:link>
+          </span>
+          <span class="dropdown pull-left">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+              <g:set var="profileString" value="${currentProfile.toString()}"/>
+              ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
+              <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu list-group">
+              <g:each var="profileDropdownEntry" in="${profileDropdown}">
+                <li>
+                  <a class="list-group-item disableable" href="${profileDropdownEntry.value}">
+                    ${profileDropdownEntry.key}
+                  </a>
+                </li>
+              </g:each>
+            </ul>
+          </span>
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
+            <g:link class="btn btn-secondary disableable" controller="following" action="show">
+              <span class="fa fa-users">
+                <g:if test="${newFollowings}">
+                  <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
+                    ${newFollowings}
+                  </span>
+                </g:if>
+              </span>
+            </g:link>
+          </span>
+        </div>
+        <div class="col-sm-4">
           <span id="profile-search-dropdown" class="dropdown" style="margin:10px;">
             <input style="width: 300px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" id="profile-search-box" name="query"/>
             <button id="profile-search-button" class="btn btn-default dropdown-toggle" onclick="searchProfile(this, 0);">
@@ -69,28 +71,34 @@
               </button>
             </div>
           </span>
+        </div>
+        <div class="col-sm-4">
           <span class="pull-right">
             <g:render template="/auth/templates/logoutButton"/>
           </span>
-        </span>
-        <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
-          <g:link class="btn btn-default disableable" controller="user" action="edit">
-            <span class="glyphicon glyphicon-cog"></span>
-          </g:link>
-        </span>
-        <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'library.tooltip')}">
-          <g:link class="btn btn-default disableable pull-right" controller="library" action=" ">
-            <span class="glyphicon glyphicon-book"></span>
-          </g:link>
-        </span>
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
+            <g:link class="btn btn-default disableable" controller="user" action="edit">
+              <span class="glyphicon glyphicon-cog"></span>
+            </g:link>
+          </span>
+          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'library.tooltip')}">
+            <g:link class="btn btn-default disableable pull-right" controller="library" action=" ">
+              <span class="glyphicon glyphicon-book"></span>
+            </g:link>
+          </span>
+        </div>
       </sec:ifLoggedIn>
       <sec:ifNotLoggedIn>
-        <span class="pull-right">
-          <g:render template="/common/templates/modalButton"
-              model="${[id: 'loginForm', message: g.message(code: 'auth.login.signup.button')]}">
-            <g:render template="/auth/templates/loginForm"/>
-          </g:render>
-        </span>
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+          <span class="pull-right">
+            <g:render template="/common/templates/modalButton"
+                model="${[id: 'loginForm', message: g.message(code: 'auth.login.signup.button')]}">
+              <g:render template="/auth/templates/loginForm"/>
+            </g:render>
+          </span>
+        </div>
       </sec:ifNotLoggedIn>
     </header>
     <hr/>
