@@ -22,7 +22,7 @@
         </div>
       </g:if>
       <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
           ${profile}
           <g:render template="/profile/templates/avatar"/>
           <g:if test="${editAllowed && active}">
@@ -39,7 +39,7 @@
           </g:if>
           <g:render template="/profile/templates/followButton"/>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-5">
           <div class="ajax-form">
             <g:render template="/ajax/templates/ajaxSmartForm"
                 model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
@@ -58,17 +58,16 @@
             <g:render template="/ajax/templates/ajaxSmartForm"
                 model="${[type: 'text', name: 'period', value: profile.period?.value, label: 'periodization.period.dropdown.label', editAllowed: false]}"/>
           </div>
+        </div>
+        <div class="col-sm-2">
           <div class="row">
-            <label>
-              <g:message code="profile.user.label"/>
-            </label>
-            <br/>
+            <b><g:message code="profile.user.label"/></b>
             <g:link class="btn btn-default col-sm-12" controller="profile" action="user" id="${user.userProfile.id}">
               ${user.userProfile}
             </g:link>
           </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-2">
           <b><g:message code="passport.list.label"/></b>
           <g:if test="${passports}">
             <ul>

@@ -9,7 +9,7 @@
     <body>
       <g:if test="${profile}">
         <div class="row">
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             ${profile}
             <g:render template="/profile/templates/avatar"/>
             <div class="row">
@@ -24,7 +24,7 @@
             </div>
             <g:render template="/profile/templates/followButton"/>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-5">
             <div class="ajax-form">
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
@@ -37,12 +37,12 @@
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', action: 'editProfileField', name: 'location', value: profile.location, label: 'profile.location.label']}"/>
             </div>
+          </div>
+          <div class="col-sm-2">
             <div id="club-profile-list">
               <g:if test="${activeProfiles || inactiveProfiles}">
                 <g:if test="${activeProfiles}">
-                  <label>
-                    <g:message code="clubProfile.active.list.label"/>
-                  </label>
+                  <b><g:message code="clubProfile.active.list.label"/></b>
                   <ul>
                     <g:each var="clubProfile" in="${activeProfiles}">
                       <g:set var="clubProfileId" value="${clubProfile.id}"/>
@@ -94,7 +94,7 @@
               </div>
             </div>
           </div>
-          <div class="col-sm-4">
+          <div class="col-sm-2">
 
           </div>
         </div>
