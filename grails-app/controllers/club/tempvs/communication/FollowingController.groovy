@@ -1,8 +1,10 @@
 package club.tempvs.communication
 
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.UserProfile
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -24,28 +26,39 @@ class FollowingController {
             unfollow: 'DELETE'
     ]
 
-    static defaultAction = 'show'
-
     ProfileService profileService
     PageRenderer groovyPageRenderer
     FollowingService followingService
     AjaxResponseHelper ajaxResponseHelper
 
-    def show() {
-        Profile profile = profileService.currentProfile
+    def index() {
+        show(profileService.currentProfile)
+    }
+
+    def user(Long id) {
+        show(profileService.getProfile(UserProfile, id))
+    }
+
+    def club(Long id) {
+        show(profileService.getProfile(ClubProfile, id))
+    }
+
+    private show(Profile profile) {
         List<Following> followers = followingService.getFollowers(profile)
         List<Following> followings = followingService.getFollowings(profile)
         List<Following> newFollowers = followers.findAll {it.isNew}
         List<Following> newFollowings = followings.findAll {it.isNew}
         followingService.ageFollowings(newFollowers + newFollowings)
 
-        [
+        Map model = [
                 profile: profile,
                 followerProfiles: profileService.getProfilesByFollowers(followers - newFollowers),
                 newFollowerProfiles: profileService.getProfilesByFollowers(newFollowers),
                 followingProfiles: profileService.getProfilesByFollowings(followings - newFollowings),
                 newFollowingProfiles: profileService.getProfilesByFollowings(newFollowings),
         ]
+
+        render view: '/following/show', model: model
     }
 
     def follow(String profileClassName, Long profileId) {

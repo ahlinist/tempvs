@@ -46,7 +46,7 @@
             </ul>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="following" action="show">
+            <g:link class="btn btn-secondary disableable" controller="following" action=" ">
               <span class="fa fa-users">
                 <g:if test="${newFollowings}">
                   <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
@@ -54,6 +54,11 @@
                   </span>
                 </g:if>
               </span>
+            </g:link>
+          </span>
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">
+            <g:link class="btn btn-secondary disableable" controller="item" action="stash">
+              <span class="glyphicon glyphicon-tent"></span>
             </g:link>
           </span>
         </div>

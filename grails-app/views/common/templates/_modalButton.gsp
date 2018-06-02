@@ -1,4 +1,4 @@
-<button class="btn btn-default ${icon}" style="${styles}" data-toggle="modal" data-target="#${id}">
+<button class="btn btn-default ${icon} ${classes}" style="${styles}" data-toggle="modal" data-target="#${id}">
   <g:message code="${message}"/>
 </button>
 

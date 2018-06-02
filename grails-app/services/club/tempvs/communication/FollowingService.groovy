@@ -71,15 +71,11 @@ class FollowingService {
     }
 
     List<Following> getFollowers(Profile profile) {
-        if (profile) {
-            Following.findAllByProfileClassNameAndFollowingId(profile.class.name, profile.id)
-        }
+        profile ? Following.findAllByProfileClassNameAndFollowingId(profile.class.name, profile.id) : []
     }
 
     List<Following> getFollowings(Profile profile) {
-        if (profile) {
-            Following.findAllByProfileClassNameAndFollowerId(profile.class.name, profile.id)
-        }
+        profile ? Following.findAllByProfileClassNameAndFollowerId(profile.class.name, profile.id) : []
     }
 
     void ageFollowings(List<Following> followings) {

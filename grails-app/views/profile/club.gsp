@@ -25,19 +25,51 @@
         <div class="col-sm-3">
           ${profile}
           <g:render template="/profile/templates/avatar"/>
-          <g:if test="${editAllowed && active}">
-            <g:render template="/common/templates/modalButton"
-                model="${[id: 'deactivateProfile' + profile.id, size: 'modal-sm', message: 'profile.club.deactivate.button']}">
-              <g:message code='profile.deactivateConfirmation.text' args="${[profile]}"/>
-              <br/>
-              <g:render template="/ajax/templates/ajaxLink"
-                  model="${[controller: 'profile', action: 'deactivateProfile', id: profile.id, method: 'POST', classes: 'btn btn-default']}">
-                <g:message code="yes"/>
-              </g:render>
-              <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-            </g:render>
-          </g:if>
-          <g:render template="/profile/templates/followButton"/>
+          <ul class="row">
+            <li class="row">
+              <g:link class="btn btn-default disableable col-sm-12" controller="item" action="stash" id="${user.id}">
+                <span class="pull-left">
+                  <g:message code="item.stash.button"/>&nbsp;
+                </span>
+                <span class="pull-right">
+                  <span class="glyphicon glyphicon-tent text-right"></span>
+                </span>
+              </g:link>
+            </li>
+            <li class="row">
+              <g:link class="btn btn-default disableable col-sm-12" controller="following" action="club" id="${profile.id}">
+                <span class="pull-left">
+                  <g:message code="following.list.button"/>&nbsp;
+                </span>
+                <span class="pull-right">
+                  <span class="fa fa-users">
+                    <g:if test="${newFollowings}">
+                      <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
+                        ${newFollowings}
+                      </span>
+                    </g:if>
+                  </span>
+                </span>
+              </g:link>
+            </li>
+            <li class="row">
+              <g:if test="${editAllowed && active}">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'deactivateProfile' + profile.id, size: 'modal-sm', message: 'profile.club.deactivate.button', classes: 'col-sm-12']}">
+                  <g:message code='profile.deactivateConfirmation.text' args="${[profile]}"/>
+                  <br/>
+                  <g:render template="/ajax/templates/ajaxLink"
+                      model="${[controller: 'profile', action: 'deactivateProfile', id: profile.id, method: 'POST', classes: 'btn btn-default']}">
+                    <g:message code="yes"/>
+                  </g:render>
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                </g:render>
+              </g:if>
+            </li>
+            <li class="row">
+              <g:render template="/profile/templates/followButton"/>
+            </li>
+          </ul>
         </div>
         <div class="col-sm-5">
           <div class="ajax-form">

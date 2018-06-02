@@ -17,6 +17,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
 
     def following = Mock Following
     def userProfile = Mock UserProfile
+    def clubProfile = Mock ClubProfile
     def followerClubProfile = Mock ClubProfile
     def followingClubProfile = Mock ClubProfile
 
@@ -33,13 +34,9 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
     def cleanup() {
     }
 
-    void "Test show()"() {
-        given:
-        params.profileClass = UserProfile.name
-        params.profileId = LONG_ONE
-
+    void "Test index()"() {
         when:
-        def result = controller.show()
+        controller.index()
 
         then:
         1 * profileService.currentProfile >> userProfile
@@ -54,7 +51,56 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         0 * _
 
         and:
-        result == [profile: userProfile, followerProfiles: [userProfile], newFollowerProfiles: [], followingProfiles: [userProfile], newFollowingProfiles: []]
+        view == '/following/show'
+        model == [profile: userProfile, followerProfiles: [userProfile], newFollowerProfiles: [], followingProfiles: [userProfile], newFollowingProfiles: []]
+    }
+
+    void "Test user()"() {
+        given:
+        params.id = LONG_ONE
+
+        when:
+        def result = controller.user()
+
+        then:
+        1 * profileService.getProfile(UserProfile, LONG_ONE) >> userProfile
+        1 * followingService.getFollowers(userProfile) >> [following]
+        1 * followingService.getFollowings(userProfile) >> [following]
+        2 * following.isNew >> Boolean.FALSE
+        1 * profileService.getProfilesByFollowings([]) >> []
+        1 * profileService.getProfilesByFollowers([]) >> []
+        1 * profileService.getProfilesByFollowings([following]) >> [userProfile]
+        1 * profileService.getProfilesByFollowers([following]) >> [userProfile]
+        1 * followingService.ageFollowings([])
+        0 * _
+
+        and:
+        view == '/following/show'
+        model == [profile: userProfile, followerProfiles: [userProfile], newFollowerProfiles: [], followingProfiles: [userProfile], newFollowingProfiles: []]
+    }
+
+    void "Test club()"() {
+        given:
+        params.id = LONG_ONE
+
+        when:
+        def result = controller.club()
+
+        then:
+        1 * profileService.getProfile(ClubProfile, LONG_ONE) >> clubProfile
+        1 * followingService.getFollowers(clubProfile) >> [following]
+        1 * followingService.getFollowings(clubProfile) >> [following]
+        2 * following.isNew >> Boolean.FALSE
+        1 * profileService.getProfilesByFollowings([]) >> []
+        1 * profileService.getProfilesByFollowers([]) >> []
+        1 * profileService.getProfilesByFollowings([following]) >> [clubProfile]
+        1 * profileService.getProfilesByFollowers([following]) >> [clubProfile]
+        1 * followingService.ageFollowings([])
+        0 * _
+
+        and:
+        view == '/following/show'
+        model == [profile: clubProfile, followerProfiles: [clubProfile], newFollowerProfiles: [], followingProfiles: [clubProfile], newFollowingProfiles: []]
     }
 
     void "Test follow()"() {

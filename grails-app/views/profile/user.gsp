@@ -12,17 +12,37 @@
           <div class="col-sm-3">
             ${profile}
             <g:render template="/profile/templates/avatar"/>
-            <div class="row">
-              <g:link class="btn btn-default disableable" controller="item" action="stash" id="${user.id}">
-                <span class="pull-left">
-                  <g:message code="item.stash.button"/>&nbsp;
-                </span>
-                <span class="pull-right">
-                  <span class="glyphicon glyphicon-tent text-right"></span>
-                </span>
-              </g:link>
-            </div>
-            <g:render template="/profile/templates/followButton"/>
+            <ul class="row">
+              <li class="row">
+                <g:link class="btn btn-default disableable col-sm-12" controller="item" action="stash" id="${user.id}">
+                  <span class="pull-left">
+                    <g:message code="item.stash.button"/>&nbsp;
+                  </span>
+                  <span class="pull-right">
+                    <span class="glyphicon glyphicon-tent text-right"></span>
+                  </span>
+                </g:link>
+              </li>
+              <li class="row">
+                <g:link class="btn btn-default disableable col-sm-12" controller="following" action="user" id="${profile.id}">
+                  <span class="pull-left">
+                    <g:message code="following.list.button"/>&nbsp;
+                  </span>
+                  <span class="pull-right">
+                    <span class="fa fa-users">
+                      <g:if test="${newFollowings}">
+                        <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
+                          ${newFollowings}
+                        </span>
+                      </g:if>
+                    </span>
+                  </span>
+                </g:link>
+              </li>
+              <li class="row">
+                <g:render template="/profile/templates/followButton"/>
+              </li>
+            </ul>
           </div>
           <div class="col-sm-5">
             <div class="ajax-form">
