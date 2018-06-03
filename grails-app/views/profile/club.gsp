@@ -115,9 +115,9 @@
             </ul>
           </g:if>
           <g:if test="${editAllowed && active}">
-            <div>
+            <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'passport.create.tooltip')}">
               <g:render template="/common/templates/modalButton"
-                  model="${[id: 'createPassport', message: 'passport.create.button']}">
+                  model="${[id: 'createPassport', icon: 'glyphicon glyphicon-plus']}">
                 <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'passport', action: 'createPassport']}">
                   <g:render template="/image/templates/imageUploader"/>
                   <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'passport.name.label', mandatory: true]}"/>

@@ -93,9 +93,9 @@
               <g:else>
                 <i><g:message code="clubProfile.noProfiles.message"/></i>
               </g:else>
-              <div>
+              <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.club.create.tooltip')}">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'createProfile', message: 'clubProfile.create.button']}">
+                    model="${[id: 'createProfile', icon: 'glyphicon glyphicon-plus']}">
                   <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'profile', action: 'createClubProfile']}">
                     <g:render template="/common/templates/formField" model="${[type: 'file', name: 'imageUploadBean.image', label: 'profile.avatar.label']}"/>
                     <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageUploadBean.imageInfo', label: 'profile.avatarInfo.label']}"/>
@@ -107,7 +107,7 @@
                     <g:render template="/common/templates/formField" model="${[type: 'text', name: 'clubName', label: 'profile.clubName.label']}"/>
                     <g:render template="/common/templates/formField" model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
                     <g:render template="/ajax/templates/submitButton">
-                      <g:message code="clubProfile.create.button"/>
+                      <g:message code="profile.club.create.button"/>
                     </g:render>
                   </g:render>
                 </g:render>
