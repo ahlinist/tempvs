@@ -17,12 +17,10 @@ To get started you need:
  * PostgreSQL 9.5.10
  * MongoDB 3.2
  
-### SMTP configuration
-SMTP-connection parameters are retrieved from env variables:
- * SMTP_HOST
- * SMTP_PORT
- * SMTP_USERNAME
- * SMTP_PASSWORD
+### Email messaging
+Email messaging is held by a separate microservice and requires the following env variables being set up:
+ * EMAIL_SERVICE_URL
+ * EMAIL_SECURITY_TOKEN
  
 ### DB configuration
 
@@ -45,3 +43,6 @@ Demodata admin user retrieves it's password from the following env var:
 http://stage.tempvs.club
 ### Prod
 http://tempvs.club
+
+## Email messaging
+Email messaging is encapsulated in a separate microservice (see: https://github.com/ahlinist/tempvs-email). It's url should be provided in EMAIL_SERVICE_URL env variable and EMAIL_SECURITY_TOKEN should match the TOKEN variable configured in remote email service.
