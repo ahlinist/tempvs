@@ -93,25 +93,27 @@
               <g:else>
                 <i><g:message code="clubProfile.noProfiles.message"/></i>
               </g:else>
-              <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.club.create.tooltip')}">
-                <g:render template="/common/templates/modalButton"
-                    model="${[id: 'createProfile', icon: 'glyphicon glyphicon-plus']}">
-                  <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'profile', action: 'createClubProfile']}">
-                    <g:render template="/common/templates/formField" model="${[type: 'file', name: 'imageUploadBean.image', label: 'profile.avatar.label']}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageUploadBean.imageInfo', label: 'profile.avatarInfo.label']}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'firstName', label: 'profile.firstName.label', mandatory: true]}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'lastName', label: 'profile.lastName.label']}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'nickName', label: 'profile.nickName.label']}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'location', label: 'profile.location.label']}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'profileId', label: 'profile.profileId.label']}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'text', name: 'clubName', label: 'profile.clubName.label']}"/>
-                    <g:render template="/common/templates/formField" model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
-                    <g:render template="/ajax/templates/submitButton">
-                      <g:message code="profile.club.create.button"/>
+              <g:if test="${editAllowed}">
+                <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.club.create.tooltip')}">
+                  <g:render template="/common/templates/modalButton"
+                      model="${[id: 'createProfile', icon: 'glyphicon glyphicon-plus']}">
+                    <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'profile', action: 'createClubProfile']}">
+                      <g:render template="/common/templates/formField" model="${[type: 'file', name: 'imageUploadBean.image', label: 'profile.avatar.label']}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageUploadBean.imageInfo', label: 'profile.avatarInfo.label']}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'text', name: 'firstName', label: 'profile.firstName.label', mandatory: true]}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'text', name: 'lastName', label: 'profile.lastName.label']}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'text', name: 'nickName', label: 'profile.nickName.label']}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'text', name: 'location', label: 'profile.location.label']}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'text', name: 'profileId', label: 'profile.profileId.label']}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'text', name: 'clubName', label: 'profile.clubName.label']}"/>
+                      <g:render template="/common/templates/formField" model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
+                      <g:render template="/ajax/templates/submitButton">
+                        <g:message code="profile.club.create.button"/>
+                      </g:render>
                     </g:render>
                   </g:render>
-                </g:render>
-              </div>
+                </div>
+              </g:if>
             </div>
           </div>
           <div class="col-sm-2">
