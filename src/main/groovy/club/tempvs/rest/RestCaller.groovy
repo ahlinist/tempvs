@@ -1,24 +1,22 @@
 package club.tempvs.rest
 
+import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import sun.net.www.protocol.http.HttpURLConnection
 
 import java.nio.charset.StandardCharsets
-import grails.compiler.GrailsCompileStatic
-import grails.gorm.transactions.Transactional
 
-@Transactional
 @GrailsCompileStatic
-class RestCallService {
+class RestCaller {
 
-    private static final String CONTENT_TYPE = 'application/json; charset=UTF-8'
+    private static final String JSON_CONTENT_TYPE = 'application/json; charset=UTF-8'
 
     ConnectionFactory connectionFactory
 
     RestResponse doPost(String url, JSON payload = "", Map<String, String> headers = [:]) {
         HttpURLConnection connection = connectionFactory.getInstance(url)
         connection.setRequestMethod("POST")
-        connection.setRequestProperty("Content-Type", CONTENT_TYPE)
+        connection.setRequestProperty("Content-Type", JSON_CONTENT_TYPE)
         connection.setDoOutput(Boolean.TRUE)
 
         headers.each { String headerName, String headerValue ->

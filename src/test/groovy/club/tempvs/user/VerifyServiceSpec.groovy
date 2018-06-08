@@ -1,6 +1,6 @@
 package club.tempvs.user
 
-import club.tempvs.rest.RestCallService
+import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -22,7 +22,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
     def userService = Mock UserService
     def restResponse = Mock RestResponse
     def profileService = Mock ProfileService
-    def restCallService = Mock RestCallService
+    def restCallService = Mock RestCaller
     def groovyPageRenderer = Mock PageRenderer
     def grailsLinkGenerator = Mock LinkGenerator
     def emailVerification = Mock EmailVerification
@@ -30,7 +30,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
     def setup() {
         GroovySpy(EmailVerification, global: true)
 
-        service.restCallService = restCallService
+        service.restCaller = restCallService
         service.userService = userService
         service.profileService = profileService
         service.groovyPageRenderer = groovyPageRenderer

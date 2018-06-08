@@ -7,7 +7,7 @@
       <span type="button" class="btn" data-toggle="modal" data-target="#modal-${images.hashCode()}" data-local="#carousel-${images.hashCode()}" onclick="modalCarousel.init(${slideMapping})">
         <g:set var="image" value="${images.first()}"/>
         <span class="badge badge-notify" style="position: absolute; right:15px; top:0px;">${images.size()}</span>
-        <g:render template="/image/templates/image" model="${[image: image]}"/>
+        <tempvs:image image="${image}"/>
       </span>
     </div>
     <div class="modal fade" id="modal-${images.hashCode()}" tabindex="-1" role="dialog">
@@ -43,8 +43,7 @@
                 <div class="carousel-inner">
                   <g:each in="${images}" var="image" status="i">
                     <div class="item ${i == 0 ? 'active' : ''}">
-                      <g:render template="/image/templates/image"
-                          model="${[image: image, styles: 'height:90vh; max-width:90vw; width: auto;']}"/>
+                      <tempvs:image image="${image}" styles="height:90vh; max-width:90vw; width: auto;"/>
                       <p class="text-center">${image.imageInfo}</p>
                     </div>
                   </g:each>
