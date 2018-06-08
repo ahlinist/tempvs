@@ -20,6 +20,9 @@
     },
     "EMAIL_SECURITY_TOKEN": {
       "required": true
+    },
+    "IMAGE_SERVICE_URL": {
+      "required": true
     }
   },
   "formation": {
