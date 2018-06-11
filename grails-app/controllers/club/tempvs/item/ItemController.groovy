@@ -128,7 +128,7 @@ class ItemController {
 
     def deleteImage(Long objectId, Long imageId) {
         Item item = itemService.getItem objectId
-        Image image = imageService.loadImage imageId
+        Image image = imageService.getImage imageId
 
         if (!item) {
             return render([action: NO_ACTION] as JSON)

@@ -1,8 +1,10 @@
+import club.tempvs.image.Image
 import club.tempvs.rest.RestCaller
 import club.tempvs.user.Role
 import club.tempvs.user.User
 import club.tempvs.user.UserProfile
 import club.tempvs.user.UserRole
+import grails.converters.JSON
 
 class BootStrap {
 
@@ -22,14 +24,9 @@ class BootStrap {
     def init = { servletContext ->
         createRoles()
         createAdminUser()
-
-        if (EMAIL_SERVICE_URL) {
-            restCaller.doGet(EMAIL_SERVICE_URL + "/api/ping")
-        }
-
-        if (IMAGE_SERVICE_URL) {
-            restCaller.doGet(IMAGE_SERVICE_URL + "/api/ping")
-        }
+        pingEmailService()
+        pingImageService()
+        registerImageMarshaller()
     }
 
     def destroy = {
@@ -71,6 +68,28 @@ class BootStrap {
 
         if (!adminRole2adminUser) {
             new UserRole(user: adminUser, role: admin).save()
+        }
+    }
+
+    private void pingEmailService() {
+        if (EMAIL_SERVICE_URL) {
+            restCaller.doGet(EMAIL_SERVICE_URL + "/api/ping")
+        }
+    }
+
+    private void pingImageService() {
+        if (IMAGE_SERVICE_URL) {
+            restCaller.doGet(IMAGE_SERVICE_URL + "/api/ping")
+        }
+    }
+
+    private void registerImageMarshaller() {
+        JSON.registerObjectMarshaller(Image) { Image image ->
+            [
+                    objectId:   image.objectId,
+                    collection: image.collection,
+                    imageInfo:  image.imageInfo,
+            ]
         }
     }
 }

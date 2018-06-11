@@ -59,4 +59,26 @@ class RestCallerSpec extends Specification {
         and:
         result instanceof RestResponse
     }
+
+    void "Test doDelete()"() {
+        when:
+        def result = restCaller.doDelete(URL, json, [:])
+
+        then:
+        1 * connectionFactory.getInstance(URL) >> connection
+        1 * connection.setRequestMethod("DELETE")
+        1 * connection.setRequestProperty("Content-Type", CONTENT_TYPE)
+        1 * connection.setDoOutput(Boolean.TRUE)
+        1 * json.toString() >> ""
+        1 * connection.setFixedLengthStreamingMode(_ as Integer)
+        1 * connection.connect()
+        1 * connection.outputStream >> outputStream
+        1 * outputStream.write(_ as byte[])
+        1 * outputStream.close()
+        1 * connection.responseCode
+        0 * _
+
+        and:
+        result instanceof RestResponse
+    }
 }

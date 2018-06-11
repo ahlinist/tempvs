@@ -124,7 +124,7 @@ class SourceController {
     @Secured("hasRole('ROLE_SCRIBE')")
     def deleteImage(Long objectId, Long imageId) {
         Source source = sourceService.getSource objectId
-        Image image = imageService.loadImage imageId
+        Image image = imageService.getImage imageId
 
         if (!source) {
             return render([action: NO_ACTION] as JSON)

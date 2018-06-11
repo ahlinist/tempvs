@@ -1,6 +1,9 @@
 package club.tempvs.image
 
+import club.tempvs.rest.RestCaller
 import grails.compiler.GrailsCompileStatic
+import grails.converters.JSON
+import org.springframework.http.HttpStatus
 import org.springframework.web.multipart.MultipartFile
 
 /**
@@ -9,26 +12,26 @@ import org.springframework.web.multipart.MultipartFile
 @GrailsCompileStatic
 class ImageService {
 
+    private static final String IMAGE_SERVICE_URL = System.getenv 'IMAGE_SERVICE_URL'
+    private static final String IMAGE_SECURITY_TOKEN = System.getenv 'IMAGE_SECURITY_TOKEN'
+
     ImageDAO imageDAO
+    RestCaller restCaller
 
     Image getImage(Long id) {
         Image.get id
     }
 
-    Image loadImage(Long id) {
-        Image.load id
+    Boolean deleteImage(Image image) {
+        deleteImages([image])
     }
 
-    byte[] getImageBytes(String collection, String objectId) {
-        imageDAO.get(collection, objectId)?.bytes
-    }
+    Boolean deleteImages(List<Image> images) {
+        String url = IMAGE_SERVICE_URL + '/api/delete'
+        Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
+        JSON payload = [images: images] as JSON
 
-    void deleteImage(Image image) {
-        imageDAO.delete(image?.collection, image?.objectId)
-    }
-
-    void deleteImages(List<Image> images) {
-        images.each { deleteImage(it) }
+        restCaller.doDelete(url, payload, headers)?.statusCode == HttpStatus.OK.value()
     }
 
     Image uploadImage(ImageUploadBean imageUploadBean, String collection, Image image = null) {

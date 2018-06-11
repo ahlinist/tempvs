@@ -271,7 +271,7 @@ class PassportController {
 
     def deleteImage(Long objectId, Long imageId) {
         Passport passport = passportService.getPassport objectId
-        Image image = imageService.loadImage imageId
+        Image image = imageService.getImage imageId
 
         if (!passport) {
             return render([action: NO_ACTION] as JSON)

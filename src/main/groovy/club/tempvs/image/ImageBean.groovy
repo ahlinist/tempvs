@@ -9,6 +9,5 @@ import groovy.transform.CompileStatic
 interface ImageBean {
     ImageBean save()
     void setMetaData(Map metaData)
-    byte[] getBytes()
     String getId()
 }

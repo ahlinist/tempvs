@@ -49,24 +49,6 @@ class MongoImageSpec extends Specification {
         0 * _
     }
 
-    void "Test getBytes()"() {
-        given:
-        byte[] byteList = "test data".bytes
-        InputStream inputStream = new ByteArrayInputStream(byteList)
-        def gridFSDBFile = Mock(GridFSDBFile)
-        MongoImageBean mongoImage = new MongoImageBean(gridFSDBFile)
-
-        when:
-        byte[] result = mongoImage.getBytes()
-
-        then:
-        1 * gridFSDBFile.getInputStream() >> inputStream
-        0 * _
-
-        and:
-        result == byteList
-    }
-
     void "Test getId()"() {
         given:
         def mongoImage = new MongoImageBean(gridFSFile)

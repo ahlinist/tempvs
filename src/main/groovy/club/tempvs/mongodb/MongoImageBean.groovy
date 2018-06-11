@@ -26,12 +26,6 @@ class MongoImageBean implements ImageBean {
         gridFSFile.metaData = metaData as DBObject
     }
 
-    byte[] getBytes() {
-        if (gridFSFile) {
-            ((GridFSDBFile) gridFSFile).inputStream?.bytes
-        }
-    }
-
     String getId() {
         this.gridFSFile?.id
     }
