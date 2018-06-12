@@ -1,13 +1,16 @@
 package club.tempvs.image
 
 import club.tempvs.rest.RestCaller
+import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
+import groovy.json.JsonSlurper
+import groovy.transform.TypeCheckingMode
 import org.springframework.http.HttpStatus
 import org.springframework.web.multipart.MultipartFile
 
 /**
- * A service that manages {@link ImageBean}-related operations.
+ * A service that manages {@link Image}-related operations.
  */
 @GrailsCompileStatic
 class ImageService {
@@ -15,7 +18,6 @@ class ImageService {
     private static final String IMAGE_SERVICE_URL = System.getenv 'IMAGE_SERVICE_URL'
     private static final String IMAGE_SECURITY_TOKEN = System.getenv 'IMAGE_SECURITY_TOKEN'
 
-    ImageDAO imageDAO
     RestCaller restCaller
 
     Image getImage(Long id) {
@@ -34,34 +36,40 @@ class ImageService {
         restCaller.doDelete(url, payload, headers)?.statusCode == HttpStatus.OK.value()
     }
 
-    Image uploadImage(ImageUploadBean imageUploadBean, String collection, Image image = null) {
-        MultipartFile multipartFile = imageUploadBean.image
-
-        if (!multipartFile.empty) {
-            if (image) {
-                imageDAO.delete(collection, image.objectId)
-            } else {
-                image = new Image()
-            }
-
-            InputStream inputStream = multipartFile.inputStream
-
-            try {
-                image.objectId = imageDAO.create(inputStream, collection).id
-            } finally {
-                inputStream?.close()
-            }
-
-            image.collection = collection
-            image.imageInfo = imageUploadBean.imageInfo
-        }
-
-        image
+    Image uploadImage(ImageUploadBean imageUploadBean, String collection) {
+        uploadImages([imageUploadBean], collection)?.find()
     }
 
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
-        imageUploadBeans?.findResults { ImageUploadBean imageUploadBean ->
-            uploadImage(imageUploadBean, collection)
-        } as List<Image>
+        String url = IMAGE_SERVICE_URL + '/api/store'
+        Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
+        List<Map<String, String>> entries = []
+
+        for (ImageUploadBean imageUploadBean in imageUploadBeans) {
+            MultipartFile multipartFile = imageUploadBean.image
+
+            if (!multipartFile.empty) {
+                String content = multipartFile.bytes.encodeBase64().toString()
+                entries << [collection: collection, imageInfo: imageUploadBean.imageInfo, content: content]
+            }
+        }
+
+        JSON payload = [images: entries] as JSON
+
+        RestResponse restResponse = restCaller.doPost(url, payload, headers)
+
+        List<Image> images = []
+
+        if (restResponse.statusCode == HttpStatus.OK.value()) {
+            JsonSlurper slurper = new JsonSlurper()
+            def json = slurper.parseText(restResponse.responseBody)
+
+            for (imageNode in json.images) {
+                images << new Image(objectId: imageNode.objectId, collection: imageNode.collection, imageInfo: imageNode.imageInfo)
+            }
+        }
+
+        return images
     }
 }

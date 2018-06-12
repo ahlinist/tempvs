@@ -3,6 +3,7 @@ package club.tempvs.rest
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import org.springframework.http.HttpMethod
+import org.springframework.http.HttpStatus
 import sun.net.www.protocol.http.HttpURLConnection
 
 import java.nio.charset.StandardCharsets
@@ -54,6 +55,28 @@ class RestCaller {
             outputStream?.close()
         }
 
-        new RestResponse(statusCode: connection.responseCode)
+        RestResponse restResponse = new RestResponse()
+        Integer statusCode = connection.responseCode
+        restResponse.statusCode = statusCode
+
+        if (statusCode == HttpStatus.OK.value()) {
+            restResponse.responseBody = parseResponse(connection)
+        }
+
+        restResponse
+    }
+
+    private String parseResponse(HttpURLConnection connection) {
+        InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)
+        BufferedReader reader = new BufferedReader(inputStreamReader)
+
+        String line
+        StringBuffer buffer = new StringBuffer()
+
+        while ((line = reader.readLine()) != null) {
+            buffer.append(line)
+        }
+
+        buffer.toString()
     }
 }
