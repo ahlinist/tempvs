@@ -33,7 +33,8 @@ class ImageService {
         Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
         JSON payload = [images: images] as JSON
 
-        restCaller.doDelete(url, payload, headers)?.statusCode == HttpStatus.OK.value()
+        RestResponse response = restCaller.doDelete(url, payload, headers)
+        response.statusCode == HttpStatus.OK.value()
     }
 
     Image uploadImage(ImageUploadBean imageUploadBean, String collection) {
@@ -42,6 +43,7 @@ class ImageService {
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
+        List<Image> images = []
         String url = IMAGE_SERVICE_URL + '/api/store'
         Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
         List<Map<String, String>> entries = []
@@ -57,13 +59,11 @@ class ImageService {
 
         JSON payload = [images: entries] as JSON
 
-        RestResponse restResponse = restCaller.doPost(url, payload, headers)
+        RestResponse response = restCaller.doPost(url, payload, headers)
 
-        List<Image> images = []
-
-        if (restResponse.statusCode == HttpStatus.OK.value()) {
+        if (response.statusCode == HttpStatus.OK.value()) {
             JsonSlurper slurper = new JsonSlurper()
-            def json = slurper.parseText(restResponse.responseBody)
+            def json = slurper.parseText(response.responseBody)
 
             for (imageNode in json.images) {
                 images << new Image(objectId: imageNode.objectId, collection: imageNode.collection, imageInfo: imageNode.imageInfo)
