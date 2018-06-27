@@ -396,7 +396,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * profileService.currentProfile >> userProfile
         1 * userProfile.avatar >> image
-        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, image) >> image
+        1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
+        1 * imageService.deleteImage(image)
         1 * profileService.uploadAvatar(userProfile, image) >> userProfile
         1 * userProfile.hasErrors() >> Boolean.FALSE
         1 * groovyPageRenderer.render(_ as Map)

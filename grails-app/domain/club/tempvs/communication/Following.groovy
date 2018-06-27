@@ -6,7 +6,7 @@ import club.tempvs.user.ClubProfile
 import grails.compiler.GrailsCompileStatic
 
 /**
- * An object that represents cross-{@link Profile} relations.
+ * An object that represents cross-{@link club.tempvs.user.Profile} relations.
  */
 @GrailsCompileStatic
 class Following implements BasePersistent {

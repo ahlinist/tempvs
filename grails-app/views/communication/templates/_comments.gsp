@@ -21,8 +21,7 @@
             </div>
           </g:if>
           <div>
-            <g:render template="/image/templates/image"
-                                      model="${[image: profile.avatar, styles: 'max-width: 45px; float: left;']}"/>
+            <tempvs:image image="${profile.avatar}" styles="max-width: 45px; float: left;"/>
             <g:link controller="profile" action="${profile.shortName}" id="${profile.id}" class="btn btn-default">
               ${profile}
             </g:link>

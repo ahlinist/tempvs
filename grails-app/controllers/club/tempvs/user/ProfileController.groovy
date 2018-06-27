@@ -263,14 +263,20 @@ class ProfileController {
         }
 
         Profile profile = profileService.currentProfile
-        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION, profile.avatar)
+        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+
+        if (!avatar) {
+            return render([action: NO_ACTION] as JSON)
+        }
+
+        imageService.deleteImage(profile.avatar)
         profile = profileService.uploadAvatar(profile, avatar)
 
         if (profile.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
-        Map model = [profile: profile]
+        Map model = [profile: profile, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/profile/templates/avatar', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

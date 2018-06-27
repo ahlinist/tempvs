@@ -2,7 +2,7 @@
 
 <div>
   <a data-toggle="modal" data-target="#modal-${image?.hashCode() ?: timestamp}" href="#">
-    <g:render template="/image/templates/image" model="${[image: image, styles: styles]}"/>
+    <tempvs:image image="${image}" styles="${styles}"/>
   </a>
 </div>
 
@@ -13,8 +13,7 @@
         ${raw(body())}
       </span>
       <span class="modal-body" style="padding: 0px; margin: 50% 0 50% 0;">
-        <g:render template="/image/templates/image"
-                                  model="${[image: image, styles: 'height:90vh; max-width:90vw; width: auto;']}"/>
+        <tempvs:image image="${image}" styles="height:90vh; max-width:90vw; width: auto;"/>
         <p class="text-center">${image?.imageInfo}</p>
       </span>
     </span>

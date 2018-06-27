@@ -15,12 +15,16 @@ To get started you need:
  * Grails 3.3.5
  * Gradle 4.4.1
  * PostgreSQL 9.5.10
- * MongoDB 3.2
  
 ### Email messaging
-Email messaging is held by a separate microservice and requires the following env variables being set up:
+Email messaging is held by a separate microservice (see: https://github.com/ahlinist/tempvs-email) and requires the following env variables being set up:
  * EMAIL_SERVICE_URL
- * EMAIL_SECURITY_TOKEN
+ * EMAIL_SECURITY_TOKEN (should match the TOKEN variable on the opposite side)
+ 
+### Graphic content
+Images upload/view/deletion are held by a separate microservice (see: https://github.com/ahlinist/tempvs-image) and require the following env variables being set up:
+ * IMAGE_SERVICE_URL
+ * IMAGE_SECURITY_TOKEN (should match the TOKEN variable on the opposite side)
  
 ### DB configuration
 
@@ -29,10 +33,6 @@ Connection parameters are retrieved from env variables:
  * JDBC_DATABASE_USERNAME
  * JDBC_DATABASE_PASSWORD
  * JDBC_DATABASE_URL
-
-#### MongoDB:
-Connection parameters are retrieved from env variables:
- * MONGODB_URI (mongodb://\<user\>:\<pass\>@\<host\>:\<port\>/\<db_name\>)
 
 #### Demodata population
 Demodata admin user retrieves it's password from the following env var:
@@ -43,6 +43,3 @@ Demodata admin user retrieves it's password from the following env var:
 http://stage.tempvs.club
 ### Prod
 http://tempvs.club
-
-## Email messaging
-Email messaging is encapsulated in a separate microservice (see: https://github.com/ahlinist/tempvs-email). It's url should be provided in EMAIL_SERVICE_URL env variable and EMAIL_SECURITY_TOKEN should match the TOKEN variable configured in remote email service.

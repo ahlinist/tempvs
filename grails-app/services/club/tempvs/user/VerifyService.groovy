@@ -5,7 +5,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.gorm.transactions.Transactional
-import club.tempvs.rest.RestCallService
+import club.tempvs.rest.RestCaller
 import grails.web.mapping.LinkGenerator
 
 /**
@@ -27,10 +27,9 @@ class VerifyService {
 
     UserService userService
     ProfileService profileService
-    RestCallService restCallService
+    RestCaller restCaller
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
-
 
     EmailVerification getVerification(String id) {
         EmailVerification.findByVerificationCode(id)
@@ -57,7 +56,7 @@ class VerifyService {
         JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
         String emailServiceUrl = EMAIL_SERVICE_URL + SEND_EMAIL_API_URI
         Map<String, String> headers = [token: EMAIL_SECURITY_TOKEN.encodeAsMD5() as String]
-        restCallService.doPost(emailServiceUrl, payload, headers)
+        restCaller.doPost(emailServiceUrl, payload, headers)
     }
 
     Boolean isEmailUnique(String email, String action, Long instanceId) {

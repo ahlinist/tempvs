@@ -20,6 +20,12 @@
     },
     "EMAIL_SECURITY_TOKEN": {
       "required": true
+    },
+    "IMAGE_SERVICE_URL": {
+      "required": true
+    },
+    "IMAGE_SECURITY_TOKEN": {
+      "required": true
     }
   },
   "formation": {
@@ -28,7 +34,6 @@
     }
   },
   "addons": [
-    "mongolab",
     "heroku-postgresql"
   ],
   "buildpacks": [

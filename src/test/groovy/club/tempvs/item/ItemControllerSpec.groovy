@@ -271,7 +271,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * imageService.loadImage(LONG_TWO) >> image
+        1 * imageService.getImage(LONG_TWO) >> image
         1 * itemService.deleteImage(item, image) >> item
         1 * item.hasErrors() >> Boolean.FALSE
         1 * item.images >> [image]

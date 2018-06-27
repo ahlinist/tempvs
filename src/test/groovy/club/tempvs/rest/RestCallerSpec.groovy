@@ -1,12 +1,10 @@
 package club.tempvs.rest
 
 import grails.converters.JSON
-import grails.testing.gorm.DataTest
-import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 import sun.net.www.protocol.http.HttpURLConnection
 
-class RestCallServiceSpec extends Specification implements ServiceUnitTest<RestCallService>, DataTest {
+class RestCallerSpec extends Specification {
 
     private static final String URL = 'url'
     private static final String CONTENT_TYPE = 'application/json; charset=UTF-8'
@@ -16,8 +14,11 @@ class RestCallServiceSpec extends Specification implements ServiceUnitTest<RestC
     def connectionFactory = Mock ConnectionFactory
     def outputStream = Mock OutputStream
 
+    RestCaller restCaller
+
     def setup() {
-        service.connectionFactory = connectionFactory
+        restCaller = new RestCaller()
+        restCaller.connectionFactory = connectionFactory
     }
 
     def cleanup() {
@@ -25,7 +26,7 @@ class RestCallServiceSpec extends Specification implements ServiceUnitTest<RestC
 
     void "Test doGet()"() {
         when:
-        def result = service.doGet(URL)
+        def result = restCaller.doGet(URL)
 
         then:
         1 * connectionFactory.getInstance(URL) >> connection
@@ -39,11 +40,33 @@ class RestCallServiceSpec extends Specification implements ServiceUnitTest<RestC
 
     void "Test doPost()"() {
         when:
-        def result = service.doPost(URL, json, [:])
+        def result = restCaller.doPost(URL, json, [:])
 
         then:
         1 * connectionFactory.getInstance(URL) >> connection
         1 * connection.setRequestMethod("POST")
+        1 * connection.setRequestProperty("Content-Type", CONTENT_TYPE)
+        1 * connection.setDoOutput(Boolean.TRUE)
+        1 * json.toString() >> ""
+        1 * connection.setFixedLengthStreamingMode(_ as Integer)
+        1 * connection.connect()
+        1 * connection.outputStream >> outputStream
+        1 * outputStream.write(_ as byte[])
+        1 * outputStream.close()
+        1 * connection.responseCode
+        0 * _
+
+        and:
+        result instanceof RestResponse
+    }
+
+    void "Test doDelete()"() {
+        when:
+        def result = restCaller.doDelete(URL, json, [:])
+
+        then:
+        1 * connectionFactory.getInstance(URL) >> connection
+        1 * connection.setRequestMethod("DELETE")
         1 * connection.setRequestProperty("Content-Type", CONTENT_TYPE)
         1 * connection.setDoOutput(Boolean.TRUE)
         1 * json.toString() >> ""
