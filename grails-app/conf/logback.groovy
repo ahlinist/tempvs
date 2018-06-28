@@ -8,7 +8,9 @@ appender('STDOUT', ConsoleAppender) {
     }
 }
 
-root(ERROR, ['STDOUT'])
+root ERROR, ['STDOUT']
+logger'BootStrap', INFO, ['STDOUT'], false
+logger'club.tempvs', INFO, ['STDOUT'], false
 
 def targetDir = BuildSettings.TARGET_DIR
 if (Environment.isDevelopmentMode() && targetDir) {
