@@ -64,33 +64,18 @@ class RestCaller {
 
     private RestResponse parseResponse(HttpURLConnection connection) {
         Integer statusCode
-        String responseBody
+        InputStream inputStream
 
         try {
             statusCode = connection.responseCode
+            inputStream = (statusCode == HttpStatus.OK.value()) ? connection.inputStream : connection.errorStream
 
-            if (statusCode == HttpStatus.OK.value()) {
-                responseBody = readResponseBody(connection)
-            }
+            return new RestResponse(statusCode: statusCode, responseBody: inputStream.text)
         } catch (ConnectException e) {
             log.error "'${connection.getURL()}' URL is not available"
             return null
+        } finally {
+            inputStream?.close()
         }
-
-        return new RestResponse(statusCode: statusCode, responseBody: responseBody)
-    }
-
-    private String readResponseBody(HttpURLConnection connection) {
-        InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)
-        BufferedReader reader = new BufferedReader(inputStreamReader)
-
-        String line
-        StringBuffer buffer = new StringBuffer()
-
-        while ((line = reader.readLine()) != null) {
-            buffer.append(line)
-        }
-
-        buffer.toString()
     }
 }
