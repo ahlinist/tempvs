@@ -261,16 +261,22 @@ class ProfileController {
         }
 
         Profile profile = profileService.currentProfile
-        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+        Image avatarForUpload = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
 
-        if (!avatar) {
+        if (!avatarForUpload) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        imageService.deleteImage(profile.avatar)
-        profile = profileService.uploadAvatar(profile, avatar)
+        Image currentAvatar = profile.avatar
+
+        if (currentAvatar) {
+            imageService.deleteImage(currentAvatar)
+        }
+
+        profile = profileService.uploadAvatar(profile, avatarForUpload)
 
         if (profile.hasErrors()) {
+            imageService.deleteImage(avatarForUpload)
             return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 
