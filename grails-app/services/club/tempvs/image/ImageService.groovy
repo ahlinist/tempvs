@@ -6,12 +6,14 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import groovy.json.JsonSlurper
 import groovy.transform.TypeCheckingMode
+import groovy.util.logging.Slf4j
 import org.springframework.http.HttpStatus
 import org.springframework.web.multipart.MultipartFile
 
 /**
  * A service that manages {@link Image}-related operations.
  */
+@Slf4j
 @GrailsCompileStatic
 class ImageService {
 
@@ -33,7 +35,16 @@ class ImageService {
         Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
         JSON payload = [images: images] as JSON
 
-        restCaller.doDelete(url, payload, headers)?.statusCode == HttpStatus.OK.value()
+        RestResponse response = restCaller.doDelete(url, payload, headers)
+        Integer statusCode = response?.statusCode
+        Boolean success = (statusCode == HttpStatus.OK.value())
+
+        if (!success) {
+            log.warn "Image deletion failed. Image service returned status code: '${statusCode}'.\n" +
+                    " Response body: ${response.responseBody}"
+        }
+
+        return success
     }
 
     Image uploadImage(ImageUploadBean imageUploadBean, String collection) {
@@ -42,6 +53,7 @@ class ImageService {
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
+        List<Image> images = []
         String url = IMAGE_SERVICE_URL + '/api/store'
         Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
         List<Map<String, String>> entries = []
@@ -57,17 +69,18 @@ class ImageService {
 
         JSON payload = [images: entries] as JSON
 
-        RestResponse restResponse = restCaller.doPost(url, payload, headers)
+        RestResponse response = restCaller.doPost(url, payload, headers)
+        Integer statusCode = response?.statusCode
 
-        List<Image> images = []
-
-        if (restResponse.statusCode == HttpStatus.OK.value()) {
+        if (statusCode == HttpStatus.OK.value()) {
             JsonSlurper slurper = new JsonSlurper()
-            def json = slurper.parseText(restResponse.responseBody)
+            def json = slurper.parseText(response.responseBody)
 
             for (imageNode in json.images) {
                 images << new Image(objectId: imageNode.objectId, collection: imageNode.collection, imageInfo: imageNode.imageInfo)
             }
+        } else if (statusCode) {
+            log.error "Image upload failed. Image service returns status code '${statusCode}'."
         }
 
         return images

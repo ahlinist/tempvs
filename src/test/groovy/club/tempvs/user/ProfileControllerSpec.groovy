@@ -8,7 +8,6 @@ import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.item.Passport
 import club.tempvs.periodization.Period
-import club.tempvs.rest.RestResponse
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.gorm.DomainUnitTest
@@ -37,7 +36,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String CLUB_PROFILE_URL = '/profile/club'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
-    private static final String EDIT_PROFILE_EMAIL_MESSAGE_SENT = 'profileEmail.verification.sent.message'
 
     def json = Mock JSON
     def user = Mock User
@@ -47,7 +45,6 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
     def period = GroovyMock Period
     def userProfile = Mock UserProfile
     def clubProfile = Mock ClubProfile
-    def restResponse = Mock RestResponse
     def imageUploadBean = Mock ImageUploadBean
     def emailVerification = Mock EmailVerification
 
@@ -318,8 +315,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * userProfile.id >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> Boolean.FALSE
-        1 * verifyService.sendEmailVerification(emailVerification) >> restResponse
-        1 * restResponse.statusCode >> 200
+        1 * verifyService.sendEmailVerification(emailVerification) >> Boolean.TRUE
         1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, 'profileEmail.verification.sent.message') >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

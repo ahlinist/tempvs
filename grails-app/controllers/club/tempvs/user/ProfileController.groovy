@@ -10,6 +10,7 @@ import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
@@ -206,13 +207,10 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_FAILED_MESSAGE))
         }
 
-        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
+        Boolean success = verifyService.sendEmailVerification(emailVerification)
+        String message = success ? EDIT_PROFILE_EMAIL_MESSAGE_SENT : EDIT_PROFILE_EMAIL_FAILED_MESSAGE
 
-        if (restResponse.statusCode == 200) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.TRUE, EDIT_PROFILE_EMAIL_MESSAGE_SENT))
-        } else {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, EDIT_PROFILE_EMAIL_FAILED_MESSAGE))
-        }
+        render ajaxResponseHelper.renderFormMessage(success, message)
     }
 
     def deactivateProfile(String id) {
@@ -263,16 +261,22 @@ class ProfileController {
         }
 
         Profile profile = profileService.currentProfile
-        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+        Image avatarForUpload = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
 
-        if (!avatar) {
+        if (!avatarForUpload) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        imageService.deleteImage(profile.avatar)
-        profile = profileService.uploadAvatar(profile, avatar)
+        Image currentAvatar = profile.avatar
+
+        if (currentAvatar) {
+            imageService.deleteImage(currentAvatar)
+        }
+
+        profile = profileService.uploadAvatar(profile, avatarForUpload)
 
         if (profile.hasErrors()) {
+            imageService.deleteImage(avatarForUpload)
             return render(ajaxResponseHelper.renderValidationResponse(profile))
         }
 

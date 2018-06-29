@@ -1,6 +1,7 @@
 package club.tempvs.rest
 
 import grails.converters.JSON
+import org.grails.datastore.mapping.query.Query
 import spock.lang.Specification
 import sun.net.www.protocol.http.HttpURLConnection
 
@@ -13,6 +14,7 @@ class RestCallerSpec extends Specification {
     def connection = Mock HttpURLConnection
     def connectionFactory = Mock ConnectionFactory
     def outputStream = Mock OutputStream
+    def inputStream = new ByteArrayInputStream()
 
     RestCaller restCaller
 
@@ -31,7 +33,8 @@ class RestCallerSpec extends Specification {
         then:
         1 * connectionFactory.getInstance(URL) >> connection
         1 * connection.setRequestMethod("GET")
-        1 * connection.responseCode
+        1 * connection.responseCode >> 200
+        1 * connection.inputStream >> inputStream
         0 * _
 
         and:
@@ -53,7 +56,8 @@ class RestCallerSpec extends Specification {
         1 * connection.outputStream >> outputStream
         1 * outputStream.write(_ as byte[])
         1 * outputStream.close()
-        1 * connection.responseCode
+        1 * connection.responseCode >> 200
+        1 * connection.inputStream >> inputStream
         0 * _
 
         and:
@@ -75,7 +79,8 @@ class RestCallerSpec extends Specification {
         1 * connection.outputStream >> outputStream
         1 * outputStream.write(_ as byte[])
         1 * outputStream.close()
-        1 * connection.responseCode
+        1 * connection.responseCode >> 200
+        1 * connection.inputStream >> inputStream
         0 * _
 
         and:

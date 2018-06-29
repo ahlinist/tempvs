@@ -5,6 +5,7 @@ import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -58,13 +59,11 @@ class UserController {
             return render(ajaxResponseHelper.renderValidationResponse(emailVerification, UPDATE_EMAIL_FAILED_MESSAGE))
         }
 
-        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
+        Boolean success = verifyService.sendEmailVerification(emailVerification)
 
-        if (restResponse.statusCode == 200) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.TRUE, UPDATE_EMAIL_MESSAGE_SENT))
-        } else {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, UPDATE_EMAIL_FAILED_MESSAGE))
-        }
+        String message = success ? UPDATE_EMAIL_MESSAGE_SENT : UPDATE_EMAIL_FAILED_MESSAGE
+
+        render ajaxResponseHelper.renderFormMessage(success, message)
     }
 
     def updatePassword(UserPasswordCommand command) {

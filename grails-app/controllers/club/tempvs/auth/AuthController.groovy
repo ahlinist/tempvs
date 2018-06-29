@@ -9,6 +9,7 @@ import club.tempvs.user.VerifyService
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices
@@ -80,13 +81,10 @@ class AuthController {
             return render(ajaxResponseHelper.renderValidationResponse(emailVerification, REGISTER_MESSAGE_NOT_SENT))
         }
 
-        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
+        Boolean success = verifyService.sendEmailVerification(emailVerification)
+        String message = success ? REGISTER_MESSAGE_SENT : REGISTER_MESSAGE_NOT_SENT
 
-        if (restResponse.statusCode == 200) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.TRUE, REGISTER_MESSAGE_SENT))
-        } else {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, REGISTER_MESSAGE_NOT_SENT))
-        }
+        render ajaxResponseHelper.renderFormMessage(success, message)
     }
 
     def logout() {

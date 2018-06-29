@@ -7,10 +7,13 @@ import grails.gsp.PageRenderer
 import grails.gorm.transactions.Transactional
 import club.tempvs.rest.RestCaller
 import grails.web.mapping.LinkGenerator
+import groovy.util.logging.Slf4j
+import org.springframework.http.HttpStatus
 
 /**
  * A service that handles operations related to {@link EmailVerification}.
  */
+@Slf4j
 @Transactional
 @GrailsCompileStatic
 class VerifyService {
@@ -48,7 +51,7 @@ class VerifyService {
         emailVerification
     }
 
-    RestResponse sendEmailVerification(EmailVerification emailVerification) {
+    Boolean sendEmailVerification(EmailVerification emailVerification) {
         String serverUrl = grailsLinkGenerator.serverBaseURL
         String verificationCode = emailVerification.verificationCode
         String body = groovyPageRenderer.render(view: "/verify/emailTemplates/${emailVerification.action}",
@@ -56,7 +59,17 @@ class VerifyService {
         JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
         String emailServiceUrl = EMAIL_SERVICE_URL + SEND_EMAIL_API_URI
         Map<String, String> headers = [token: EMAIL_SECURITY_TOKEN.encodeAsMD5() as String]
-        restCaller.doPost(emailServiceUrl, payload, headers)
+        RestResponse response = restCaller.doPost(emailServiceUrl, payload, headers)
+        Integer statusCode = response?.statusCode
+        Boolean success = Boolean.TRUE
+
+        if (statusCode != HttpStatus.OK.value()) {
+            success = Boolean.FALSE
+            log.error "Email delivery failed. Email service returned status code: '${statusCode}'.\n" +
+                    " Response body: ${response.responseBody}"
+        }
+
+        return success
     }
 
     Boolean isEmailUnique(String email, String action, Long instanceId) {

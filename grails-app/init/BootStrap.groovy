@@ -1,11 +1,15 @@
 import club.tempvs.image.Image
 import club.tempvs.rest.RestCaller
+import club.tempvs.rest.RestResponse
 import club.tempvs.user.Role
 import club.tempvs.user.User
 import club.tempvs.user.UserProfile
 import club.tempvs.user.UserRole
 import grails.converters.JSON
+import groovy.util.logging.Slf4j
+import org.springframework.http.HttpStatus
 
+@Slf4j
 class BootStrap {
 
     private static final String ROLE_ADMIN = 'ROLE_ADMIN'
@@ -22,10 +26,11 @@ class BootStrap {
     RestCaller restCaller
 
     def init = { servletContext ->
+        log.info 'Starting tempvs: ...'
         createRoles()
         createAdminUser()
-        pingEmailService()
-        pingImageService()
+        pingMicroService(EMAIL_SERVICE_URL, 'Email', 'EMAIL_SERVICE_URL')
+        pingMicroService(IMAGE_SERVICE_URL, 'Image', 'IMAGE_SERVICE_URL')
         registerImageMarshaller()
     }
 
@@ -71,18 +76,6 @@ class BootStrap {
         }
     }
 
-    private void pingEmailService() {
-        if (EMAIL_SERVICE_URL) {
-            restCaller.doGet(EMAIL_SERVICE_URL + "/api/ping")
-        }
-    }
-
-    private void pingImageService() {
-        if (IMAGE_SERVICE_URL) {
-            restCaller.doGet(IMAGE_SERVICE_URL + "/api/ping")
-        }
-    }
-
     private void registerImageMarshaller() {
         JSON.registerObjectMarshaller(Image) { Image image ->
             [
@@ -90,6 +83,23 @@ class BootStrap {
                     collection: image.collection,
                     imageInfo:  image.imageInfo,
             ]
+        }
+    }
+
+    private pingMicroService(String serviceUrl, String serviceName, String urlVariable) {
+        if (serviceUrl) {
+            String pingUrl = "${serviceUrl}/api/ping"
+            RestResponse response = restCaller.doGet(pingUrl)
+
+            if (!response) {
+                log.error "${serviceName} service is down"
+            } else if (response.statusCode == HttpStatus.OK.value()) {
+                log.info "${serviceName} service is up and running at '${serviceUrl}'"
+            } else {
+                log.error "${serviceName} service returns status code '${response.statusCode}' for URL: '${pingUrl}'"
+            }
+        } else {
+            log.error "'${urlVariable}' environment variable has not been set up"
         }
     }
 }

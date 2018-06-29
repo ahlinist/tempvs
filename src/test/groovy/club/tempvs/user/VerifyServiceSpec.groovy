@@ -82,10 +82,11 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         1 * emailVerification.action
         1 * emailVerification.email
         1 * restCallService.doPost(_ as String, _ as JSON, _ as Map) >> restResponse
+        1 * restResponse.statusCode >> 200
         0 * _
 
         and:
-        result == restResponse
+        result == Boolean.TRUE
     }
 
     void "Test isEmailUnique()"() {
