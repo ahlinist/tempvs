@@ -59,15 +59,9 @@ class UserController {
             return render(ajaxResponseHelper.renderValidationResponse(emailVerification, UPDATE_EMAIL_FAILED_MESSAGE))
         }
 
-        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
+        Boolean success = verifyService.sendEmailVerification(emailVerification)
 
-        Boolean success = Boolean.TRUE
-        String message = UPDATE_EMAIL_MESSAGE_SENT
-
-        if (restResponse?.statusCode != HttpStatus.OK.value()) {
-            success = Boolean.FALSE
-            message = UPDATE_EMAIL_FAILED_MESSAGE
-        }
+        String message = success ? UPDATE_EMAIL_MESSAGE_SENT : UPDATE_EMAIL_FAILED_MESSAGE
 
         render ajaxResponseHelper.renderFormMessage(success, message)
     }

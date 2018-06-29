@@ -40,7 +40,8 @@ class ImageService {
         Boolean success = (statusCode == HttpStatus.OK.value())
 
         if (!success) {
-            log.warn "Image deletion failed. Image service returned status code: '${statusCode}'. Response body: \n ${response.responseBody}"
+            log.warn "Image deletion failed. Image service returned status code: '${statusCode}'.\n" +
+                    " Response body: ${response.responseBody}"
         }
 
         return success

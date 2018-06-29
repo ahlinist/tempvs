@@ -207,15 +207,8 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(emailVerification, EDIT_PROFILE_EMAIL_FAILED_MESSAGE))
         }
 
-        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
-
-        Boolean success = Boolean.TRUE
-        String message = EDIT_PROFILE_EMAIL_MESSAGE_SENT
-
-        if (restResponse?.statusCode != HttpStatus.OK.value()) {
-            success = Boolean.FALSE
-            message = EDIT_PROFILE_EMAIL_FAILED_MESSAGE
-        }
+        Boolean success = verifyService.sendEmailVerification(emailVerification)
+        String message = success ? EDIT_PROFILE_EMAIL_MESSAGE_SENT : EDIT_PROFILE_EMAIL_FAILED_MESSAGE
 
         render ajaxResponseHelper.renderFormMessage(success, message)
     }

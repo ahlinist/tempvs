@@ -81,15 +81,8 @@ class AuthController {
             return render(ajaxResponseHelper.renderValidationResponse(emailVerification, REGISTER_MESSAGE_NOT_SENT))
         }
 
-        RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
-
-        Boolean success = Boolean.TRUE
-        String message = REGISTER_MESSAGE_SENT
-
-        if (restResponse?.statusCode != HttpStatus.OK.value()) {
-            success = Boolean.FALSE
-            message = REGISTER_MESSAGE_NOT_SENT
-        }
+        Boolean success = verifyService.sendEmailVerification(emailVerification)
+        String message = success ? REGISTER_MESSAGE_SENT : REGISTER_MESSAGE_NOT_SENT
 
         render ajaxResponseHelper.renderFormMessage(success, message)
     }
