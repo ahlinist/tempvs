@@ -10,6 +10,7 @@ import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
@@ -208,11 +209,15 @@ class ProfileController {
 
         RestResponse restResponse = verifyService.sendEmailVerification(emailVerification)
 
-        if (restResponse.statusCode == 200) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.TRUE, EDIT_PROFILE_EMAIL_MESSAGE_SENT))
-        } else {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, EDIT_PROFILE_EMAIL_FAILED_MESSAGE))
+        Boolean success = Boolean.TRUE
+        String message = EDIT_PROFILE_EMAIL_MESSAGE_SENT
+
+        if (restResponse?.statusCode != HttpStatus.OK.value()) {
+            success = Boolean.FALSE
+            message = EDIT_PROFILE_EMAIL_FAILED_MESSAGE
         }
+
+        render ajaxResponseHelper.renderFormMessage(success, message)
     }
 
     def deactivateProfile(String id) {
