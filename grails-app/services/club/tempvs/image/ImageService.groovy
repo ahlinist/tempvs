@@ -6,12 +6,14 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import groovy.json.JsonSlurper
 import groovy.transform.TypeCheckingMode
+import groovy.util.logging.Slf4j
 import org.springframework.http.HttpStatus
 import org.springframework.web.multipart.MultipartFile
 
 /**
  * A service that manages {@link Image}-related operations.
  */
+@Slf4j
 @GrailsCompileStatic
 class ImageService {
 
@@ -34,7 +36,14 @@ class ImageService {
         JSON payload = [images: images] as JSON
 
         RestResponse response = restCaller.doDelete(url, payload, headers)
-        response.statusCode == HttpStatus.OK.value()
+        Integer statusCode = response?.statusCode
+        Boolean success = (statusCode == HttpStatus.OK.value())
+
+        if (!success) {
+            log.warn "Image deletion failed. Image service returned status code: '${statusCode}'. Response body: \n ${response.responseBody}"
+        }
+
+        return success
     }
 
     Image uploadImage(ImageUploadBean imageUploadBean, String collection) {
@@ -60,14 +69,17 @@ class ImageService {
         JSON payload = [images: entries] as JSON
 
         RestResponse response = restCaller.doPost(url, payload, headers)
+        Integer statusCode = response?.statusCode
 
-        if (response.statusCode == HttpStatus.OK.value()) {
+        if (statusCode == HttpStatus.OK.value()) {
             JsonSlurper slurper = new JsonSlurper()
             def json = slurper.parseText(response.responseBody)
 
             for (imageNode in json.images) {
                 images << new Image(objectId: imageNode.objectId, collection: imageNode.collection, imageInfo: imageNode.imageInfo)
             }
+        } else if (statusCode) {
+            log.error "Image upload failed. Image service returns status code '${statusCode}'."
         }
 
         return images
