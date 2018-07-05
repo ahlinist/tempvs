@@ -310,7 +310,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * userService.currentUserId >> LONG_ONE
         1 * item.sources >> [source]
         1 * source.sourceType >> sourceType
-        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
+        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType, [source]) >> [source]
         0 * _
 
         and:
@@ -462,7 +462,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.itemType >> itemType
         1 * item.sources >> [source]
         1 * source.sourceType >> sourceType
-        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
+        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType, [source]) >> [source]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -485,7 +485,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.itemType >> itemType
         1 * item.sources >> [source]
         1 * source.sourceType >> sourceType
-        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType) >> [source]
+        1 * sourceService.getSourcesByPeriodAndItemType(period, itemType, [source]) >> [source]
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

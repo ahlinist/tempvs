@@ -49,7 +49,7 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         def result = service.getSourcesByPeriodAndItemType(period, itemType)
 
         then:
-        1 * Source.findAllByPeriodAndItemType(period, itemType) >> [source]
+        1 * Source.withCriteria(_ as Closure)>> [source]
         0 * _
 
         and:

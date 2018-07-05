@@ -35,8 +35,20 @@ class SourceService {
         Source.findAllByPeriod period
     }
 
-    List<Source> getSourcesByPeriodAndItemType(Period period, ItemType itemType) {
-        Source.findAllByPeriodAndItemType period, itemType
+    @GrailsCompileStatic(TypeCheckingMode.SKIP)
+    List<Source> getSourcesByPeriodAndItemType(Period period, ItemType itemType, List<Source> excludedSources = []) {
+        Source.withCriteria {
+            and {
+                eq 'period', period
+                eq 'itemType', itemType
+
+                if (excludedSources) {
+                    not {
+                        'in' 'id',excludedSources*.id
+                    }
+                }
+            }
+        }
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)

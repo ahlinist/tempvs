@@ -160,6 +160,8 @@ class ItemController {
             if (item) {
                 ItemGroup itemGroup = item.itemGroup
                 User user = itemGroup.user
+                List<Source> sources = item.sources
+                List<Source> availableSources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType, sources)
 
                 [
                         user: user,
@@ -168,8 +170,8 @@ class ItemController {
                         userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
-                        sourceMap: composeSourceMap(item.sources),
-                        sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
+                        sourceMap: composeSourceMap(sources),
+                        sources: availableSources,
                 ]
             }
         }
@@ -280,11 +282,13 @@ class ItemController {
             return render(ajaxResponseHelper.renderValidationResponse(item2Source))
         }
 
+        List<Source> sources = item.sources
+
         Map model = [
-                sourceMap: composeSourceMap(item.sources),
+                sourceMap: composeSourceMap(sources),
                 itemId: itemId,
                 editAllowed: Boolean.TRUE,
-                sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
+                sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType, sources),
         ]
 
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
@@ -300,12 +304,13 @@ class ItemController {
         }
 
         itemService.unlinkSource(item, source)
+        List<Source> sources = item.sources
 
         Map model = [
-                sourceMap: composeSourceMap(item.sources),
+                sourceMap: composeSourceMap(sources),
                 itemId: itemId,
                 editAllowed: Boolean.TRUE,
-                sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType),
+                sources: sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType, sources),
         ]
 
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
