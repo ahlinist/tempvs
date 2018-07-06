@@ -11,9 +11,11 @@ import spock.lang.Specification
 class FollowingControllerSpec extends Specification implements ControllerUnitTest<FollowingController> {
 
     private static final Long LONG_ONE = 1L
+    private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String REPLACE_ACTION = 'replaceElement'
+    private static final String DISPLAY_COUNTER = 'displayCounter'
 
     def following = Mock Following
     def userProfile = Mock UserProfile
@@ -60,7 +62,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         params.id = LONG_ONE
 
         when:
-        def result = controller.user()
+        controller.user()
 
         then:
         1 * profileService.getProfile(UserProfile, LONG_ONE) >> userProfile
@@ -84,7 +86,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         params.id = LONG_ONE
 
         when:
-        def result = controller.club()
+        controller.club()
 
         then:
         1 * profileService.getProfile(ClubProfile, LONG_ONE) >> clubProfile
@@ -144,5 +146,25 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         1 * followingService.mayBeFollowed(followerClubProfile, followingClubProfile) >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
+
+    void "Test getNewFollowingsCount()"() {
+        given:
+        request.method = GET_METHOD
+
+        when:
+        controller.getNewFollowersCount()
+
+        then:
+        1 * profileService.currentProfile >> userProfile
+        1 * followingService.getNewFollowersCount(userProfile) >> 2
+        0 * _
+
+        and:
+        response.json.action == DISPLAY_COUNTER
+        response.json.count == 2
     }
 }

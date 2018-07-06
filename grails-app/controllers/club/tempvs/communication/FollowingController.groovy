@@ -19,11 +19,14 @@ class FollowingController {
 
     private static final String NO_ACTION = 'none'
     private static final String REPLACE_ACTION = 'replaceElement'
+    private static final String DISPLAY_COUNTER = 'displayCounter'
 
     static allowedMethods = [
+            index: 'GET',
             show: 'GET',
             follow: 'POST',
-            unfollow: 'DELETE'
+            unfollow: 'DELETE',
+            getNewFollowingsCount: 'GET',
     ]
 
     ProfileService profileService
@@ -94,5 +97,11 @@ class FollowingController {
         Map model = [profile: followingProfile, mayBeFollowed: mayBeFollowed, isFollowed: Boolean.FALSE]
         String template = groovyPageRenderer.render(template: '/profile/templates/followButton', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def getNewFollowersCount() {
+        Profile currentProfile = profileService.currentProfile
+        Integer count = followingService.getNewFollowersCount(currentProfile)
+        render([action: DISPLAY_COUNTER, count: count] as JSON)
     }
 }

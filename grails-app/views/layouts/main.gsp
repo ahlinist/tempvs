@@ -2,7 +2,6 @@
   <g:set var="profileService" value="${applicationContext.profileService}"/>
   <g:set var="currentProfile" value="${profileService.currentProfile}"/>
   <g:set var="profileDropdown" value="${profileService.profileDropdown}"/>
-  <g:set var="newFollowings" value="${applicationContext.followingService.getNewFollowingsCount(currentProfile)}"/>
 </sec:ifLoggedIn>
 
 <!DOCTYPE html>
@@ -48,11 +47,8 @@
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
             <g:link class="btn btn-secondary disableable" controller="following" action=" ">
               <span class="fa fa-users">
-                <g:if test="${newFollowings}">
-                  <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
-                    ${newFollowings}
-                  </span>
-                </g:if>
+                <span id="new-followings" class="badge badge-notify rounded hidden" style="background-color: red; position: absolute; border-radius: 10px !important;">
+                </span>
               </span>
             </g:link>
           </span>

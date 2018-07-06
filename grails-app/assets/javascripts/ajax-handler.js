@@ -49,7 +49,7 @@ var ajaxHandler = {
         },
         none: function() {},
     },
-    processAjaxRequest: function(element, url, data, method, selector, actions, isValid) {
+    processAjaxRequest: function(element, url, data, method, selector, actions, isValid, isHidden) {
         clearForm(element);
         var submitButton = element.querySelector('.submit-button');
 
@@ -62,7 +62,9 @@ var ajaxHandler = {
                 processData: false,
                 contentType: false,
                 beforeSend: function() {
-                    blockUI();
+                    if (!isHidden) {
+                        blockUI();
+                    }
 
                     if (submitButton) {
                         submitButton.setAttribute("disabled", true);

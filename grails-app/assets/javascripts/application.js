@@ -16,7 +16,9 @@ function blockUI() {
 }
 
 function unblockUI() {
-    document.body.removeChild(overlay);
+    if (overlay.parentNode == document.body) {
+        document.body.removeChild(overlay);
+    }
 }
 
 $(function (){
@@ -44,6 +46,9 @@ $(function (){
     $('.modal').on('shown.bs.modal', function (e) {
         $('[data-toggle="tooltip"]').tooltip('hide');
     });
+
+    //display new followers counter
+    followersCounter.displayCounter();
 });
 
 function hideModals() {

@@ -1,6 +1,5 @@
 package club.tempvs.communication
 
-import club.tempvs.user.ClubProfile
 import club.tempvs.periodization.Period
 import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
@@ -31,7 +30,7 @@ class FollowingService {
         }
     }
 
-    Integer getNewFollowingsCount(Profile profile) {
+    Integer getNewFollowersCount(Profile profile) {
         if (profile) {
             String profileClassName = profile.class.name
             Long profileId = profile.id
