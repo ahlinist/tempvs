@@ -14,9 +14,7 @@ import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
-import grails.plugin.springsecurity.SecurityTagLib
 import grails.web.mapping.LinkGenerator
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -32,6 +30,8 @@ class SourceController {
     private static final String SOURCE_COLLECTION = 'source'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
+    private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
+    private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
 
     static allowedMethods = [
             index: 'GET',
@@ -52,7 +52,6 @@ class SourceController {
     SourceService sourceService
     ProfileService profileService
     CommentService commentService
-    SecurityTagLib securityTagLib
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
@@ -136,15 +135,12 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR')
-        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_SCRIBE')
-
         Map model = [
                 images: source.images,
                 objectId: objectId,
                 controllerName: 'source',
-                addingAllowed: addingAllowed,
-                deletingAllowed: deletingAllowed,
+                addingAllowed: userService.ifAnyRoleGranted(ROLE_CONTRIBUTOR),
+                deletingAllowed: userService.ifAnyRoleGranted(ROLE_SCRIBE),
         ]
 
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
@@ -189,15 +185,12 @@ class SourceController {
             return render(ajaxResponseHelper.renderValidationResponse(source))
         }
 
-        Boolean addingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_CONTRIBUTOR')
-        Boolean deletingAllowed = securityTagLib.ifAnyGranted(roles: 'ROLE_SCRIBE')
-
         Map model = [
                 images: source.images,
                 objectId: params.objectId,
                 controllerName: 'source',
-                addingAllowed: addingAllowed,
-                deletingAllowed: deletingAllowed,
+                addingAllowed: userService.ifAnyRoleGranted(ROLE_CONTRIBUTOR),
+                deletingAllowed: userService.ifAnyRoleGranted(ROLE_SCRIBE),
         ]
 
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)

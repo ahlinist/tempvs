@@ -2,7 +2,6 @@ import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.rest.ConnectionFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.user.UserPasswordEncoderListener
-import grails.plugin.springsecurity.SecurityTagLib
 import org.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 
@@ -16,7 +15,6 @@ beans = {
     }
 
     connectionFactory(ConnectionFactory)
-    securityTagLib(SecurityTagLib)
     validationTagLib(ValidationTagLib)
     passwordEncoder(BCryptPasswordEncoder)
     userPasswordEncoderListener(UserPasswordEncoderListener)

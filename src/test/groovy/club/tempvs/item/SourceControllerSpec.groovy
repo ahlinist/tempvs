@@ -14,7 +14,6 @@ import club.tempvs.user.UserProfile
 import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
-import grails.plugin.springsecurity.SecurityTagLib
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.grails.plugins.testing.GrailsMockMultipartFile
@@ -38,6 +37,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String PERIOD_URI = '/source/period'
     private static final String LIBRARY_URI = '/library'
     private static final String REPLACE_ACTION = 'replaceElement'
+    private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
+    private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
 
     def json = Mock JSON
     def user = Mock User
@@ -55,7 +56,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def sourceService = Mock SourceService
     def profileService = Mock ProfileService
     def commentService = Mock CommentService
-    def securityTagLib = Mock SecurityTagLib
     def groovyPageRenderer = Mock PageRenderer
     def ajaxResponseHelper = Mock AjaxResponseHelper
 
@@ -67,7 +67,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
-        controller.securityTagLib = securityTagLib
     }
 
     def cleanup() {
@@ -208,7 +207,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.saveSource(source) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
-        2 * securityTagLib.ifAnyGranted(_ as Map) >> Boolean.TRUE
+        1 * userService.ifAnyRoleGranted(ROLE_SCRIBE)
+        1 * userService.ifAnyRoleGranted(ROLE_CONTRIBUTOR)
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -245,7 +245,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         1 * sourceService.deleteImage(source, image) >> source
         1 * source.hasErrors() >> Boolean.FALSE
         1 * source.images >> [image]
-        2 * securityTagLib.ifAnyGranted(_ as Map) >> Boolean.TRUE
+        1 * userService.ifAnyRoleGranted(ROLE_SCRIBE)
+        1 * userService.ifAnyRoleGranted(ROLE_CONTRIBUTOR)
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
