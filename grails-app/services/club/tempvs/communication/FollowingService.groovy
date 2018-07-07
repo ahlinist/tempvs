@@ -1,5 +1,6 @@
 package club.tempvs.communication
 
+import club.tempvs.object.ObjectFactory
 import club.tempvs.periodization.Period
 import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
@@ -16,11 +17,14 @@ import org.springframework.security.access.prepost.PreAuthorize
 class FollowingService {
 
     private static final String PERIOD_FIELD = 'period'
-    private static final String PROFILE_CLASS_FIELD = 'profileClass'
+    private static final String PROFILE_CLASS_NAME_FIELD = 'profileClassName'
+    private static final String FOLLOWING_ID_FIELD = 'followingId'
     private static final String PERIOD_MISMATCH = 'period.mismatch.message'
+    private static final String USER_MISMATCH = 'following.user.mismatch.message'
     private static final String PROFILE_CLASSES_MISMATCH = 'profile.classes.mismatch.message'
 
     ProfileService profileService
+    ObjectFactory objectFactory
 
     Following getFollowing(Profile followerProfile, Profile followingProfile) {
         if (followerProfile && followingProfile) {
@@ -40,17 +44,21 @@ class FollowingService {
 
     @PreAuthorize('#followerProfile.user.email == authentication.name')
     Following createFollowing(Profile followerProfile, Profile followingProfile) {
-        Following following = new Following()
+        Following following = objectFactory.getInstance(Following)
 
         if (followerProfile?.class != followingProfile?.class) {
-            following.errors.rejectValue(PROFILE_CLASS_FIELD, PROFILE_CLASSES_MISMATCH, [] as Object[], PROFILE_CLASSES_MISMATCH)
+            following.errors.rejectValue(PROFILE_CLASS_NAME_FIELD, PROFILE_CLASSES_MISMATCH, PROFILE_CLASSES_MISMATCH)
         }
 
         if (followerProfile instanceof ClubProfile) {
             Period period = followerProfile.period
 
             if (period != ((ClubProfile) followingProfile)?.period) {
-                following.errors.rejectValue(PERIOD_FIELD, PERIOD_MISMATCH, [] as Object[], PERIOD_MISMATCH)
+                following.errors.rejectValue(PERIOD_FIELD, PERIOD_MISMATCH, PERIOD_MISMATCH)
+            }
+
+            if (followerProfile.user == followingProfile.user) {
+                following.errors.rejectValue(FOLLOWING_ID_FIELD, USER_MISMATCH, USER_MISMATCH)
             }
 
             following.period = period

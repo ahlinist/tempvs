@@ -1,4 +1,5 @@
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.ConnectionFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.user.UserPasswordEncoderListener
@@ -14,6 +15,7 @@ beans = {
         connectionFactory = ref "connectionFactory"
     }
 
+    objectFactory(ObjectFactory)
     connectionFactory(ConnectionFactory)
     validationTagLib(ValidationTagLib)
     passwordEncoder(BCryptPasswordEncoder)

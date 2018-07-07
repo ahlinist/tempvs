@@ -1,11 +1,14 @@
 package club.tempvs.communication
 
+import club.tempvs.object.ObjectFactory
 import club.tempvs.periodization.Period
 import club.tempvs.user.ClubProfile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.User
 import club.tempvs.user.UserProfile
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
+import org.springframework.validation.Errors
 import spock.lang.Specification
 
 class FollowingServiceSpec extends Specification implements ServiceUnitTest<FollowingService>, DataTest {
@@ -15,20 +18,25 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
     private static final String ID = 'id'
     private static final String CLASS = 'class'
 
+    def user1 = Mock User
+    def user2 = Mock User
+    def errors = GroovyMock Errors
     def following = Mock Following
-    def period = GroovyMock Period
+    def ancientPeriod = Period.ANCIENT
+    def antiquityPeriod = Period.ANTIQUITY
+    def objectFactory = Mock ObjectFactory
+    def profileService = Mock ProfileService
     def followerUserProfile = Mock UserProfile
     def followingUserProfile = Mock UserProfile
     def followerClubProfile = Mock ClubProfile
     def followingClubProfile = Mock ClubProfile
-
-    def profileService = Mock ProfileService
 
     void setupSpec() {
         mockDomain Following
     }
 
     def setup() {
+        service.objectFactory = objectFactory
         service.profileService = profileService
 
         GroovySpy(Following, global: true)
@@ -42,6 +50,7 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         def result = service.createFollowing(followerUserProfile, followingUserProfile)
 
         then:
+        1 * objectFactory.getInstance(Following) >> following
         1 * followerUserProfile.id >> LONG_ONE
         1 * followingUserProfile.id >> LONG_TWO
 
@@ -54,10 +63,83 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         def result = service.createFollowing(followerClubProfile, followingClubProfile)
 
         then:
+        1 * objectFactory.getInstance(Following) >> following
         1 * followerClubProfile.id >> LONG_ONE
         1 * followingClubProfile.id >> LONG_TWO
-        1 * followerClubProfile.period >> period
-        1 * followingClubProfile.period >> period
+        1 * followerClubProfile.period >> ancientPeriod
+        1 * followingClubProfile.period >> ancientPeriod
+        1 * followerClubProfile.user >> user1
+        1 * followingClubProfile.user >> user2
+
+        and:
+        result instanceof Following
+    }
+
+    void "Test createFollowing() for different profile types"() {
+        when:
+        def result = service.createFollowing(followerUserProfile, followingClubProfile)
+
+        then:
+        1 * objectFactory.getInstance(Following) >> following
+        1 * followerUserProfile.id >> LONG_ONE
+        1 * followingClubProfile.id >> LONG_TWO
+        1 * following.getErrors() >> errors
+        1 * errors.rejectValue('profileClassName', _ as String, _ as String)
+        1 * following.setFollowerId(LONG_ONE)
+        1 * following.setFollowingId(LONG_TWO)
+        1 * following.setProfileClassName(_ as String)
+        1 * following.save()
+        0 * _
+
+        and:
+        result instanceof Following
+    }
+
+    void "Test createFollowing() for clubProfiles with different periods"() {
+        when:
+        def result = service.createFollowing(followerClubProfile, followingClubProfile)
+
+        then:
+        1 * objectFactory.getInstance(Following) >> following
+        1 * followerClubProfile.id >> LONG_ONE
+        1 * followingClubProfile.id >> LONG_TWO
+        1 * followerClubProfile.period >> ancientPeriod
+        1 * followingClubProfile.period >> antiquityPeriod
+        1 * following.setPeriod(ancientPeriod)
+        1 * followerClubProfile.user >> user1
+        1 * followingClubProfile.user >> user2
+        1 * following.getErrors() >> errors
+        1 * errors.rejectValue('period', _ as String, _ as String)
+        1 * following.setFollowerId(LONG_ONE)
+        1 * following.setFollowingId(LONG_TWO)
+        1 * following.setProfileClassName(_ as String)
+        1 * following.save()
+        0 * _
+
+        and:
+        result instanceof Following
+    }
+
+    void "Test createFollowing() for clubProfiles belonging to one user"() {
+        when:
+        def result = service.createFollowing(followerClubProfile, followingClubProfile)
+
+        then:
+        1 * objectFactory.getInstance(Following) >> following
+        1 * followerClubProfile.id >> LONG_ONE
+        1 * followingClubProfile.id >> LONG_TWO
+        1 * followerClubProfile.period >> ancientPeriod
+        1 * followingClubProfile.period >> ancientPeriod
+        1 * following.setPeriod(ancientPeriod)
+        1 * followerClubProfile.user >> user1
+        1 * followingClubProfile.user >> user1
+        1 * following.getErrors() >> errors
+        1 * errors.rejectValue('followingId', _ as String, _ as String)
+        1 * following.setFollowerId(LONG_ONE)
+        1 * following.setFollowingId(LONG_TWO)
+        1 * following.setProfileClassName(_ as String)
+        1 * following.save()
+        0 * _
 
         and:
         result instanceof Following
@@ -153,8 +235,8 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         then:
         1 * followerClubProfile.id >> LONG_ONE
         1 * followingClubProfile.id >> LONG_TWO
-        1 * followerClubProfile.period >> period
-        1 * followingClubProfile.period >> period
+        1 * followerClubProfile.period >> ancientPeriod
+        1 * followingClubProfile.period >> ancientPeriod
         0 * _
 
         and:

@@ -34,7 +34,7 @@ class Following implements BasePersistent {
     }
 
     int hashCode() {
-        profileClassName.hashCode() * followerId * followingId * period.name().hashCode()
+        profileClassName.hashCode() * followerId * followingId
     }
 
     boolean equals(Object obj) {
