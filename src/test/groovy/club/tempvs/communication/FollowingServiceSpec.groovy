@@ -53,6 +53,12 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         1 * objectFactory.getInstance(Following) >> following
         1 * followerUserProfile.id >> LONG_ONE
         1 * followingUserProfile.id >> LONG_TWO
+        1 * following.setFollowerId(LONG_ONE)
+        1 * following.setFollowingId(LONG_TWO)
+        1 * following.setProfileClassName(_ as String)
+        1 * following.hasErrors() >> Boolean.FALSE
+        1 * following.save()
+        0 * _
 
         and:
         result instanceof Following
@@ -70,6 +76,13 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         1 * followingClubProfile.period >> ancientPeriod
         1 * followerClubProfile.user >> user1
         1 * followingClubProfile.user >> user2
+        1 * following.setPeriod(ancientPeriod)
+        1 * following.setFollowerId(LONG_ONE)
+        1 * following.setFollowingId(LONG_TWO)
+        1 * following.setProfileClassName(_ as String)
+        1 * following.hasErrors() >> Boolean.FALSE
+        1 * following.save()
+        0 * _
 
         and:
         result instanceof Following
@@ -88,7 +101,7 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         1 * following.setFollowerId(LONG_ONE)
         1 * following.setFollowingId(LONG_TWO)
         1 * following.setProfileClassName(_ as String)
-        1 * following.save()
+        1 * following.hasErrors() >> Boolean.TRUE
         0 * _
 
         and:
@@ -113,7 +126,7 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         1 * following.setFollowerId(LONG_ONE)
         1 * following.setFollowingId(LONG_TWO)
         1 * following.setProfileClassName(_ as String)
-        1 * following.save()
+        1 * following.hasErrors() >> Boolean.TRUE
         0 * _
 
         and:
@@ -138,7 +151,7 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         1 * following.setFollowerId(LONG_ONE)
         1 * following.setFollowingId(LONG_TWO)
         1 * following.setProfileClassName(_ as String)
-        1 * following.save()
+        1 * following.hasErrors() >> Boolean.TRUE
         0 * _
 
         and:

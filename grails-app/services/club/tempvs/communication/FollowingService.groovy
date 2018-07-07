@@ -67,7 +67,11 @@ class FollowingService {
         following.followerId = followerProfile?.id
         following.followingId = followingProfile?.id
         following.profileClassName = followerProfile?.class?.name
-        following.save()
+
+        if (!following.hasErrors()) {
+            following.save()
+        }
+
         following
     }
 
