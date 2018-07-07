@@ -250,6 +250,8 @@ class FollowingServiceSpec extends Specification implements ServiceUnitTest<Foll
         1 * followingClubProfile.id >> LONG_TWO
         1 * followerClubProfile.period >> ancientPeriod
         1 * followingClubProfile.period >> ancientPeriod
+        1 * followerClubProfile.user >> user1
+        1 * followingClubProfile.user >> user2
         0 * _
 
         and:

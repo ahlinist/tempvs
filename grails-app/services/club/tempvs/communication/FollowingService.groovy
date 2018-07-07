@@ -102,7 +102,9 @@ class FollowingService {
                 if (followerProfile.id != followingProfile.id) {
                     if (followerProfile instanceof ClubProfile) {
                         if (((ClubProfile) followerProfile).period == ((ClubProfile) followingProfile).period) {
-                            return Boolean.TRUE
+                            if (followerProfile.user != followingProfile.user) {
+                                return Boolean.TRUE
+                            }
                         }
                     } else {
                         return Boolean.TRUE
