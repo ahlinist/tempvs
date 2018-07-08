@@ -24,7 +24,7 @@ function unblockUI() {
 $(function (){
     //preventing double clicking
     $('.disableable').click(function() {
-        $(this).attr("disabled", true);
+        this.setAttribute('disabled', true);
     });
 
     $('body').click(function() {

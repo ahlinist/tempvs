@@ -110,6 +110,10 @@ select:disabled {
     display: none !important;
 }
 
+[disabled] {
+    pointer-events: none;
+}
+
 label {
      overflow: hidden;
 }
