@@ -87,19 +87,23 @@ class BootStrap {
     }
 
     private pingMicroService(String serviceUrl, String serviceName, String urlVariable) {
-        if (serviceUrl) {
-            String pingUrl = "${serviceUrl}/api/ping"
-            RestResponse response = restCaller.doGet(pingUrl)
+        new Thread(serviceName){
+            void run(){
+                if (serviceUrl) {
+                    String pingUrl = "${serviceUrl}/api/ping"
+                    RestResponse response = restCaller.doGet(pingUrl)
 
-            if (!response) {
-                log.error "${serviceName} service is down"
-            } else if (response.statusCode == HttpStatus.OK.value()) {
-                log.info "${serviceName} service is up and running at '${serviceUrl}'"
-            } else {
-                log.error "${serviceName} service returns status code '${response.statusCode}' for URL: '${pingUrl}'"
+                    if (!response) {
+                        log.error "${serviceName} service is down"
+                    } else if (response.statusCode == HttpStatus.OK.value()) {
+                        log.info "${serviceName} service is up and running at '${serviceUrl}'"
+                    } else {
+                        log.error "${serviceName} service returns status code '${response.statusCode}' for URL: '${pingUrl}'"
+                    }
+                } else {
+                    log.error "'${urlVariable}' environment variable has not been set up"
+                }
             }
-        } else {
-            log.error "'${urlVariable}' environment variable has not been set up"
-        }
+        }.start()
     }
 }
