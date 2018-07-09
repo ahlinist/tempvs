@@ -21,11 +21,11 @@
               <b>${quantity}</b>
             </g:else>
           </span>
-          <g:link controller="item" action="show" id="${itemId}" class="btn btn-default col-sm-10">
+          <g:link controller="item" action="show" id="${itemId}" class="btn btn-default col-sm-9">
             ${itemName}
           </g:link>
           <g:if test="${editAllowed}">
-            <div class="pull-left">
+            <span>
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'passport.remove.item.button')}">
                 <g:render template="/common/templates/modalButton"
                     model="${[id: 'unlinkSource' + itemId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
@@ -38,7 +38,7 @@
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </g:render>
               </span>
-            </div>
+            </span>
           </g:if>
         </li>
       </g:each>

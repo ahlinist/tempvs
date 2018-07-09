@@ -37,7 +37,7 @@
     <sec:ifLoggedIn>
       <g:render template="/ajax/templates/ajaxForm"
                     model="${[controller: controllerName, action: 'addComment', selector: 'div#comments']}">
-        <g:textArea name="text" rows="2" cols="10"/>
+        <g:textArea name="text" style="height: 70px; width: 100%;"/>
         <br/>
         <input type="hidden" name="objectId" value="${object.id}"/>
         <g:render template="/ajax/templates/submitButton">
