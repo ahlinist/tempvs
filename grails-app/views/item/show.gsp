@@ -39,14 +39,14 @@
               </div>
             </div>
           </g:if>
-          <g:render template="/communication/templates/comments" model="${[controllerName: 'item', object: item, objectId: itemId]}"/>
-        </div>
-        <div class="col-sm-4">
-          <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
         </div>
         <div class="col-sm-4">
           <g:render template="/image/templates/modalCarousel"
-              model="${[objectId: itemId, addingAllowed: editAllowed, deletingAllowed: editAllowed]}"/>
+                        model="${[objectId: itemId, addingAllowed: editAllowed, deletingAllowed: editAllowed]}"/>
+        </div>
+        <div class="col-sm-4">
+          <g:render template="/item/templates/linkedSources" model="${[itemId: itemId]}"/>
+          <g:render template="/communication/templates/comments" model="${[controllerName: 'item', object: item, objectId: itemId]}"/>
         </div>
       </div>
     </g:if>
