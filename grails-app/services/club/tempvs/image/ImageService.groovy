@@ -35,13 +35,18 @@ class ImageService {
         Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
         JSON payload = [images: images] as JSON
 
-        RestResponse response = restCaller.doDelete(url, payload, headers)
+        RestResponse response = restCaller.doPost(url, headers, payload)
         Integer statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK.value())
 
         if (!success) {
-            log.warn "Image deletion failed. Image service returned status code: '${statusCode}'.\n" +
-                    " Response body: ${response.responseBody}"
+            String message = "Image deletion failed. Image service returned status code: '${statusCode}'.\n"
+
+            if (response.responseBody) {
+                message += "Response body: ${response.responseBody}"
+            }
+
+            log.warn message
         }
 
         return success
@@ -69,7 +74,7 @@ class ImageService {
 
         JSON payload = [images: entries] as JSON
 
-        RestResponse response = restCaller.doPost(url, payload, headers)
+        RestResponse response = restCaller.doPost(url, headers, payload)
         Integer statusCode = response?.statusCode
 
         if (statusCode == HttpStatus.OK.value()) {

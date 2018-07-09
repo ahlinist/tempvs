@@ -59,7 +59,7 @@ class VerifyService {
         JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
         String emailServiceUrl = EMAIL_SERVICE_URL + SEND_EMAIL_API_URI
         Map<String, String> headers = [token: EMAIL_SECURITY_TOKEN.encodeAsMD5() as String]
-        RestResponse response = restCaller.doPost(emailServiceUrl, payload, headers)
+        RestResponse response = restCaller.doPost(emailServiceUrl, headers, payload)
         Integer statusCode = response?.statusCode
         Boolean success = Boolean.TRUE
 

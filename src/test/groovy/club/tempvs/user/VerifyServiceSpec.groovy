@@ -81,7 +81,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         1 * emailVerification.verificationCode
         1 * emailVerification.action
         1 * emailVerification.email
-        1 * restCallService.doPost(_ as String, _ as JSON, _ as Map) >> restResponse
+        1 * restCallService.doPost(_ as String, _ as Map, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> 200
         0 * _
 

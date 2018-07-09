@@ -20,30 +20,28 @@ class RestCaller {
     RestResponse doGet(String url, Map<String, String> headers = [:]) {
         HttpURLConnection connection = connectionFactory.getInstance(url)
         connection.setRequestMethod(HttpMethod.GET.name())
+        setHeaders(connection, headers)
         parseResponse(connection)
     }
 
-    RestResponse doPost(String url, JSON payload = new JSON(), Map<String, String> headers = [:]) {
+    RestResponse doPost(String url, Map<String, String> headers = [:], JSON payload = new JSON()) {
         HttpURLConnection connection = connectionFactory.getInstance(url)
         connection.setRequestMethod(HttpMethod.POST.name())
-        sendRequest(connection, payload, headers)
+        setHeaders(connection, headers)
+        sendRequest(connection, payload)
         parseResponse(connection)
     }
 
-    RestResponse doDelete(String url, JSON payload = new JSON(), Map<String, String> headers = [:]) {
+    RestResponse doDelete(String url, Map<String, String> headers = [:]) {
         HttpURLConnection connection = connectionFactory.getInstance(url)
         connection.setRequestMethod(HttpMethod.DELETE.name())
-        sendRequest(connection, payload, headers)
+        setHeaders(connection, headers)
         parseResponse(connection)
     }
 
-    private HttpURLConnection sendRequest(HttpURLConnection connection, JSON payload = new JSON(), Map<String, String> headers = [:]) {
+    private HttpURLConnection sendRequest(HttpURLConnection connection, JSON payload = new JSON()) {
         connection.setRequestProperty("Content-Type", JSON_CONTENT_TYPE)
         connection.setDoOutput(Boolean.TRUE)
-
-        headers.each { String headerName, String headerValue ->
-            connection.setRequestProperty(headerName, headerValue)
-        }
 
         String jsonString = payload.toString()
 
@@ -59,6 +57,12 @@ class RestCaller {
             outputStream.write(out)
         } finally {
             outputStream?.close()
+        }
+    }
+
+    private void setHeaders(HttpURLConnection connection, Map<String, String> headers) {
+        headers.each { String headerName, String headerValue ->
+            connection.setRequestProperty(headerName, headerValue)
         }
     }
 

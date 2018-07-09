@@ -51,7 +51,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         def result = service.deleteImage(image)
 
         then:
-        1 * restCaller.doDelete(_ as String, _ as JSON, _ as Map) >> restResponse
+        1 * restCaller.doPost(_ as String, _ as Map, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> 200
         0 * _
 
@@ -64,7 +64,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         def result = service.deleteImages([image, image])
 
         then:
-        1 * restCaller.doDelete(_ as String, _ as JSON, _ as Map) >> restResponse
+        1 * restCaller.doPost(_ as String, _ as Map, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> 200
         0 * _
 
@@ -79,7 +79,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         1 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * restCaller.doPost(_ as String, _ as JSON, _ as Map) >> restResponse
+        1 * restCaller.doPost(_ as String, _ as Map, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> 200
         1 * restResponse.responseBody >> "{}"
         0 * _
@@ -92,7 +92,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         1 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * restCaller.doPost(_ as String, _ as JSON, _ as Map) >> restResponse
+        1 * restCaller.doPost(_ as String, _ as Map, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> 200
         1 * restResponse.responseBody >> "{}"
         0 * _
