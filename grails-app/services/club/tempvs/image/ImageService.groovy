@@ -27,7 +27,24 @@ class ImageService {
     }
 
     Boolean deleteImage(Image image) {
-        deleteImages([image])
+        String url = "${IMAGE_SERVICE_URL}/api/delete/${image.collection}/${image.objectId}"
+        Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
+
+        RestResponse response = restCaller.doDelete(url, headers)
+        Integer statusCode = response?.statusCode
+        Boolean success = (statusCode == HttpStatus.OK.value())
+
+        if (!success) {
+            String message = "Image deletion failed. Image service returned status code: '${statusCode}'.\n"
+
+            if (response.responseBody) {
+                message += "Response body: ${response.responseBody}"
+            }
+
+            log.warn message
+        }
+
+        return success
     }
 
     Boolean deleteImages(List<Image> images) {
