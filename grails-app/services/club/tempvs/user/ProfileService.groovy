@@ -67,19 +67,35 @@ class ProfileService {
         }
     }
 
-    Map<String, String> getProfileDropdown() {
-        Map result = [:]
-        User user = userService.currentUser
-        String userProfileString = user.userProfile.toString()
-        String normalizedUserProfileString = userProfileString.size() <= 30 ? userProfileString : userProfileString[0..29] + '...'
-        result[(normalizedUserProfileString)] = grailsLinkGenerator.link(controller: 'profile', action: 'switchProfile')
+    Map getProfileDropdown() {
+        User currentUser = userService.currentUser
 
-        for (ClubProfile clubProfile in user.clubProfiles) {
-            if (clubProfile.active) {
-                String clubProfileString = clubProfile.toString()
-                String normalizedClubProfileString = clubProfileString.size() <= 30 ? clubProfileString : clubProfileString[0..29] + '...'
-                result[(normalizedClubProfileString)] = grailsLinkGenerator.link(controller: 'profile', action: 'switchProfile', id: clubProfile.id)
+        if (!currentUser) {
+            return [:]
+        }
+
+        UserProfile userProfile = currentUser.userProfile
+        List<ClubProfile> clubProfiles = currentUser.clubProfiles
+        Long currentProfileId = currentUser.currentProfileId
+
+        Profile currentProfile
+
+        if (currentUser.currentProfileClass == UserProfile) {
+            currentProfile = userProfile
+        } else {
+            currentProfile = clubProfiles.find { ClubProfile clubProfile ->
+                clubProfile.id == currentProfileId
             }
+        }
+
+        Map result = [
+                current: [currentProfile.toString()],
+                user: [userProfile.toString()],
+                club: [],
+        ]
+
+        result.club = clubProfiles.collect { ClubProfile clubProfile ->
+            [id:clubProfile.id, name: clubProfile.toString()]
         }
 
         return result

@@ -211,4 +211,23 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         and:
         result == Boolean.TRUE
     }
+
+    void "Test getProfileDropdown()"() {
+        when:
+        def result = service.getProfileDropdown()
+
+        then:
+        1 * userService.currentUser >> user
+        1 * user.userProfile >> userProfile
+        1 * user.clubProfiles >> [clubProfile]
+        1 * user.currentProfileClass >> ClubProfile
+        1 * user.currentProfileId >> LONG_ONE
+        2 * clubProfile.toString() >> "I'm a club profile"
+        1 * userProfile.toString() >> "I'm a user profile"
+        _ * clubProfile.id >> LONG_ONE
+        0 * _
+
+        and:
+        result.current != null
+    }
 }

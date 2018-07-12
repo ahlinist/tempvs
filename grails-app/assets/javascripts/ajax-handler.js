@@ -49,7 +49,7 @@ var ajaxHandler = {
         },
         none: function() {},
     },
-    processAjaxRequest: function(element, url, data, method, selector, actions, isValid, isHidden) {
+    processAjaxRequest: function(element, url, data, method, selector, actions, isValid, isSpinnerHidden) {
         clearForm(element);
         var submitButton = element.querySelector('.submit-button');
 
@@ -62,7 +62,7 @@ var ajaxHandler = {
                 processData: false,
                 contentType: false,
                 beforeSend: function() {
-                    if (!isHidden) {
+                    if (!isSpinnerHidden) {
                         blockUI();
                     }
 

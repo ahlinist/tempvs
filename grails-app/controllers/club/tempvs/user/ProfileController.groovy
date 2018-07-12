@@ -24,9 +24,10 @@ import org.springframework.security.access.AccessDeniedException
 class ProfileController {
 
     private static final String NO_ACTION = 'none'
+    private static final String REFERER = 'referer'
     private static final String SUCCESS_ACTION = 'success'
     private static final String AVATAR_COLLECTION = 'avatar'
-    private static final String REFERER = 'referer'
+    private static final String FILL_DROPDOWN = 'fillDropdown'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String NO_SUCH_PROFILE = 'profile.noSuchProfile.message'
@@ -45,7 +46,8 @@ class ProfileController {
             activateProfile: 'POST',
             deactivateProfile: 'POST',
             deleteAvatar: 'DELETE',
-            uploadAvatar: 'POST'
+            uploadAvatar: 'POST',
+            getProfileDropdown: 'GET',
     ]
 
     UserService userService
@@ -283,6 +285,19 @@ class ProfileController {
         Map model = [profile: profile, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/profile/templates/avatar', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def getProfileDropdown() {
+        Map body = profileService.getProfileDropdown()
+        Map result
+
+        if (body) {
+            result = [action: FILL_DROPDOWN, body: body]
+        } else {
+            result = [action: NO_ACTION]
+        }
+
+        render(result as JSON)
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {

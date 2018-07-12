@@ -49,6 +49,9 @@ $(function (){
 
     //display new followers counter
     followersCounter.displayCounter();
+
+    //populate profile dropdown
+    profileDropdown.displayDropdown();
 });
 
 function hideModals() {

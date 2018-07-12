@@ -1,9 +1,3 @@
-<sec:ifLoggedIn>
-  <g:set var="profileService" value="${applicationContext.profileService}"/>
-  <g:set var="currentProfile" value="${profileService.currentProfile}"/>
-  <g:set var="profileDropdown" value="${profileService.profileDropdown}"/>
-</sec:ifLoggedIn>
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -28,20 +22,15 @@
               <span class="glyphicon glyphicon-user"></span>
             </g:link>
           </span>
-          <span class="dropdown pull-left">
-            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-              <g:set var="profileString" value="${currentProfile.toString()}"/>
-              ${profileString.size() <= 30 ? profileString : profileString[0..29] + '...'}
+          <span id="profile-dropdown" class="dropdown pull-left">
+            <button id="current-profile" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+              <span id="current-profile-name"></span>
               <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu list-group">
-              <g:each var="profileDropdownEntry" in="${profileDropdown}">
-                <li>
-                  <a class="list-group-item disableable" href="${profileDropdownEntry.value}">
-                    ${profileDropdownEntry.key}
-                  </a>
-                </li>
-              </g:each>
+            <ul id="profiles" class="dropdown-menu list-group">
+              <li id="user-profile">
+                <a class="list-group-item disableable" href=""></a>
+              </li>
             </ul>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">

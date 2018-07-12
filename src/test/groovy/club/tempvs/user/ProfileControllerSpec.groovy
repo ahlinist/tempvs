@@ -399,4 +399,16 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
     }
+
+    void "Test getProfileDropdown()"() {
+        given:
+        request.method = GET_METHOD
+
+        when:
+        controller.getProfileDropdown()
+
+        then:
+        1 * profileService.getProfileDropdown()
+        0 * _
+    }
 }
