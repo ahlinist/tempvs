@@ -7,6 +7,7 @@ import grails.gsp.PageRenderer
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import grails.web.mapping.LinkGenerator
+import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
 class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyService>, DomainUnitTest<EmailVerification> {
@@ -81,8 +82,8 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         1 * emailVerification.verificationCode
         1 * emailVerification.action
         1 * emailVerification.email
-        1 * restCallService.doPost(_ as String, _ as Map, _ as JSON) >> restResponse
-        1 * restResponse.statusCode >> 200
+        1 * restCallService.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 
         and:

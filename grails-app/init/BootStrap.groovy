@@ -95,7 +95,7 @@ class BootStrap {
 
                     if (!response) {
                         log.error "${serviceName} service is down"
-                    } else if (response.statusCode == HttpStatus.OK.value()) {
+                    } else if (response.statusCode == HttpStatus.OK) {
                         log.info "${serviceName} service is up and running at '${serviceUrl}'"
                     } else {
                         log.error "${serviceName} service returns status code '${response.statusCode}' for URL: '${pingUrl}'"

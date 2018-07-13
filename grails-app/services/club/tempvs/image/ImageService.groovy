@@ -28,16 +28,16 @@ class ImageService {
 
     Boolean deleteImage(Image image) {
         String url = "${IMAGE_SERVICE_URL}/api/delete/${image.collection}/${image.objectId}"
-        Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
+        RestResponse response = restCaller.doDelete(url, IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String)
+        HttpStatus statusCode = response?.statusCode
+        Boolean success = (statusCode == HttpStatus.OK)
 
-        RestResponse response = restCaller.doDelete(url, headers)
-        Integer statusCode = response?.statusCode
-        Boolean success = (statusCode == HttpStatus.OK.value())
+        if (!response) {
+            log.warn "Image deletion failed."
+        } else if (!success) {
+            String message = "Image deletion failed. Image service returned status code: '${statusCode.value()}'.\n"
 
-        if (!success) {
-            String message = "Image deletion failed. Image service returned status code: '${statusCode}'.\n"
-
-            if (response.responseBody) {
+            if (response?.responseBody) {
                 message += "Response body: ${response.responseBody}"
             }
 
@@ -49,15 +49,15 @@ class ImageService {
 
     Boolean deleteImages(List<Image> images) {
         String url = IMAGE_SERVICE_URL + '/api/delete'
-        Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
+        String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         JSON payload = [images: images] as JSON
 
-        RestResponse response = restCaller.doPost(url, headers, payload)
-        Integer statusCode = response?.statusCode
-        Boolean success = (statusCode == HttpStatus.OK.value())
+        RestResponse response = restCaller.doPost(url, token, payload)
+        HttpStatus statusCode = response?.statusCode
+        Boolean success = (statusCode == HttpStatus.OK)
 
         if (!success) {
-            String message = "Image deletion failed. Image service returned status code: '${statusCode}'.\n"
+            String message = "Image deletion failed. Image service returned status code: '${statusCode.value()}'.\n"
 
             if (response.responseBody) {
                 message += "Response body: ${response.responseBody}"
@@ -77,7 +77,7 @@ class ImageService {
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
         List<Image> images = []
         String url = IMAGE_SERVICE_URL + '/api/store'
-        Map<String, String> headers = [token: IMAGE_SECURITY_TOKEN.encodeAsMD5() as String]
+        String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         List<Map<String, String>> entries = []
 
         for (ImageUploadBean imageUploadBean in imageUploadBeans) {
@@ -91,10 +91,10 @@ class ImageService {
 
         JSON payload = [images: entries] as JSON
 
-        RestResponse response = restCaller.doPost(url, headers, payload)
-        Integer statusCode = response?.statusCode
+        RestResponse response = restCaller.doPost(url, token, payload)
+        HttpStatus statusCode = response?.statusCode
 
-        if (statusCode == HttpStatus.OK.value()) {
+        if (statusCode == HttpStatus.OK) {
             JsonSlurper slurper = new JsonSlurper()
             def json = slurper.parseText(response.responseBody)
 

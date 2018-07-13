@@ -3,83 +3,51 @@ package club.tempvs.rest
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
-import sun.net.www.protocol.http.HttpURLConnection
-
-import java.nio.charset.StandardCharsets
+import org.springframework.http.ResponseEntity
+import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.ResourceAccessException
+import org.springframework.web.client.RestTemplate
 
 @Slf4j
 @GrailsCompileStatic
 class RestCaller {
 
+    private static final String TOKEN = 'token'
+    private static final String CONTENT_TYPE = 'Content-Type'
     private static final String JSON_CONTENT_TYPE = 'application/json; charset=UTF-8'
 
-    ConnectionFactory connectionFactory
+    RestHelper restHelper
 
-    RestResponse doGet(String url, Map<String, String> headers = [:]) {
-        HttpURLConnection connection = connectionFactory.getInstance(url)
-        connection.setRequestMethod(HttpMethod.GET.name())
-        setHeaders(connection, headers)
-        parseResponse(connection)
+    RestResponse doGet(String url, String token = null) {
+        RestTemplate restTemplate = restHelper.newTemplate()
+        HttpEntity<String> entity = restHelper.newHttpEntity([(TOKEN): token])
+        execute(restTemplate, url, HttpMethod.GET, entity)
     }
 
-    RestResponse doPost(String url, Map<String, String> headers = [:], JSON payload = new JSON()) {
-        HttpURLConnection connection = connectionFactory.getInstance(url)
-        connection.setRequestMethod(HttpMethod.POST.name())
-        setHeaders(connection, headers)
-        sendRequest(connection, payload)
-        parseResponse(connection)
+    RestResponse doPost(String url, String token = null, JSON payload = new JSON()) {
+        RestTemplate restTemplate = restHelper.newTemplate()
+        Map<String, String> headers = [(TOKEN): token, (CONTENT_TYPE): JSON_CONTENT_TYPE]
+        HttpEntity<String> entity = restHelper.newHttpEntity(headers, payload?.toString())
+        execute(restTemplate, url, HttpMethod.POST, entity)
     }
 
-    RestResponse doDelete(String url, Map<String, String> headers = [:]) {
-        HttpURLConnection connection = connectionFactory.getInstance(url)
-        connection.setRequestMethod(HttpMethod.DELETE.name())
-        setHeaders(connection, headers)
-        parseResponse(connection)
+    RestResponse doDelete(String url, String token = null) {
+        RestTemplate restTemplate = restHelper.newTemplate()
+        HttpEntity<String> entity = restHelper.newHttpEntity([(TOKEN): token])
+        execute(restTemplate, url, HttpMethod.DELETE, entity)
     }
 
-    private HttpURLConnection sendRequest(HttpURLConnection connection, JSON payload = new JSON()) {
-        connection.setRequestProperty("Content-Type", JSON_CONTENT_TYPE)
-        connection.setDoOutput(Boolean.TRUE)
-
-        String jsonString = payload.toString()
-
-        byte[] out = jsonString.getBytes(StandardCharsets.UTF_8)
-
-        connection.setFixedLengthStreamingMode(out.length)
-        connection.connect()
-
-        OutputStream outputStream
-
+    private RestResponse execute(RestTemplate restTemplate, String url, HttpMethod httpMethod, HttpEntity<String> httpEntity) {
         try {
-            outputStream = connection.outputStream
-            outputStream.write(out)
-        } finally {
-            outputStream?.close()
-        }
-    }
-
-    private void setHeaders(HttpURLConnection connection, Map<String, String> headers) {
-        headers.each { String headerName, String headerValue ->
-            connection.setRequestProperty(headerName, headerValue)
-        }
-    }
-
-    private RestResponse parseResponse(HttpURLConnection connection) {
-        Integer statusCode
-        InputStream inputStream
-
-        try {
-            statusCode = connection.responseCode
-            inputStream = (statusCode == HttpStatus.OK.value()) ? connection.inputStream : connection.errorStream
-
-            return new RestResponse(statusCode: statusCode, responseBody: inputStream.text)
-        } catch (ConnectException e) {
-            log.error "'${connection.getURL()}' URL is not available"
+            ResponseEntity<String> responseEntity = restTemplate.exchange(url, httpMethod, httpEntity, String.class)
+            return restHelper.newRestResponse(responseEntity)
+        } catch(ResourceAccessException e) {
+            log.error e.message
             return null
-        } finally {
-            inputStream?.close()
+        } catch (HttpClientErrorException e) {
+            return restHelper.newRestResponse(e)
         }
     }
 }

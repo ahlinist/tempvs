@@ -1,26 +1,32 @@
 package club.tempvs.rest
 
 import grails.converters.JSON
-import org.grails.datastore.mapping.query.Query
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpMethod
+import org.springframework.http.ResponseEntity
+import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
-import sun.net.www.protocol.http.HttpURLConnection
 
 class RestCallerSpec extends Specification {
 
     private static final String URL = 'url'
-    private static final String CONTENT_TYPE = 'application/json; charset=UTF-8'
+    private static final String TOKEN = 'token'
+    private static final String TEST_JSON = 'test json'
+    private static final String CONTENT_TYPE = 'Content-Type'
+    private static final String JSON_CONTENT_TYPE = 'application/json; charset=UTF-8'
 
     def json = Mock JSON
-    def connection = Mock HttpURLConnection
-    def connectionFactory = Mock ConnectionFactory
-    def outputStream = Mock OutputStream
-    def inputStream = new ByteArrayInputStream()
+    def restHelper = Mock RestHelper
+    def httpEntity = Mock HttpEntity
+    def restTemplate = Mock RestTemplate
+    def restResponse = Mock RestResponse
+    def responseEntity = Mock ResponseEntity
 
     RestCaller restCaller
 
     def setup() {
         restCaller = new RestCaller()
-        restCaller.connectionFactory = connectionFactory
+        restCaller.restHelper = restHelper
     }
 
     def cleanup() {
@@ -28,36 +34,29 @@ class RestCallerSpec extends Specification {
 
     void "Test doGet()"() {
         when:
-        def result = restCaller.doGet(URL)
+        def result = restCaller.doGet(URL, TOKEN)
 
         then:
-        1 * connectionFactory.getInstance(URL) >> connection
-        1 * connection.setRequestMethod("GET")
-        1 * connection.responseCode >> 200
-        1 * connection.inputStream >> inputStream
+        1 * restHelper.newTemplate() >> restTemplate
+        1 * restHelper.newHttpEntity([(TOKEN): TOKEN]) >> httpEntity
+        1 * restTemplate.exchange(URL, HttpMethod.GET, httpEntity, String.class) >> responseEntity
+        1 * restHelper.newRestResponse(responseEntity) >> restResponse
         0 * _
 
         and:
-        result instanceof RestResponse
+        result == restResponse
     }
 
     void "Test doPost()"() {
         when:
-        def result = restCaller.doPost(URL, [:], json)
+        def result = restCaller.doPost(URL, TOKEN, json)
 
         then:
-        1 * connectionFactory.getInstance(URL) >> connection
-        1 * connection.setRequestMethod("POST")
-        1 * connection.setRequestProperty("Content-Type", CONTENT_TYPE)
-        1 * connection.setDoOutput(Boolean.TRUE)
-        1 * json.toString() >> ""
-        1 * connection.setFixedLengthStreamingMode(_ as Integer)
-        1 * connection.connect()
-        1 * connection.outputStream >> outputStream
-        1 * outputStream.write(_ as byte[])
-        1 * outputStream.close()
-        1 * connection.responseCode >> 200
-        1 * connection.inputStream >> inputStream
+        1 * restHelper.newTemplate() >> restTemplate
+        1 * json.toString() >> TEST_JSON
+        1 * restHelper.newHttpEntity([(TOKEN): TOKEN, (CONTENT_TYPE): JSON_CONTENT_TYPE], TEST_JSON) >> httpEntity
+        1 * restTemplate.exchange(URL, HttpMethod.POST, httpEntity, String.class) >> responseEntity
+        1 * restHelper.newRestResponse(responseEntity) >> restResponse
         0 * _
 
         and:
@@ -66,16 +65,16 @@ class RestCallerSpec extends Specification {
 
     void "Test doDelete()"() {
         when:
-        def result = restCaller.doDelete(URL, [:])
+        def result = restCaller.doDelete(URL, TOKEN)
 
         then:
-        1 * connectionFactory.getInstance(URL) >> connection
-        1 * connection.setRequestMethod("DELETE")
-        1 * connection.responseCode >> 200
-        1 * connection.inputStream >> inputStream
+        1 * restHelper.newTemplate() >> restTemplate
+        1 * restHelper.newHttpEntity([(TOKEN): TOKEN]) >> httpEntity
+        1 * restTemplate.exchange(URL, HttpMethod.DELETE, httpEntity, String.class) >> responseEntity
+        1 * restHelper.newRestResponse(responseEntity) >> restResponse
         0 * _
 
         and:
-        result instanceof RestResponse
+        result == restResponse
     }
 }

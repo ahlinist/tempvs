@@ -58,14 +58,14 @@ class VerifyService {
                 model: [serverUrl: serverUrl, verificationCode: verificationCode])
         JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
         String emailServiceUrl = EMAIL_SERVICE_URL + SEND_EMAIL_API_URI
-        Map<String, String> headers = [token: EMAIL_SECURITY_TOKEN.encodeAsMD5() as String]
-        RestResponse response = restCaller.doPost(emailServiceUrl, headers, payload)
-        Integer statusCode = response?.statusCode
+        String token = EMAIL_SECURITY_TOKEN?.encodeAsMD5() as String
+        RestResponse response = restCaller.doPost(emailServiceUrl, token, payload)
+        HttpStatus statusCode = response?.statusCode
         Boolean success = Boolean.TRUE
 
-        if (statusCode != HttpStatus.OK.value()) {
+        if (statusCode != HttpStatus.OK) {
             success = Boolean.FALSE
-            log.error "Email delivery failed. Email service returned status code: '${statusCode}'.\n" +
+            log.error "Email delivery failed. Email service returned status code: '${statusCode.value()}'.\n" +
                     " Response body: ${response.responseBody}"
         }
 
