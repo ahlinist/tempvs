@@ -84,22 +84,37 @@ class ProfileController {
 
         User user = profile.user
         List<Profile> profiles = user.profiles
-        Profile userProfile = profiles.find {it.type == ProfileType.USER}
-        List<Profile> clubProfiles = profiles.findAll {it.type == ProfileType.CLUB}
 
-        [
-                profile: userProfile,
-                user: user,
-                id: userProfile.identifier,
-                passports: profile.passports,
-                active: profile.active,
-                editAllowed: currentProfile == userProfile,
-                mayBeFollowed: followingService.mayBeFollowed(currentProfile, userProfile),
-                isFollowed: followingService.getFollowing(currentProfile, userProfile) as Boolean,
-                activeProfiles: clubProfiles.findAll { it.active },
-                inactiveProfiles: clubProfiles.findAll { !it.active },
-                periods: Period.values(),
-        ]
+        if (profile.ofUserType) {
+            List<Profile> clubProfiles = profiles.findAll {it.type == ProfileType.CLUB}
+
+            [
+                    profile: profile,
+                    user: user,
+                    id: profile.identifier,
+                    editAllowed: currentProfile == profile,
+                    mayBeFollowed: followingService.mayBeFollowed(currentProfile, profile),
+                    isFollowed: followingService.getFollowing(currentProfile, profile) as Boolean,
+                    activeProfiles: clubProfiles.findAll { it.active },
+                    inactiveProfiles: clubProfiles.findAll { !it.active },
+                    periods: Period.values(),
+            ]
+        } else if (profile.ofClubType) {
+            Profile userProfile = profiles.find {it.type == ProfileType.USER}
+
+            [
+                    profile: profile,
+                    user: user,
+                    userProfile: userProfile,
+                    id: profile.identifier,
+                    passports: profile.passports,
+                    active: profile.active,
+                    editAllowed: currentProfile == profile,
+                    mayBeFollowed: followingService.mayBeFollowed(currentProfile, profile),
+                    isFollowed: followingService.getFollowing(currentProfile, profile) as Boolean,
+                    periods: Period.values(),
+            ]
+        }
     }
 
     def switchProfile(Long id) {

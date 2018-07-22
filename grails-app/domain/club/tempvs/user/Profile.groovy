@@ -58,6 +58,14 @@ class Profile implements BasePersistent {
         profileId ?: id as String
     }
 
+    Boolean isOfUserType() {
+        type == ProfileType.USER
+    }
+
+    Boolean isOfClubType() {
+        type == ProfileType.CLUB
+    }
+
     @Override
     String toString() {
         String result = firstName
