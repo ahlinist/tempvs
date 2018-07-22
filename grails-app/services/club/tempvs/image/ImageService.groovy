@@ -27,6 +27,10 @@ class ImageService {
     }
 
     Boolean deleteImage(Image image) {
+        if (!image) {
+            return Boolean.TRUE
+        }
+
         String url = "${IMAGE_SERVICE_URL}/api/delete/${image.collection}/${image.objectId}"
         RestResponse response = restCaller.doDelete(url, IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String)
         HttpStatus statusCode = response?.statusCode

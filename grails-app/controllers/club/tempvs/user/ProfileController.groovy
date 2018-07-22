@@ -134,23 +134,23 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        User user = userService.currentUser
-        profile = profileService.validateClubProfile(profile, user)
-        profile = profileService.validateClubProfile(profile, user)
-
-        if (profile.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(profile))
-        }
-
+        Profile persistentProfile
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
-        profile = profileService.createClubProfile(profile, avatar)
 
-        if (profile.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(profile))
+        try {
+            persistentProfile = profileService.createClubProfile(profile, avatar)
+        } catch (Exception e) {
+            imageService.deleteImage(avatar)
+            throw e
         }
 
-        profileService.currentProfile = profile
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: profile.id))
+        if (persistentProfile.hasErrors()) {
+            imageService.deleteImage(avatar)
+            return render(ajaxResponseHelper.renderValidationResponse(persistentProfile))
+        }
+
+        profileService.currentProfile = persistentProfile
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'show', id: persistentProfile.id))
     }
 
     def editProfileField() {
@@ -242,27 +242,27 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
 
-        Profile profile = profileService.currentProfile
-        Image avatarForUpload = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+        Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
 
-        if (!avatarForUpload) {
+        if (!avatar) {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Image currentAvatar = profile.avatar
+        Profile updatedProfile
 
-        if (currentAvatar) {
-            imageService.deleteImage(currentAvatar)
+        try {
+            updatedProfile = profileService.uploadAvatar(profileService.currentProfile, avatar)
+        } catch (Exception e) {
+            imageService.deleteImage(avatar)
+            throw e
         }
 
-        profile = profileService.uploadAvatar(profile, avatarForUpload)
-
-        if (profile.hasErrors()) {
-            imageService.deleteImage(avatarForUpload)
-            return render(ajaxResponseHelper.renderValidationResponse(profile))
+        if (updatedProfile.hasErrors()) {
+            imageService.deleteImage(avatar)
+            return render(ajaxResponseHelper.renderValidationResponse(updatedProfile))
         }
 
-        Map model = [profile: profile, editAllowed: Boolean.TRUE]
+        Map model = [profile: updatedProfile, editAllowed: Boolean.TRUE]
         String template = groovyPageRenderer.render(template: '/profile/templates/avatar', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

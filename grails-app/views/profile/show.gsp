@@ -143,6 +143,7 @@
                         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'nickName', label: 'profile.nickName.label']}"/>
                         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'location', label: 'profile.location.label']}"/>
                         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'profileId', label: 'profile.profileId.label']}"/>
+                        <g:render template="/common/templates/formField" model="${[type: 'text', name: 'profileEmail', label: 'profile.profileEmail.label']}"/>
                         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'clubName', label: 'profile.clubName.label']}"/>
                         <g:render template="/common/templates/formField" model="${[type: 'select', name: 'period', label: 'periodization.period.dropdown.label', mandatory: true, from: periods, optionKey: 'key', optionValue: 'value']}"/>
                         <g:render template="/ajax/templates/submitButton">
@@ -162,8 +163,8 @@
             <div class="col-sm-2">
               <div class="row">
                 <b><g:message code="profile.user.label"/></b>
-                <g:link class="btn btn-default col-sm-12" controller="profile" action="user" id="${user.userProfile.id}">
-                  ${user.userProfile}
+                <g:link class="btn btn-default col-sm-12" controller="profile" action="user" id="${userProfile.id}">
+                  ${userProfile}
                 </g:link>
               </div>
             </div>

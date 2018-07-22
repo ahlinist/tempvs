@@ -9,7 +9,6 @@ import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.transaction.annotation.Propagation
 
 /**
  * Service for {@link Profile} managing.
@@ -18,10 +17,10 @@ import org.springframework.transaction.annotation.Propagation
 @GrailsCompileStatic
 class ProfileService {
 
-    private static String PERIOD_FIELD = 'period'
-    private static Integer MAX_PROFILES_RETRIEVED = 10
-    private static String PROFILE_EMAIL_FIELD = 'profileEmail'
-    private static String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
+    private static final String PERIOD_FIELD = 'period'
+    private static final Integer MAX_PROFILES_RETRIEVED = 10
+    private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
+    private static final String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
 
     UserService userService
     ImageService imageService
@@ -122,27 +121,21 @@ class ProfileService {
         }
     }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    Profile validateClubProfile(Profile clubProfile, User user) {
+    Profile createClubProfile(Profile profile, Image avatar) {
+        User user = userService.currentUser
+        profile.user = user
+        profile.avatar = avatar
+        profile.type = ProfileType.CLUB
+        user.addToProfiles(profile)
 
-        throw new RuntimeException("implement rest-call-driven image deletion in case if failing validation")
-
-        clubProfile.user = user
-        user.addToProfiles(clubProfile)
-        clubProfile.validate()
-
-        if (!isProfileEmailUnique(clubProfile, clubProfile.profileEmail)) {
-            clubProfile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [clubProfile.profileEmail] as Object[], EMAIL_USED_CODE)
+        if (!isProfileEmailUnique(profile, profile.profileEmail)) {
+            throw new RuntimeException("throw something to interrupt")
+            profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)
+        } else {
+            profile.save()
         }
 
-        clubProfile
-    }
-
-    @PreAuthorize('#profile.user.email == authentication.name')
-    Profile createClubProfile(Profile clubProfile, Image avatar) {
-        clubProfile.avatar = avatar
-        clubProfile.save()
-        clubProfile
+        return profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
@@ -181,6 +174,12 @@ class ProfileService {
 
     @PreAuthorize('#profile.user.email == authentication.name')
     Profile uploadAvatar(Profile profile, Image avatar) {
+        Image currentAvatar = profile.avatar
+
+        if (currentAvatar) {
+            imageService.deleteImage(currentAvatar)
+        }
+
         profile.avatar = avatar
         profile.save()
         profile
@@ -203,7 +202,8 @@ class ProfileService {
         User profileUser = profile.user
         User persistentUser = userService.getUserByEmail(email)
 
-        if (persistentUser && profileUser != persistentUser) {
+        if (persistentUser && (profileUser != persistentUser)) {
+            println "returning false"
             return Boolean.FALSE
         }
 

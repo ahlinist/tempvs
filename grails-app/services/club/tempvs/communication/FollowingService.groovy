@@ -1,7 +1,6 @@
 package club.tempvs.communication
 
 import club.tempvs.object.ObjectFactory
-import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import club.tempvs.user.ProfileType
@@ -16,10 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class FollowingService {
 
-    private static final String PERIOD_FIELD = 'period'
     private static final String PROFILE_CLASS_NAME_FIELD = 'profileClassName'
     private static final String FOLLOWING_ID_FIELD = 'followingId'
-    private static final String PERIOD_MISMATCH = 'period.mismatch.message'
     private static final String USER_MISMATCH = 'following.user.mismatch.message'
     private static final String PROFILE_CLASSES_MISMATCH = 'profile.classes.mismatch.message'
 

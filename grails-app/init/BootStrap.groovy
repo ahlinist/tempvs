@@ -19,7 +19,6 @@ class BootStrap {
     private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
     private static final String ADMIN_EMAIL = 'admin@tempvs.club'
     private static final String ADMIN_FIRST_NAME = 'Tempvs'
-    private static final String ADMIN_LAST_NAME = 'Admin'
     private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'adminPassword'
     private static final String EMAIL_SERVICE_URL = System.getenv("EMAIL_SERVICE_URL")
     private static final String IMAGE_SERVICE_URL = System.getenv("IMAGE_SERVICE_URL")
