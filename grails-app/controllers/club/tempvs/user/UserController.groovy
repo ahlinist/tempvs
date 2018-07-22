@@ -90,7 +90,7 @@ class UserController {
         String email = emailVerification.email
         Map properties = command.properties
         properties.email = email
-        User user = userService.register(properties as User, properties as UserProfile)
+        User user = userService.register(properties as User, properties as Profile)
 
         if (user.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(user))

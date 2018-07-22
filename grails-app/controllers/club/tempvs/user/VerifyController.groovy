@@ -39,12 +39,8 @@ class VerifyController {
                         email(emailVerification)
                         emailVerification.delete(flush: true)
                         break
-                    case UserProfile.simpleName.uncapitalize():
-                        profileEmail(UserProfile, emailVerification)
-                        emailVerification.delete(flush: true)
-                        break
-                    case ClubProfile.simpleName.uncapitalize():
-                        profileEmail(ClubProfile, emailVerification)
+                    case 'profile':
+                        profileEmail(emailVerification)
                         emailVerification.delete(flush: true)
                         break
                 }
@@ -75,15 +71,15 @@ class VerifyController {
         }
     }
 
-    private profileEmail(Class clazz, EmailVerification emailVerification) {
-        Profile profile = profileService.getProfile(clazz, emailVerification.instanceId)
+    private profileEmail(EmailVerification emailVerification) {
+        Profile profile = profileService.getProfile(emailVerification.instanceId)
 
         if (profile) {
             profile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)
 
             if (profile.validate()) {
                 profileService.setCurrentProfile(profile)
-                return redirect(controller: 'profile', action: profile.shortName, id: profile.identifier)
+                return redirect(controller: 'profile', action: 'show', id: profile.identifier)
             }
         }
 

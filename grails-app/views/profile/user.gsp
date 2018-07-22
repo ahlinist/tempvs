@@ -24,7 +24,7 @@
                 </g:link>
               </li>
               <li class="row">
-                <g:link class="btn btn-default disableable col-sm-12" controller="following" action="user" id="${profile.id}">
+                <g:link class="btn btn-default disableable col-sm-12" controller="following" action="show" id="${profile.id}">
                   <span class="pull-left">
                     <g:message code="following.list.button"/>&nbsp;
                   </span>

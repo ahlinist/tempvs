@@ -7,7 +7,6 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
-import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import grails.compiler.GrailsCompileStatic
@@ -65,7 +64,7 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
         }
 
-        ClubProfile clubProfile = profileService.currentProfile as ClubProfile
+        Profile clubProfile = profileService.currentProfile
         passport = passportService.validatePassport(passport, clubProfile)
 
         if (passport.hasErrors()) {
@@ -90,7 +89,7 @@ class PassportController {
             return [id: id, notFoundMessage: NO_SUCH_PASSPORT]
         }
 
-        ClubProfile clubProfile = passport.clubProfile
+        Profile clubProfile = passport.profile
 
         [
                 passport: passport,
@@ -155,7 +154,7 @@ class PassportController {
 
     def deletePassport(Long id) {
         Passport passport = passportService.getPassport id
-        ClubProfile clubProfile = passport.clubProfile
+        Profile clubProfile = passport.profile
         passportService.deletePassport(passport, clubProfile)
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: clubProfile.id))
     }
@@ -179,7 +178,7 @@ class PassportController {
                 object: passport,
                 objectId: objectId,
                 controllerName: 'passport',
-                editAllowed: passport.clubProfile == profile,
+                editAllowed: passport.profile == profile,
         ]
 
         String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
@@ -204,7 +203,7 @@ class PassportController {
                 object: passport,
                 objectId: objectId,
                 controllerName: 'passport',
-                editAllowed: passport.clubProfile == profileService.currentProfile,
+                editAllowed: passport.profile == profileService.currentProfile,
         ]
 
         String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)

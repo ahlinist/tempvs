@@ -23,7 +23,7 @@ class EmailVerification implements BasePersistent {
             }
         }
         email email: true, unique: ['action'], size: 0..35
-        action inList: ['registration', 'email', 'userProfile', 'clubProfile']
+        action inList: ['registration', 'email', 'user', 'club']
         verificationCode unique: true
     }
 }

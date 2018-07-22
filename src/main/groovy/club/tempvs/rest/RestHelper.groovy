@@ -4,7 +4,7 @@ import groovy.transform.CompileStatic
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
-import org.springframework.web.client.HttpClientErrorException
+import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.RestTemplate
 
 @CompileStatic
@@ -16,7 +16,7 @@ class RestHelper {
         new RestTemplate()
     }
 
-    RestResponse newRestResponse(HttpClientErrorException e) {
+    RestResponse newRestResponse(HttpStatusCodeException e) {
         new RestResponse(statusCode: e.statusCode, responseBody: e.responseBodyAsString)
     }
 

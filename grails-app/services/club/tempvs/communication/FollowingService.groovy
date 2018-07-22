@@ -2,9 +2,9 @@ package club.tempvs.communication
 
 import club.tempvs.object.ObjectFactory
 import club.tempvs.periodization.Period
-import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.ProfileType
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
 import org.springframework.security.access.prepost.PreAuthorize
@@ -28,17 +28,15 @@ class FollowingService {
 
     Following getFollowing(Profile followerProfile, Profile followingProfile) {
         if (followerProfile && followingProfile) {
-            if (followerProfile.class == followingProfile.class) {
-                Following.findByProfileClassNameAndFollowerIdAndFollowingId(followerProfile.class.name, followerProfile.id, followingProfile.id)
+            if (followerProfile.type == followingProfile.type) {
+                Following.findByFollowerAndFollowed(followerProfile, followingProfile)
             }
         }
     }
 
     Integer getNewFollowersCount(Profile profile) {
         if (profile) {
-            String profileClassName = profile.class.name
-            Long profileId = profile.id
-            Following.countByProfileClassNameAndFollowingIdAndIsNew(profileClassName, profileId, Boolean.TRUE)
+            Following.countByFollowedAndIsNew(profile, Boolean.TRUE)
         }
     }
 
@@ -50,23 +48,14 @@ class FollowingService {
             following.errors.rejectValue(PROFILE_CLASS_NAME_FIELD, PROFILE_CLASSES_MISMATCH, PROFILE_CLASSES_MISMATCH)
         }
 
-        if (followerProfile instanceof ClubProfile) {
-            Period period = followerProfile.period
-
-            if (period != ((ClubProfile) followingProfile)?.period) {
-                following.errors.rejectValue(PERIOD_FIELD, PERIOD_MISMATCH, PERIOD_MISMATCH)
-            }
-
+        if (followerProfile.type == ProfileType.CLUB) {
             if (followerProfile.user == followingProfile.user) {
                 following.errors.rejectValue(FOLLOWING_ID_FIELD, USER_MISMATCH, USER_MISMATCH)
             }
-
-            following.period = period
         }
 
-        following.followerId = followerProfile?.id
-        following.followingId = followingProfile?.id
-        following.profileClassName = followerProfile?.class?.name
+        following.follower = followerProfile
+        following.followed = followingProfile
 
         if (!following.hasErrors()) {
             following.save()
@@ -82,11 +71,11 @@ class FollowingService {
     }
 
     List<Following> getFollowers(Profile profile) {
-        profile ? Following.findAllByProfileClassNameAndFollowingId(profile.class.name, profile.id) : []
+        profile ? Following.findAllByFollowed(profile) : []
     }
 
     List<Following> getFollowings(Profile profile) {
-        profile ? Following.findAllByProfileClassNameAndFollowerId(profile.class.name, profile.id) : []
+        profile ? Following.findAllByFollower(profile) : []
     }
 
     void ageFollowings(List<Following> followings) {
@@ -98,10 +87,10 @@ class FollowingService {
 
     Boolean mayBeFollowed(Profile followerProfile, Profile followingProfile) {
         if (followerProfile && followingProfile) {
-            if (followerProfile.class == followingProfile.class) {
+            if (followerProfile.type == followingProfile.type) {
                 if (followerProfile.id != followingProfile.id) {
-                    if (followerProfile instanceof ClubProfile) {
-                        if (((ClubProfile) followerProfile).period == ((ClubProfile) followingProfile).period) {
+                    if (followerProfile.type == ProfileType.CLUB) {
+                        if (followerProfile.period == followingProfile.period) {
                             if (followerProfile.user != followingProfile.user) {
                                 return Boolean.TRUE
                             }

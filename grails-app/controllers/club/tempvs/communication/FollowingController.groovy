@@ -1,10 +1,8 @@
 package club.tempvs.communication
 
 import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
-import club.tempvs.user.UserProfile
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -21,6 +19,8 @@ class FollowingController {
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String DISPLAY_COUNTER = 'displayCounter'
 
+    static defaultAction = 'show'
+
     static allowedMethods = [
             index: 'GET',
             show: 'GET',
@@ -34,19 +34,8 @@ class FollowingController {
     FollowingService followingService
     AjaxResponseHelper ajaxResponseHelper
 
-    def index() {
-        show(profileService.currentProfile)
-    }
-
-    def user(Long id) {
-        show(profileService.getProfile(UserProfile, id))
-    }
-
-    def club(Long id) {
-        show(profileService.getProfile(ClubProfile, id))
-    }
-
-    private show(Profile profile) {
+    def show(Long id) {
+        Profile profile = id ? profileService.getProfile(id) : profileService.currentProfile
         List<Following> followers = followingService.getFollowers(profile)
         List<Following> followings = followingService.getFollowings(profile)
         List<Following> newFollowers = followers.findAll {it.isNew}
@@ -64,9 +53,9 @@ class FollowingController {
         render view: '/following/show', model: model
     }
 
-    def follow(String profileClassName, Long profileId) {
+    def follow(Long profileId) {
         Profile followerProfile = profileService.currentProfile
-        Profile followingProfile = profileService.getProfile(Class.forName(profileClassName), profileId) as Profile
+        Profile followingProfile = profileService.getProfile(profileId)
 
         if (!followingProfile) {
             return render([action: NO_ACTION] as JSON)
@@ -84,9 +73,9 @@ class FollowingController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def unfollow(String profileClassName, Long profileId) {
+    def unfollow(Long profileId) {
         Profile followerProfile = profileService.currentProfile
-        Profile followingProfile = profileService.getProfile(Class.forName(profileClassName), profileId) as Profile
+        Profile followingProfile = profileService.getProfile(profileId)
 
         if (!followingProfile) {
             return render([action: NO_ACTION] as JSON)

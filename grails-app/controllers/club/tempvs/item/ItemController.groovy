@@ -10,6 +10,7 @@ import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.ProfileType
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -69,7 +70,14 @@ class ItemController {
         User user = id ? userService.getUser(id) : userService.currentUser
 
         if (user) {
-            [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE]
+            Profile userProfile = user.profiles.find { it.type == ProfileType.USER }
+
+            [
+                    user: user,
+                    itemGroups: user.itemGroups,
+                    userProfile: userProfile,
+                    editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE
+            ]
         }
     }
 
@@ -91,6 +99,7 @@ class ItemController {
 
             if (itemGroup) {
                 User user = itemGroup.user
+                Profile userProfile = user.profiles.find { it.type == ProfileType.USER }
 
                 [
                         user: user,
@@ -98,7 +107,7 @@ class ItemController {
                         itemTypes: ItemType.values(),
                         periods: Period.values(),
                         items: itemGroup.items.sort { it.id },
-                        userProfile: user.userProfile,
+                        userProfile: userProfile,
                         editAllowed: user.id == userService.currentUserId,
                 ]
             }
@@ -162,12 +171,13 @@ class ItemController {
                 User user = itemGroup.user
                 List<Source> sources = item.sources
                 List<Source> availableSources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType, sources)
+                Profile userProfile = user.profiles.find { it.type == ProfileType.USER }
 
                 [
                         user: user,
                         item: item,
                         itemGroup: itemGroup,
-                        userProfile: user.userProfile,
+                        userProfile: userProfile,
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
                         sourceMap: composeSourceMap(sources),

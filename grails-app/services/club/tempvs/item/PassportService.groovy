@@ -3,7 +3,7 @@ package club.tempvs.item
 import club.tempvs.communication.Comment
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.user.ClubProfile
+import club.tempvs.user.Profile
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
 import groovy.transform.TypeCheckingMode
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Propagation
 @GrailsCompileStatic
 class PassportService {
 
-    private static final String CLUB_PROFILE_FIELD = 'clubProfile'
+    private static final String PROFILE_FIELD = 'profile'
 
     ImageService imageService
 
@@ -35,9 +35,9 @@ class PassportService {
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    Passport validatePassport(Passport passport, ClubProfile clubProfile) {
-        passport.clubProfile = clubProfile
-        clubProfile.addToPassports(passport)
+    Passport validatePassport(Passport passport, Profile profile) {
+        passport.profile = profile
+        profile.addToPassports(passport)
         passport.validate()
         passport
     }
@@ -58,7 +58,7 @@ class PassportService {
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
     Passport editPassportField(Passport passport, String fieldName, String fieldValue) {
-        if (fieldName in [CLUB_PROFILE_FIELD]) {
+        if (fieldName in [PROFILE_FIELD]) {
             throw new AccessDeniedException('Operation not supported.')
         } else {
             passport."${fieldName}" = fieldValue
@@ -81,10 +81,10 @@ class PassportService {
     }
 
     @PreAuthorize('#passport.clubProfile.user.email == authentication.name')
-    void deletePassport(Passport passport, ClubProfile clubProfile) {
+    void deletePassport(Passport passport, Profile profile) {
         Item2Passport.findByPassport(passport)?.delete()
-        clubProfile.removeFromPassports(passport)
-        clubProfile.save()
+        profile.removeFromPassports(passport)
+        profile.save()
     }
 
     Passport addComment(Passport passport, Comment comment) {
