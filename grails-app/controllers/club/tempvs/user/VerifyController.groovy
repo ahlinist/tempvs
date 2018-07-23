@@ -2,6 +2,7 @@ package club.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.validation.ValidationException
 import org.springframework.security.access.annotation.Secured
 
 /**
@@ -75,11 +76,17 @@ class VerifyController {
         Profile profile = profileService.getProfile(emailVerification.instanceId)
 
         if (profile) {
-            profile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)
+            Profile persistentProfile
 
-            if (profile.validate()) {
-                profileService.setCurrentProfile(profile)
-                return redirect(controller: 'profile', action: 'show', id: profile.identifier)
+            try {
+                persistentProfile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)
+            } catch (ValidationException e) {
+                return error([notFoundMessage: PROFILE_EMAIL_UPDATE_FAILED])
+            }
+
+            if (!persistentProfile.hasErrors()) {
+                profileService.setCurrentProfile(persistentProfile)
+                return redirect(controller: 'profile', action: 'show', id: persistentProfile.identifier)
             }
         }
 

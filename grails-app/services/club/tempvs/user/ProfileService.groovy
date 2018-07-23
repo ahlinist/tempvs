@@ -6,6 +6,7 @@ import club.tempvs.image.ImageService
 import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
+import grails.validation.ValidationException
 import grails.web.mapping.LinkGenerator
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
@@ -129,12 +130,12 @@ class ProfileService {
         user.addToProfiles(profile)
 
         if (!isProfileEmailUnique(profile, profile.profileEmail)) {
-            throw new RuntimeException("throw something to interrupt")
+            profile.validate()
             profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)
-        } else {
-            profile.save()
+            throw new ValidationException("ProfileEmail is non-unique", profile.errors)
         }
 
+        profile.save()
         return profile
     }
 
@@ -163,7 +164,7 @@ class ProfileService {
             }
         } else if ((fieldName == PROFILE_EMAIL_FIELD) && !isProfileEmailUnique(profile, profile.profileEmail)) {
             profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [fieldValue] as Object[], EMAIL_USED_CODE)
-            return profile
+            throw new ValidationException("ProfileEmail is non-unique", profile.errors)
         } else {
             profile."${fieldName}" = fieldValue
         }

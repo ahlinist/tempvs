@@ -9,6 +9,7 @@ import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import grails.validation.ValidationException
 import org.springframework.security.access.annotation.Secured
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
@@ -139,14 +140,13 @@ class ProfileController {
 
         try {
             persistentProfile = profileService.createClubProfile(profile, avatar)
-        } catch (Exception e) {
-            imageService.deleteImage(avatar)
-            throw e
-        }
 
-        if (persistentProfile.hasErrors()) {
+            if (persistentProfile.hasErrors()) {
+                throw new ValidationException("Profile has errors", persistentProfile.errors)
+            }
+        } catch (ValidationException e) {
             imageService.deleteImage(avatar)
-            return render(ajaxResponseHelper.renderValidationResponse(persistentProfile))
+            return render(ajaxResponseHelper.renderValidationResponse(e.errors))
         }
 
         profileService.currentProfile = persistentProfile
@@ -154,10 +154,16 @@ class ProfileController {
     }
 
     def editProfileField() {
-        Profile profile = profileService.editProfileField(profileService.currentProfile, params.fieldName as String, params.fieldValue as String)
+        Profile profile
 
-        if (profile.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(profile))
+        try {
+            profile = profileService.editProfileField(profileService.currentProfile, params.fieldName as String, params.fieldValue as String)
+
+            if (profile.hasErrors()) {
+                throw new ValidationException("Profile has errors", profile.errors)
+            }
+        } catch (ValidationException e) {
+            return render(ajaxResponseHelper.renderValidationResponse(e.errors))
         }
 
         render([action: SUCCESS_ACTION] as JSON)
