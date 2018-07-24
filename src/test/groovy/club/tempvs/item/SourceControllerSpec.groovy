@@ -8,9 +8,9 @@ import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
+import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import club.tempvs.user.User
-import club.tempvs.user.UserProfile
 import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -46,7 +46,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def source = Mock Source
     def comment = Mock Comment
     def period = Period.OTHER
-    def userProfile = Mock UserProfile
+    def profile = Mock Profile
     def imageUploadBean = Mock ImageUploadBean
     def imageUploadCommand = Mock ImageUploadCommand
     def multipartFile = Mock GrailsMockMultipartFile
@@ -263,8 +263,8 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * profileService.currentProfile >> userProfile
-        1 * commentService.createComment(TEXT, userProfile) >> comment
+        1 * profileService.currentProfile >> profile
+        1 * commentService.createComment(TEXT, profile) >> comment
         1 * comment.hasErrors() >> Boolean.FALSE
         1 * sourceService.addComment(source, comment) >> source
         1 * groovyPageRenderer.render(_ as Map)

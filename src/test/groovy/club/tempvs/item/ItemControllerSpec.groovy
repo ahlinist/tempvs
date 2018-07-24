@@ -8,9 +8,9 @@ import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
+import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import club.tempvs.user.User
-import club.tempvs.user.UserProfile
 import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -44,7 +44,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def comment = Mock Comment
     def period = GroovyMock Period
     def itemGroup = Mock ItemGroup
-    def userProfile = Mock UserProfile
+    def profile = Mock Profile
     def item2Source = Mock Item2Source
     def itemType = GroovyMock ItemType
     def sourceType = GroovyMock SourceType
@@ -82,11 +82,11 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         then:
         1 * userService.currentUser >> user
         1 * user.itemGroups >> [itemGroup]
-        1 * user.userProfile >> userProfile
+        1 * user.profiles >> [profile]
         0 * _
 
         and:
-        result == [itemGroups: [itemGroup], user: user, userProfile: userProfile, editAllowed: Boolean.TRUE]
+        result == [itemGroups: [itemGroup], user: user, userProfile: profile, editAllowed: Boolean.TRUE]
     }
 
     void "Test stash() with id being not logged in"() {
@@ -109,14 +109,14 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * userService.getUser(LONG_ONE) >> user
-        1 * user.userProfile >> userProfile
+        1 * user.profiles >> profile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * user.itemGroups >> [itemGroup]
         0 * _
 
         and:
-        result == [itemGroups: [itemGroup], user: user, userProfile: userProfile, editAllowed: true]
+        result == [itemGroups: [itemGroup], user: user, profile: profile, editAllowed: true]
     }
 
     void "Test createGroup() against invalid group"() {
@@ -188,7 +188,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.getGroup(LONG_ONE) >> itemGroup
         1 * itemGroup.user >> user
         1 * itemGroup.items >> items
-        1 * user.userProfile >> userProfile
+        1 * user.profiles >> profile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         0 * _
@@ -198,7 +198,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 itemGroup: itemGroup,
                 user: user,
                 items: items,
-                userProfile: userProfile,
+                userProfile: profile,
                 itemTypes: ItemType.values(),
                 periods: Period.values(),
                 editAllowed: Boolean.TRUE,
@@ -305,7 +305,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.itemType >> itemType
         1 * item.images >> [image]
         1 * itemGroup.user >> user
-        1 * user.userProfile >> userProfile
+        1 * user.profiles >> profile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * item.sources >> [source]
@@ -318,7 +318,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 user: user,
                 item: item,
                 itemGroup: itemGroup,
-                userProfile: userProfile,
+                userProfile: profile,
                 editAllowed: Boolean.TRUE,
                 images: [image],
                 sources: [source],
@@ -502,8 +502,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * profileService.currentProfile >> userProfile
-        1 * commentService.createComment(TEXT, userProfile) >> comment
+        1 * profileService.currentProfile >> profile
+        1 * commentService.createComment(TEXT, profile) >> comment
         1 * item.hasErrors() >> Boolean.FALSE
         1 * itemService.addComment(item, comment) >> item
         1 * item.itemGroup >> itemGroup

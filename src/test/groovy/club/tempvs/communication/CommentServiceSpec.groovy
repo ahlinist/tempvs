@@ -1,6 +1,5 @@
 package club.tempvs.communication
 
-import club.tempvs.user.ClubProfile
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification

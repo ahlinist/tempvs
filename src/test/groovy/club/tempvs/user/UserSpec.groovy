@@ -8,7 +8,7 @@ import static club.tempvs.tests.utils.TestingUtils.PASSWORD
 
 class UserSpec extends Specification implements DomainUnitTest<User> {
 
-    def userProfile = Mock UserProfile
+    def profile = Mock Profile
 
     def setup() {
         domain.email = EMAIL

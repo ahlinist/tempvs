@@ -2,10 +2,8 @@ package club.tempvs.communication
 
 import club.tempvs.object.ObjectFactory
 import club.tempvs.periodization.Period
-import club.tempvs.user.ClubProfile
 import club.tempvs.user.ProfileService
 import club.tempvs.user.User
-import club.tempvs.user.UserProfile
 import grails.testing.gorm.DataTest
 import grails.testing.services.ServiceUnitTest
 import org.springframework.validation.Errors

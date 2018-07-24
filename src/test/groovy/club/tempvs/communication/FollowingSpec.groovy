@@ -1,8 +1,6 @@
 package club.tempvs.communication
 
 import club.tempvs.periodization.Period
-import club.tempvs.user.ClubProfile
-import club.tempvs.user.UserProfile
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 

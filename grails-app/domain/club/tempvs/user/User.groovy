@@ -42,6 +42,14 @@ class User implements BasePersistent {
         }
     }
 
+    Profile getUserProfile() {
+        this.profiles.find { Profile profile -> profile.type == ProfileType.USER }
+    }
+
+    List<Profile> getClubProfiles() {
+        this.profiles.findAll { Profile profile -> profile.type == ProfileType.CLUB }
+    }
+
     static constraints = {
         email email: true, unique: true, blank: false, size: 0..35
         currentProfileId nullable: true

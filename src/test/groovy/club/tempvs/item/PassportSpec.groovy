@@ -1,6 +1,5 @@
 package club.tempvs.item
 
-import club.tempvs.user.ClubProfile
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 

@@ -1,9 +1,7 @@
 package club.tempvs.communication
 
-import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
-import club.tempvs.user.UserProfile
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification

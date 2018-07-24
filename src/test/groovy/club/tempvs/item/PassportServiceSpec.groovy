@@ -3,7 +3,6 @@ package club.tempvs.item
 import club.tempvs.communication.Comment
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.user.ClubProfile
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
