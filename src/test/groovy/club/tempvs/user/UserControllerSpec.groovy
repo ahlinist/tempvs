@@ -19,8 +19,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
 
     def user = Mock User
     def json = Mock JSON
-    def userProfile = Mock UserProfile
-    def clubProfile = Mock ClubProfile
+    def profile = Mock Profile
     def userService = Mock UserService
     def verifyService = Mock VerifyService
     def emailVerification = Mock EmailVerification
@@ -129,7 +128,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
         1 * emailVerification.email >> EMAIL
-        1 * userService.register(_ as User, _ as UserProfile) >> user
+        1 * userService.register(_ as User, _ as Profile) >> user
         1 * user.hasErrors() >> Boolean.TRUE
         1 * ajaxResponseHelper.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -155,7 +154,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
         1 * emailVerification.email >> EMAIL
-        1 * userService.register(_ as User, _ as UserProfile) >> user
+        1 * userService.register(_ as User, _ as Profile) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * springSecurityService.reauthenticate(EMAIL)
         1 * emailVerification.delete([flush: Boolean.TRUE])

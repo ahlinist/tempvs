@@ -7,7 +7,7 @@ import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
 
-class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DomainUnitTest<UserProfile> {
+class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DomainUnitTest<Profile> {
 
     private static final String ONE = '1'
     private static final Long LONG_ONE = 1L
@@ -23,13 +23,11 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def criteria = Mock HibernateCriteriaBuilder
 
     def userService = Mock UserService
-    def clubProfile = Mock ClubProfile
-    def userProfile = Mock UserProfile
+    def profile = Mock Profile
     def imageService = Mock ImageService
 
     def setup() {
-        GroovySpy(ClubProfile, global: true)
-        GroovySpy(UserProfile, global: true)
+        GroovySpy(Profile, global: true)
 
         service.userService = userService
         service.imageService = imageService
@@ -40,36 +38,36 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     void "Test getProfile()"() {
         when:
-        def result = service.getProfile(ClubProfile, ONE)
+        def result = service.getProfile(ONE)
 
         then:
-        1 * ClubProfile.findByProfileId(ONE) >> clubProfile
+        1 * Profile.findByProfileId(ONE) >> profile
         0 * _
 
         and:
-        result == clubProfile
+        result == profile
 
         when:
-        result = service.getProfile(UserProfile, ONE)
+        result = service.getProfile(ONE)
 
         then:
-        1 * UserProfile.findByProfileId(ONE) >> null
-        1 * UserProfile.get(ONE) >> userProfile
+        1 * Profile.findByProfileId(ONE) >> null
+        1 * Profile.get(ONE) >> profile
         0 * _
 
         and:
-        result == userProfile
+        result == profile
     }
 
     void "Test getProfileByProfileEmail()"() {
         when:
-        def result = service.getProfileByProfileEmail(UserProfile, PROFILE_EMAIL)
+        def result = service.getProfileByProfileEmail(PROFILE_EMAIL)
 
         then:
-        1 * UserProfile.findByProfileEmail(PROFILE_EMAIL) >> userProfile
+        1 * profile.findByProfileEmail(PROFILE_EMAIL) >> profile
         0 * _
 
-        result == userProfile
+        result == profile
     }
 
     void "Test searchProfiles()"() {
@@ -79,133 +77,115 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         Integer offset = 0
 
         when:
-        def result = service.searchProfiles(userProfile, query, offset)
+        def result = service.searchProfiles(profile, query, offset)
 
         then:
-        1 * userProfile.getProperty(CLASS) >> UserProfile
-        1 * UserProfile.createCriteria() >> criteria
-        1 * criteria.list(['max': max, 'offset': offset], _ as Closure) >> [userProfile]
+        1 * Profile.createCriteria() >> criteria
+        1 * criteria.list(['max': max, 'offset': offset], _ as Closure) >> [profile]
         0 * _
 
         and:
-        result == [userProfile]
+        result == [profile]
     }
 
     void "Test setCurrentProfile()"() {
         when:
-        service.setCurrentProfile(clubProfile)
+        service.setCurrentProfile(profile)
 
         then:
         1 * userService.currentUser >> user
-        1 * clubProfile.id >> LONG_ONE
+        1 * profile.id >> LONG_ONE
         1 * user.setCurrentProfileClass(_ as Class)
         1 * user.setCurrentProfileId(LONG_ONE)
         1 * user.save([flush: true])
         0 * _
     }
 
-    void "Test validateClubProfile()"() {
-        when:
-        def result = service.validateClubProfile(clubProfile, user)
-
-        then:
-        1 * clubProfile.setUser(user)
-        1 * user.addToClubProfiles(clubProfile)
-        1 * clubProfile.validate() >> clubProfile
-        1 * clubProfile.profileEmail
-        0 * _
-
-        and:
-        result == clubProfile
-    }
-
     void "Test createClubProfile()"() {
         when:
-        def result = service.createClubProfile(clubProfile, image)
+        def result = service.createClubProfile(profile, image)
 
         then:
-        1 * clubProfile.setAvatar(image)
-        1 * clubProfile.save() >> clubProfile
+        1 * profile.setAvatar(image)
+        1 * profile.save() >> profile
         0 * _
 
         and:
-        result == clubProfile
+        result == profile
     }
 
     void "Test deactivateProfile()"() {
         when:
-        def result = service.deactivateProfile(clubProfile)
+        def result = service.deactivateProfile(profile)
 
         then:
-        1 * clubProfile.setActive(Boolean.FALSE)
-        1 * clubProfile.save()
+        1 * profile.setActive(Boolean.FALSE)
+        1 * profile.save()
         0 * _
 
         and:
-        result == clubProfile
+        result == profile
     }
 
     void "Test activateProfile()"() {
         when:
-        def result = service.activateProfile(clubProfile)
+        def result = service.activateProfile(profile)
 
         then:
-        1 * clubProfile.setActive(Boolean.TRUE)
-        1 * clubProfile.save()
+        1 * profile.setActive(Boolean.TRUE)
+        1 * profile.save()
         0 * _
 
         and:
-        result == clubProfile
+        result == profile
     }
 
     void "Test editProfileField()"() {
         when:
-        def result = service.editProfileField(userProfile, FIRST_NAME, FIELD_VALUE)
+        def result = service.editProfileField(profile, FIRST_NAME, FIELD_VALUE)
 
         then:
-        1 * userProfile.setProperty(FIRST_NAME, FIELD_VALUE)
-        1 * userProfile.save() >> userProfile
+        1 * profile.setProperty(FIRST_NAME, FIELD_VALUE)
+        1 * profile.save() >> profile
         0 * _
 
         and:
-        result == userProfile
+        result == profile
     }
 
     void "Test uploadAvatar()"() {
         when:
-        def result = service.uploadAvatar(userProfile, image)
+        def result = service.uploadAvatar(profile, image)
 
         then:
-        1 * userProfile.setAvatar(image)
-        1 * userProfile.save() >> userProfile
+        1 * profile.setAvatar(image)
+        1 * profile.save() >> profile
         0 * _
 
         and:
-        result == userProfile
+        result == profile
     }
 
     void "Test deleteAvatar()"() {
         when:
-        service.deleteAvatar(userProfile)
+        service.deleteAvatar(profile)
 
         then:
-        1 * userProfile.avatar >> image
+        1 * profile.avatar >> image
         1 * imageService.deleteImage(image)
-        1 * userProfile.setAvatar(null)
-        1 * userProfile.save() >> userProfile
+        1 * profile.setAvatar(null)
+        1 * profile.save() >> profile
         0 * _
     }
 
     void "Test isProfileEmailUnique() for clubProfile"() {
         when:
-        def result = service.isProfileEmailUnique(clubProfile, EMAIL)
+        def result = service.isProfileEmailUnique(profile, EMAIL)
 
         then:
         1 * userService.getUserByEmail(EMAIL) >> user
-        1 * clubProfile.getProperty(CLASS) >> ClubProfile
-        1 * UserProfile.findByProfileEmail(EMAIL) >> userProfile
-        1 * userProfile.getProperty(USER) >> user
-        1 * clubProfile.getProperty(USER) >> user
+        1 * Profile.findAllByProfileEmail(EMAIL) >> profile
+        1 * profile.getProperty(USER) >> user
         0 * _
 
         and:
@@ -218,13 +198,11 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         then:
         1 * userService.currentUser >> user
-        1 * user.userProfile >> userProfile
-        1 * user.clubProfiles >> [clubProfile]
-        1 * user.currentProfileClass >> ClubProfile
+        1 * user.userProfile >> profile
+        1 * user.clubProfiles >> [profile]
         1 * user.currentProfileId >> LONG_ONE
-        2 * clubProfile.toString() >> "I'm a club profile"
-        1 * userProfile.toString() >> "I'm a user profile"
-        _ * clubProfile.id >> LONG_ONE
+        2 * profile.toString() >> "I'm a club profile"
+        _ * profile.id >> LONG_ONE
         0 * _
 
         and:
