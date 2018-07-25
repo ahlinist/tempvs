@@ -105,7 +105,7 @@
                       <g:each var="clubProfile" in="${activeProfiles}">
                         <g:set var="clubProfileId" value="${clubProfile.id}"/>
                         <li class="row" id="clubProfile-${clubProfileId}">
-                          <g:link class="btn btn-default col-sm-12" controller="profile" action="club" id="${clubProfileId}">
+                          <g:link class="btn btn-default col-sm-12" controller="profile" action="show" id="${clubProfileId}">
                             ${clubProfile}
                           </g:link>
                         </li>
@@ -163,7 +163,7 @@
             <div class="col-sm-2">
               <div class="row">
                 <b><g:message code="profile.user.label"/></b>
-                <g:link class="btn btn-default col-sm-12" controller="profile" action="user" id="${userProfile.id}">
+                <g:link class="btn btn-default col-sm-12" controller="profile" action="show" id="${userProfile.id}">
                   ${userProfile}
                 </g:link>
               </div>
