@@ -4,7 +4,6 @@ import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.plugin.springsecurity.userdetails.GrailsUser
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -35,13 +34,6 @@ class UserService {
 
     Long getCurrentUserId() {
         springSecurityService.currentUserId as Long
-    }
-
-    String getCurrentUserEmail() {
-        if (springSecurityService.loggedIn) {
-            GrailsUser grailsUser = springSecurityService.principal as GrailsUser
-            grailsUser.username as String
-        }
     }
 
     User getUserByEmail(String email) {
@@ -76,9 +68,14 @@ class UserService {
         List<Profile> profiles = profileService.getProfilesByProfileEmail(email)
 
         if (id) {
-            return !profiles
+            User persistentUser = getUser(id)
+
+            return !profiles?.any {
+                User profileUser = it.user
+                (profileUser.id != id) && (profileUser != persistentUser)
+            }
         } else {
-            return !profiles.any { it.user.id != id}
+            return !profiles
         }
     }
 

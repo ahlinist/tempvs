@@ -67,7 +67,8 @@ class BootStrap {
 
         if (!adminUser) {
             Profile adminUserProfile = new Profile(firstName: ADMIN_FIRST_NAME, type: ProfileType.USER, active: Boolean.FALSE)
-            adminUser = new User(email: ADMIN_EMAIL, password: ADMIN_PASSWORD, userProfile: adminUserProfile)
+            adminUser = new User(email: ADMIN_EMAIL, password: ADMIN_PASSWORD)
+            adminUser.addToProfiles adminUserProfile
             adminUser.save()
         }
 

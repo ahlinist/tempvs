@@ -42,11 +42,11 @@ class User implements BasePersistent {
     }
 
     Profile getUserProfile() {
-        this.profiles.find { it.type == ProfileType.USER }
+        profiles?.find { it.type == ProfileType.USER }
     }
 
     List<Profile> getClubProfiles() {
-        this.profiles.findAll { it.type == ProfileType.CLUB }
+        profiles?.findAll { it.type == ProfileType.CLUB }
     }
 
     static constraints = {
