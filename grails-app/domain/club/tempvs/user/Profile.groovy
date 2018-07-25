@@ -48,7 +48,7 @@ class Profile implements BasePersistent {
         period nullable: true, validator: { Period period, Profile profile ->
             if (profile.type == ProfileType.USER) {
                 return Boolean.TRUE
-            } else if (!profile.period) {
+            } else if (!period) {
                 return Boolean.FALSE
             }
         }

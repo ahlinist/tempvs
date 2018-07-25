@@ -12,7 +12,7 @@ class EmailVerificationSpec extends Specification implements DomainUnitTest<Emai
     private static final String VALID_EMAIL = 'verification@email.com'
     private static final String VERIFICATION_CODE = 'verificationCode'
     private static final String INVALID_EMAIL = 'verification-email.com'
-    private static final String UPD_PROFILE_EMAIL_ACTION = 'userProfile'
+    private static final String UPD_PROFILE_EMAIL_ACTION = 'profileEmail'
 
     def setup() {
     }

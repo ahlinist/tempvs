@@ -19,7 +19,6 @@ class User implements BasePersistent {
     boolean accountExpired
     boolean accountLocked
     boolean passwordExpired
-    Date lastActive = new Date()
     Long currentProfileId
     List<Profile> profiles
     List<ItemGroup> itemGroups
@@ -43,16 +42,19 @@ class User implements BasePersistent {
     }
 
     Profile getUserProfile() {
-        this.profiles.find { Profile profile -> profile.type == ProfileType.USER }
+        this.profiles.find { it.type == ProfileType.USER }
     }
 
     List<Profile> getClubProfiles() {
-        this.profiles.findAll { Profile profile -> profile.type == ProfileType.CLUB }
+        this.profiles.findAll { it.type == ProfileType.CLUB }
     }
 
     static constraints = {
         email email: true, unique: true, blank: false, size: 0..35
         currentProfileId nullable: true
+        profiles validator: { List<Profile> profiles, User user ->
+            user.userProfile != null
+        }
     }
 
     static mapping = {
