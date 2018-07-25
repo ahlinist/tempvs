@@ -40,9 +40,12 @@ class VerifyController {
                         email(emailVerification)
                         emailVerification.delete(flush: true)
                         break
-                    case 'profile':
+                    case 'profileEmail':
                         profileEmail(emailVerification)
                         emailVerification.delete(flush: true)
+                        break
+                    default:
+                        error([notFoundMessage: NO_VERIFICATION_CODE])
                         break
                 }
             } else {
