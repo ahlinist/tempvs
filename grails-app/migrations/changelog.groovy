@@ -1,10 +1,10 @@
 databaseChangeLog = {
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-1") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-1") {
         createSequence(sequenceName: "hibernate_sequence")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-2") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-2") {
         createTable(tableName: "acl_class") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "acl_classPK")
@@ -16,7 +16,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-3") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-3") {
         createTable(tableName: "acl_entry") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "acl_entryPK")
@@ -52,7 +52,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-4") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-4") {
         createTable(tableName: "acl_object_identity") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "acl_object_identityPK")
@@ -76,7 +76,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-5") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-5") {
         createTable(tableName: "acl_sid") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "acl_sidPK")
@@ -92,7 +92,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-6") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-6") {
         createTable(tableName: "comment") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "commentPK")
@@ -120,7 +120,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-7") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-7") {
         createTable(tableName: "email_verification") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "email_verificationPK")
@@ -154,7 +154,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-8") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-8") {
         createTable(tableName: "following") {
             column(name: "follower_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -182,7 +182,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-9") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-9") {
         createTable(tableName: "image") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "imagePK")
@@ -212,7 +212,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-10") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-10") {
         createTable(tableName: "item") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "itemPK")
@@ -252,7 +252,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-11") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-11") {
         createTable(tableName: "item2passport") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "item2passportPK")
@@ -284,7 +284,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-12") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-12") {
         createTable(tableName: "item2source") {
             column(name: "item_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -308,7 +308,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-13") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-13") {
         createTable(tableName: "item_comment") {
             column(name: "item_comments_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -320,7 +320,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-14") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-14") {
         createTable(tableName: "item_group") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "item_groupPK")
@@ -352,7 +352,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-15") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-15") {
         createTable(tableName: "item_image") {
             column(name: "item_images_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -364,7 +364,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-16") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-16") {
         createTable(tableName: "passport") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "passportPK")
@@ -396,7 +396,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-17") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-17") {
         createTable(tableName: "passport_comment") {
             column(name: "passport_comments_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -408,7 +408,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-18") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-18") {
         createTable(tableName: "passport_image") {
             column(name: "passport_images_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -420,7 +420,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-19") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-19") {
         createTable(tableName: "profile") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "profilePK")
@@ -474,7 +474,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-20") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-20") {
         createTable(tableName: "request_map") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "request_mapPK")
@@ -496,7 +496,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-21") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-21") {
         createTable(tableName: "role") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "rolePK")
@@ -520,7 +520,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-22") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-22") {
         createTable(tableName: "role_request") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "role_requestPK")
@@ -548,7 +548,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-23") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-23") {
         createTable(tableName: "source") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "sourcePK")
@@ -586,7 +586,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-24") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-24") {
         createTable(tableName: "source_comment") {
             column(name: "source_comments_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -598,7 +598,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-25") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-25") {
         createTable(tableName: "source_image") {
             column(name: "source_images_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -610,7 +610,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-26") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-26") {
         createTable(tableName: "user") {
             column(autoIncrement: "true", name: "id", type: "BIGINT") {
                 constraints(primaryKey: "true", primaryKeyName: "userPK")
@@ -656,7 +656,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-27") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-27") {
         createTable(tableName: "user_role") {
             column(name: "user_id", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -676,171 +676,167 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-28") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-28") {
         addPrimaryKey(columnNames: "follower_id, followed_id", constraintName: "followingPK", tableName: "following")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-29") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-29") {
         addPrimaryKey(columnNames: "item_id, source_id", constraintName: "item2sourcePK", tableName: "item2source")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-30") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-30") {
         addPrimaryKey(columnNames: "user_id, role_id", constraintName: "user_rolePK", tableName: "user_role")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-31") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-31") {
         addUniqueConstraint(columnNames: "class", constraintName: "UC_ACL_CLASSCLASS_COL", tableName: "acl_class")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-32") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-32") {
         addUniqueConstraint(columnNames: "verification_code", constraintName: "UC_EMAIL_VERIFICATIONVERIFICATION_CODE_COL", tableName: "email_verification")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-33") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-33") {
         addUniqueConstraint(columnNames: "profile_id", constraintName: "UC_PROFILEPROFILE_ID_COL", tableName: "profile")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-34") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-34") {
         addUniqueConstraint(columnNames: "authority", constraintName: "UC_ROLEAUTHORITY_COL", tableName: "role")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-35") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-35") {
         addUniqueConstraint(columnNames: "email", constraintName: "UC_USEREMAIL_COL", tableName: "user")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-36") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-36") {
         addUniqueConstraint(columnNames: "sid, principal", constraintName: "UK1781b9a084dff171b580608b3640", tableName: "acl_sid")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-37") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-37") {
         addUniqueConstraint(columnNames: "object_id_class, object_id_identity", constraintName: "UK56103a82abb455394f8c97a95587", tableName: "acl_object_identity")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-38") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-38") {
         addUniqueConstraint(columnNames: "passport_id, item_id", constraintName: "UK6b2df26b03b2b985bf3c4698f396", tableName: "item2passport")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-39") {
-        addUniqueConstraint(columnNames: "action, email", constraintName: "UKb232bd49e5b8712edc8d6f1868a4", tableName: "email_verification")
-    }
-
-    changeSet(author: "albvs (generated)", id: "1532524249920-40") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-39") {
         addUniqueConstraint(columnNames: "user_id, role_id", constraintName: "UKc8fa29d7d73775bc92c5795bc721", tableName: "role_request")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-41") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-40") {
         addUniqueConstraint(columnNames: "acl_object_identity, ace_order", constraintName: "UKce200ed06800e5a163c6ab6c0c85", tableName: "acl_entry")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-42") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-41") {
         addUniqueConstraint(columnNames: "http_method, url", constraintName: "UKf721bf1f2340334e273dd57aedcb", tableName: "request_map")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-43") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-42") {
         addForeignKeyConstraint(baseColumnNames: "passport_id", baseTableName: "item2passport", constraintName: "FK1t10y5yqkaadeb71bj4hrxxhg", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "passport")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-44") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-43") {
         addForeignKeyConstraint(baseColumnNames: "profile_id", baseTableName: "passport", constraintName: "FK22vmyybh54m73f71xfoaov4js", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-45") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-44") {
         addForeignKeyConstraint(baseColumnNames: "user_id", baseTableName: "profile", constraintName: "FK34lmibaadehn191lgf4gl9jk7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-46") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-45") {
         addForeignKeyConstraint(baseColumnNames: "parent_object", baseTableName: "acl_object_identity", constraintName: "FK4soxn7uid8qxltqps8kewftx7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "acl_object_identity")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-47") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-46") {
         addForeignKeyConstraint(baseColumnNames: "user_id", baseTableName: "item_group", constraintName: "FK67urgr2etxe0afvgjkxxq3lo", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-48") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-47") {
         addForeignKeyConstraint(baseColumnNames: "followed_id", baseTableName: "following", constraintName: "FK7aud1pqpivq0ecijth4gegrc1", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-49") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-48") {
         addForeignKeyConstraint(baseColumnNames: "item_id", baseTableName: "item2passport", constraintName: "FK8v1ebuj2ub3jk9j3pouey0h4g", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "item")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-50") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-49") {
         addForeignKeyConstraint(baseColumnNames: "sid", baseTableName: "acl_entry", constraintName: "FK9r4mj8ewa904g3wivff0tb5b0", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "acl_sid")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-51") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-50") {
         addForeignKeyConstraint(baseColumnNames: "user_id", baseTableName: "role_request", constraintName: "FK9ve684xlarq9w37wj1fxgqtn7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-52") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-51") {
         addForeignKeyConstraint(baseColumnNames: "role_id", baseTableName: "user_role", constraintName: "FKa68196081fvovjhkek5m97n3y", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "role")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-53") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-52") {
         addForeignKeyConstraint(baseColumnNames: "profile_id", baseTableName: "comment", constraintName: "FKa926jdw9ofp44fheygercoe4n", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-54") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-53") {
         addForeignKeyConstraint(baseColumnNames: "object_id_class", baseTableName: "acl_object_identity", constraintName: "FKc06nv93ck19el45a3g1p0e58w", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "acl_class")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-55") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-54") {
         addForeignKeyConstraint(baseColumnNames: "image_id", baseTableName: "source_image", constraintName: "FKeu8sa8tipk8chkldwqq0lmtln", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "image")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-56") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-55") {
         addForeignKeyConstraint(baseColumnNames: "image_id", baseTableName: "item_image", constraintName: "FKffekuuetvxc58mlha2e9i3tj5", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "image")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-57") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-56") {
         addForeignKeyConstraint(baseColumnNames: "user_id", baseTableName: "user_role", constraintName: "FKfgsgxvihks805qcq8sq26ab7c", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "user")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-58") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-57") {
         addForeignKeyConstraint(baseColumnNames: "comment_id", baseTableName: "item_comment", constraintName: "FKfqcrpo3y4l5tsko8698ke0r4e", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "comment")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-59") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-58") {
         addForeignKeyConstraint(baseColumnNames: "owner_sid", baseTableName: "acl_object_identity", constraintName: "FKikrbtok3aqlrp9wbq6slh9mcw", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "acl_sid")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-60") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-59") {
         addForeignKeyConstraint(baseColumnNames: "follower_id", baseTableName: "following", constraintName: "FKktejkg0u0led7oux4kg7fgxjo", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "profile")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-61") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-60") {
         addForeignKeyConstraint(baseColumnNames: "acl_object_identity", baseTableName: "acl_entry", constraintName: "FKl39t1oqikardwghegxe0wdcpt", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "acl_object_identity")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-62") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-61") {
         addForeignKeyConstraint(baseColumnNames: "comment_id", baseTableName: "source_comment", constraintName: "FKlef4yys4enjfcnngx65ldjwh", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "comment")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-63") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-62") {
         addForeignKeyConstraint(baseColumnNames: "avatar_id", baseTableName: "profile", constraintName: "FKpmjjoqxn1ya27uwi5gar8ickc", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "image")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-64") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-63") {
         addForeignKeyConstraint(baseColumnNames: "role_id", baseTableName: "role_request", constraintName: "FKq3pmcnl1x9ymtr4ypdboi0lv3", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "role")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-65") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-64") {
         addForeignKeyConstraint(baseColumnNames: "source_id", baseTableName: "item2source", constraintName: "FKqu63sppr2062vav0ky6rua1m", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "source")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-66") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-65") {
         addForeignKeyConstraint(baseColumnNames: "item_group_id", baseTableName: "item", constraintName: "FKr4fbv7293k0b5v1qjk5lm6md", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "item_group")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-67") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-66") {
         addForeignKeyConstraint(baseColumnNames: "image_id", baseTableName: "passport_image", constraintName: "FKsiok32hg03dnuropo3meotkwm", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "image")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-68") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-67") {
         addForeignKeyConstraint(baseColumnNames: "item_id", baseTableName: "item2source", constraintName: "FKtp4u7one6eah0pp4u5ul0ami6", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "item")
     }
 
-    changeSet(author: "albvs (generated)", id: "1532524249920-69") {
+    changeSet(author: "albvs (generated)", id: "1532526192663-68") {
         addForeignKeyConstraint(baseColumnNames: "comment_id", baseTableName: "passport_comment", constraintName: "FKyyu8k8oa59y5eg4pdonqyu2h", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "comment")
     }
 }

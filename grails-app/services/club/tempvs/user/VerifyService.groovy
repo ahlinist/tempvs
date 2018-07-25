@@ -20,8 +20,6 @@ class VerifyService {
 
     private static final String EMAIL_FIELD = 'email'
     private static final String EMAIL_ACTION = 'email'
-    private static final String USER_PROFILE_ACTION = 'user'
-    private static final String CLUB_PROFILE_ACTION = 'club'
     private static final String REGISTRATION_ACTION = 'registration'
     private static final String PROFILE_EMAIL_ACTION = 'profileEmail'
     private static final String EMAIL_USED_CODE = 'emailVerification.email.used.error'
