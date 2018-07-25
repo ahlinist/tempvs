@@ -79,6 +79,10 @@ class ImageService {
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     List<Image> uploadImages(List<ImageUploadBean> imageUploadBeans, String collection) {
+        if (imageUploadBeans.every { it.image.empty }) {
+            return []
+        }
+
         List<Image> images = []
         String url = IMAGE_SERVICE_URL + '/api/store'
         String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String

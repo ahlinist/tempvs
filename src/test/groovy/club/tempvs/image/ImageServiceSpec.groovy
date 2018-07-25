@@ -79,7 +79,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         service.uploadImage(imageUploadBean, COLLECTION)
 
         then:
-        1 * imageUploadBean.image >> multipartFile
+        2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -92,7 +92,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         service.uploadImages([imageUploadBean], COLLECTION)
 
         then:
-        1 * imageUploadBean.image >> multipartFile
+        2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK

@@ -157,11 +157,7 @@ class ProfileService {
     @PreAuthorize('#profile.user.email == authentication.name')
     Profile editProfileField(Profile profile, String fieldName, String fieldValue) {
         if (fieldName == PERIOD_FIELD) {
-            try {
-                profile.period = Period.valueOf(fieldValue)
-            } catch (IllegalArgumentException exception) {
-                profile.period = null
-            }
+            throw new IllegalArgumentException("Forbidden operation")
         } else if ((fieldName == PROFILE_EMAIL_FIELD) && !isProfileEmailUnique(profile, profile.profileEmail)) {
             profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [fieldValue] as Object[], EMAIL_USED_CODE)
             throw new ValidationException("ProfileEmail is non-unique", profile.errors)
@@ -197,7 +193,7 @@ class ProfileService {
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Boolean isProfileEmailUnique(Profile profile, String email) {
         if (!email) {
-            return Boolean.FALSE
+            return Boolean.TRUE
         }
 
         User profileUser = profile.user
