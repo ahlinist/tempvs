@@ -167,15 +167,19 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         then:
         1 * userService.currentUser >> user
-        1 * user.profiles >> [profile]
-        2 * profile.type >> ProfileType.USER
-        1 * profile.id >> LONG_ONE
+        1 * user.userProfile >> profile
+        1 * user.clubProfiles >> [profile]
+        1 * profile.active >> true
         1 * user.currentProfile >> profile
-        1 * user.currentProfileId >> LONG_ONE
-        2 * profile.toString() >> "I'm a club profile"
+        1 * profile.id >> LONG_ONE
+        3 * profile.toString() >> "I'm a profile"
         0 * _
 
         and:
-        result.current != null
+        result == [
+                current: ["I'm a profile"],
+                user   : ["I'm a profile"],
+                club   : [[id: 1, name: "I'm a profile"]],
+        ]
     }
 }

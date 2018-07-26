@@ -84,24 +84,23 @@ class ProfileController {
         }
 
         User user = profile.user
-        List<Profile> profiles = user.profiles
 
         if (profile.ofUserType) {
-            List<Profile> clubProfiles = profiles.findAll {it.type == ProfileType.CLUB}
+            List<Profile> clubProfiles = user.clubProfiles
 
             [
                     profile: profile,
                     user: user,
                     id: profile.identifier,
                     editAllowed: currentProfile == profile,
-                    mayBeFollowed: followingService.mayBeFollowed(currentProfile, profile),
+                    mayBeFollowed: followingService.mayBeFollowed(currentProfile, profile) as Boolean,
                     isFollowed: followingService.getFollowing(currentProfile, profile) as Boolean,
                     activeProfiles: clubProfiles.findAll { it.active },
                     inactiveProfiles: clubProfiles.findAll { !it.active },
                     periods: Period.values(),
             ]
         } else if (profile.ofClubType) {
-            Profile userProfile = profiles.find {it.type == ProfileType.USER}
+            Profile userProfile = user.userProfile
 
             [
                     profile: profile,
@@ -121,9 +120,9 @@ class ProfileController {
     def switchProfile(Long id) {
         User currentUser = userService.currentUser
         List<Profile> profiles = currentUser?.profiles
-        Profile profile = id ? profiles?.find { it.id == id } : profiles.find { it.type == ProfileType.USER}
+        Profile profile = id ? profiles.find { it.id == id } : profiles.find { it.type == ProfileType.USER}
 
-        if (profile.active) {
+        if (profile?.active) {
             profileService.currentProfile = profile
         }
 
@@ -147,6 +146,8 @@ class ProfileController {
         } catch (ValidationException e) {
             imageService.deleteImage(avatar)
             return render(ajaxResponseHelper.renderValidationResponse(e.errors))
+        } catch (Exception e) {
+            imageService.deleteImage(avatar)
         }
 
         profileService.currentProfile = persistentProfile
@@ -258,14 +259,15 @@ class ProfileController {
 
         try {
             updatedProfile = profileService.uploadAvatar(profileService.currentProfile, avatar)
+
+            if (updatedProfile.hasErrors()) {
+                throw new ValidationException("Profile has errors", updatedProfile.errors)
+            }
+        } catch (ValidationException e) {
+            imageService.deleteImage(avatar)
+            return render(ajaxResponseHelper.renderValidationResponse(e.errors))
         } catch (Exception e) {
             imageService.deleteImage(avatar)
-            throw e
-        }
-
-        if (updatedProfile.hasErrors()) {
-            imageService.deleteImage(avatar)
-            return render(ajaxResponseHelper.renderValidationResponse(updatedProfile))
         }
 
         Map model = [profile: updatedProfile, editAllowed: Boolean.TRUE]

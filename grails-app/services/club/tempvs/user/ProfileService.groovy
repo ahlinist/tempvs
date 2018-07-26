@@ -3,7 +3,6 @@ package club.tempvs.user
 import club.tempvs.communication.Following
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
 import grails.validation.ValidationException
@@ -29,7 +28,17 @@ class ProfileService {
 
 
     Profile getProfile(id) {
-        Profile.findByProfileId(id as String) ?: getProfileById(id as Long)
+        Profile profile = Profile.findByProfileId(id as String)
+
+        try {
+            if (!profile) {
+                profile = getProfileById(id as Long)
+            }
+        } catch (Exception e) {
+            return null
+        }
+
+        return profile
     }
 
     Profile getProfileById(Long id) {
@@ -73,25 +82,14 @@ class ProfileService {
             return [:]
         }
 
-        List<Profile> profiles = currentUser.profiles
-
-        Profile userProfile = profiles.find { it.type == ProfileType.USER }
-        List<Profile> clubProfiles = profiles.findAll { it.type == ProfileType.CLUB }
-
-        Profile currentProfile = profiles.find {
-            Profile currentProfile = currentUser.currentProfile
-
-            if (currentProfile) {
-                it.id == currentUser.currentProfileId
-            } else {
-                it.id == currentProfile.id
-            }
-        }
+        Profile userProfile = currentUser.userProfile
+        List<Profile> clubProfiles = currentUser.clubProfiles.findAll { it.active }
+        Profile currentProfile = currentUser.currentProfile
 
         Map result = [
                 current: [currentProfile.toString()],
                 user: [userProfile.toString()],
-                club: clubProfiles.collect { [id:it.id, name: it.toString()] },
+                club: clubProfiles.collect { [id: it.id, name: it.toString()] },
         ]
 
         return result
