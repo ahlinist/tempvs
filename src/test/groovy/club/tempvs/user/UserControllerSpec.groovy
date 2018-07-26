@@ -125,6 +125,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * registrationCommand.firstName
         1 * registrationCommand.lastName
         1 * registrationCommand.profileId
+        1 * registrationCommand.type
         1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
         1 * emailVerification.email >> EMAIL
@@ -151,6 +152,7 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * registrationCommand.firstName
         1 * registrationCommand.lastName
         1 * registrationCommand.profileId
+        1 * registrationCommand.type
         1 * registrationCommand.password >> PASSWORD
         1 * registrationCommand.confirmPassword
         1 * emailVerification.email >> EMAIL
