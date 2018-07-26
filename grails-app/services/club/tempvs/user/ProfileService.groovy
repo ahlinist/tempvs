@@ -75,14 +75,16 @@ class ProfileService {
 
         List<Profile> profiles = currentUser.profiles
 
-        Profile userProfile = profiles.find { it.type == ProfileType.USER}
-        List<Profile> clubProfiles = profiles.findAll { it.type == ProfileType.CLUB}
+        Profile userProfile = profiles.find { it.type == ProfileType.USER }
+        List<Profile> clubProfiles = profiles.findAll { it.type == ProfileType.CLUB }
 
         Profile currentProfile = profiles.find {
-            if (currentUser.currentProfile) {
+            Profile currentProfile = currentUser.currentProfile
+
+            if (currentProfile) {
                 it.id == currentUser.currentProfileId
             } else {
-                it.id == currentUser.currentProfile.id
+                it.id == currentProfile.id
             }
         }
 
@@ -190,7 +192,6 @@ class ProfileService {
         profile
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Boolean isProfileEmailUnique(Profile profile, String email) {
         if (!email) {
             return Boolean.TRUE
@@ -200,11 +201,10 @@ class ProfileService {
         User persistentUser = userService.getUserByEmail(email)
 
         if (persistentUser && (profileUser != persistentUser)) {
-            println "returning false"
             return Boolean.FALSE
         }
 
-        List<Profile> persistentProfiles = Profile.findAllByProfileEmail(email)
+        List<Profile> persistentProfiles = Profile.findAllByProfileEmail(email) as List<Profile>
 
         return !persistentProfiles.any { it.user != profileUser }
     }

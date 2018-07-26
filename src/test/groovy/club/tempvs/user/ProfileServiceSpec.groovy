@@ -9,14 +9,10 @@ import spock.lang.Specification
 
 class ProfileServiceSpec extends Specification implements ServiceUnitTest<ProfileService>, DomainUnitTest<Profile> {
 
-    private static final String ONE = '1'
     private static final Long LONG_ONE = 1L
-    private static final String USER = 'user'
     private static final String EMAIL = 'email'
-    private static final String CLASS = 'class'
     private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
-    private static final String PROFILE_EMAIL = 'profileEmail'
 
     def user = Mock User
     def image = Mock Image
@@ -34,40 +30,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     }
 
     def cleanup() {
-    }
-
-    void "Test getProfile()"() {
-        when:
-        def result = service.getProfile(ONE)
-
-        then:
-        1 * Profile.findByProfileId(ONE) >> profile
-        0 * _
-
-        and:
-        result == profile
-
-        when:
-        result = service.getProfile(ONE)
-
-        then:
-        1 * Profile.findByProfileId(ONE) >> null
-        1 * Profile.get(ONE) >> profile
-        0 * _
-
-        and:
-        result == profile
-    }
-
-    void "Test getProfileByProfileEmail()"() {
-        when:
-        def result = service.getProfileByProfileEmail(PROFILE_EMAIL)
-
-        then:
-        1 * profile.findByProfileEmail(PROFILE_EMAIL) >> profile
-        0 * _
-
-        result == profile
     }
 
     void "Test searchProfiles()"() {
@@ -95,7 +57,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         then:
         1 * userService.currentUser >> user
         1 * profile.id >> LONG_ONE
-        1 * user.setCurrentProfileClass(_ as Class)
         1 * user.setCurrentProfileId(LONG_ONE)
         1 * user.save([flush: true])
         0 * _
@@ -106,7 +67,12 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         def result = service.createClubProfile(profile, image)
 
         then:
+        1 * userService.currentUser >> user
+        1 * profile.setUser(user)
         1 * profile.setAvatar(image)
+        1 * profile.setType(ProfileType.CLUB)
+        1 * user.addToProfiles(profile)
+        1 * profile.profileEmail
         1 * profile.save() >> profile
         0 * _
 
@@ -145,7 +111,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         def result = service.editProfileField(profile, FIRST_NAME, FIELD_VALUE)
 
         then:
-        1 * profile.setProperty(FIRST_NAME, FIELD_VALUE)
+        1 * profile.setFirstName(FIELD_VALUE)
         1 * profile.save() >> profile
         0 * _
 
@@ -158,6 +124,8 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         def result = service.uploadAvatar(profile, image)
 
         then:
+        1 * profile.avatar >> image
+        1 * imageService.deleteImage(image)
         1 * profile.setAvatar(image)
         1 * profile.save() >> profile
         0 * _
@@ -178,14 +146,15 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         0 * _
     }
 
-    void "Test isProfileEmailUnique() for clubProfile"() {
+    void "Test isProfileEmailUnique()"() {
         when:
         def result = service.isProfileEmailUnique(profile, EMAIL)
 
         then:
+        1 * profile.user >> user
         1 * userService.getUserByEmail(EMAIL) >> user
-        1 * Profile.findAllByProfileEmail(EMAIL) >> profile
-        1 * profile.getProperty(USER) >> user
+        1 * Profile.findAllByProfileEmail(EMAIL) >> [profile]
+        1 * profile.user >> user
         0 * _
 
         and:
@@ -198,11 +167,12 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         then:
         1 * userService.currentUser >> user
-        1 * user.userProfile >> profile
-        1 * user.clubProfiles >> [profile]
+        1 * user.profiles >> [profile]
+        2 * profile.type >> ProfileType.USER
+        1 * profile.id >> LONG_ONE
+        1 * user.currentProfile >> profile
         1 * user.currentProfileId >> LONG_ONE
         2 * profile.toString() >> "I'm a club profile"
-        _ * profile.id >> LONG_ONE
         0 * _
 
         and:
