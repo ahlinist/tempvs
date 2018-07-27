@@ -65,19 +65,15 @@ class ProfileService {
         userService.currentUser?.currentProfile
     }
 
-    @PreAuthorize('(#profile == null) or (#profile.user.email == authentication.name)')
-    void setCurrentProfile(Profile profile) {
-        User user = userService.currentUser
-
+    @PreAuthorize('(#profile == null) or (#user.email == authentication.name)')
+    void setCurrentProfile(User user, Profile profile) {
         if (user) {
             user.currentProfileId = profile?.id
             user.save(flush: true)
         }
     }
 
-    Map getProfileDropdown() {
-        User currentUser = userService.currentUser
-
+    Map getProfileDropdown(User currentUser) {
         if (!currentUser) {
             return [:]
         }
@@ -122,8 +118,8 @@ class ProfileService {
         }
     }
 
-    Profile createClubProfile(Profile profile, Image avatar) {
-        User user = userService.currentUser
+    @PreAuthorize('#user.email == authentication.name')
+    Profile createClubProfile(User user, Profile profile, Image avatar) {
         profile.user = user
         profile.avatar = avatar
         profile.type = ProfileType.CLUB

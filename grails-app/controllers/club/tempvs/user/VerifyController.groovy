@@ -88,7 +88,8 @@ class VerifyController {
             }
 
             if (!persistentProfile.hasErrors()) {
-                profileService.setCurrentProfile(persistentProfile)
+                User user = userService.currentUser
+                profileService.setCurrentProfile(user, persistentProfile)
                 return redirect(controller: 'profile', action: 'show', id: persistentProfile.identifier)
             }
         }

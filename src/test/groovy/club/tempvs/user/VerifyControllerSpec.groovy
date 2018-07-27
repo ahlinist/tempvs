@@ -120,7 +120,8 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         1 * profileService.getProfile(LONG_ID) >> profile
         1 * profileService.editProfileField(profile, PROFILE_EMAIL, EMAIL) >> profile
         1 * profile.hasErrors() >> false
-        1 * profileService.setCurrentProfile(profile)
+        1 * userService.currentUser >> user
+        1 * profileService.setCurrentProfile(user, profile)
         1 * profile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
         0 * _

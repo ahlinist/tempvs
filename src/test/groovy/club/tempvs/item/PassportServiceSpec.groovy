@@ -3,6 +3,7 @@ package club.tempvs.item
 import club.tempvs.communication.Comment
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
+import club.tempvs.user.Profile
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import spock.lang.Specification
@@ -17,7 +18,7 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
     def image = Mock Image
     def comment = Mock Comment
     def passport = Mock Passport
-    def clubProfile = Mock ClubProfile
+    def profile = Mock Profile
     def imageService = Mock ImageService
     def item2Passport = Mock Item2Passport
 
@@ -47,26 +48,14 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
         result == [item2Passport]
     }
 
-    void "Test validatePassport()"() {
-        when:
-        def result = service.validatePassport(passport, clubProfile)
-
-        then:
-        1 * passport.setClubProfile(clubProfile)
-        1 * clubProfile.addToPassports(passport)
-        1 * passport.validate() >> passport
-        0 * _
-
-        and:
-        result == passport
-    }
-
     void "Test createPassport()"() {
         when:
-        def result = service.createPassport(passport, [image])
+        def result = service.createPassport(passport, profile, [image])
 
         then:
         1 * passport.setImages([image])
+        1 * passport.setProfile(profile)
+        1 * profile.addToPassports(passport)
         1 * passport.save() >> passport
         0 * _
 
@@ -111,13 +100,13 @@ class PassportServiceSpec extends Specification implements ServiceUnitTest<Passp
 
     void "Test deletePassport()"() {
         when:
-        service.deletePassport(passport, clubProfile)
+        service.deletePassport(passport, profile)
 
         then:
         1 * Item2Passport.findByPassport(passport) >> item2Passport
         1 * item2Passport.delete()
-        1 * clubProfile.removeFromPassports(passport)
-        1 * clubProfile.save()
+        1 * profile.removeFromPassports(passport)
+        1 * profile.save()
         0 * _
     }
 

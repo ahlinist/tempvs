@@ -52,10 +52,9 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     void "Test setCurrentProfile()"() {
         when:
-        service.setCurrentProfile(profile)
+        service.setCurrentProfile(user, profile)
 
         then:
-        1 * userService.currentUser >> user
         1 * profile.id >> LONG_ONE
         1 * user.setCurrentProfileId(LONG_ONE)
         1 * user.save([flush: true])
@@ -64,10 +63,9 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     void "Test createClubProfile()"() {
         when:
-        def result = service.createClubProfile(profile, image)
+        def result = service.createClubProfile(user, profile, image)
 
         then:
-        1 * userService.currentUser >> user
         1 * profile.setUser(user)
         1 * profile.setAvatar(image)
         1 * profile.setType(ProfileType.CLUB)
@@ -163,10 +161,9 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     void "Test getProfileDropdown()"() {
         when:
-        def result = service.getProfileDropdown()
+        def result = service.getProfileDropdown(user)
 
         then:
-        1 * userService.currentUser >> user
         1 * user.userProfile >> profile
         1 * user.clubProfiles >> [profile]
         1 * profile.active >> true

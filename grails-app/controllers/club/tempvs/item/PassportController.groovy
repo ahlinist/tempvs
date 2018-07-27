@@ -12,6 +12,7 @@ import club.tempvs.user.ProfileService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
+import grails.validation.ValidationException
 import grails.web.mapping.LinkGenerator
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
@@ -64,18 +65,21 @@ class PassportController {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
         }
 
-        Profile clubProfile = profileService.currentProfile
-        passport = passportService.validatePassport(passport, clubProfile)
-
-        if (passport.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(passport))
-        }
-
+        Profile profile = profileService.currentProfile
+        Passport persistentPassport
         List<Image> images = imageService.uploadImages(imageUploadBeans, PASSPORT_COLLECTION)
-        passport = passportService.createPassport(passport, images)
 
-        if (passport.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(passport))
+        try {
+            persistentPassport = passportService.createPassport(passport, profile, images)
+
+            if (persistentPassport.hasErrors()) {
+                throw new ValidationException("Passport has errors", persistentPassport.errors)
+            }
+        } catch (ValidationException e) {
+            imageService.deleteImages(images)
+            return render(ajaxResponseHelper.renderValidationResponse(e.errors))
+        } catch (Exception e) {
+            imageService.deleteImages(images)
         }
 
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'passport', action: 'show', id: passport.id))
@@ -89,15 +93,15 @@ class PassportController {
             return [id: id, notFoundMessage: NO_SUCH_PASSPORT]
         }
 
-        Profile clubProfile = passport.profile
+        Profile profile = passport.profile
 
         [
                 passport: passport,
                 images: passport.images,
-                clubProfile: clubProfile,
+                profile: profile,
                 itemMap: composeItemMap(passport),
-                availableItems: itemService.getItemsByPeriod(clubProfile.period),
-                editAllowed: clubProfile == profileService.currentProfile,
+                availableItems: itemService.getItemsByPeriod(profile.period),
+                editAllowed: profile == profileService.currentProfile,
         ]
     }
 
@@ -154,9 +158,9 @@ class PassportController {
 
     def deletePassport(Long id) {
         Passport passport = passportService.getPassport id
-        Profile clubProfile = passport.profile
-        passportService.deletePassport(passport, clubProfile)
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'club', id: clubProfile.id))
+        Profile profile = passport.profile
+        passportService.deletePassport(passport, profile)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'show', id: profile.id))
     }
 
     def addComment(Long objectId, String text) {

@@ -70,12 +70,10 @@ class ItemController {
         User user = id ? userService.getUser(id) : userService.currentUser
 
         if (user) {
-            Profile userProfile = user.profiles.find { it.type == ProfileType.USER }
-
             [
                     user: user,
                     itemGroups: user.itemGroups,
-                    userProfile: userProfile,
+                    profile: user.userProfile,
                     editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE
             ]
         }
@@ -99,7 +97,6 @@ class ItemController {
 
             if (itemGroup) {
                 User user = itemGroup.user
-                Profile userProfile = user.profiles.find { it.type == ProfileType.USER }
 
                 [
                         user: user,
@@ -107,7 +104,7 @@ class ItemController {
                         itemTypes: ItemType.values(),
                         periods: Period.values(),
                         items: itemGroup.items.sort { it.id },
-                        userProfile: userProfile,
+                        userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                 ]
             }
@@ -171,13 +168,12 @@ class ItemController {
                 User user = itemGroup.user
                 List<Source> sources = item.sources
                 List<Source> availableSources = sourceService.getSourcesByPeriodAndItemType(item.period, item.itemType, sources)
-                Profile userProfile = user.profiles.find { it.type == ProfileType.USER }
 
                 [
                         user: user,
                         item: item,
                         itemGroup: itemGroup,
-                        userProfile: userProfile,
+                        userProfile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
                         sourceMap: composeSourceMap(sources),

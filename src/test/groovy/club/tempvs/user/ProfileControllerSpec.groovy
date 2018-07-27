@@ -192,7 +192,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * user.profiles >> [profile]
         1 * profile.type >> ProfileType.USER
         1 * profile.active >> true
-        1 * profileService.setCurrentProfile(profile)
+        1 * profileService.setCurrentProfile(user, profile)
         0 * _
 
         and:
@@ -211,7 +211,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * user.profiles >> [profile]
         1 * profile.id >> LONG_ID
         1 * profile.active >> true
-        1 * profileService.setCurrentProfile(profile)
+        1 * profileService.setCurrentProfile(user, profile)
         0 * _
 
         and:
@@ -228,7 +228,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * imageUploadBean.validate() >> true
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * profileService.createClubProfile(profile, image) >> profile
+        1 * userService.currentUser >> user
+        1 * profileService.createClubProfile(user, profile, image) >> profile
         1 * profile.hasErrors() >> true
         1 * profile.errors >> errors
         1 * errors.allErrors >> []
@@ -248,9 +249,10 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * profileService.createClubProfile(profile, image) >> profile
+        1 * userService.currentUser >> user
+        1 * profileService.createClubProfile(user, profile, image) >> profile
         1 * profile.hasErrors() >> Boolean.FALSE
-        1 * profileService.setCurrentProfile(profile)
+        1 * profileService.setCurrentProfile(user, profile)
         1 * profile.id >> LONG_ID
         1 * ajaxResponseHelper.renderRedirect("/profile/show/${LONG_ID}") >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -307,7 +309,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.getProfile(ONE) >> profile
         1 * profileService.currentProfile >> profile
-        1 * profileService.setCurrentProfile(null)
+        1 * userService.currentUser >> user
+        1 * profileService.setCurrentProfile(user, null)
         1 * profileService.deactivateProfile(profile) >> profile
         1 * profile.hasErrors() >> false
         1 * ajaxResponseHelper.renderRedirect(REFERER) >> json
@@ -378,7 +381,8 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.getProfileDropdown()
 
         then:
-        1 * profileService.getProfileDropdown()
+        1 * userService.currentUser >> user
+        1 * profileService.getProfileDropdown(user)
         0 * _
     }
 }

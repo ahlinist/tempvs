@@ -118,12 +118,12 @@ class ProfileController {
     }
 
     def switchProfile(Long id) {
-        User currentUser = userService.currentUser
-        List<Profile> profiles = currentUser?.profiles
+        User user = userService.currentUser
+        List<Profile> profiles = user?.profiles
         Profile profile = id ? profiles.find { it.id == id } : profiles.find { it.type == ProfileType.USER}
 
         if (profile?.active) {
-            profileService.currentProfile = profile
+            profileService.setCurrentProfile(user, profile)
         }
 
         redirect uri: request.getHeader(REFERER)
@@ -136,9 +136,10 @@ class ProfileController {
 
         Profile persistentProfile
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
+        User user = userService.currentUser
 
         try {
-            persistentProfile = profileService.createClubProfile(profile, avatar)
+            persistentProfile = profileService.createClubProfile(user, profile, avatar)
 
             if (persistentProfile.hasErrors()) {
                 throw new ValidationException("Profile has errors", persistentProfile.errors)
@@ -150,7 +151,7 @@ class ProfileController {
             imageService.deleteImage(avatar)
         }
 
-        profileService.currentProfile = persistentProfile
+        profileService.setCurrentProfile(user, persistentProfile)
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile', action: 'show', id: persistentProfile.id))
     }
 
@@ -210,7 +211,8 @@ class ProfileController {
         }
 
         if (profileService.currentProfile == profile) {
-            profileService.currentProfile = null
+            User user = userService.currentUser
+            profileService.setCurrentProfile(user, null)
         }
 
         profile = profileService.deactivateProfile(profile)
@@ -276,15 +278,9 @@ class ProfileController {
     }
 
     def getProfileDropdown() {
-        Map body = profileService.getProfileDropdown()
-        Map result
-
-        if (body) {
-            result = [action: FILL_DROPDOWN, body: body]
-        } else {
-            result = [action: NO_ACTION]
-        }
-
+        User user = userService.currentUser
+        Map body = profileService.getProfileDropdown(user)
+        Map result = body ? [action: FILL_DROPDOWN, body: body] : [action: NO_ACTION]
         render(result as JSON)
     }
 

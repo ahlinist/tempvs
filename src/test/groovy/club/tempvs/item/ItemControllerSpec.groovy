@@ -82,11 +82,11 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         then:
         1 * userService.currentUser >> user
         1 * user.itemGroups >> [itemGroup]
-        1 * user.profiles >> [profile]
+        1 * user.userProfile >> profile
         0 * _
 
         and:
-        result == [itemGroups: [itemGroup], user: user, userProfile: profile, editAllowed: Boolean.TRUE]
+        result == [itemGroups: [itemGroup], user: user, profile: profile, editAllowed: Boolean.TRUE]
     }
 
     void "Test stash() with id being not logged in"() {
@@ -109,7 +109,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * userService.getUser(LONG_ONE) >> user
-        1 * user.profiles >> profile
+        1 * user.userProfile >> profile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * user.itemGroups >> [itemGroup]
@@ -188,7 +188,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.getGroup(LONG_ONE) >> itemGroup
         1 * itemGroup.user >> user
         1 * itemGroup.items >> items
-        1 * user.profiles >> profile
+        1 * user.userProfile >> profile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         0 * _
@@ -305,7 +305,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.itemType >> itemType
         1 * item.images >> [image]
         1 * itemGroup.user >> user
-        1 * user.profiles >> profile
+        1 * user.userProfile >> profile
         1 * user.id >> LONG_ONE
         1 * userService.currentUserId >> LONG_ONE
         1 * item.sources >> [source]

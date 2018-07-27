@@ -90,10 +90,9 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageUploadBean.validate() >> Boolean.TRUE
         1 * profileService.currentProfile >> profile
-        1 * passportService.validatePassport(passport, profile) >> passport
         1 * imageService.uploadImages([imageUploadBean], PASSPORT_COLLECTION) >> [image]
-        1 * passportService.createPassport(passport, [image]) >> passport
-        2 * passport.hasErrors() >> Boolean.FALSE
+        1 * passportService.createPassport(passport, profile, [image]) >> passport
+        1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect(_) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
