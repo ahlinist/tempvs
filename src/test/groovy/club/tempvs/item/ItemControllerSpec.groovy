@@ -318,7 +318,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
                 user: user,
                 item: item,
                 itemGroup: itemGroup,
-                userProfile: profile,
+                profile: profile,
                 editAllowed: Boolean.TRUE,
                 images: [image],
                 sources: [source],
