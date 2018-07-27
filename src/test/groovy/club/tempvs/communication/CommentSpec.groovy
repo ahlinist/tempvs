@@ -1,5 +1,6 @@
 package club.tempvs.communication
 
+import club.tempvs.user.Profile
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
@@ -7,7 +8,7 @@ class CommentSpec extends Specification implements DomainUnitTest<Comment> {
 
     private static final String TEXT = 'text'
 
-    def clubProfile = Mock ClubProfile
+    def profile = Mock Profile
 
     def setup() {
     }
@@ -15,20 +16,33 @@ class CommentSpec extends Specification implements DomainUnitTest<Comment> {
     def cleanup() {
     }
 
-    void "Test Comment creation"() {
+    void "Test empty Comment creation"() {
         expect:
         !domain.validate()
+    }
 
-        when:
-        domain.clubProfile = clubProfile
-
-        then:
-        !domain.validate()
-
-        when:
+    void "Test Comment creation without profile assigned"() {
+        given:
         domain.text = TEXT
 
-        then:
+        expect:
+        !domain.validate()
+    }
+
+    void "Test Comment creation"() {
+        given:
+        domain.profile = profile
+
+        expect:
+        !domain.validate()
+    }
+
+    void "Test successful Comment creation"() {
+        given:
+        domain.profile = profile
+        domain.text = TEXT
+
+        expect:
         domain.validate()
     }
 }

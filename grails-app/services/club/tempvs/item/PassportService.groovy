@@ -74,7 +74,7 @@ class PassportService {
         Item2Passport.findByItemAndPassport(item, passport)?.delete()
     }
 
-    @PreAuthorize('#passport.profile.user.email == authentication.name')
+    @PreAuthorize('#profile.user.email == authentication.name')
     void deletePassport(Passport passport, Profile profile) {
         Item2Passport.findByPassport(passport)?.delete()
         profile.removeFromPassports(passport)

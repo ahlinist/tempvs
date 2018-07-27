@@ -1,7 +1,7 @@
 <g:if test="${profiles}">
   <g:each var="profile" in="${profiles}">
     <li class="row">
-      <g:link class="btn btn-default col-sm-12" controller="profile" action="${profile.shortName}" id="${profile.id}">
+      <g:link class="btn btn-default col-sm-12" controller="profile" action="show" id="${profile.id}">
         ${profile}
       </g:link>
     </li>

@@ -36,21 +36,19 @@ class FollowingController {
 
     def show(Long id) {
         Profile profile = id ? profileService.getProfile(id) : profileService.currentProfile
-        List<Following> followers = followingService.getFollowers(profile)
-        List<Following> followings = followingService.getFollowings(profile)
-        List<Following> newFollowers = followers.findAll {it.isNew}
-        List<Following> newFollowings = followings.findAll {it.isNew}
-        followingService.ageFollowings(newFollowers + newFollowings)
+        List<Following> followerList = followingService.getFollowers(profile)
+        List<Following> followedList = followingService.getFollowings(profile)
+        List<Following> newFollowerList = followerList.findAll {it.isNew}
+        List<Following> newFollowedList = followedList.findAll {it.isNew}
+        followingService.ageFollowings(newFollowerList + newFollowedList)
 
-        Map model = [
+        [
                 profile: profile,
-                followerProfiles: profileService.getProfilesByFollowers(followers - newFollowers),
-                newFollowerProfiles: profileService.getProfilesByFollowers(newFollowers),
-                followingProfiles: profileService.getProfilesByFollowings(followings - newFollowings),
-                newFollowingProfiles: profileService.getProfilesByFollowings(newFollowings),
+                followerProfiles: (followerList - newFollowerList)*.follower,
+                newFollowerProfiles: newFollowerList*.follower,
+                followedProfiles: (followedList - newFollowedList)*.followed,
+                newFollowedProfiles: newFollowedList*.followed,
         ]
-
-        render view: '/following/show', model: model
     }
 
     def follow(Long profileId) {

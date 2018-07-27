@@ -1,6 +1,5 @@
 package club.tempvs.user
 
-import club.tempvs.communication.Following
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import grails.compiler.GrailsCompileStatic
@@ -49,18 +48,6 @@ class ProfileService {
         Profile.findAllByProfileEmail(email)
     }
 
-    List<Profile> getProfilesByFollowings(List<Following> followings) {
-        followings.collect { Following following ->
-            Profile.get(following.followed)
-        }
-    }
-
-    List<Profile> getProfilesByFollowers(List<Following> followings) {
-        followings.collect { Following following ->
-            Profile.get(following.follower)
-        }
-    }
-
     Profile getCurrentProfile() {
         userService.currentUser?.currentProfile
     }
@@ -96,6 +83,7 @@ class ProfileService {
         Profile.createCriteria().list(max: MAX_PROFILES_RETRIEVED, offset: offset) {
             not {'in'('id', profile.user.profiles.id)}
             eq ('active', Boolean.TRUE)
+            eq ('type', profile.type)
 
             if (profile.type == ProfileType.CLUB) {
                 eq('period', profile.period)

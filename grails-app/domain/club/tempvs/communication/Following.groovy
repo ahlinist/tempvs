@@ -20,8 +20,12 @@ class Following implements BasePersistent {
             follower != following.followed
         }
 
-        followed validator: { Period period, Following following ->
-            following.follower.period == following.followed.period
+        followed validator: { Profile followed, Following following ->
+            following.follower?.period == following.followed?.period
+        }
+
+        isNew validator: { Boolean isNew, Following following ->
+            following.follower?.type == following.followed?.type
         }
     }
 
@@ -30,7 +34,7 @@ class Following implements BasePersistent {
     }
 
     int hashCode() {
-        (follower.id + followed.id).hashCode()
+        (follower.hashCode() + followed.hashCode()).hashCode()
     }
 
     boolean equals(Object obj) {

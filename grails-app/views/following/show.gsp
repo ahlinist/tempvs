@@ -7,27 +7,27 @@
   <body>
     <div class="row">
       <div class="col-sm-6">
-        <g:if test="${followingProfiles || newFollowingProfiles}">
-          <g:if test="${newFollowingProfiles}">
+        <g:if test="${followedProfiles || newFollowedProfiles}">
+          <g:if test="${newFollowedProfiles}">
             <b><g:message code="following.newFollowings.label"/></b>
             <ul>
-              <g:each var="profile" in="${newFollowingProfiles}">
+              <g:each var="profile" in="${newFollowedProfiles}">
                 <g:set var="profileId" value="${profile.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.shortName}" id="${profileId}" style="background-color: #99FFCC;">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="show" id="${profileId}" style="background-color: #99FFCC;">
                     ${profile}
                   </g:link>
                 </li>
               </g:each>
             </ul>
           </g:if>
-          <g:if test="${followingProfiles}">
+          <g:if test="${followedProfiles}">
             <b><g:message code="following.followings.label"/></b>
             <ul>
-              <g:each var="profile" in="${followingProfiles}">
-                <g:set var="profileId" value="${profile.id}"/>
+              <g:each var="profile" in="${followedProfiles}">
+                <g:set var="profileId" value="${profile?.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.shortName}" id="${profileId}">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="show" id="${profileId}">
                     ${profile}
                   </g:link>
                 </li>
@@ -49,7 +49,7 @@
               <g:each var="profile" in="${newFollowerProfiles}">
                 <g:set var="profileId" value="${profile.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.shortName}" id="${profileId}" style="background-color: #99FFCC;">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="show" id="${profileId}" style="background-color: #99FFCC;">
                     ${profile}
                   </g:link>
                 </li>
@@ -62,7 +62,7 @@
               <g:each var="profile" in="${followerProfiles}">
                 <g:set var="profileId" value="${profile.id}"/>
                 <li class="row" id="followingProfile-${profileId}">
-                  <g:link class="btn btn-default col-sm-10" controller="profile" action="${profile.shortName}" id="${profileId}">
+                  <g:link class="btn btn-default col-sm-10" controller="profile" action="show" id="${profileId}">
                     ${profile}
                   </g:link>
                 </li>

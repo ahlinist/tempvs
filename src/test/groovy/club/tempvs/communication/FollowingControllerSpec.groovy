@@ -16,10 +16,9 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
     private static final String DISPLAY_COUNTER = 'displayCounter'
 
     def following = Mock Following
-    def userProfile = Mock UserProfile
-    def clubProfile = Mock ClubProfile
-    def followerClubProfile = Mock ClubProfile
-    def followingClubProfile = Mock ClubProfile
+    def profile = Mock Profile
+    def followerProfile = Mock Profile
+    def followedProfile = Mock Profile
 
     def profileService = Mock ProfileService
     def groovyPageRenderer = Mock PageRenderer
@@ -34,91 +33,41 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
     def cleanup() {
     }
 
-    void "Test index()"() {
-        when:
-        controller.index()
-
-        then:
-        1 * profileService.currentProfile >> userProfile
-        1 * followingService.getFollowers(userProfile) >> [following]
-        1 * followingService.getFollowings(userProfile) >> [following]
-        2 * following.isNew >> Boolean.FALSE
-        1 * profileService.getProfilesByFollowings([]) >> []
-        1 * profileService.getProfilesByFollowers([]) >> []
-        1 * profileService.getProfilesByFollowings([following]) >> [userProfile]
-        1 * profileService.getProfilesByFollowers([following]) >> [userProfile]
-        1 * followingService.ageFollowings([])
-        0 * _
-
-        and:
-        view == '/following/show'
-        model == [profile: userProfile, followerProfiles: [userProfile], newFollowerProfiles: [], followingProfiles: [userProfile], newFollowingProfiles: []]
-    }
-
-    void "Test user()"() {
+    void "Test show()"() {
         given:
         params.id = LONG_ONE
 
         when:
-        controller.user()
+        def result = controller.show()
 
         then:
-        1 * profileService.getProfile(UserProfile, LONG_ONE) >> userProfile
-        1 * followingService.getFollowers(userProfile) >> [following]
-        1 * followingService.getFollowings(userProfile) >> [following]
+        1 * profileService.getProfile(LONG_ONE) >> profile
+        1 * followingService.getFollowers(profile) >> [following]
+        1 * followingService.getFollowings(profile) >> [following]
         2 * following.isNew >> Boolean.FALSE
-        1 * profileService.getProfilesByFollowings([]) >> []
-        1 * profileService.getProfilesByFollowers([]) >> []
-        1 * profileService.getProfilesByFollowings([following]) >> [userProfile]
-        1 * profileService.getProfilesByFollowers([following]) >> [userProfile]
+        1 * following.getProperty('follower') >> profile
+        1 * following.getProperty('followed') >> profile
         1 * followingService.ageFollowings([])
         0 * _
 
         and:
-        view == '/following/show'
-        model == [profile: userProfile, followerProfiles: [userProfile], newFollowerProfiles: [], followingProfiles: [userProfile], newFollowingProfiles: []]
-    }
-
-    void "Test club()"() {
-        given:
-        params.id = LONG_ONE
-
-        when:
-        controller.club()
-
-        then:
-        1 * profileService.getProfile(ClubProfile, LONG_ONE) >> clubProfile
-        1 * followingService.getFollowers(clubProfile) >> [following]
-        1 * followingService.getFollowings(clubProfile) >> [following]
-        2 * following.isNew >> Boolean.FALSE
-        1 * profileService.getProfilesByFollowings([]) >> []
-        1 * profileService.getProfilesByFollowers([]) >> []
-        1 * profileService.getProfilesByFollowings([following]) >> [clubProfile]
-        1 * profileService.getProfilesByFollowers([following]) >> [clubProfile]
-        1 * followingService.ageFollowings([])
-        0 * _
-
-        and:
-        view == '/following/show'
-        model == [profile: clubProfile, followerProfiles: [clubProfile], newFollowerProfiles: [], followingProfiles: [clubProfile], newFollowingProfiles: []]
+        result == [profile: profile, followerProfiles: [profile], newFollowerProfiles: [], followedProfiles: [profile], newFollowedProfiles: []]
     }
 
     void "Test follow()"() {
         given:
         request.method = POST_METHOD
-        params.profileClassName = ClubProfile.name
         params.profileId = LONG_ONE
 
         when:
         controller.follow()
 
         then:
-        1 * profileService.currentProfile >> followerClubProfile
-        1 * profileService.getProfile(ClubProfile, LONG_ONE) >> followingClubProfile
-        1 * followingClubProfile.asType(Profile) >> followingClubProfile
-        1 * followingService.createFollowing(followerClubProfile, followingClubProfile) >> following
+        1 * profileService.currentProfile >> followerProfile
+        1 * profileService.getProfile(LONG_ONE) >> followedProfile
+        1 * followingService.createFollowing(followerProfile, followedProfile) >> following
         1 * following.hasErrors() >> Boolean.FALSE
-        1 * followingService.mayBeFollowed(followerClubProfile, followingClubProfile) >> Boolean.TRUE
+        1 * followingService.mayBeFollowed(followerProfile, followedProfile) >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -130,18 +79,16 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
     void "Test unfollow()"() {
         given:
         request.method = DELETE_METHOD
-        params.profileClassName = ClubProfile.name
         params.profileId = LONG_ONE
 
         when:
         controller.unfollow()
 
         then:
-        1 * profileService.currentProfile >> followerClubProfile
-        1 * profileService.getProfile(ClubProfile, LONG_ONE) >> followingClubProfile
-        1 * followingClubProfile.asType(Profile) >> followingClubProfile
-        1 * followingService.deleteFollowing(followerClubProfile, followingClubProfile)
-        1 * followingService.mayBeFollowed(followerClubProfile, followingClubProfile) >> Boolean.TRUE
+        1 * profileService.currentProfile >> followerProfile
+        1 * profileService.getProfile(LONG_ONE) >> followedProfile
+        1 * followingService.deleteFollowing(followerProfile, followedProfile)
+        1 * followingService.mayBeFollowed(followerProfile, followedProfile) >> Boolean.TRUE
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -157,8 +104,8 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         controller.getNewFollowersCount()
 
         then:
-        1 * profileService.currentProfile >> userProfile
-        1 * followingService.getNewFollowersCount(userProfile) >> 2
+        1 * profileService.currentProfile >> profile
+        1 * followingService.getNewFollowersCount(profile) >> 2
         0 * _
 
         and:

@@ -15,19 +15,12 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class FollowingService {
 
-    private static final String PROFILE_CLASS_NAME_FIELD = 'profileClassName'
-    private static final String FOLLOWING_ID_FIELD = 'followingId'
-    private static final String USER_MISMATCH = 'following.user.mismatch.message'
-    private static final String PROFILE_CLASSES_MISMATCH = 'profile.classes.mismatch.message'
-
     ProfileService profileService
     ObjectFactory objectFactory
 
-    Following getFollowing(Profile followerProfile, Profile followingProfile) {
-        if (followerProfile && followingProfile) {
-            if (followerProfile.type == followingProfile.type) {
-                Following.findByFollowerAndFollowed(followerProfile, followingProfile)
-            }
+    Following getFollowing(Profile follower, Profile followed) {
+        if (follower && followed) {
+            Following.findByFollowerAndFollowed(follower, followed)
         }
     }
 
@@ -37,33 +30,18 @@ class FollowingService {
         }
     }
 
-    @PreAuthorize('#followerProfile.user.email == authentication.name')
-    Following createFollowing(Profile followerProfile, Profile followingProfile) {
+    @PreAuthorize('#follower.user.email == authentication.name')
+    Following createFollowing(Profile follower, Profile followed) {
         Following following = objectFactory.getInstance(Following)
-
-        if (followerProfile?.class != followingProfile?.class) {
-            following.errors.rejectValue(PROFILE_CLASS_NAME_FIELD, PROFILE_CLASSES_MISMATCH, PROFILE_CLASSES_MISMATCH)
-        }
-
-        if (followerProfile.type == ProfileType.CLUB) {
-            if (followerProfile.user == followingProfile.user) {
-                following.errors.rejectValue(FOLLOWING_ID_FIELD, USER_MISMATCH, USER_MISMATCH)
-            }
-        }
-
-        following.follower = followerProfile
-        following.followed = followingProfile
-
-        if (!following.hasErrors()) {
-            following.save()
-        }
-
-        following
+        following.follower = follower
+        following.followed = followed
+        following.save()
+        return following
     }
 
-    @PreAuthorize('#followerProfile.user.email == authentication.name')
-    void deleteFollowing(Profile followerProfile, Profile followingProfile) {
-        Following following = getFollowing(followerProfile, followingProfile)
+    @PreAuthorize('#follower.user.email == authentication.name')
+    void deleteFollowing(Profile follower, Profile followed) {
+        Following following = getFollowing(follower, followed)
         following?.delete()
     }
 
@@ -82,18 +60,14 @@ class FollowingService {
         }
     }
 
-    Boolean mayBeFollowed(Profile followerProfile, Profile followingProfile) {
-        if (followerProfile && followingProfile) {
-            if (followerProfile.type == followingProfile.type) {
-                if (followerProfile.id != followingProfile.id) {
-                    if (followerProfile.type == ProfileType.CLUB) {
-                        if (followerProfile.period == followingProfile.period) {
-                            if (followerProfile.user != followingProfile.user) {
-                                return Boolean.TRUE
-                            }
+    Boolean mayBeFollowed(Profile follower, Profile followed) {
+        if (follower && followed) {
+            if (follower.type == followed.type) {
+                if (follower.id != followed.id) {
+                    if (follower.period == followed.period) {
+                        if (follower.user != followed.user) {
+                            return Boolean.TRUE
                         }
-                    } else {
-                        return Boolean.TRUE
                     }
                 }
             }
