@@ -173,7 +173,7 @@ class ItemController {
                         user: user,
                         item: item,
                         itemGroup: itemGroup,
-                        userProfile: user.userProfile,
+                        profile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
                         sourceMap: composeSourceMap(sources),
