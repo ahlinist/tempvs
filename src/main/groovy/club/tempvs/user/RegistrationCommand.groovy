@@ -14,6 +14,7 @@ class RegistrationCommand implements Validateable {
     String profileId
     String password
     String confirmPassword
+    ProfileType type = ProfileType.USER
     EmailVerification emailVerification
 
     static constraints = {

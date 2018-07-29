@@ -5,7 +5,6 @@ import club.tempvs.item.ItemGroup
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
-import groovy.transform.TypeCheckingMode
 
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='email')
@@ -20,41 +19,46 @@ class User implements BasePersistent {
     boolean accountExpired
     boolean accountLocked
     boolean passwordExpired
-    Date lastActive = new Date()
-    Class currentProfileClass
     Long currentProfileId
-    List<ClubProfile> clubProfiles
+    List<Profile> profiles
     List<ItemGroup> itemGroups
 
     transient Profile currentProfile
 
-    static hasMany = [clubProfiles: ClubProfile, itemGroups: ItemGroup]
-    static hasOne = [userProfile: UserProfile]
+    static hasMany = [itemGroups: ItemGroup, profiles: Profile]
 
     Set<Role> getAuthorities() {
         (UserRole.findAllByUser(this) as List<UserRole>)*.role as Set<Role>
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Profile getCurrentProfile() {
-        if (this.currentProfileClass && this.currentProfileId) {
-            this.currentProfileClass.get(this.currentProfileId)
+        if (this.currentProfileId) {
+            Profile.get(this.currentProfileId)
         } else {
-            this.currentProfileClass = this.userProfile.class
-            this.currentProfileId = this.userProfile.id
-            this.userProfile
+            Profile userProfile = this.profiles.find { it.type == ProfileType.USER }
+            this.currentProfileId = userProfile.id
+            userProfile
         }
+    }
+
+    Profile getUserProfile() {
+        profiles?.find { it.type == ProfileType.USER }
+    }
+
+    List<Profile> getClubProfiles() {
+        profiles?.findAll { it.type == ProfileType.CLUB }
     }
 
     static constraints = {
         email email: true, unique: true, blank: false, size: 0..35
-        currentProfileClass nullable: true
         currentProfileId nullable: true
+        profiles validator: { List<Profile> profiles, User user ->
+            user.userProfile != null
+        }
     }
 
     static mapping = {
         table '`user`'
         password column: '`password`'
-        userProfile lazy: false
     }
 }

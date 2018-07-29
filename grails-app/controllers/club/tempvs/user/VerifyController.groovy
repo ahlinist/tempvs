@@ -2,6 +2,7 @@ package club.tempvs.user
 
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.validation.ValidationException
 import org.springframework.security.access.annotation.Secured
 
 /**
@@ -39,13 +40,12 @@ class VerifyController {
                         email(emailVerification)
                         emailVerification.delete(flush: true)
                         break
-                    case UserProfile.simpleName.uncapitalize():
-                        profileEmail(UserProfile, emailVerification)
+                    case 'profileEmail':
+                        profileEmail(emailVerification)
                         emailVerification.delete(flush: true)
                         break
-                    case ClubProfile.simpleName.uncapitalize():
-                        profileEmail(ClubProfile, emailVerification)
-                        emailVerification.delete(flush: true)
+                    default:
+                        error([notFoundMessage: NO_VERIFICATION_CODE])
                         break
                 }
             } else {
@@ -75,15 +75,22 @@ class VerifyController {
         }
     }
 
-    private profileEmail(Class clazz, EmailVerification emailVerification) {
-        Profile profile = profileService.getProfile(clazz, emailVerification.instanceId)
+    private profileEmail(EmailVerification emailVerification) {
+        Profile profile = profileService.getProfile(emailVerification.instanceId)
 
         if (profile) {
-            profile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)
+            Profile persistentProfile
 
-            if (profile.validate()) {
-                profileService.setCurrentProfile(profile)
-                return redirect(controller: 'profile', action: profile.shortName, id: profile.identifier)
+            try {
+                persistentProfile = profileService.editProfileField(profile, PROFILE_EMAIL, emailVerification.email)
+            } catch (ValidationException e) {
+                return error([notFoundMessage: PROFILE_EMAIL_UPDATE_FAILED])
+            }
+
+            if (!persistentProfile.hasErrors()) {
+                User user = userService.currentUser
+                profileService.setCurrentProfile(user, persistentProfile)
+                return redirect(controller: 'profile', action: 'show', id: persistentProfile.identifier)
             }
         }
 

@@ -1,134 +1,102 @@
 package club.tempvs.user
 
-import club.tempvs.communication.Following
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.periodization.Period
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
+import grails.validation.ValidationException
 import grails.web.mapping.LinkGenerator
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.transaction.annotation.Propagation
 
 /**
- * Service for managing {@link UserProfile} and {@link ClubProfile}.
+ * Service for {@link Profile} managing.
  */
 @Transactional
 @GrailsCompileStatic
 class ProfileService {
 
-    private static String PERIOD_FIELD = 'period'
-    private static Integer MAX_PROFILES_RETRIEVED = 10
-    private static String PROFILE_EMAIL_FIELD = 'profileEmail'
-    private static String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
+    private static final String PERIOD_FIELD = 'period'
+    private static final Integer MAX_PROFILES_RETRIEVED = 10
+    private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
+    private static final String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
 
     UserService userService
     ImageService imageService
     LinkGenerator grailsLinkGenerator
 
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    public <T> T getProfile(Class<T> clazz, id) {
-        clazz.findByProfileId(id as String) ?: clazz.get(id)
-    }
+    Profile getProfile(id) {
+        Profile profile = Profile.findByProfileId(id as String)
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    public <T> T getProfileByProfileEmail(Class<T> clazz, String email) {
-        clazz.findByProfileEmail(email)
-    }
-
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    List<Profile> getProfilesByFollowings(List<Following> followings) {
-        followings.collect { Following following ->
-            Class.forName(following.profileClassName).get(following.followingId)
+        try {
+            if (!profile) {
+                profile = getProfileById(id as Long)
+            }
+        } catch (Exception e) {
+            return null
         }
+
+        return profile
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    List<Profile> getProfilesByFollowers(List<Following> followings) {
-        followings.collect { Following following ->
-            Class.forName(following.profileClassName).get(following.followerId)
-        }
+    Profile getProfileById(Long id) {
+        Profile.get(id)
+    }
+
+    List<Profile> getProfilesByProfileEmail(String email) {
+        Profile.findAllByProfileEmail(email)
     }
 
     Profile getCurrentProfile() {
         userService.currentUser?.currentProfile
     }
 
-    @PreAuthorize('(#profile == null) or (#profile.user.email == authentication.name)')
-    void setCurrentProfile(Profile profile) {
-        User user = userService.currentUser
-
+    @PreAuthorize('(#profile == null) or (#user.email == authentication.name)')
+    void setCurrentProfile(User user, Profile profile) {
         if (user) {
-            user.currentProfileClass = profile?.class
             user.currentProfileId = profile?.id
             user.save(flush: true)
         }
     }
 
-    Map getProfileDropdown() {
-        User currentUser = userService.currentUser
-
+    Map getProfileDropdown(User currentUser) {
         if (!currentUser) {
             return [:]
         }
 
-        UserProfile userProfile = currentUser.userProfile
-        List<ClubProfile> clubProfiles = currentUser.clubProfiles
-        Long currentProfileId = currentUser.currentProfileId
-
-        Profile currentProfile
-
-        if (currentUser.currentProfileClass == UserProfile) {
-            currentProfile = userProfile
-        } else {
-            currentProfile = clubProfiles.find { ClubProfile clubProfile ->
-                clubProfile.id == currentProfileId
-            }
-        }
+        Profile userProfile = currentUser.userProfile
+        List<Profile> clubProfiles = currentUser.clubProfiles.findAll { it.active }
+        Profile currentProfile = currentUser.currentProfile
 
         Map result = [
                 current: [currentProfile.toString()],
                 user: [userProfile.toString()],
-                club: [],
+                club: clubProfiles.collect { [id: it.id, name: it.toString()] },
         ]
-
-        result.club = clubProfiles.collect { ClubProfile clubProfile ->
-            [id:clubProfile.id, name: clubProfile.toString()]
-        }
 
         return result
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     List<Profile> searchProfiles(Profile profile, String query, Integer offset) {
-        profile.class.createCriteria().list (max: MAX_PROFILES_RETRIEVED, offset: offset) {
-            if (profile instanceof UserProfile) {
-                ne('id', profile.id)
-                eq ('active', Boolean.TRUE)
+        Profile.createCriteria().list(max: MAX_PROFILES_RETRIEVED, offset: offset) {
+            not {'in'('id', profile.user.profiles.id)}
+            eq ('active', Boolean.TRUE)
+            eq ('type', profile.type)
 
-                if (query) {
-                    or {
-                        query.tokenize(' ').each { String value ->
-                            or {
-                                ilike('firstName', "%${value}%")
-                                ilike('lastName', "%${value}%")
-                            }
-                        }
-                    }
-                }
-            } else if (profile instanceof ClubProfile) {
-                not {'in'('id', profile.user.clubProfiles.id)}
-                eq ('active', Boolean.TRUE)
-                eq('period', ((ClubProfile) profile).period)
+            if (profile.type == ProfileType.CLUB) {
+                eq('period', profile.period)
+            }
 
-                if (query) {
-                    or {
-                        query.tokenize(' ').each { String value ->
-                            or {
-                                ilike('firstName', "%${value}%")
-                                ilike('lastName', "%${value}%")
+            if (query) {
+                or {
+                    query.tokenize(' ').each { String value ->
+                        or {
+                            ilike('firstName', "%${value}%")
+                            ilike('lastName', "%${value}%")
+
+                            if (profile.type == ProfileType.CLUB) {
                                 ilike('nickName', "%${value}%")
                             }
                         }
@@ -138,24 +106,21 @@ class ProfileService {
         }
     }
 
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    ClubProfile validateClubProfile(ClubProfile clubProfile, User user) {
-        clubProfile.user = user
-        user.addToClubProfiles(clubProfile)
-        clubProfile.validate()
+    @PreAuthorize('#user.email == authentication.name')
+    Profile createClubProfile(User user, Profile profile, Image avatar) {
+        profile.user = user
+        profile.avatar = avatar
+        profile.type = ProfileType.CLUB
+        user.addToProfiles(profile)
 
-        if (!isProfileEmailUnique(clubProfile, clubProfile.profileEmail)) {
-            clubProfile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [clubProfile.profileEmail] as Object[], EMAIL_USED_CODE)
+        if (!isProfileEmailUnique(profile, profile.profileEmail)) {
+            profile.validate()
+            profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [profile.profileEmail] as Object[], EMAIL_USED_CODE)
+            throw new ValidationException("ProfileEmail is non-unique", profile.errors)
         }
 
-        clubProfile
-    }
-
-    @PreAuthorize('#clubProfile.user.email == authentication.name')
-    ClubProfile createClubProfile(ClubProfile clubProfile, Image avatar) {
-        clubProfile.avatar = avatar
-        clubProfile.save()
-        clubProfile
+        profile.save()
+        return profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')
@@ -176,14 +141,10 @@ class ProfileService {
     @PreAuthorize('#profile.user.email == authentication.name')
     Profile editProfileField(Profile profile, String fieldName, String fieldValue) {
         if (fieldName == PERIOD_FIELD) {
-            try {
-                profile.period = Period.valueOf(fieldValue)
-            } catch (IllegalArgumentException exception) {
-                profile.period = null
-            }
+            throw new IllegalArgumentException("Forbidden operation")
         } else if ((fieldName == PROFILE_EMAIL_FIELD) && !isProfileEmailUnique(profile, profile.profileEmail)) {
             profile.errors.rejectValue(PROFILE_EMAIL_FIELD, EMAIL_USED_CODE, [fieldValue] as Object[], EMAIL_USED_CODE)
-            return profile
+            throw new ValidationException("ProfileEmail is non-unique", profile.errors)
         } else {
             profile."${fieldName}" = fieldValue
         }
@@ -194,6 +155,12 @@ class ProfileService {
 
     @PreAuthorize('#profile.user.email == authentication.name')
     Profile uploadAvatar(Profile profile, Image avatar) {
+        Image currentAvatar = profile.avatar
+
+        if (currentAvatar) {
+            imageService.deleteImage(currentAvatar)
+        }
+
         profile.avatar = avatar
         profile.save()
         profile
@@ -207,23 +174,20 @@ class ProfileService {
         profile
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     Boolean isProfileEmailUnique(Profile profile, String email) {
-        if (email) {
-            User user = userService.getUserByEmail(email)
-            User profileUser = profile.user
-
-            if (user && profileUser != user) {
-                return Boolean.FALSE
-            }
-
-            Profile persistedProfile = profile.class.findByProfileEmail email
-
-            if (persistedProfile && profileUser != persistedProfile.user) {
-                return Boolean.FALSE
-            }
+        if (!email) {
+            return Boolean.TRUE
         }
 
-        return Boolean.TRUE
+        User profileUser = profile.user
+        User persistentUser = userService.getUserByEmail(email)
+
+        if (persistentUser && (profileUser != persistentUser)) {
+            return Boolean.FALSE
+        }
+
+        List<Profile> persistentProfiles = Profile.findAllByProfileEmail(email) as List<Profile>
+
+        return !persistentProfiles.any { it.user != profileUser }
     }
 }

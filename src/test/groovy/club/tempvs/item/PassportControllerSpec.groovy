@@ -8,7 +8,7 @@ import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
-import club.tempvs.user.ClubProfile
+import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import club.tempvs.user.User
 import grails.converters.JSON
@@ -42,7 +42,7 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
     def itemType = GroovyMock ItemType
     def passport = Mock Passport
     def period = GroovyMock Period
-    def clubProfile = Mock ClubProfile
+    def profile = Mock Profile
     def item2Passport = Mock Item2Passport
     def imageUploadBean = Mock ImageUploadBean
     def imageUploadCommand = Mock ImageUploadCommand
@@ -89,12 +89,10 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         then:
         1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
         1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * profileService.currentProfile >> clubProfile
-        1 * clubProfile.asType(ClubProfile) >> clubProfile
-        1 * passportService.validatePassport(passport, clubProfile) >> passport
+        1 * profileService.currentProfile >> profile
         1 * imageService.uploadImages([imageUploadBean], PASSPORT_COLLECTION) >> [image]
-        1 * passportService.createPassport(passport, [image]) >> passport
-        2 * passport.hasErrors() >> Boolean.FALSE
+        1 * passportService.createPassport(passport, profile, [image]) >> passport
+        1 * passport.hasErrors() >> Boolean.FALSE
         1 * passport.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect(_) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -110,20 +108,20 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
-        1 * passport.clubProfile >> clubProfile
-        1 * clubProfile.period >> period
+        1 * passport.profile >> profile
+        1 * profile.period >> period
         1 * passportService.getItem2PassportRelations(passport) >> [item2Passport]
         1 * item2Passport.item >> item
         1 * item.itemType >> itemType
         1 * itemService.getItemsByPeriod(period) >> [item, item]
-        1 * profileService.currentProfile >> clubProfile
+        1 * profileService.currentProfile >> profile
         1 * passport.images >> [image]
         0 * _
 
         and:
         result == [
                 images: [image],
-                clubProfile: clubProfile,
+                profile: profile,
                 passport: passport,
                 itemMap: [(itemType): [item2Passport]],
                 availableItems: [item, item],
@@ -204,9 +202,9 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
-        1 * passport.clubProfile >> clubProfile
-        1 * passportService.deletePassport(passport, clubProfile)
-        1 * clubProfile.id >> LONG_ONE
+        1 * passport.profile >> profile
+        1 * passportService.deletePassport(passport, profile)
+        1 * profile.id >> LONG_ONE
         1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -221,11 +219,11 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
 
         then:
         1 * passportService.getPassport(LONG_ONE) >> passport
-        1 * profileService.currentProfile >> clubProfile
-        1 * commentService.createComment(TEXT, clubProfile) >> comment
+        1 * profileService.currentProfile >> profile
+        1 * commentService.createComment(TEXT, profile) >> comment
         1 * passportService.addComment(passport, comment) >> passport
         1 * comment.hasErrors() >> Boolean.FALSE
-        1 * passport.clubProfile >> clubProfile
+        1 * passport.profile >> profile
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 
@@ -245,8 +243,8 @@ class PassportControllerSpec extends Specification implements ControllerUnitTest
         1 * commentService.loadComment(LONG_TWO) >> comment
         1 * passportService.deleteComment(passport, comment) >> passport
         1 * passport.hasErrors() >> Boolean.FALSE
-        1 * profileService.currentProfile >> clubProfile
-        1 * passport.clubProfile >> clubProfile
+        1 * profileService.currentProfile >> profile
+        1 * passport.profile >> profile
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

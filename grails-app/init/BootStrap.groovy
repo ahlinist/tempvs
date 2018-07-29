@@ -1,9 +1,10 @@
 import club.tempvs.image.Image
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
+import club.tempvs.user.Profile
+import club.tempvs.user.ProfileType
 import club.tempvs.user.Role
 import club.tempvs.user.User
-import club.tempvs.user.UserProfile
 import club.tempvs.user.UserRole
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
@@ -18,7 +19,6 @@ class BootStrap {
     private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
     private static final String ADMIN_EMAIL = 'admin@tempvs.club'
     private static final String ADMIN_FIRST_NAME = 'Tempvs'
-    private static final String ADMIN_LAST_NAME = 'Admin'
     private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'adminPassword'
     private static final String EMAIL_SERVICE_URL = System.getenv("EMAIL_SERVICE_URL")
     private static final String IMAGE_SERVICE_URL = System.getenv("IMAGE_SERVICE_URL")
@@ -66,8 +66,9 @@ class BootStrap {
         UserRole adminRole2adminUser = UserRole.findByUserAndRole(adminUser, admin)
 
         if (!adminUser) {
-            UserProfile adminUserProfile = new UserProfile(firstName: ADMIN_FIRST_NAME, lastName: ADMIN_LAST_NAME, active: Boolean.FALSE)
-            adminUser = new User(email: ADMIN_EMAIL, password: ADMIN_PASSWORD, userProfile: adminUserProfile)
+            Profile adminUserProfile = new Profile(firstName: ADMIN_FIRST_NAME, type: ProfileType.USER, active: Boolean.FALSE)
+            adminUser = new User(email: ADMIN_EMAIL, password: ADMIN_PASSWORD)
+            adminUser.addToProfiles adminUserProfile
             adminUser.save()
         }
 

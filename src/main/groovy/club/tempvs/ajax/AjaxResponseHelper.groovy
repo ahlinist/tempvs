@@ -4,6 +4,7 @@ import grails.converters.JSON
 import grails.validation.Validateable
 import groovy.transform.CompileStatic
 import org.grails.plugins.web.taglib.ValidationTagLib
+import org.springframework.validation.Errors
 import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 
@@ -29,6 +30,14 @@ class AjaxResponseHelper {
         } else {
             renderFormMessage(Boolean.TRUE, successMessage)
         }
+    }
+
+    JSON renderValidationResponse(Errors errors) {
+        List result = errors.allErrors.collect { ObjectError error ->
+            [message: validationTagLib.message(error: error), name: ((FieldError) error).field]
+        }
+
+        [action: VALIDATION_RESPONSE, messages: result] as JSON
     }
 
     JSON renderFormMessage(Boolean success, String code) {

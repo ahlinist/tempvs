@@ -12,9 +12,6 @@
     "JDBC_DATABASE_USERNAME": {
       "required": true
     },
-    "MONGODB_URI": {
-      "required": true
-    },
     "EMAIL_SERVICE_URL": {
       "required": true
     },

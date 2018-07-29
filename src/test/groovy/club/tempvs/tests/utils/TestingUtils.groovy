@@ -3,8 +3,7 @@ package club.tempvs.tests.utils
 import club.tempvs.periodization.Period
 
 /**
- * Utility class that holds test data for dummy {@link club.tempvs.user.User},
- * {@link club.tempvs.user.UserProfile}, {@link club.tempvs.user.ClubProfile} creation.
+ * Utility class that holds test data for dummy {@link club.tempvs.user.User} and {@link club.tempvs.user.Profile} creation.
  */
 class TestingUtils {
 

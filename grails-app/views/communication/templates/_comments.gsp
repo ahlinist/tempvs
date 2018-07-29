@@ -1,7 +1,7 @@
 <div id="comments">
   <ul>
     <g:each var="comment" in="${object.comments}">
-      <g:set var="profile" value="${comment.clubProfile ?: comment.userProfile}"/>
+      <g:set var="profile" value="${comment.profile}"/>
       <li>
         <div style="border: 1px solid #000;">
           <g:if test="${editAllowed || profile == request.currentProfile}">
@@ -22,7 +22,7 @@
           </g:if>
           <div>
             <tempvs:image image="${profile.avatar}" styles="max-width: 45px; float: left;"/>
-            <g:link controller="profile" action="${profile.shortName}" id="${profile.id}" class="btn btn-default">
+            <g:link controller="profile" action="show" id="${profile.id}" class="btn btn-default">
               ${profile}
             </g:link>
           </div>

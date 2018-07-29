@@ -1,17 +1,15 @@
 package club.tempvs.communication
 
 import club.tempvs.periodization.Period
-import club.tempvs.user.ClubProfile
-import club.tempvs.user.UserProfile
+import club.tempvs.user.Profile
+import club.tempvs.user.ProfileType
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 
 class FollowingSpec extends Specification implements DomainUnitTest<Following> {
 
-    private static final Long LONG_ONE = 1L
-    private static final Long LONG_TWO = 2L
-
-    def period = GroovyMock Period
+    def follower = GroovyMock(Profile)
+    def followed = GroovyMock(Profile)
 
     def setup() {
     }
@@ -19,63 +17,78 @@ class FollowingSpec extends Specification implements DomainUnitTest<Following> {
     def cleanup() {
     }
 
-    void "Test userProfile following creation"() {
+    void "Test Following creation without both followed and follower"() {
         expect:
         !domain.validate()
-
-        when:
-        domain.profileClassName = UserProfile
-
-        then:
-        !domain.validate()
-
-        when:
-        domain.followerId = LONG_ONE
-
-        then:
-        !domain.validate()
-
-        when:
-        domain.followingId = LONG_TWO
-
-        then:
-        domain.validate()
     }
 
-    void "Test clubProfile following creation"() {
+    void "Test Following creation without followed"() {
+        given:
+        domain.follower = follower
+
         expect:
         !domain.validate()
+    }
 
-        when:
-        domain.profileClassName = ClubProfile.name
+    void "Test Following creation without follower"() {
+        given:
+        domain.followed = followed
 
-        then:
+        expect:
         !domain.validate()
+    }
 
-        when:
-        domain.followerId = LONG_ONE
+    void "Test successful Following creation"() {
+        given:
+        domain.follower = follower
+        domain.followed = followed
 
-        then:
-        !domain.validate()
-
-        when:
-        domain.followingId = LONG_TWO
-
-        then:
-        !domain.validate()
-
-        when:
-        domain.period = period
-
-        then:
+        expect:
         domain.validate()
     }
 
     void "Test self-following"() {
+        given:
+        domain.follower = follower
+        domain.follower = follower
+
+        expect:
+        !domain.validate()
+    }
+
+    void "Test different periods for profiles involved"() {
+        given:
+        def follower = GroovyMock(Profile) {
+            getPeriod() >> Period.ANTIQUITY
+        }
+
+        def followed = GroovyMock(Profile) {
+            getPeriod() >> Period.HIGH_MIDDLE_AGES
+        }
+
+
         when:
-        domain.profileClassName = ClubProfile
-        domain.followerId = LONG_ONE
-        domain.followingId = LONG_ONE
+        domain.follower = follower
+        domain.follower = followed
+
+        then:
+        !domain.validate()
+    }
+
+    void "Test different types for profiles involved"() {
+        given:
+        def follower = GroovyMock(Profile) {
+            getType() >> ProfileType.USER
+        }
+
+        def followed = GroovyMock(Profile) {
+            getType() >> ProfileType.CLUB
+        }
+
+
+        when:
+        domain.follower = follower
+        domain.follower = followed
 
         then:
         !domain.validate()

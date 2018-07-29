@@ -1,7 +1,6 @@
 package club.tempvs.auth
 
 import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.rest.RestResponse
 import club.tempvs.user.EmailVerification
 import club.tempvs.user.User
 import club.tempvs.user.UserService
@@ -9,7 +8,6 @@ import club.tempvs.user.VerifyService
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
-import org.springframework.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices

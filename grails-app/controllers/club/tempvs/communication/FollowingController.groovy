@@ -1,10 +1,8 @@
 package club.tempvs.communication
 
 import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.user.ClubProfile
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
-import club.tempvs.user.UserProfile
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -21,6 +19,8 @@ class FollowingController {
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String DISPLAY_COUNTER = 'displayCounter'
 
+    static defaultAction = 'show'
+
     static allowedMethods = [
             index: 'GET',
             show: 'GET',
@@ -34,39 +34,26 @@ class FollowingController {
     FollowingService followingService
     AjaxResponseHelper ajaxResponseHelper
 
-    def index() {
-        show(profileService.currentProfile)
-    }
+    def show(Long id) {
+        Profile profile = id ? profileService.getProfile(id) : profileService.currentProfile
+        List<Following> followerList = followingService.getFollowers(profile)
+        List<Following> followedList = followingService.getFollowings(profile)
+        List<Following> newFollowerList = followerList.findAll {it.isNew}
+        List<Following> newFollowedList = followedList.findAll {it.isNew}
+        followingService.ageFollowings(newFollowerList + newFollowedList)
 
-    def user(Long id) {
-        show(profileService.getProfile(UserProfile, id))
-    }
-
-    def club(Long id) {
-        show(profileService.getProfile(ClubProfile, id))
-    }
-
-    private show(Profile profile) {
-        List<Following> followers = followingService.getFollowers(profile)
-        List<Following> followings = followingService.getFollowings(profile)
-        List<Following> newFollowers = followers.findAll {it.isNew}
-        List<Following> newFollowings = followings.findAll {it.isNew}
-        followingService.ageFollowings(newFollowers + newFollowings)
-
-        Map model = [
+        [
                 profile: profile,
-                followerProfiles: profileService.getProfilesByFollowers(followers - newFollowers),
-                newFollowerProfiles: profileService.getProfilesByFollowers(newFollowers),
-                followingProfiles: profileService.getProfilesByFollowings(followings - newFollowings),
-                newFollowingProfiles: profileService.getProfilesByFollowings(newFollowings),
+                followerProfiles: (followerList - newFollowerList)*.follower,
+                newFollowerProfiles: newFollowerList*.follower,
+                followedProfiles: (followedList - newFollowedList)*.followed,
+                newFollowedProfiles: newFollowedList*.followed,
         ]
-
-        render view: '/following/show', model: model
     }
 
-    def follow(String profileClassName, Long profileId) {
+    def follow(Long profileId) {
         Profile followerProfile = profileService.currentProfile
-        Profile followingProfile = profileService.getProfile(Class.forName(profileClassName), profileId) as Profile
+        Profile followingProfile = profileService.getProfile(profileId)
 
         if (!followingProfile) {
             return render([action: NO_ACTION] as JSON)
@@ -84,9 +71,9 @@ class FollowingController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def unfollow(String profileClassName, Long profileId) {
+    def unfollow(Long profileId) {
         Profile followerProfile = profileService.currentProfile
-        Profile followingProfile = profileService.getProfile(Class.forName(profileClassName), profileId) as Profile
+        Profile followingProfile = profileService.getProfile(profileId)
 
         if (!followingProfile) {
             return render([action: NO_ACTION] as JSON)

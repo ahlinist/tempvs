@@ -20,9 +20,8 @@ class VerifyService {
 
     private static final String EMAIL_FIELD = 'email'
     private static final String EMAIL_ACTION = 'email'
-    private static final String USER_PROFILE_ACTION = 'userProfile'
-    private static final String CLUB_PROFILE_ACTION = 'clubProfile'
     private static final String REGISTRATION_ACTION = 'registration'
+    private static final String PROFILE_EMAIL_ACTION = 'profileEmail'
     private static final String EMAIL_USED_CODE = 'emailVerification.email.used.error'
     private static final String EMAIL_SERVICE_URL = System.getenv('EMAIL_SERVICE_URL')
     private static final String SEND_EMAIL_API_URI = '/api/send'
@@ -74,39 +73,25 @@ class VerifyService {
 
     Boolean isEmailUnique(String email, String action, Long instanceId) {
         User user = userService.getUserByEmail(email)
-        UserProfile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
-        ClubProfile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
+        List<Profile> profiles = profileService.getProfilesByProfileEmail(email)
 
         switch (action) {
             case REGISTRATION_ACTION:
-                return !(user || userProfile || clubProfile)
+                return !(user || profiles)
                 break
             case EMAIL_ACTION:
-                if (user) {
-                    return Boolean.FALSE
-                } else if (userProfile && (userProfile.user.id != instanceId)) {
-                    return Boolean.FALSE
-                } else if (clubProfile && (clubProfile.user.id != instanceId)) {
+                if (user || (profiles && profiles.any { it.user.id != instanceId })) {
                     return Boolean.FALSE
                 }
 
                 break
-            case USER_PROFILE_ACTION:
-                if (userProfile) {
-                    return Boolean.FALSE
-                } else if (user && user.userProfile.id != instanceId) {
-                    return Boolean.FALSE
-                } else if (clubProfile && clubProfile.user.userProfile.id != instanceId) {
-                    return Boolean.FALSE
-                }
+            case PROFILE_EMAIL_ACTION:
+                Profile currentProfile = profileService.getProfileById(instanceId)
+                User profileUser = currentProfile.user
 
-                break
-            case CLUB_PROFILE_ACTION:
-                if (clubProfile) {
+                if (user != profileUser) {
                     return Boolean.FALSE
-                } else if (user && !user.clubProfiles.find{it.id == instanceId}) {
-                    return Boolean.FALSE
-                } else if (userProfile && !userProfile.user.clubProfiles.find{it.id == instanceId}) {
+                } else if (profiles.any { it.user != profileUser }) {
                     return Boolean.FALSE
                 }
 

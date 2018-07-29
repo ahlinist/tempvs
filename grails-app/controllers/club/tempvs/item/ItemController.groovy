@@ -10,6 +10,7 @@ import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.ProfileType
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -69,7 +70,12 @@ class ItemController {
         User user = id ? userService.getUser(id) : userService.currentUser
 
         if (user) {
-            [user: user, itemGroups: user.itemGroups, userProfile: user.userProfile, editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE]
+            [
+                    user: user,
+                    itemGroups: user.itemGroups,
+                    profile: user.userProfile,
+                    editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE
+            ]
         }
     }
 
@@ -167,7 +173,7 @@ class ItemController {
                         user: user,
                         item: item,
                         itemGroup: itemGroup,
-                        userProfile: user.userProfile,
+                        profile: user.userProfile,
                         editAllowed: user.id == userService.currentUserId,
                         images: item.images.sort {it.id},
                         sourceMap: composeSourceMap(sources),

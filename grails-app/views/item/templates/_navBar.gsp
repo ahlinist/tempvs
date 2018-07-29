@@ -1,8 +1,8 @@
-<g:if test="${userProfile}">
+<g:if test="${profile}">
   <span class="pull-left">
     <g:link action="stash" id="${user?.id}">
       <u>
-        <g:message code="item.stash.link" args="${[userProfile]}"/>
+        <g:message code="item.stash.link" args="${[profile]}"/>
       </u>
     </g:link>
   </span>

@@ -10,7 +10,7 @@
               <g:message code='profile.avatar.deleteConfirmation.text'/>
               <br/>
               <g:render template="/ajax/templates/ajaxLink"
-                  model="${[controller: 'profile', action: 'deleteAvatar', params: [profileClass: profile.class.name, profileId: profile.id], method: 'DELETE', classes: 'btn btn-default']}">
+                  model="${[controller: 'profile', action: 'deleteAvatar', params: [profileId: profile.id], method: 'DELETE', classes: 'btn btn-default']}">
                 <g:message code="yes"/>
               </g:render>
               <button type="button" class="btn btn-default" onclick="$('#deleteAvatar').modal('hide');"><g:message code="no"/></button>

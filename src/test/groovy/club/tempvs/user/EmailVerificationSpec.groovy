@@ -12,7 +12,7 @@ class EmailVerificationSpec extends Specification implements DomainUnitTest<Emai
     private static final String VALID_EMAIL = 'verification@email.com'
     private static final String VERIFICATION_CODE = 'verificationCode'
     private static final String INVALID_EMAIL = 'verification-email.com'
-    private static final String UPD_PROFILE_EMAIL_ACTION = 'userProfile'
+    private static final String UPD_PROFILE_EMAIL_ACTION = 'profileEmail'
 
     def setup() {
     }
@@ -105,24 +105,6 @@ class EmailVerificationSpec extends Specification implements DomainUnitTest<Emai
         emailVerification2.action = UPD_EMAIL_ACTION
         emailVerification2.email = 'suffix' + VALID_EMAIL
         emailVerification2.instanceId = USER_ID
-
-        expect:
-        emailVerification1.save(flush:true)
-        !emailVerification2.save(flush:true)
-    }
-
-    void "Email should be unique within 1 action" () {
-        given:
-        EmailVerification emailVerification1 = new EmailVerification()
-        emailVerification1.verificationCode = VERIFICATION_CODE
-        emailVerification1.action = REGISTER_ACTION
-        emailVerification1.email = VALID_EMAIL
-
-        and:
-        EmailVerification emailVerification2 = new EmailVerification()
-        emailVerification2.verificationCode = VERIFICATION_CODE + 1
-        emailVerification2.action = REGISTER_ACTION
-        emailVerification2.email = VALID_EMAIL
 
         expect:
         emailVerification1.save(flush:true)

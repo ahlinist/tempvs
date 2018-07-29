@@ -9,11 +9,9 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
     private static final String ID = 'id'
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
-    private static final String USERPROFILE = 'userProfile'
-    private static final String CLUBPROFILE = 'clubProfile'
+    private static final String PROFILE_EMAIL = 'profileEmail'
     private static final String PROFILE_PAGE_URI = '/profile'
     private static final String REGISTRATION = 'registration'
-    private static final String PROFILE_EMAIL = 'profileEmail'
     private static final String ERROR_PAGE_URI = '/verify/error'
     private static final String USER_EDIT_PAGE_URI = '/user/edit'
     private static final String REGISTRATION_PAGE_URI = '/verify/registration'
@@ -21,8 +19,7 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
 
     def user = Mock User
     def userService = Mock UserService
-    def userProfile = Mock UserProfile
-    def clubProfile = Mock ClubProfile
+    def profile = Mock Profile
     def verifyService = Mock VerifyService
     def profileService = Mock ProfileService
     def emailVerification = Mock EmailVerification
@@ -92,7 +89,7 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         1 * emailVerification.instanceId >> LONG_ID
         1 * userService.getUser(LONG_ID) >> user
         1 * emailVerification.email >> EMAIL
-        1 * user.hasErrors() >> Boolean.FALSE
+        1 * user.hasErrors() >> false
         1 * user.email >> EMAIL
         1 * springSecurityService.reauthenticate(EMAIL)
         1 * userService.editUserField(user, EMAIL, EMAIL) >> user
@@ -103,7 +100,7 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         response.redirectedUrl == USER_EDIT_PAGE_URI
     }
 
-    void "Check userprofile email update verification"() {
+    void "Check profileEmail update verification"() {
         when:
         controller.byEmail()
 
@@ -117,46 +114,16 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
 
         then:
         1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getAction() >> USERPROFILE
+        1 * emailVerification.getAction() >> PROFILE_EMAIL
         1 * emailVerification.getEmail() >> EMAIL
         1 * emailVerification.getInstanceId() >> LONG_ID
-        1 * profileService.getProfile(UserProfile, LONG_ID) >> userProfile
-        1 * userProfile.validate() >> Boolean.TRUE
-        1 * profileService.editProfileField(userProfile, PROFILE_EMAIL, EMAIL) >> userProfile
-        1 * profileService.setCurrentProfile(userProfile)
-        1 * userProfile.identifier >> LONG_ID
+        1 * profileService.getProfile(LONG_ID) >> profile
+        1 * profileService.editProfileField(profile, PROFILE_EMAIL, EMAIL) >> profile
+        1 * profile.hasErrors() >> false
+        1 * userService.currentUser >> user
+        1 * profileService.setCurrentProfile(user, profile)
+        1 * profile.identifier >> LONG_ID
         1 * emailVerification.delete(['flush':true])
-        1 * userProfile.shortName >> 'user'
-        0 * _
-
-        and:
-        response.redirectedUrl.contains PROFILE_PAGE_URI
-    }
-
-    void "Check clubprofile email update verification"() {
-        when:
-        controller.byEmail()
-
-        then:
-        controller.modelAndView.viewName == ERROR_PAGE_URI
-        controller.modelAndView.model == [notFoundMessage: NO_VERIFICATION_CODE]
-
-        when:
-        params.id = ID
-        controller.byEmail()
-
-        then:
-        1 * verifyService.getVerification(ID) >> emailVerification
-        1 * emailVerification.getAction() >> CLUBPROFILE
-        1 * emailVerification.getEmail() >> EMAIL
-        1 * emailVerification.getInstanceId() >> LONG_ID
-        1 * profileService.getProfile(ClubProfile, LONG_ID) >> clubProfile
-        1 * clubProfile.validate() >> Boolean.TRUE
-        1 * profileService.editProfileField(clubProfile, PROFILE_EMAIL, EMAIL) >> clubProfile
-        1 * profileService.setCurrentProfile(clubProfile)
-        1 * clubProfile.identifier >> LONG_ID
-        1 * emailVerification.delete(['flush':true])
-        1 * clubProfile.shortName >> 'club'
         0 * _
 
         and:

@@ -6,7 +6,7 @@
     </head>
     <body>
       <div class="row">
-        <g:render template="/item/templates/navBar" model="${[item, itemGroup, user, userProfile]}"/>
+        <g:render template="/item/templates/navBar"/>
       </div>
       <g:if test="${user}">
         <div class="row">

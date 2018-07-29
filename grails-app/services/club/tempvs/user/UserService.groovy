@@ -4,7 +4,6 @@ import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.plugin.springsecurity.userdetails.GrailsUser
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -37,20 +36,13 @@ class UserService {
         springSecurityService.currentUserId as Long
     }
 
-    String getCurrentUserEmail() {
-        if (springSecurityService.loggedIn) {
-            GrailsUser grailsUser = springSecurityService.principal as GrailsUser
-            grailsUser.username as String
-        }
-    }
-
     User getUserByEmail(String email) {
         User.findByEmail(email)
     }
 
-    User register(User user, UserProfile userProfile) {
+    User register(User user, Profile userProfile) {
         if (isEmailUnique(user.email)) {
-            user.userProfile = userProfile
+            user.addToProfiles userProfile
             user.save()
         } else {
             user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [user.email] as Object[], EMAIL_USED_CODE)
@@ -62,7 +54,7 @@ class UserService {
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#user.email == authentication.name')
     User editUserField(User user, String fieldName, Object fieldValue) {
-        if ((fieldName == EMAIL_FIELD) && !isEmailUnique(fieldValue)) {
+        if ((fieldName == EMAIL_FIELD) && !isEmailUnique(fieldValue, user.id)) {
             user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [fieldValue] as Object[], EMAIL_USED_CODE)
             return user
         }
@@ -72,19 +64,19 @@ class UserService {
         user
     }
 
-    Boolean isEmailUnique(String email) {
-        Profile userProfile = profileService.getProfileByProfileEmail(UserProfile, email)
-        Profile clubProfile = profileService.getProfileByProfileEmail(ClubProfile, email)
+    Boolean isEmailUnique(String email, Long id = null) {
+        List<Profile> profiles = profileService.getProfilesByProfileEmail(email)
 
-        if (userProfile && userProfile.user.email != email) {
-            return Boolean.FALSE
+        if (id) {
+            User persistentUser = getUser(id)
+
+            return !profiles?.any {
+                User profileUser = it.user
+                (profileUser.id != id) && (profileUser != persistentUser)
+            }
+        } else {
+            return !profiles
         }
-
-        if (clubProfile && clubProfile.user.email != email) {
-            return Boolean.FALSE
-        }
-
-        return Boolean.TRUE
     }
 
     Boolean ifAnyRoleGranted(String roles) {

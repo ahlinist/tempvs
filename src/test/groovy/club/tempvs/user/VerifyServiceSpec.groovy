@@ -15,11 +15,9 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
     private static final Long LONG_ID = 1L
     private static final String EMAIL = 'email'
     private static final String REGISTRATION_ACTION = 'registration'
-    private static final String VERIFICATION_CODE = 'verificationCode'
 
     def user = Mock User
-    def userProfile = Mock UserProfile
-    def clubProfile = Mock ClubProfile
+    def profile = Mock Profile
     def userService = Mock UserService
     def restResponse = Mock RestResponse
     def profileService = Mock ProfileService
@@ -29,8 +27,6 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
     def emailVerification = Mock EmailVerification
 
     def setup() {
-        GroovySpy(EmailVerification, global: true)
-
         service.restCaller = restCallService
         service.userService = userService
         service.profileService = profileService
@@ -41,18 +37,6 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
     def cleanup() {
     }
 
-    void "Test getVerification()"() {
-        when:
-        def result = service.getVerification(VERIFICATION_CODE)
-
-        then:
-        1 * EmailVerification.findByVerificationCode(VERIFICATION_CODE) >> emailVerification
-        0 * _
-
-        and:
-        result == emailVerification
-    }
-
     void "Test successful creation of email verification"() {
         when:
         def result = service.createEmailVerification(emailVerification)
@@ -60,8 +44,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         then:
         1 * emailVerification.email >> EMAIL
         1 * userService.getUserByEmail(EMAIL)
-        1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
-        1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL)
+        1 * profileService.getProfilesByProfileEmail(EMAIL)
         1 * emailVerification.action >> REGISTRATION_ACTION
         1 * emailVerification.instanceId >> LONG_ID
         1 * emailVerification.setVerificationCode(_ as String)
@@ -96,8 +79,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
 
         then:
         1 * userService.getUserByEmail(EMAIL) >> user
-        1 * profileService.getProfileByProfileEmail(UserProfile, EMAIL)
-        1 * profileService.getProfileByProfileEmail(ClubProfile, EMAIL)
+        1 * profileService.getProfilesByProfileEmail(EMAIL)
         0 * _
 
         and:
