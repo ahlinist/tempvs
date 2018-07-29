@@ -25,7 +25,6 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     def emailVerification = Mock EmailVerification
     def ajaxResponseHelper = Mock AjaxResponseHelper
     def userPasswordCommand = Mock UserPasswordCommand
-    def registrationCommand = Mock RegistrationCommand
     def springSecurityService = Mock SpringSecurityService
 
     def setup() {
@@ -116,21 +115,12 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         params.repeatedPassword = PASSWORD
 
         when:
-        controller.register(registrationCommand)
+        controller.register(user)
 
         then:
-        1 * registrationCommand.validate() >> Boolean.TRUE
-        2 * registrationCommand.emailVerification >> emailVerification
-        1 * registrationCommand.errors
-        1 * registrationCommand.firstName
-        1 * registrationCommand.lastName
-        1 * registrationCommand.profileId
-        1 * registrationCommand.type
-        1 * registrationCommand.password >> PASSWORD
-        1 * registrationCommand.confirmPassword
-        1 * emailVerification.email >> EMAIL
-        1 * userService.register(_ as User, _ as Profile) >> user
-        1 * user.hasErrors() >> Boolean.TRUE
+        1 * user.validate() >> true
+        1 * userService.register(user) >> user
+        1 * user.hasErrors() >> true
         1 * ajaxResponseHelper.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
@@ -143,23 +133,14 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         params.repeatedPassword = PASSWORD
 
         when:
-        controller.register(registrationCommand)
+        controller.register(user)
 
         then:
-        1 * registrationCommand.validate() >> Boolean.TRUE
-        2 * registrationCommand.emailVerification >> emailVerification
-        1 * registrationCommand.errors
-        1 * registrationCommand.firstName
-        1 * registrationCommand.lastName
-        1 * registrationCommand.profileId
-        1 * registrationCommand.type
-        1 * registrationCommand.password >> PASSWORD
-        1 * registrationCommand.confirmPassword
-        1 * emailVerification.email >> EMAIL
-        1 * userService.register(_ as User, _ as Profile) >> user
-        1 * user.hasErrors() >> Boolean.FALSE
+        1 * user.validate() >> true
+        1 * userService.register(user) >> user
+        1 * user.hasErrors() >> false
+        1 * user.email >> EMAIL
         1 * springSecurityService.reauthenticate(EMAIL)
-        1 * emailVerification.delete([flush: Boolean.TRUE])
         1 * ajaxResponseHelper.renderRedirect(PROFILE_PAGE_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

@@ -18,13 +18,14 @@ class UserService {
     private static String EMAIL_USED_CODE = 'user.email.used.error'
 
     ProfileService profileService
+    VerifyService verifyService
     SpringSecurityService springSecurityService
 
     User getUser(Long id) {
         User.get id
     }
 
-    Boolean isLoggedIn() {
+    boolean isLoggedIn() {
         springSecurityService.loggedIn
     }
 
@@ -40,15 +41,17 @@ class UserService {
         User.findByEmail(email)
     }
 
-    User register(User user, Profile userProfile) {
+    User register(User user) {
         if (isEmailUnique(user.email)) {
-            user.addToProfiles userProfile
             user.save()
         } else {
             user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [user.email] as Object[], EMAIL_USED_CODE)
         }
 
-        user
+        EmailVerification emailVerification = verifyService.getVerificationByUser(user)
+        emailVerification.delete()
+
+        return user
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
@@ -64,7 +67,7 @@ class UserService {
         user
     }
 
-    Boolean isEmailUnique(String email, Long id = null) {
+    boolean isEmailUnique(String email, Long id = null) {
         List<Profile> profiles = profileService.getProfilesByProfileEmail(email)
 
         if (id) {
@@ -79,7 +82,7 @@ class UserService {
         }
     }
 
-    Boolean ifAnyRoleGranted(String roles) {
+    boolean ifAnyRoleGranted(String roles) {
         SpringSecurityUtils.ifAnyGranted(roles)
     }
 }

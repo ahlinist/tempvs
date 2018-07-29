@@ -13,10 +13,13 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 
     def user = Mock User
     def profile = Mock Profile
+    def verifyService = Mock VerifyService
     def profileService = Mock ProfileService
+    def emailVerification = Mock EmailVerification
     def springSecurityService = Mock SpringSecurityService
 
     def setup() {
+        service.verifyService = verifyService
         service.profileService = profileService
         service.springSecurityService = springSecurityService
     }
@@ -26,13 +29,14 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
 
     void "Test register()"() {
         when:
-        def result = service.register(user, profile)
+        def result = service.register(user)
 
         then:
         1 * user.email >> EMAIL
         1 * profileService.getProfilesByProfileEmail(EMAIL)
-        1 * user.addToProfiles(profile)
         1 * user.save() >> user
+        1 * verifyService.getVerificationByUser(user) >> emailVerification
+        1 * emailVerification.delete()
         0 * _
 
         and:

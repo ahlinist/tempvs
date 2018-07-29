@@ -52,9 +52,6 @@ class User implements BasePersistent {
     static constraints = {
         email email: true, unique: true, blank: false, size: 0..35
         currentProfileId nullable: true
-        profiles validator: { List<Profile> profiles, User user ->
-            user.userProfile != null
-        }
     }
 
     static mapping = {

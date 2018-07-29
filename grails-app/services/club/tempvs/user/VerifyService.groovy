@@ -37,6 +37,10 @@ class VerifyService {
         EmailVerification.findByVerificationCode(id)
     }
 
+    EmailVerification getVerificationByUser(User user) {
+        EmailVerification.findByActionAndInstanceId(REGISTRATION_ACTION, user.id)
+    }
+
     EmailVerification createEmailVerification(EmailVerification emailVerification) {
         String email = emailVerification.email
 
@@ -71,29 +75,19 @@ class VerifyService {
         return success
     }
 
-    Boolean isEmailUnique(String email, String action, Long instanceId) {
-        User user = userService.getUserByEmail(email)
-        List<Profile> profiles = profileService.getProfilesByProfileEmail(email)
-
+    boolean isEmailUnique(String email, String action, Long instanceId) {
         switch (action) {
             case REGISTRATION_ACTION:
-                return !(user || profiles)
+                return userService.isEmailUnique(email, instanceId)
+
                 break
             case EMAIL_ACTION:
-                if (user || (profiles && profiles.any { it.user.id != instanceId })) {
-                    return Boolean.FALSE
-                }
+                return userService.isEmailUnique(email, instanceId)
 
                 break
             case PROFILE_EMAIL_ACTION:
                 Profile currentProfile = profileService.getProfileById(instanceId)
-                User profileUser = currentProfile.user
-
-                if (user != profileUser) {
-                    return Boolean.FALSE
-                } else if (profiles.any { it.user != profileUser }) {
-                    return Boolean.FALSE
-                }
+                return profileService.isProfileEmailUnique(currentProfile, email)
 
                 break
             default:
@@ -101,6 +95,6 @@ class VerifyService {
                 break
         }
 
-        return Boolean.TRUE
+        return true
     }
 }

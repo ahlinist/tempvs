@@ -1,11 +1,9 @@
 package club.tempvs.user
 
 import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.web.mapping.LinkGenerator
-import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -19,6 +17,7 @@ class UserController {
     private static final String PASSWORD = 'password'
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
+    private static final String PASSWORDS_MISMATCH_MESSAGE = 'user.register.password.mismatch.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
     private static final String UPDATE_EMAIL_FAILED_MESSAGE = 'user.edit.email.verification.failed.message'
 
@@ -81,23 +80,22 @@ class UserController {
     }
 
     @Secured('permitAll')
-    def register(RegistrationCommand command) {
-        if (!command.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(command))
-        }
+    def register(User user) {
+        if (!user.validate()) {
+            if (params.password != params.confirmPassword) {
+                user.errors.rejectValue(PASSWORD, PASSWORDS_MISMATCH_MESSAGE, PASSWORDS_MISMATCH_MESSAGE)
+            }
 
-        EmailVerification emailVerification = command.emailVerification
-        String email = emailVerification.email
-        Map properties = command.properties
-        properties.email = email
-        User user = userService.register(properties as User, properties as Profile)
-
-        if (user.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(user))
         }
 
-        springSecurityService.reauthenticate(email)
-        emailVerification.delete(flush: true)
+        User persistentUser = userService.register(user)
+
+        if (persistentUser.hasErrors()) {
+            return render(ajaxResponseHelper.renderValidationResponse(persistentUser))
+        }
+
+        springSecurityService.reauthenticate(persistentUser.email)
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'profile'))
     }
 

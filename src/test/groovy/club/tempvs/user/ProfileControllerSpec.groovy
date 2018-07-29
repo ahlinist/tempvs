@@ -73,7 +73,9 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.index()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentUser >> user
+        1 * user.userProfile >> profile
+        1 * user.currentProfile >> profile
         1 * profile.identifier >> IDENTIFIER
         0 * _
 
@@ -112,13 +114,13 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.currentProfile >> profile
         1 * profileService.getProfile(ONE) >> profile
         1 * profile.user >> user
-        1 * profile.isOfUserType() >> Boolean.TRUE
+        1 * profile.isOfUserType() >> true
         1 * user.clubProfiles >> [profile]
-        2 * profile.active >> Boolean.TRUE
+        2 * profile.active >> true
         1 * profile.identifier >> IDENTIFIER
-        1 * followingService.mayBeFollowed(profile, profile) >> Boolean.TRUE
+        1 * followingService.mayBeFollowed(profile, profile) >> true
         1 * followingService.getFollowing(profile, profile) >> following
-        1 * following.asType(Boolean) >> Boolean.TRUE
+        1 * following.asType(Boolean) >> true
         0 * _
 
         and:
@@ -126,9 +128,9 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
                 profile: profile,
                 user: user,
                 id: IDENTIFIER,
-                editAllowed: Boolean.TRUE,
-                mayBeFollowed: Boolean.TRUE,
-                isFollowed: Boolean.TRUE,
+                editAllowed: true,
+                mayBeFollowed: true,
+                isFollowed: true,
                 activeProfiles: [profile],
                 inactiveProfiles: [],
                 periods: Period.values(),
@@ -218,18 +220,20 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         response.redirectedUrl == PROFILE_URL
     }
 
-    void "Test createClubProfile() against invalid profile"() {
+    void "Test createProfile() against invalid profile"() {
         given:
         request.method = POST_METHOD
 
         when:
-        controller.createClubProfile(profile, imageUploadBean)
+        controller.createProfile(profile, imageUploadBean)
 
         then:
         1 * imageUploadBean.validate() >> true
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * userService.currentUser >> user
-        1 * profileService.createClubProfile(user, profile, image) >> profile
+        1 * profile.profileEmail >> EMAIL
+        1 * profile.setProfileEmail(null)
+        1 * profileService.createProfile(user, profile, image) >> profile
         1 * profile.hasErrors() >> true
         1 * profile.errors >> errors
         1 * errors.allErrors >> []
@@ -239,19 +243,24 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
     }
 
-    void "Test createClubProfile()"() {
+    void "Test createProfile()"() {
         given:
         request.method = POST_METHOD
 
         when: 'Command valid. Profile created.'
-        controller.createClubProfile(profile, imageUploadBean)
+        controller.createProfile(profile, imageUploadBean)
 
         then:
-        1 * imageUploadBean.validate() >> Boolean.TRUE
+        1 * imageUploadBean.validate() >> true
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
         1 * userService.currentUser >> user
-        1 * profileService.createClubProfile(user, profile, image) >> profile
-        1 * profile.hasErrors() >> Boolean.FALSE
+        1 * profile.profileEmail >> EMAIL
+        1 * profile.setProfileEmail(null)
+        1 * profileService.createProfile(user, profile, image) >> profile
+        1 * profile.hasErrors() >> false
+        1 * profile.id >> LONG_ID
+        1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
+        1 * verifyService.sendEmailVerification(emailVerification)
         1 * profileService.setCurrentProfile(user, profile)
         1 * profile.id >> LONG_ID
         1 * ajaxResponseHelper.renderRedirect("/profile/show/${LONG_ID}") >> json
@@ -271,7 +280,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * profileService.editProfileField(profile, FIELD_NAME, FIELD_VALUE) >> profile
-        1 * profile.hasErrors() >> Boolean.FALSE
+        1 * profile.hasErrors() >> false
         0 * _
 
         and:
@@ -290,9 +299,9 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.currentProfile >> profile
         1 * profile.id >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
-        1 * emailVerification.hasErrors() >> Boolean.FALSE
-        1 * verifyService.sendEmailVerification(emailVerification) >> Boolean.TRUE
-        1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, 'profileEmail.verification.sent.message') >> json
+        1 * emailVerification.hasErrors() >> false
+        1 * verifyService.sendEmailVerification(emailVerification) >> true
+        1 * ajaxResponseHelper.renderFormMessage(true, 'profileEmail.verification.sent.message') >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }
@@ -329,9 +338,9 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.getProfile(ONE) >> profile
-        1 * profile.active >> Boolean.FALSE
+        1 * profile.active >> false
         1 * profileService.activateProfile(profile) >> profile
-        1 * profile.hasErrors() >> Boolean.FALSE
+        1 * profile.hasErrors() >> false
         1 * ajaxResponseHelper.renderRedirect(REFERER) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

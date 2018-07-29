@@ -43,10 +43,9 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
 
         then:
         1 * emailVerification.email >> EMAIL
-        1 * userService.getUserByEmail(EMAIL)
-        1 * profileService.getProfilesByProfileEmail(EMAIL)
         1 * emailVerification.action >> REGISTRATION_ACTION
         1 * emailVerification.instanceId >> LONG_ID
+        1 * userService.isEmailUnique(EMAIL, LONG_ID) >> true
         1 * emailVerification.setVerificationCode(_ as String)
         1 * emailVerification.save() >> emailVerification
         0 * _
@@ -78,11 +77,10 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         def result = service.isEmailUnique(EMAIL, REGISTRATION_ACTION, LONG_ID)
 
         then:
-        1 * userService.getUserByEmail(EMAIL) >> user
-        1 * profileService.getProfilesByProfileEmail(EMAIL)
+        1 * userService.isEmailUnique(EMAIL, LONG_ID) >> false
         0 * _
 
         and:
-        result == Boolean.FALSE
+        result == false
     }
 }
