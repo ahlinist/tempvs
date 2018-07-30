@@ -32,10 +32,8 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         def result = service.register(user)
 
         then:
-        1 * user.email >> EMAIL
-        1 * profileService.getProfilesByProfileEmail(EMAIL)
         1 * user.save() >> user
-        1 * verifyService.getVerificationByUser(user) >> emailVerification
+        1 * verifyService.getRegistrationVerificationByUser(user) >> emailVerification
         1 * emailVerification.delete()
         0 * _
 
@@ -48,8 +46,6 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
         def result = service.editUserField(user, EMAIL, FIELD_VALUE)
 
         then:
-        1 * user.id >> LONG_ONE
-        1 * profileService.getProfilesByProfileEmail(FIELD_VALUE)
         1 * user.setEmail(FIELD_VALUE)
         1 * user.save() >> user
         0 * _

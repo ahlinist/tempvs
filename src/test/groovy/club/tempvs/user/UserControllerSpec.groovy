@@ -5,6 +5,7 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
+import org.springframework.validation.Errors
 import spock.lang.Specification
 
 class UserControllerSpec extends Specification implements ControllerUnitTest<UserController> {
@@ -112,14 +113,15 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         given:
         request.method = POST_METHOD
         params.password = PASSWORD
-        params.repeatedPassword = PASSWORD
+        params.confirmPassword = PASSWORD
 
         when:
         controller.register(user)
 
         then:
         1 * user.validate() >> true
-        1 * userService.register(user) >> user
+        1 * user.email >> EMAIL
+        1 * userService.isEmailUnique(EMAIL) >> true
         1 * user.hasErrors() >> true
         1 * ajaxResponseHelper.renderValidationResponse(user) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
@@ -130,16 +132,17 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         given:
         request.method = POST_METHOD
         params.password = PASSWORD
-        params.repeatedPassword = PASSWORD
+        params.confirmPassword = PASSWORD
 
         when:
         controller.register(user)
 
         then:
         1 * user.validate() >> true
+        2 * user.email >> EMAIL
+        1 * userService.isEmailUnique(EMAIL) >> true
         1 * userService.register(user) >> user
-        1 * user.hasErrors() >> false
-        1 * user.email >> EMAIL
+        2 * user.hasErrors() >> false
         1 * springSecurityService.reauthenticate(EMAIL)
         1 * ajaxResponseHelper.renderRedirect(PROFILE_PAGE_URI) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)

@@ -36,7 +36,7 @@ class User implements BasePersistent {
             Profile.get(this.currentProfileId)
         } else {
             Profile userProfile = this.profiles.find { it.type == ProfileType.USER }
-            this.currentProfileId = userProfile.id
+            this.currentProfileId = userProfile?.id
             userProfile
         }
     }

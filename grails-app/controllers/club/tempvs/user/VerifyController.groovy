@@ -14,6 +14,8 @@ class VerifyController {
 
     private static final String EMAIL = 'email'
     private static final String PROFILE_EMAIL = 'profileEmail'
+    private static final String EMAIL_FIELD = 'email'
+    private static final String EMAIL_USED_CODE = 'user.email.used.error'
     private static final String NO_VERIFICATION_CODE = 'verify.noCode.message'
     private static final String EMAIL_UPDATE_FAILED = 'user.edit.email.failed.message'
     private static final String PROFILE_EMAIL_UPDATE_FAILED = 'profileEmail.update.failed.message'
@@ -61,13 +63,19 @@ class VerifyController {
     }
 
     private email(EmailVerification emailVerification) {
-        User user = userService.getUser(emailVerification.instanceId)
+        String email = emailVerification.email
+        Long userId = emailVerification.instanceId
+        User user = userService.getUser userId
 
         if (user) {
-            user = userService.editUserField(user, EMAIL, emailVerification.email)
+            if (userService.isEmailUnique(email, userId)) {
+                user = userService.editUserField(user, EMAIL, emailVerification.email)
+            } else {
+                user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [email] as Object[], EMAIL_USED_CODE)
+            }
 
             if (!user.hasErrors()) {
-                springSecurityService.reauthenticate(user.email)
+                springSecurityService.reauthenticate(email)
                 redirect controller: 'user', action: 'edit'
             }
         } else {

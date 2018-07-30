@@ -37,8 +37,8 @@ class VerifyService {
         EmailVerification.findByVerificationCode(id)
     }
 
-    EmailVerification getVerificationByUser(User user) {
-        EmailVerification.findByActionAndInstanceId(REGISTRATION_ACTION, user.id)
+    EmailVerification getRegistrationVerificationByUser(User user) {
+        EmailVerification.findByActionAndEmail(REGISTRATION_ACTION, user.email)
     }
 
     EmailVerification createEmailVerification(EmailVerification emailVerification) {
@@ -75,7 +75,7 @@ class VerifyService {
         return success
     }
 
-    boolean isEmailUnique(String email, String action, Long instanceId) {
+    private boolean isEmailUnique(String email, String action, Long instanceId) {
         switch (action) {
             case REGISTRATION_ACTION:
                 return userService.isEmailUnique(email, instanceId)

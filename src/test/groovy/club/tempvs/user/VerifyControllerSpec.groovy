@@ -87,10 +87,11 @@ class VerifyControllerSpec extends Specification implements ControllerUnitTest<V
         1 * verifyService.getVerification(ID) >> emailVerification
         1 * emailVerification.action >> EMAIL
         1 * emailVerification.instanceId >> LONG_ID
+        1 * emailVerification.email >> EMAIL
         1 * userService.getUser(LONG_ID) >> user
         1 * emailVerification.email >> EMAIL
+        1 * userService.isEmailUnique(EMAIL, LONG_ID) >> true
         1 * user.hasErrors() >> false
-        1 * user.email >> EMAIL
         1 * springSecurityService.reauthenticate(EMAIL)
         1 * userService.editUserField(user, EMAIL, EMAIL) >> user
         1 * emailVerification.delete(['flush':true])
