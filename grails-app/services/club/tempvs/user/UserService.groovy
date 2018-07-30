@@ -14,17 +14,15 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class UserService {
 
-    private static String EMAIL_FIELD = 'email'
-    private static String EMAIL_USED_CODE = 'user.email.used.error'
-
     ProfileService profileService
+    VerifyService verifyService
     SpringSecurityService springSecurityService
 
     User getUser(Long id) {
         User.get id
     }
 
-    Boolean isLoggedIn() {
+    boolean isLoggedIn() {
         springSecurityService.loggedIn
     }
 
@@ -40,31 +38,24 @@ class UserService {
         User.findByEmail(email)
     }
 
-    User register(User user, Profile userProfile) {
-        if (isEmailUnique(user.email)) {
-            user.addToProfiles userProfile
-            user.save()
-        } else {
-            user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [user.email] as Object[], EMAIL_USED_CODE)
+    User register(User user) {
+        if (user.save()) {
+            EmailVerification emailVerification = verifyService.getRegistrationVerificationByUser(user)
+            emailVerification.delete()
         }
 
-        user
+        return user
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     @PreAuthorize('#user.email == authentication.name')
     User editUserField(User user, String fieldName, Object fieldValue) {
-        if ((fieldName == EMAIL_FIELD) && !isEmailUnique(fieldValue, user.id)) {
-            user.errors.rejectValue(EMAIL_FIELD, EMAIL_USED_CODE, [fieldValue] as Object[], EMAIL_USED_CODE)
-            return user
-        }
-
         user."${fieldName}" = fieldValue
         user.save()
         user
     }
 
-    Boolean isEmailUnique(String email, Long id = null) {
+    boolean isEmailUnique(String email, Long id = null) {
         List<Profile> profiles = profileService.getProfilesByProfileEmail(email)
 
         if (id) {
@@ -79,7 +70,7 @@ class UserService {
         }
     }
 
-    Boolean ifAnyRoleGranted(String roles) {
+    boolean ifAnyRoleGranted(String roles) {
         SpringSecurityUtils.ifAnyGranted(roles)
     }
 }

@@ -106,11 +106,9 @@ class ProfileService {
         }
     }
 
-    @PreAuthorize('#user.email == authentication.name')
-    Profile createClubProfile(User user, Profile profile, Image avatar) {
+    Profile createProfile(User user, Profile profile, Image avatar) {
         profile.user = user
         profile.avatar = avatar
-        profile.type = ProfileType.CLUB
         user.addToProfiles(profile)
 
         if (!isProfileEmailUnique(profile, profile.profileEmail)) {
@@ -174,16 +172,16 @@ class ProfileService {
         profile
     }
 
-    Boolean isProfileEmailUnique(Profile profile, String email) {
+    boolean isProfileEmailUnique(Profile profile, String email) {
         if (!email) {
-            return Boolean.TRUE
+            return true
         }
 
         User profileUser = profile.user
         User persistentUser = userService.getUserByEmail(email)
 
         if (persistentUser && (profileUser != persistentUser)) {
-            return Boolean.FALSE
+            return false
         }
 
         List<Profile> persistentProfiles = Profile.findAllByProfileEmail(email) as List<Profile>

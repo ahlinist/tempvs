@@ -58,8 +58,13 @@ class ProfileController {
     AjaxResponseHelper ajaxResponseHelper
 
     def index() {
-        Profile profile = profileService.currentProfile
-        redirect action: 'show', id: profile.identifier
+        User currentUser = userService.currentUser
+
+        if (currentUser.userProfile) {
+            redirect action: 'show', id: currentUser.currentProfile.identifier
+        } else {
+            render view: 'registration', model: [user: currentUser]
+        }
     }
 
     def search(String query, Integer offset) {
@@ -129,7 +134,7 @@ class ProfileController {
         redirect uri: request.getHeader(REFERER)
     }
 
-    def createClubProfile(Profile profile, ImageUploadBean imageUploadBean) {
+    def createProfile(Profile profile, ImageUploadBean imageUploadBean) {
         if (!imageUploadBean.validate()) {
             return render(ajaxResponseHelper.renderValidationResponse(imageUploadBean))
         }
@@ -138,8 +143,11 @@ class ProfileController {
         Image avatar = imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION)
         User user = userService.currentUser
 
+        String profileEmail = profile.profileEmail
+        profile.profileEmail = null
+
         try {
-            persistentProfile = profileService.createClubProfile(user, profile, avatar)
+            persistentProfile = profileService.createProfile(user, profile, avatar)
 
             if (persistentProfile.hasErrors()) {
                 throw new ValidationException("Profile has errors", persistentProfile.errors)
@@ -149,6 +157,17 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(e.errors))
         } catch (Exception e) {
             imageService.deleteImage(avatar)
+        }
+
+        if (profileEmail) {
+            Map properties = [
+                    instanceId: profile.id,
+                    email: profileEmail,
+                    action: PROFILE_EMAIL_ACTION,
+            ]
+
+            EmailVerification emailVerification = verifyService.createEmailVerification(properties as EmailVerification)
+            verifyService.sendEmailVerification(emailVerification)
         }
 
         profileService.setCurrentProfile(user, persistentProfile)

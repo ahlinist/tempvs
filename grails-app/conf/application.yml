@@ -29,7 +29,7 @@ grails:
             failureHandler:
                 defaultFailureUrl: /auth/index
             successHandler:
-                defaultTargetUrl: /profile/user/
+                defaultTargetUrl: /profile/
             authority:
                 className: club.tempvs.user.Role
             requestMap:
