@@ -76,7 +76,7 @@
               <g:render template="/ajax/templates/ajaxSmartForm"
                   model="${[type: 'text', action: 'editProfileField', name: 'firstName', value: profile.firstName, label: 'profile.firstName.label', mandatory: true]}"/>
               <g:render template="/ajax/templates/ajaxSmartForm"
-                  model="${[type: 'text', action: 'editProfileField', name: 'lastName', value: profile.lastName, label: 'profile.lastName.label', mandatory: true]}"/>
+                  model="${[type: 'text', action: 'editProfileField', name: 'lastName', value: profile.lastName, label: 'profile.lastName.label']}"/>
               <g:if test="${profile.ofClubType}">
                 <g:render template="/ajax/templates/ajaxSmartForm"
                     model="${[type: 'text', action: 'editProfileField', name: 'nickName', value: profile.nickName, label: 'profile.nickName.label']}"/>
