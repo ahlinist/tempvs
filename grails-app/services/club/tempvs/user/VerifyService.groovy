@@ -66,10 +66,10 @@ class VerifyService {
         HttpStatus statusCode = response?.statusCode
         Boolean success = Boolean.TRUE
 
-        if (statusCode != HttpStatus.OK) {
+        if (response && statusCode != HttpStatus.OK) {
             success = Boolean.FALSE
-            log.error "Email delivery failed. Email service returned status code: '${statusCode.value()}'.\n" +
-                    " Response body: ${response.responseBody}"
+            log.error "Email delivery failed. Email service returned status code: '${statusCode?.value()}'.\n" +
+                    " Response body: ${response?.responseBody}"
         }
 
         return success
