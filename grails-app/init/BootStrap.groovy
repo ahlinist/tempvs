@@ -22,6 +22,7 @@ class BootStrap {
     private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'adminPassword'
     private static final String EMAIL_SERVICE_URL = System.getenv("EMAIL_SERVICE_URL")
     private static final String IMAGE_SERVICE_URL = System.getenv("IMAGE_SERVICE_URL")
+    private static final String MESSAGE_SERVICE_URL = System.getenv("MESSAGE_SERVICE_URL")
 
     RestCaller restCaller
 
@@ -31,6 +32,7 @@ class BootStrap {
         createAdminUser()
         pingMicroService(EMAIL_SERVICE_URL, 'Email', 'EMAIL_SERVICE_URL')
         pingMicroService(IMAGE_SERVICE_URL, 'Image', 'IMAGE_SERVICE_URL')
+        pingMicroService(MESSAGE_SERVICE_URL, 'Message', 'MESSAGE_SERVICE_URL')
         registerImageMarshaller()
     }
 
