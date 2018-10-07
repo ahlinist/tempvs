@@ -6,8 +6,6 @@ import groovy.util.logging.Slf4j
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
@@ -16,7 +14,7 @@ import org.springframework.web.client.RestTemplate
 @GrailsCompileStatic
 class RestCaller {
 
-    private static final String TOKEN = 'token'
+    private static final String AUTHORIZATION = 'Authorization'
     private static final String CONTENT_TYPE = 'Content-Type'
     private static final String JSON_CONTENT_TYPE = 'application/json; charset=UTF-8'
 
@@ -24,20 +22,20 @@ class RestCaller {
 
     RestResponse doGet(String url, String token = null) {
         RestTemplate restTemplate = restHelper.newTemplate()
-        HttpEntity<String> entity = restHelper.newHttpEntity([(TOKEN): token])
+        HttpEntity<String> entity = restHelper.newHttpEntity([(AUTHORIZATION): token])
         execute(restTemplate, url, HttpMethod.GET, entity)
     }
 
     RestResponse doPost(String url, String token = null, JSON payload = new JSON()) {
         RestTemplate restTemplate = restHelper.newTemplate()
-        Map<String, String> headers = [(TOKEN): token, (CONTENT_TYPE): JSON_CONTENT_TYPE]
+        Map<String, String> headers = [(AUTHORIZATION): token, (CONTENT_TYPE): JSON_CONTENT_TYPE]
         HttpEntity<String> entity = restHelper.newHttpEntity(headers, payload?.toString())
         execute(restTemplate, url, HttpMethod.POST, entity)
     }
 
     RestResponse doDelete(String url, String token = null) {
         RestTemplate restTemplate = restHelper.newTemplate()
-        HttpEntity<String> entity = restHelper.newHttpEntity([(TOKEN): token])
+        HttpEntity<String> entity = restHelper.newHttpEntity([(AUTHORIZATION): token])
         execute(restTemplate, url, HttpMethod.DELETE, entity)
     }
 
