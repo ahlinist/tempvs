@@ -46,6 +46,11 @@
               <span class="glyphicon glyphicon-tent"></span>
             </g:link>
           </span>
+          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'message.tooltip')}">
+            <g:link class="btn btn-secondary disableable" controller="message" action=" ">
+              <span class="glyphicon glyphicon-envelope"></span>
+            </g:link>
+          </span>
         </div>
         <div class="col-sm-4">
           <span id="profile-search-dropdown" class="dropdown" style="margin:10px;">
@@ -95,9 +100,5 @@
     <main>
       <g:layoutBody/>
     </main>
-    <footer class="navbar-fixed-bottom text-center text-muted col-sm-12">
-      <hr/>
-      <g:message code="tempvs.footer.message"/>
-    </footer>
   </body>
 </html>
