@@ -10,7 +10,7 @@ import spock.lang.Specification
 class RestCallerSpec extends Specification {
 
     private static final String URL = 'url'
-    private static final String TOKEN = 'token'
+    private static final String AUTHORIZATION = 'Authorization'
     private static final String TEST_JSON = 'test json'
     private static final String CONTENT_TYPE = 'Content-Type'
     private static final String JSON_CONTENT_TYPE = 'application/json; charset=UTF-8'
@@ -34,11 +34,11 @@ class RestCallerSpec extends Specification {
 
     void "Test doGet()"() {
         when:
-        def result = restCaller.doGet(URL, TOKEN)
+        def result = restCaller.doGet(URL, AUTHORIZATION)
 
         then:
         1 * restHelper.newTemplate() >> restTemplate
-        1 * restHelper.newHttpEntity([(TOKEN): TOKEN]) >> httpEntity
+        1 * restHelper.newHttpEntity([(AUTHORIZATION): AUTHORIZATION]) >> httpEntity
         1 * restTemplate.exchange(URL, HttpMethod.GET, httpEntity, String.class) >> responseEntity
         1 * restHelper.newRestResponse(responseEntity) >> restResponse
         0 * _
@@ -49,12 +49,12 @@ class RestCallerSpec extends Specification {
 
     void "Test doPost()"() {
         when:
-        def result = restCaller.doPost(URL, TOKEN, json)
+        def result = restCaller.doPost(URL, AUTHORIZATION, json)
 
         then:
         1 * restHelper.newTemplate() >> restTemplate
         1 * json.toString() >> TEST_JSON
-        1 * restHelper.newHttpEntity([(TOKEN): TOKEN, (CONTENT_TYPE): JSON_CONTENT_TYPE], TEST_JSON) >> httpEntity
+        1 * restHelper.newHttpEntity([(AUTHORIZATION): AUTHORIZATION, (CONTENT_TYPE): JSON_CONTENT_TYPE], TEST_JSON) >> httpEntity
         1 * restTemplate.exchange(URL, HttpMethod.POST, httpEntity, String.class) >> responseEntity
         1 * restHelper.newRestResponse(responseEntity) >> restResponse
         0 * _
@@ -65,11 +65,11 @@ class RestCallerSpec extends Specification {
 
     void "Test doDelete()"() {
         when:
-        def result = restCaller.doDelete(URL, TOKEN)
+        def result = restCaller.doDelete(URL, AUTHORIZATION)
 
         then:
         1 * restHelper.newTemplate() >> restTemplate
-        1 * restHelper.newHttpEntity([(TOKEN): TOKEN]) >> httpEntity
+        1 * restHelper.newHttpEntity([(AUTHORIZATION): AUTHORIZATION]) >> httpEntity
         1 * restTemplate.exchange(URL, HttpMethod.DELETE, httpEntity, String.class) >> responseEntity
         1 * restHelper.newRestResponse(responseEntity) >> restResponse
         0 * _
