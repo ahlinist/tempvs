@@ -1,4 +1,6 @@
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.json.JsonConverter
+import club.tempvs.message.MessageProxy
 import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestHelper
@@ -15,9 +17,15 @@ beans = {
         restHelper = ref "restHelper"
     }
 
+    messageProxy(MessageProxy) {
+        restCaller = ref "restCaller"
+        objectFactory = ref "objectFactory"
+    }
+
     objectFactory(ObjectFactory)
     restHelper(RestHelper)
     validationTagLib(ValidationTagLib)
     passwordEncoder(BCryptPasswordEncoder)
     userPasswordEncoderListener(UserPasswordEncoderListener)
+    jsonConverter(JsonConverter)
 }
