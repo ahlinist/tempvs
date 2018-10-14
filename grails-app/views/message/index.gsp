@@ -6,12 +6,17 @@
     </head>
     <body>
       <div class="col-sm-4" style="border-right: 1px solid #AAA; height: 100%;">
-        <g:each var="conversation" in="${conversationsDto.conversations}">
-          <div class="well well-sm">
-            name: ${conversation.participants}
-            message: ${conversation.lastMessage.text}
-          </div>
-        </g:each>
+        <ul>
+          <g:each var="conversation" in="${conversationsDto.conversations}">
+            <g:link controller="message" action="conversation" id="${conversation.id}">
+              <li class="btn btn-default col-sm-12">
+                <b class="pull-left">${conversation.conversant}</b>
+                <br>
+                <i class="pull-left">${conversation.lastMessage.text}</i>
+              </li>
+            </g:link>
+          </g:each>
+        </ul>
       </div>
       <div class="col-sm-8">
       </div>

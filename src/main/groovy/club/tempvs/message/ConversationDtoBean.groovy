@@ -5,5 +5,5 @@ class ConversationDtoBean {
     String type
     String name
     MessageDtoBean lastMessage
-    Set<Long> participants
+    String conversant
 }
