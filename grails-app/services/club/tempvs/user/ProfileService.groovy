@@ -1,8 +1,12 @@
 package club.tempvs.user
 
+import club.tempvs.ampq.AmpqSender
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
+import club.tempvs.object.ObjectFactory
+import club.tempvs.profile.ProfileDto
 import grails.compiler.GrailsCompileStatic
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.validation.ValidationException
 import grails.web.mapping.LinkGenerator
@@ -20,11 +24,13 @@ class ProfileService {
     private static final Integer MAX_PROFILES_RETRIEVED = 10
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
+    private static final String MESSAGE_PARTICIPANT_AMPQ_QUEUE = 'message.participant'
 
     UserService userService
     ImageService imageService
     LinkGenerator grailsLinkGenerator
-
+    AmpqSender ampqSender
+    ObjectFactory objectFactory
 
     Profile getProfile(id) {
         Profile profile = Profile.findByProfileId(id as String)
@@ -117,7 +123,12 @@ class ProfileService {
             throw new ValidationException("ProfileEmail is non-unique", profile.errors)
         }
 
-        profile.save()
+        if (profile.save()) {
+            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
+            JSON jsonPayload = profileDto as JSON
+            ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+        }
+
         return profile
     }
 
@@ -147,8 +158,13 @@ class ProfileService {
             profile."${fieldName}" = fieldValue
         }
 
-        profile.save()
-        profile
+        if (profile.save()) {
+            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
+            JSON jsonPayload = profileDto as JSON
+            ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+        }
+
+        return profile
     }
 
     @PreAuthorize('#profile.user.email == authentication.name')

@@ -60,6 +60,8 @@ dependencies {
     compile 'org.liquibase:liquibase-core:3.5.3'
     //heroku
     compile 'com.github.jsimone:webapp-runner:8.5.27.0'
+    //ampq
+    compile 'com.rabbitmq:amqp-client:3.3.4'
 }
 
 bootRun {

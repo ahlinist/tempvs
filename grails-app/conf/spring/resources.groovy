@@ -1,4 +1,5 @@
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.ampq.AmpqSender
 import club.tempvs.json.JsonConverter
 import club.tempvs.message.MessageProxy
 import club.tempvs.object.ObjectFactory
@@ -28,4 +29,5 @@ beans = {
     passwordEncoder(BCryptPasswordEncoder)
     userPasswordEncoderListener(UserPasswordEncoderListener)
     jsonConverter(JsonConverter)
+    ampqSender(AmpqSender)
 }

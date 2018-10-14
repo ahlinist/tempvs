@@ -1,7 +1,11 @@
 package club.tempvs.user
 
+import club.tempvs.ampq.AmpqSender
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
+import club.tempvs.object.ObjectFactory
+import club.tempvs.profile.ProfileDto
+import grails.converters.JSON
 import grails.orm.HibernateCriteriaBuilder
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
@@ -13,20 +17,27 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     private static final String EMAIL = 'email'
     private static final String FIRST_NAME = 'firstName'
     private static final String FIELD_VALUE = 'fieldValue'
+    private static final String MESSAGE_PARTICIPANT_AMPQ_QUEUE = 'message.participant'
 
     def user = Mock User
     def image = Mock Image
+    def json = Mock JSON
+    def profileDto = GroovyMock ProfileDto
     def criteria = Mock HibernateCriteriaBuilder
 
     def userService = Mock UserService
     def profile = Mock Profile
     def imageService = Mock ImageService
+    def objectFactory = Mock ObjectFactory
+    def ampqSender = Mock AmpqSender
 
     def setup() {
         GroovySpy(Profile, global: true)
 
         service.userService = userService
         service.imageService = imageService
+        service.objectFactory = objectFactory
+        service.ampqSender = ampqSender
     }
 
     def cleanup() {
@@ -62,6 +73,10 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     }
 
     void "Test createProfile()"() {
+        given:
+        String profileAsString = "profileAsString"
+        String profileDtoAsJsonString = "profileDtoAsJsonString"
+
         when:
         def result = service.createProfile(user, profile, image)
 
@@ -71,6 +86,12 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         1 * user.addToProfiles(profile)
         1 * profile.profileEmail
         1 * profile.save() >> profile
+        1 * profile.id >> LONG_ONE
+        1 * profile.toString() >> profileAsString
+        1 * objectFactory.getInstance(ProfileDto, [id: LONG_ONE, name: profileAsString]) >> profileDto
+        1 * profileDto.asType(JSON) >> json
+        1 * json.toString() >> profileDtoAsJsonString
+        1 * ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
         0 * _
 
         and:
@@ -104,12 +125,22 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     }
 
     void "Test editProfileField()"() {
+        given:
+        String profileAsString = "profileAsString"
+        String profileDtoAsJsonString = "profileDtoAsJsonString"
+
         when:
         def result = service.editProfileField(profile, FIRST_NAME, FIELD_VALUE)
 
         then:
         1 * profile.setFirstName(FIELD_VALUE)
         1 * profile.save() >> profile
+        1 * profile.id >> LONG_ONE
+        1 * profile.toString() >> profileAsString
+        1 * objectFactory.getInstance(ProfileDto, [id: LONG_ONE, name: profileAsString]) >> profileDto
+        1 * profileDto.asType(JSON) >> json
+        1 * json.toString() >> profileDtoAsJsonString
+        1 * ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
         0 * _
 
         and:
