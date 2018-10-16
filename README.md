@@ -26,6 +26,16 @@ Images upload/view/deletion are held by a separate microservice (see: https://gi
  * IMAGE_SERVICE_URL
  * IMAGE_SECURITY_TOKEN (should match the TOKEN variable on the opposite side)
  
+### Profile-to-profile messaging
+Users may create conversations between their profiles with the help of messaging microservice (see: https://github.com/ahlinist/tempvs-message). It requires the following env variables being set up:
+ * MESSAGE_SERVICE_URL
+ * MESSAGE_SECURITY_TOKEN (should match the TOKEN variable on the opposite side)
+ 
+### AMQP support
+Some events (e.g. profile update) trigger information exchange between microservices to refresh the bounded contexts. To make queuing work set the following env variables:
+ * CLOUDAMQP_URL
+ * CLOUDAMQP_APIKEY
+ 
 ### DB configuration
 
 #### PostgreSQL:
