@@ -1,6 +1,10 @@
 package club.tempvs.user
 
+import club.tempvs.ampq.AmqpSender
+import club.tempvs.object.ObjectFactory
+import club.tempvs.profile.ProfileDto
 import grails.compiler.GrailsCompileStatic
+import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -14,9 +18,13 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class UserService {
 
+    private static final String MESSAGE_PARTICIPANT_AMPQ_QUEUE = 'message.participant'
+
     ProfileService profileService
     VerifyService verifyService
     SpringSecurityService springSecurityService
+    AmqpSender amqpSender
+    ObjectFactory objectFactory
 
     User getUser(Long id) {
         User.get id
@@ -42,6 +50,11 @@ class UserService {
         if (user.save()) {
             EmailVerification emailVerification = verifyService.getRegistrationVerificationByUser(user)
             emailVerification.delete()
+
+            Profile profile = user.userProfile
+            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
+            JSON jsonPayload = profileDto as JSON
+            amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
         }
 
         return user

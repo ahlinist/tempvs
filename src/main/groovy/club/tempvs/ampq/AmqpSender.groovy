@@ -6,7 +6,7 @@ import com.rabbitmq.client.ConnectionFactory
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class AmpqSender {
+class AmqpSender {
 
     private static final String CLOUDAMQP_URL = System.getenv('CLOUDAMQP_URL')
 

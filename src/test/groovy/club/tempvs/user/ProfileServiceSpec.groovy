@@ -1,6 +1,6 @@
 package club.tempvs.user
 
-import club.tempvs.ampq.AmpqSender
+import club.tempvs.ampq.AmqpSender
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.object.ObjectFactory
@@ -29,7 +29,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def profile = Mock Profile
     def imageService = Mock ImageService
     def objectFactory = Mock ObjectFactory
-    def ampqSender = Mock AmpqSender
+    def amqpSender = Mock AmqpSender
 
     def setup() {
         GroovySpy(Profile, global: true)
@@ -37,7 +37,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         service.userService = userService
         service.imageService = imageService
         service.objectFactory = objectFactory
-        service.ampqSender = ampqSender
+        service.amqpSender = amqpSender
     }
 
     def cleanup() {
@@ -91,7 +91,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         1 * objectFactory.getInstance(ProfileDto, [id: LONG_ONE, name: profileAsString]) >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
-        1 * ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
+        1 * amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
         0 * _
 
         and:
@@ -140,7 +140,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         1 * objectFactory.getInstance(ProfileDto, [id: LONG_ONE, name: profileAsString]) >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
-        1 * ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
+        1 * amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
         0 * _
 
         and:

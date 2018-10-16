@@ -1,6 +1,6 @@
 package club.tempvs.user
 
-import club.tempvs.ampq.AmpqSender
+import club.tempvs.ampq.AmqpSender
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.object.ObjectFactory
@@ -29,7 +29,7 @@ class ProfileService {
     UserService userService
     ImageService imageService
     LinkGenerator grailsLinkGenerator
-    AmpqSender ampqSender
+    AmqpSender amqpSender
     ObjectFactory objectFactory
 
     Profile getProfile(id) {
@@ -126,7 +126,7 @@ class ProfileService {
         if (profile.save()) {
             ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
             JSON jsonPayload = profileDto as JSON
-            ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+            amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
         }
 
         return profile
@@ -161,7 +161,7 @@ class ProfileService {
         if (profile.save()) {
             ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
             JSON jsonPayload = profileDto as JSON
-            ampqSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+            amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
         }
 
         return profile
