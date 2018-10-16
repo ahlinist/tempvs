@@ -47,11 +47,12 @@ $(function (){
         $('[data-toggle="tooltip"]').tooltip('hide');
     });
 
-    //display new followers counter
-    followersCounter.displayCounter();
-
     //populate profile dropdown
     profileDropdown.displayDropdown();
+
+    //display horizontal menu counters
+    horizontalMenuCounter.displayCounter('span#new-conversations', '/message/getNewConversationsCount');
+    horizontalMenuCounter.displayCounter('span#new-followings', '/following/getNewFollowersCount');
 });
 
 function hideModals() {

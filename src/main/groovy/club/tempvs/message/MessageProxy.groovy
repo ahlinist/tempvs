@@ -6,7 +6,6 @@ import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
 import grails.compiler.GrailsCompileStatic
-import groovy.transform.TypeCheckingMode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 
@@ -15,6 +14,7 @@ class MessageProxy {
 
     private static final String MESSAGE_SERVICE_URL = System.getenv('MESSAGE_SERVICE_URL')
     private static final String MESSAGE_SECURITY_TOKEN = System.getenv('MESSAGE_SECURITY_TOKEN')
+    private static final String COUNT_HEADER = 'X-Total-Count'
 
     @Autowired
     RestCaller restCaller
@@ -23,7 +23,6 @@ class MessageProxy {
     @Autowired
     ObjectFactory objectFactory
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
     ConversationsDto getConversations(Profile profile, int page, int size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&page=${page}&size=${size}"
         String token = MESSAGE_SECURITY_TOKEN.encodeAsMD5() as String
@@ -35,5 +34,12 @@ class MessageProxy {
         } else {
             return objectFactory.getInstance(ConversationsDto)
         }
+    }
+
+    Integer getNewConversationsCount(Profile profile) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&new=${true}"
+        String token = MESSAGE_SECURITY_TOKEN.encodeAsMD5() as String
+        RestResponse response = restCaller.doHead(url, token)
+        return response.headers?.getFirst(COUNT_HEADER) as Integer
     }
 }

@@ -21,7 +21,11 @@ class RestHelper {
     }
 
     RestResponse newRestResponse(ResponseEntity<String> responseEntity) {
-        new RestResponse(statusCode: responseEntity.statusCode, responseBody: responseEntity.body)
+        new RestResponse(
+                statusCode: responseEntity.statusCode,
+                responseBody: responseEntity.body,
+                headers: responseEntity.headers
+        )
     }
 
     HttpEntity<String> newHttpEntity(Map<String, String> headers, String body = null) {

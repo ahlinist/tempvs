@@ -1,5 +1,6 @@
 package club.tempvs.rest
 
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 
 /**
@@ -8,4 +9,5 @@ import org.springframework.http.HttpStatus
 class RestResponse {
     HttpStatus statusCode
     String responseBody
+    HttpHeaders headers
 }

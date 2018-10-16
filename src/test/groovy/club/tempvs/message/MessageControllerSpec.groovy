@@ -7,6 +7,8 @@ import spock.lang.Specification
 
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
+    private static final String DISPLAY_COUNTER = 'displayCounter'
+
     def profile = Mock Profile
     def conversationsDto = Mock ConversationsDto
     def profileService = Mock ProfileService
@@ -35,5 +37,22 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
         and:
         result == [conversationsDto: conversationsDto]
+    }
+
+    void "test getNewConversationsCount()"() {
+        given:
+        Integer count = 5
+
+        when:
+        controller.getNewConversationsCount()
+
+        then:
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.getNewConversationsCount(profile) >> count
+        0 * _
+
+        and:
+        response.json.action == DISPLAY_COUNTER
+        response.json.count == count
     }
 }

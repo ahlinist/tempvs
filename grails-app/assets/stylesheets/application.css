@@ -130,3 +130,9 @@ footer {
 .well {
     margin : 0px;
 }
+
+.counter {
+    background-color: red;
+    position: absolute !important;
+    border-radius: 10px !important;
+}

@@ -47,6 +47,21 @@ class RestCallerSpec extends Specification {
         result == restResponse
     }
 
+    void "Test doHead()"() {
+        when:
+        def result = restCaller.doHead(URL, AUTHORIZATION)
+
+        then:
+        1 * restHelper.newTemplate() >> restTemplate
+        1 * restHelper.newHttpEntity([(AUTHORIZATION): AUTHORIZATION]) >> httpEntity
+        1 * restTemplate.exchange(URL, HttpMethod.HEAD, httpEntity, String.class) >> responseEntity
+        1 * restHelper.newRestResponse(responseEntity) >> restResponse
+        0 * _
+
+        and:
+        result == restResponse
+    }
+
     void "Test doPost()"() {
         when:
         def result = restCaller.doPost(URL, AUTHORIZATION, json)

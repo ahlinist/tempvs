@@ -26,6 +26,12 @@ class RestCaller {
         execute(restTemplate, url, HttpMethod.GET, entity)
     }
 
+    RestResponse doHead(String url, String token = null) {
+        RestTemplate restTemplate = restHelper.newTemplate()
+        HttpEntity<String> entity = restHelper.newHttpEntity([(AUTHORIZATION): token])
+        execute(restTemplate, url, HttpMethod.HEAD, entity)
+    }
+
     RestResponse doPost(String url, String token = null, JSON payload = new JSON()) {
         RestTemplate restTemplate = restHelper.newTemplate()
         Map<String, String> headers = [(AUTHORIZATION): token, (CONTENT_TYPE): JSON_CONTENT_TYPE]
