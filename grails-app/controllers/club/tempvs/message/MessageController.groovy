@@ -14,6 +14,7 @@ class MessageController {
     private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
     private static final String APPEND_ACTION = 'appendElement'
+    private static final String REPLACE_ACTION = 'replaceElement'
 
     static allowedMethods = [
             getNewConversationsCount: 'GET',
@@ -28,7 +29,9 @@ class MessageController {
     LinkGenerator grailsLinkGenerator
     PageRenderer groovyPageRenderer
 
-    static defaultAction = 'conversation'
+    def index() {
+
+    }
 
     def getNewConversationsCount() {
         Profile currentProfile = profileService.currentProfile
@@ -44,12 +47,12 @@ class MessageController {
         render([action: APPEND_ACTION, template: template] as JSON)
     }
 
-    def conversation(Long id) {
-        if (id) {
-            Profile currentProfile = profileService.currentProfile
-            ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
-            [conversation: conversationDto]
-        }
+    def loadMessages(Long id) {
+        Profile currentProfile = profileService.currentProfile
+        ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
+        Map model = [conversation: conversationDto]
+        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
     def createDialogue(CreateDialogueCommand command) {

@@ -11,9 +11,10 @@ import spock.lang.Specification
 
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
+    private static final String POST_METHOD = 'POST'
     private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final String APPEND_ACTION = 'appendElement'
-    private static final String POST_METHOD = 'POST'
+    private static final String REPLACE_ACTION = 'replaceElement'
 
     def json = Mock JSON
     def profile = Mock Profile
@@ -36,34 +37,23 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def cleanup() {
     }
 
-    void "test conversation() without id"() {
-        when:
-        controller.conversation()
-
-        then:
-        0 * _
-
-        and:
-        controller.modelAndView == null
-        response.redirectedUrl == null
-    }
-
-    void "test conversation()"() {
+    void "test loadMessages()"() {
         given:
         Long id = 1L
         int page = 0
         int size = 20
 
         when:
-        def result = controller.conversation(id)
+        controller.loadMessages(id)
 
         then:
         1 * profileService.currentProfile >> profile
         1 * messageProxy.getConversation(id, profile, page, size) >> conversationDto
+        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: [conversation: conversationDto]])
         0 * _
 
         and:
-        result == [conversation: conversationDto]
+        response.json.action == REPLACE_ACTION
     }
 
     void "test getNewConversationsCount()"() {
