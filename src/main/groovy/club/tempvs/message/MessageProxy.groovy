@@ -42,4 +42,17 @@ class MessageProxy {
         RestResponse response = restCaller.doHead(url, token)
         return response.headers?.getFirst(COUNT_HEADER) as Integer
     }
+
+    ConversationDto getConversation(long conversationId, Profile profile, int page, int size) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/?page=${page}&size=${size}&caller=${profile.id}"
+        String token = MESSAGE_SECURITY_TOKEN.encodeAsMD5() as String
+
+        RestResponse response = restCaller.doGet(url, token)
+
+        if (response.statusCode == HttpStatus.OK) {
+            return jsonConverter.convert(ConversationDto, response.responseBody)
+        } else {
+            return objectFactory.getInstance(ConversationDto)
+        }
+    }
 }

@@ -14,7 +14,7 @@
     <g:layoutHead/>
   </head>
   <body class="container">
-    <header class="row">
+    <header class="row" style="height:35px;">
       <sec:ifLoggedIn>
         <div class="col-sm-4">
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.tooltip')}">
@@ -101,5 +101,9 @@
     <main>
       <g:layoutBody/>
     </main>
+    <footer class="navbar-fixed-bottom text-center text-muted col-sm-12" style="height:35px;">
+      <hr/>
+      <g:message code="tempvs.footer.message"/>
+    </footer>
   </body>
 </html>

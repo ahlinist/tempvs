@@ -11,6 +11,8 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     def profile = Mock Profile
     def conversationsDto = Mock ConversationsDto
+    def conversationDtoBean = Mock ConversationDtoBean
+    def conversationDto = Mock ConversationDto
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
 
@@ -33,10 +35,11 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * messageProxy.getConversations(profile, page, size) >> conversationsDto
+        1 * conversationsDto.conversations >> [conversationDtoBean]
         0 * _
 
         and:
-        result == [conversationsDto: conversationsDto]
+        result == [conversations: [conversationDtoBean]]
     }
 
     void "test getNewConversationsCount()"() {
@@ -54,5 +57,26 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         and:
         response.json.action == DISPLAY_COUNTER
         response.json.count == count
+    }
+
+    void "test conversation()"() {
+        given:
+        long id = 1L
+        int page = 0
+        int size = 20
+
+        when:
+        controller.conversation(id)
+
+        then:
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.getConversations(profile, page, size) >> conversationsDto
+        1 * messageProxy.getConversation(id, profile, page, size) >> conversationDto
+        1 * conversationsDto.conversations >> [conversationDtoBean]
+        0 * _
+
+        and:
+        controller.modelAndView.model == [conversations: [conversationDtoBean], conversation: conversationDto]
+        view == '/message/index'
     }
 }

@@ -16,12 +16,19 @@ class MessageController {
     def index() {
         Profile currentProfile = profileService.currentProfile
         ConversationsDto conversationsDto = messageProxy.getConversations(currentProfile, 0, 20)
-        [conversationsDto: conversationsDto]
+        [conversations: conversationsDto.conversations]
     }
 
     def getNewConversationsCount() {
         Profile currentProfile = profileService.currentProfile
         Integer count = messageProxy.getNewConversationsCount(currentProfile)
         render([action: DISPLAY_COUNTER, count: count] as JSON)
+    }
+
+    def conversation(long id) {
+        Profile currentProfile = profileService.currentProfile
+        ConversationsDto conversationsDto = messageProxy.getConversations(currentProfile, 0, 20)
+        ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
+        render model: [conversations: conversationsDto.conversations, conversation: conversationDto], view: 'index'
     }
 }

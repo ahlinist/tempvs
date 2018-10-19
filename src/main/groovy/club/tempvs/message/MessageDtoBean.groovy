@@ -1,13 +1,14 @@
 package club.tempvs.message
 
-import java.time.Instant
+import groovy.transform.CompileStatic
 
+@CompileStatic
 class MessageDtoBean {
     Long id
     String text
-    Long author
-    Long subject
-    Instant createdDate
-    Set<Long> newFor = new HashSet<>()
-    Boolean isSystem
+    ParticipantDto author
+    ParticipantDto subject
+    String createdDate
+    Boolean unread
+    Boolean system
 }

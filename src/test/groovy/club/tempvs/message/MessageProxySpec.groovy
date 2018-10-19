@@ -20,6 +20,7 @@ class MessageProxySpec extends Specification {
     def objectFactory = Mock ObjectFactory
     def profile = Mock Profile
     def restResponse = Mock RestResponse
+    def conversationDto = Mock ConversationDto
     def conversationsDto = Mock ConversationsDto
     def httpHeaders = Mock HttpHeaders
 
@@ -87,5 +88,28 @@ class MessageProxySpec extends Specification {
 
         and:
         result == newConversationsCount
+    }
+
+    void "test getConversation()"() {
+        given:
+        int page = 0
+        int size = 20
+        String jsonResponse = "{response}"
+        Long profileId = 1L
+        Long conversationId = 2L;
+
+        when:
+        ConversationDto result = messageProxy.getConversation(conversationId, profile, page, size)
+
+        then:
+        1 * profile.id >> profileId
+        1 * restCaller.doGet(_ as String, _) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody >> jsonResponse
+        1 * jsonConverter.convert(ConversationDto, jsonResponse) >> conversationDto
+        0 * _
+
+        and:
+        result == conversationDto
     }
 }
