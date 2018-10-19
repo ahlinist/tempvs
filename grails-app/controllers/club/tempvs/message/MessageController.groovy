@@ -5,6 +5,7 @@ import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 
 @GrailsCompileStatic
@@ -12,17 +13,22 @@ class MessageController {
 
     private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
+    private static final String APPEND_ACTION = 'appendElement'
+
+    static allowedMethods = [
+            getNewConversationsCount: 'GET',
+            loadConversations: 'GET',
+            conversation: 'GET',
+            createDialogue: 'POST',
+    ]
 
     ProfileService profileService
     MessageProxy messageProxy
     AjaxResponseHelper ajaxResponseHelper
     LinkGenerator grailsLinkGenerator
+    PageRenderer groovyPageRenderer
 
-    def index() {
-        Profile currentProfile = profileService.currentProfile
-        ConversationsDto conversationsDto = messageProxy.getConversations(currentProfile, 0, 20)
-        [conversations: conversationsDto.conversations]
-    }
+    static defaultAction = 'conversation'
 
     def getNewConversationsCount() {
         Profile currentProfile = profileService.currentProfile
@@ -30,11 +36,20 @@ class MessageController {
         render([action: DISPLAY_COUNTER, count: count] as JSON)
     }
 
-    def conversation(long id) {
+    def loadConversations() {
         Profile currentProfile = profileService.currentProfile
         ConversationsDto conversationsDto = messageProxy.getConversations(currentProfile, 0, 20)
-        ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
-        render model: [conversations: conversationsDto.conversations, conversation: conversationDto], view: 'index'
+        Map model = [conversations: conversationsDto.conversations]
+        String template = groovyPageRenderer.render(template: '/message/templates/conversations', model: model)
+        render([action: APPEND_ACTION, template: template] as JSON)
+    }
+
+    def conversation(Long id) {
+        if (id) {
+            Profile currentProfile = profileService.currentProfile
+            ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
+            [conversation: conversationDto]
+        }
     }
 
     def createDialogue(CreateDialogueCommand command) {

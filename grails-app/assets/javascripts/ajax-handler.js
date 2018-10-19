@@ -18,13 +18,30 @@ var ajaxHandler = {
             document.querySelector('body').classList.remove('modal-open');
             container.innerHTML = response.template;
         },
+        appendElement: function(element, response, selector) {
+            var backdrop = document.querySelector('.modal-backdrop');
+            var container = document.querySelector(selector);
+
+            if (backdrop) {
+                backdrop.parentNode.removeChild(backdrop);
+            }
+
+            $(element).modal('hide');
+            hideModals();
+            document.querySelector('body').classList.remove('modal-open');
+            container.innerHTML += response.template;
+        },
         formMessage: function(element, response) {
+            var submitButton = element.querySelector('.submit-button')
             var messageContainer = document.createElement('span');
             messageContainer.classList.add('text-center');
             messageContainer.classList.add('form-message');
             messageContainer.classList.add(response.success ? 'text-success' : 'text-danger');
             messageContainer.innerHTML += response.message;
-            element.querySelector('.submit-button').parentNode.appendChild(messageContainer);
+
+            if (submitButton) {
+                submitButton.parentNode.appendChild(messageContainer);
+            }
         },
         validationResponse: function(element, response) {
             var fieldEntry;

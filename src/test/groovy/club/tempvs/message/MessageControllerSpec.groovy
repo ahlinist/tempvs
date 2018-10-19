@@ -4,6 +4,7 @@ import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -11,6 +12,8 @@ import spock.lang.Specification
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
     private static final String DISPLAY_COUNTER = 'displayCounter'
+    private static final String APPEND_ACTION = 'appendElement'
+    private static final String POST_METHOD = 'POST'
 
     def json = Mock JSON
     def profile = Mock Profile
@@ -21,32 +24,46 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def messageProxy = Mock MessageProxy
     def createDialogueCommand = Mock CreateDialogueCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
+    def groovyPageRenderer = Mock PageRenderer
 
     def setup() {
         controller.profileService = profileService
         controller.messageProxy = messageProxy
         controller.ajaxResponseHelper = ajaxResponseHelper
+        controller.groovyPageRenderer = groovyPageRenderer
     }
 
     def cleanup() {
     }
 
-    void "test index()"() {
+    void "test conversation() without id"() {
+        when:
+        controller.conversation()
+
+        then:
+        0 * _
+
+        and:
+        controller.modelAndView == null
+        response.redirectedUrl == null
+    }
+
+    void "test conversation()"() {
         given:
+        Long id = 1L
         int page = 0
         int size = 20
 
         when:
-        def result = controller.index()
+        def result = controller.conversation(id)
 
         then:
         1 * profileService.currentProfile >> profile
-        1 * messageProxy.getConversations(profile, page, size) >> conversationsDto
-        1 * conversationsDto.conversations >> [conversationDtoBean]
+        1 * messageProxy.getConversation(id, profile, page, size) >> conversationDto
         0 * _
 
         and:
-        result == [conversations: [conversationDtoBean]]
+        result == [conversation: conversationDto]
     }
 
     void "test getNewConversationsCount()"() {
@@ -66,29 +83,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         response.json.count == count
     }
 
-    void "test conversation()"() {
-        given:
-        long id = 1L
-        int page = 0
-        int size = 20
-
-        when:
-        controller.conversation(id)
-
-        then:
-        1 * profileService.currentProfile >> profile
-        1 * messageProxy.getConversations(profile, page, size) >> conversationsDto
-        1 * messageProxy.getConversation(id, profile, page, size) >> conversationDto
-        1 * conversationsDto.conversations >> [conversationDtoBean]
-        0 * _
-
-        and:
-        controller.modelAndView.model == [conversations: [conversationDtoBean], conversation: conversationDto]
-        view == '/message/index'
-    }
-
     void "text createDialogue()"() {
         given:
+        request.method = POST_METHOD
         String text = "msg text"
         Long conversationId = 1L
         def receiver = Mock Profile
@@ -106,5 +103,24 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         1 * ajaxResponseHelper.renderRedirect("/message/conversation/" + conversationId) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
+    }
+
+    void "test loadConversations()"() {
+        given:
+        int page = 0
+        int size = 20
+
+        when:
+        controller.loadConversations()
+
+        then:
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.getConversations(profile, page, size) >> conversationsDto
+        1 * conversationsDto.conversations >> [conversationDtoBean]
+        1 * groovyPageRenderer.render([template: '/message/templates/conversations', model: [conversations: [conversationDtoBean]]])
+        0 * _
+
+        and:
+        response.json.action == APPEND_ACTION
     }
 }

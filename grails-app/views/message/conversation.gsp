@@ -3,21 +3,20 @@
     <head>
       <meta name="layout" content="main"/>
       <title>Tempvs - <g:message code="message.title"/></title>
+      <script>
+        function loadConversations() {
+            var element = $('div#conversationsBox');
+            var url = '/message/loadConversations';
+            ajaxHandler.processAjaxRequest(document, url, null, 'GET', '#conversationsBox', ajaxHandler.actions, true, true);
+        }
+
+        window.onload = loadConversations;
+      </script>
     </head>
     <body>
       <div class="col-sm-4" style="border-right: 1px solid #AAA; height: calc(100vh - 75px);">
-        <ul>
-          <g:each var="conversation" in="${conversations}">
-            <g:set var="lastMessage" value="${conversation.lastMessage}"/>
-            <g:link controller="message" action="conversation" id="${conversation.id}">
-              <li class="btn btn-default col-sm-12" style="${lastMessage.unread ? 'background-color: #E9F9FF;' : ''}">
-                <b class="pull-left">${conversation.conversant}</b>
-                <br>
-                <i class="pull-left">${lastMessage.text}</i>
-              </li>
-            </g:link>
-          </g:each>
-        </ul>
+        <div id="conversationsBox">
+        </div>
       </div>
       <div class="col-sm-8" style="position: absolute; bottom:37px; right:0px;">
         <g:if test="${conversation}">
