@@ -8,13 +8,14 @@
     </head>
     <body>
       <g:if test="${profile}">
+        <g:set var="profileId" value="${profile.id}"/>
         <g:if test="${profile.ofClubType && !active}">
           <div class="well">
             <div class="text-right">
               <b><g:message code="profile.inactive.message"/></b>&nbsp;
               <g:if test="${profile.user == user}">
                 <g:render template="/ajax/templates/ajaxLink"
-                    model="${[controller: 'profile', action: 'activateProfile', id: profile.id, method: 'POST', classes:'btn btn-default']}">
+                    model="${[controller: 'profile', action: 'activateProfile', id: profileId, method: 'POST', classes:'btn btn-default']}">
                   <g:message code="profile.activate.button"/>
                 </g:render>
               </g:if>
@@ -37,7 +38,7 @@
                 </g:link>
               </li>
               <li class="row">
-                <g:link class="btn btn-default disableable col-sm-12" controller="following" action="show" id="${profile.id}">
+                <g:link class="btn btn-default disableable col-sm-12" controller="following" action="show" id="${profileId}">
                   <span class="pull-left">
                     <g:message code="following.list.button"/>&nbsp;
                   </span>
@@ -53,13 +54,27 @@
                 </g:link>
               </li>
               <li class="row">
+                <g:render template="/common/templates/modalButton"
+                    model="${[id: 'writeMessageBox', template: '/message/templates/writeMessageButton', classes: 'col-sm-12']}">
+                  <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'message', action: 'createDialogue']}">
+                    <input name="text" style="width: 100%; height: 100px;">
+                    <input type="hidden" name="receiver" value="${profileId}">
+                    <div>
+                      <g:render template="/ajax/templates/submitButton">
+                        <g:message code="message.send.message.button"/>
+                      </g:render>
+                    </div>
+                  </g:render>
+                </g:render>
+              </li>
+              <li class="row">
                 <g:if test="${profile.ofClubType && editAllowed && active}">
                   <g:render template="/common/templates/modalButton"
-                      model="${[id: 'deactivateProfile' + profile.id, size: 'modal-sm', message: 'profile.club.deactivate.button', classes: 'col-sm-12']}">
+                      model="${[id: 'deactivateProfile' + profileId, size: 'modal-sm', message: 'profile.club.deactivate.button', classes: 'col-sm-12']}">
                     <g:message code='profile.deactivateConfirmation.text' args="${[profile]}"/>
                     <br/>
                     <g:render template="/ajax/templates/ajaxLink"
-                        model="${[controller: 'profile', action: 'deactivateProfile', id: profile.id, method: 'POST', classes: 'btn btn-default']}">
+                        model="${[controller: 'profile', action: 'deactivateProfile', id: profileId, method: 'POST', classes: 'btn btn-default']}">
                       <g:message code="yes"/>
                     </g:render>
                     <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>

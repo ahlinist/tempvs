@@ -5,6 +5,7 @@ import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
+import grails.converters.JSON
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
@@ -23,6 +24,8 @@ class MessageProxySpec extends Specification {
     def conversationDto = Mock ConversationDto
     def conversationsDto = Mock ConversationsDto
     def httpHeaders = Mock HttpHeaders
+    def participantDto = Mock ParticipantDto
+    def createConversationDto = Mock CreateConversationDto
 
     def setup() {
         messageProxy = new MessageProxy(restCaller: restCaller, jsonConverter: jsonConverter, objectFactory: objectFactory)
@@ -57,7 +60,6 @@ class MessageProxySpec extends Specification {
         given:
         int page = 0
         int size = 20
-        String jsonResponse = "{response}"
         Long profileId = 1L
 
         when:
@@ -96,7 +98,7 @@ class MessageProxySpec extends Specification {
         int size = 20
         String jsonResponse = "{response}"
         Long profileId = 1L
-        Long conversationId = 2L;
+        Long conversationId = 2L
 
         when:
         ConversationDto result = messageProxy.getConversation(conversationId, profile, page, size)
@@ -104,6 +106,33 @@ class MessageProxySpec extends Specification {
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody >> jsonResponse
+        1 * jsonConverter.convert(ConversationDto, jsonResponse) >> conversationDto
+        0 * _
+
+        and:
+        result == conversationDto
+    }
+
+    void "test createConversation()"() {
+        given:
+        String jsonResponse = "{response}"
+        List<Profile> receivers = [profile]
+        String text = "msg txt"
+        String name = "conversation name"
+        Long profileId = 1L
+        String profileName = "profile name"
+
+        when:
+        ConversationDto result = messageProxy.createConversation(profile, receivers, text, name)
+
+        then:
+        2 * profile.id >> profileId
+        2 * profile.toString() >> profileName
+        2 * objectFactory.getInstance(ParticipantDto, [id: profileId, name: profileName]) >> participantDto
+        1 * objectFactory.getInstance(CreateConversationDto, _ as Map) >> createConversationDto
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(ConversationDto, jsonResponse) >> conversationDto

@@ -1,24 +1,31 @@
 package club.tempvs.message
 
+import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
+import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
     private static final String DISPLAY_COUNTER = 'displayCounter'
 
+    def json = Mock JSON
     def profile = Mock Profile
     def conversationsDto = Mock ConversationsDto
     def conversationDtoBean = Mock ConversationDtoBean
     def conversationDto = Mock ConversationDto
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
+    def createDialogueCommand = Mock CreateDialogueCommand
+    def ajaxResponseHelper = Mock AjaxResponseHelper
 
     def setup() {
         controller.profileService = profileService
         controller.messageProxy = messageProxy
+        controller.ajaxResponseHelper = ajaxResponseHelper
     }
 
     def cleanup() {
@@ -78,5 +85,26 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         and:
         controller.modelAndView.model == [conversations: [conversationDtoBean], conversation: conversationDto]
         view == '/message/index'
+    }
+
+    void "text createDialogue()"() {
+        given:
+        String text = "msg text"
+        Long conversationId = 1L
+        def receiver = Mock Profile
+
+        when:
+        controller.createDialogue(createDialogueCommand)
+
+        then:
+        1 * createDialogueCommand.validate() >> true
+        1 * createDialogueCommand.receiver >> receiver
+        1 * createDialogueCommand.text >> text
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.createConversation(profile, [receiver], text) >> conversationDto
+        1 * conversationDto.id >> conversationId
+        1 * ajaxResponseHelper.renderRedirect("/message/conversation/" + conversationId) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
     }
 }

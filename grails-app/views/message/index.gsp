@@ -10,7 +10,7 @@
           <g:each var="conversation" in="${conversations}">
             <g:set var="lastMessage" value="${conversation.lastMessage}"/>
             <g:link controller="message" action="conversation" id="${conversation.id}">
-              <li class="btn btn-default col-sm-12" style="${lastMessage.unread ? 'background-color: #DFFFFF;' : ''}">
+              <li class="btn btn-default col-sm-12" style="${lastMessage.unread ? 'background-color: #E9F9FF;' : ''}">
                 <b class="pull-left">${conversation.conversant}</b>
                 <br>
                 <i class="pull-left">${lastMessage.text}</i>
@@ -24,8 +24,11 @@
           <ul>
             <g:each var="message" in="${conversation.messages}">
               <li>
-                <div style="margin: 5px; padding: 5px; ${message.unread ? 'background-color: #DFFFFF;' : ''}">
-                  <b>${message.author.name}</b>: ${message.text}
+                <div style="margin: 5px; padding: 5px; ${message.unread ? 'background-color: #E9F9FF;' : ''}">
+                  <g:link controller='profile' action='show' id="${message.author.id}">
+                  <b>${message.author.name}</b>:
+                  </g:link>
+                  ${message.text}
                   <span class="pull-right">${message.createdDate}</span>
                 </div>
               </li>
