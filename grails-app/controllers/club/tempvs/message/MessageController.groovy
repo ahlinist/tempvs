@@ -23,14 +23,20 @@ class MessageController {
             createDialogue: 'POST',
     ]
 
+    static defaultAction = 'conversation'
+
     ProfileService profileService
     MessageProxy messageProxy
     AjaxResponseHelper ajaxResponseHelper
     LinkGenerator grailsLinkGenerator
     PageRenderer groovyPageRenderer
 
-    def index() {
-
+    def conversation(Long id) {
+        if (id) {
+            Profile currentProfile = profileService.currentProfile
+            ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
+            render view: '/message/conversation', model: [conversation: conversationDto]
+        }
     }
 
     def getNewConversationsCount() {

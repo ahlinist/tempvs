@@ -37,6 +37,25 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def cleanup() {
     }
 
+    void "test conversation()"() {
+        given:
+        long conversationId = 1L
+        int page = 0
+        int size = 20
+
+        when:
+        controller.conversation(conversationId)
+
+        then:
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.getConversation(conversationId, profile, page, size) >> conversationDto
+        0 * _
+
+        and:
+        controller.modelAndView.model == [conversation: conversationDto]
+        view == '/message/conversation'
+    }
+
     void "test loadMessages()"() {
         given:
         Long id = 1L

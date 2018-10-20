@@ -18,7 +18,11 @@
         <div id="conversationsBox"></div>
       </div>
       <div class="col-sm-8" style="position: absolute; bottom:37px; right:0px;">
-        <div id="messagesBox"></div>
+        <div id="messagesBox">
+          <g:if test="${conversation}">
+            <g:render template="/message/templates/messages" model="${[conversation: conversation]}"/>
+          </g:if>
+        </div>
       </div>
     </body>
 </html>
