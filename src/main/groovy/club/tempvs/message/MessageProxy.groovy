@@ -74,4 +74,18 @@ class MessageProxy {
             return objectFactory.getInstance(ConversationDto)
         }
     }
+
+    ConversationDto addMessage(Long conversationId, Profile author, String text) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/messages"
+        ParticipantDto authorDto = objectFactory.getInstance(ParticipantDto, [id: author.id, name: author.toString()])
+        Map argumentMap = [author: authorDto, text: text, system: false]
+        AddMessageDto addMessageDto = objectFactory.getInstance(AddMessageDto, argumentMap)
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addMessageDto as JSON)
+
+        if (response.statusCode == HttpStatus.OK) {
+            return jsonConverter.convert(ConversationDto, response.responseBody)
+        } else {
+            return objectFactory.getInstance(ConversationDto)
+        }
+    }
 }

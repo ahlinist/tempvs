@@ -26,6 +26,7 @@ class MessageProxySpec extends Specification {
     def httpHeaders = Mock HttpHeaders
     def participantDto = Mock ParticipantDto
     def createConversationDto = Mock CreateConversationDto
+    def addMessageDto = Mock AddMessageDto
 
     def setup() {
         messageProxy = new MessageProxy(restCaller: restCaller, jsonConverter: jsonConverter, objectFactory: objectFactory)
@@ -132,6 +133,32 @@ class MessageProxySpec extends Specification {
         2 * profile.toString() >> profileName
         2 * objectFactory.getInstance(ParticipantDto, [id: profileId, name: profileName]) >> participantDto
         1 * objectFactory.getInstance(CreateConversationDto, _ as Map) >> createConversationDto
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody >> jsonResponse
+        1 * jsonConverter.convert(ConversationDto, jsonResponse) >> conversationDto
+        0 * _
+
+        and:
+        result == conversationDto
+    }
+
+    void "test addMessage()"() {
+        given:
+        String jsonResponse = "{response}"
+        Long conversationId = 1L
+        Long profileId = 1L
+        String profileName = "profile name"
+        String text = "message text"
+
+        when:
+        ConversationDto result = messageProxy.addMessage(conversationId, profile, text)
+
+        then:
+        1 * profile.id >> profileId
+        1 * profile.toString() >> profileName
+        1 * objectFactory.getInstance(ParticipantDto, [id: profileId, name: profileName]) >> participantDto
+        1 * objectFactory.getInstance(AddMessageDto, [author: participantDto, text: text, system: false]) >> addMessageDto
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse

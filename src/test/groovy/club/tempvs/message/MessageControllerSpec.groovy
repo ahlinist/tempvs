@@ -132,4 +132,24 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         and:
         response.json.action == APPEND_ACTION
     }
+
+    void "test add"() {
+        given:
+        request.method = POST_METHOD
+        Long conversationId = 1L
+        String message = "msg text"
+        params.message = message
+
+        when:
+        controller.add(conversationId)
+
+        then:
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.addMessage(conversationId, profile, message) >> conversationDto
+        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: [conversation: conversationDto]])
+        0 * _
+
+        and:
+        response.json.action == REPLACE_ACTION
+    }
 }

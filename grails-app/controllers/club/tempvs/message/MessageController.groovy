@@ -21,6 +21,7 @@ class MessageController {
             loadConversations: 'GET',
             conversation: 'GET',
             createDialogue: 'POST',
+            add: 'POST',
     ]
 
     static defaultAction = 'conversation'
@@ -75,5 +76,13 @@ class MessageController {
 
         ConversationDto conversationDto = messageProxy.createConversation(currentProfile, [receiver], command.text)
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'message', action: 'conversation', id: conversationDto.id))
+    }
+
+    def add(Long id) {
+        Profile currentProfile = profileService.currentProfile
+        ConversationDto conversationDto = messageProxy.addMessage(id, currentProfile, params.message as String)
+        Map model = [conversation: conversationDto]
+        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
     }
 }
