@@ -161,7 +161,7 @@ class MessageProxySpec extends Specification {
         1 * profile.id >> profileId
         1 * profile.toString() >> profileName
         1 * objectFactory.getInstance(ParticipantDto, [id: profileId, name: profileName]) >> participantDto
-        1 * objectFactory.getInstance(AddMessageDto, [author: participantDto, text: text, system: false]) >> addMessageDto
+        1 * objectFactory.getInstance(AddMessageDto, [author: participantDto, text: text]) >> addMessageDto
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
