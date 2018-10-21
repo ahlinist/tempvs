@@ -12,10 +12,10 @@
       </li>
     </g:each>
   <ul>
-  <form onsubmit="messageSender.send(this, '#messagesBox', '/message/add/${conversation.id}'); return false;">
+  <form onsubmit="messaging.send(this, '#messagesBox', '${conversation.id}'); return false;">
     <input type="text" style="width: calc(100% - 45px);" name="message">
-      <button class="btn btn-default">
-        <span class="fa fa-paper-plane" aria-hidden="true"></span>
-      </button>
+    <button class="btn btn-default">
+      <span class="fa fa-paper-plane" aria-hidden="true"></span>
+    </button>
   </form>
 </g:if>
