@@ -9,6 +9,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.AccessDeniedException
 
 @GrailsCompileStatic
 class MessageProxy {
@@ -28,11 +29,12 @@ class MessageProxy {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&page=${page}&size=${size}"
 
         RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
+        HttpStatus httpStatus = response.statusCode
 
-        if (response.statusCode == HttpStatus.OK) {
+        if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(ConversationsDto, response.responseBody)
         } else {
-            return objectFactory.getInstance(ConversationsDto)
+            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
@@ -46,11 +48,12 @@ class MessageProxy {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/?page=${page}&size=${size}&caller=${profile.id}"
 
         RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
+        HttpStatus httpStatus = response.statusCode
 
-        if (response.statusCode == HttpStatus.OK) {
+        if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(ConversationDto, response.responseBody)
         } else {
-            return objectFactory.getInstance(ConversationDto)
+            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
@@ -67,11 +70,12 @@ class MessageProxy {
         CreateConversationDto createConversationDto = objectFactory.getInstance(CreateConversationDto, argumentMap)
 
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, createConversationDto as JSON)
+        HttpStatus httpStatus = response.statusCode
 
-        if (response.statusCode == HttpStatus.OK) {
+        if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(ConversationDto, response.responseBody)
         } else {
-            return objectFactory.getInstance(ConversationDto)
+            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
@@ -81,11 +85,12 @@ class MessageProxy {
         Map argumentMap = [author: authorDto, text: text, system: false]
         AddMessageDto addMessageDto = objectFactory.getInstance(AddMessageDto, argumentMap)
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addMessageDto as JSON)
+        HttpStatus httpStatus = response.statusCode
 
-        if (response.statusCode == HttpStatus.OK) {
+        if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(ConversationDto, response.responseBody)
         } else {
-            return objectFactory.getInstance(ConversationDto)
+            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 }

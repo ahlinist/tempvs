@@ -8,6 +8,7 @@ import club.tempvs.user.Profile
 import grails.converters.JSON
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.security.access.AccessDeniedException
 import spock.lang.Specification
 
 class MessageProxySpec extends Specification {
@@ -70,8 +71,10 @@ class MessageProxySpec extends Specification {
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.INTERNAL_SERVER_ERROR
-        1 * objectFactory.getInstance(ConversationsDto) >> conversationsDto
         0 * _
+
+        and:
+        thrown(AccessDeniedException)
     }
 
     void "test getNewConversationsCount()"() {

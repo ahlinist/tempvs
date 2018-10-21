@@ -7,6 +7,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
+import org.springframework.security.access.AccessDeniedException
 
 @GrailsCompileStatic
 class MessageController {
@@ -84,5 +85,13 @@ class MessageController {
         Map model = [conversation: conversationDto]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
+    def accessDeniedThrown(AccessDeniedException exception) {
+        if (request.xhr) {
+            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
+        } else {
+            redirect(controller: 'auth')
+        }
     }
 }
