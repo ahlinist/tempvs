@@ -4,13 +4,7 @@
       <meta name="layout" content="main"/>
       <title>Tempvs - <g:message code="message.title"/></title>
       <script>
-        function loadConversations() {
-            var element = $('div#conversationsBox');
-            var url = '/message/loadConversations';
-            ajaxHandler.processAjaxRequest(document, url, null, 'GET', '#conversationsBox', ajaxHandler.actions, true, true);
-        }
-
-        window.onload = loadConversations;
+        window.onload = messaging.loadConversations;
       </script>
     </head>
     <body>

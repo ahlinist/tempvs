@@ -42,6 +42,8 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         long conversationId = 1L
         int page = 0
         int size = 20
+        params.page = page
+        params.size = size
 
         when:
         controller.conversation(conversationId)
@@ -61,6 +63,8 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         Long id = 1L
         int page = 0
         int size = 20
+        params.page = page
+        params.size = size
 
         when:
         controller.loadMessages(id)
@@ -118,6 +122,8 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         given:
         int page = 0
         int size = 20
+        params.page = page
+        params.size = size
 
         when:
         controller.loadConversations()

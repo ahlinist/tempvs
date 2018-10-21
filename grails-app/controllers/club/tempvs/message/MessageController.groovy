@@ -16,6 +16,8 @@ class MessageController {
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
     private static final String APPEND_ACTION = 'appendElement'
     private static final String REPLACE_ACTION = 'replaceElement'
+    private static final Integer DEFAULT_PAGE_NUMBER = 0
+    private static final Integer DEFAULT_PAGE_SIZE = 40
 
     static allowedMethods = [
             getNewConversationsCount: 'GET',
@@ -35,8 +37,10 @@ class MessageController {
 
     def conversation(Long id) {
         if (id) {
+            Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
+            Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
             Profile currentProfile = profileService.currentProfile
-            ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
+            ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, page, size)
             render view: '/message/conversation', model: [conversation: conversationDto]
         }
     }
@@ -48,16 +52,20 @@ class MessageController {
     }
 
     def loadConversations() {
+        Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
+        Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
-        ConversationsDto conversationsDto = messageProxy.getConversations(currentProfile, 0, 20)
+        ConversationsDto conversationsDto = messageProxy.getConversations(currentProfile, page, size)
         Map model = [conversations: conversationsDto.conversations]
         String template = groovyPageRenderer.render(template: '/message/templates/conversations', model: model)
         render([action: APPEND_ACTION, template: template] as JSON)
     }
 
     def loadMessages(Long id) {
+        Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
+        Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
-        ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, 0, 20)
+        ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, page, size)
         Map model = [conversation: conversationDto]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
