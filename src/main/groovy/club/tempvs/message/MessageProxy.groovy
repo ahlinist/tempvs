@@ -5,13 +5,13 @@ import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
-import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
+import groovy.transform.CompileStatic
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 
-@GrailsCompileStatic
+@CompileStatic
 class MessageProxy {
 
     private static final String MESSAGE_SERVICE_URL = System.getenv('MESSAGE_SERVICE_URL')

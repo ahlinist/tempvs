@@ -54,7 +54,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
 
         and:
-        controller.modelAndView.model == [conversation: conversationDto]
+        controller.modelAndView.model == [conversation: conversationDto, currentProfile: profile]
         view == '/message/conversation'
     }
 
@@ -65,6 +65,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         int size = 20
         params.page = page
         params.size = size
+        Map model = [conversation: conversationDto, currentProfile: profile]
 
         when:
         controller.loadMessages(id)
@@ -72,7 +73,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * messageProxy.getConversation(id, profile, page, size) >> conversationDto
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: [conversation: conversationDto]])
+        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
 
         and:

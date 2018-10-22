@@ -41,7 +41,7 @@ class MessageController {
             Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
             Profile currentProfile = profileService.currentProfile
             ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, page, size)
-            render view: '/message/conversation', model: [conversation: conversationDto]
+            render view: '/message/conversation', model: [conversation: conversationDto, currentProfile: currentProfile]
         }
     }
 
@@ -66,7 +66,7 @@ class MessageController {
         Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
         ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, page, size)
-        Map model = [conversation: conversationDto]
+        Map model = [conversation: conversationDto, currentProfile: currentProfile]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
