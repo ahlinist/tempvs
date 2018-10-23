@@ -27,7 +27,7 @@
             <div class="row">
               <div class="pull-left">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'deleteItem' + itemId, size: 'modal-sm', message: 'item.delete.button']}">
+                    model="${[elementId: 'deleteItem' + itemId, size: 'modal-sm', message: 'item.delete.button']}">
                   <g:message code='item.deleteConfirmation.text' args="${[item.name]}"/>
                   <br/>
                   <g:render template="/ajax/templates/ajaxLink"

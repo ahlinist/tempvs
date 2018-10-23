@@ -28,7 +28,7 @@
             <span>
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'passport.remove.item.button')}">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'unlinkSource' + itemId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
+                    model="${[elementId: 'unlinkSource' + itemId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='passport.removeConfirmation.text' args="${[itemName]}"/>
                   <br/>
                   <g:render template="/ajax/templates/ajaxLink"

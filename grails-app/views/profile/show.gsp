@@ -55,7 +55,7 @@
               </li>
               <li class="row">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'writeMessageBox', template: '/message/templates/writeMessageButton', classes: 'col-sm-12']}">
+                    model="${[elementId: 'writeMessageBox', template: '/message/templates/writeMessageButton', classes: 'col-sm-12']}">
                   <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'message', action: 'createDialogue']}">
                     <input name="text" style="width: 100%; height: 100px;">
                     <input type="hidden" name="receiver" value="${profileId}">
@@ -70,7 +70,7 @@
               <li class="row">
                 <g:if test="${profile.ofClubType && editAllowed && active}">
                   <g:render template="/common/templates/modalButton"
-                      model="${[id: 'deactivateProfile' + profileId, size: 'modal-sm', message: 'profile.club.deactivate.button', classes: 'col-sm-12']}">
+                      model="${[elementId: 'deactivateProfile' + profileId, size: 'modal-sm', message: 'profile.club.deactivate.button', classes: 'col-sm-12']}">
                     <g:message code='profile.deactivateConfirmation.text' args="${[profile]}"/>
                     <br/>
                     <g:render template="/ajax/templates/ajaxLink"
@@ -149,7 +149,7 @@
                 <g:if test="${editAllowed}">
                   <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.club.create.tooltip')}">
                     <g:render template="/common/templates/modalButton"
-                        model="${[id: 'createProfile', icon: 'glyphicon glyphicon-plus']}">
+                        model="${[elementId: 'createProfile', icon: 'glyphicon glyphicon-plus']}">
                       <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'profile', action: 'createProfile']}">
                         <g:render template="/common/templates/formField" model="${[type: 'file', name: 'imageUploadBean.image', label: 'profile.avatar.label']}"/>
                         <g:render template="/common/templates/formField" model="${[type: 'text', name: 'imageUploadBean.imageInfo', label: 'profile.avatarInfo.label']}"/>
@@ -202,7 +202,7 @@
               <g:if test="${editAllowed && active}">
                 <div class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'passport.create.tooltip')}">
                   <g:render template="/common/templates/modalButton"
-                      model="${[id: 'createPassport', icon: 'glyphicon glyphicon-plus']}">
+                      model="${[elementId: 'createPassport', icon: 'glyphicon glyphicon-plus']}">
                     <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'passport', action: 'createPassport']}">
                       <g:render template="/image/templates/imageUploader"/>
                       <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'passport.name.label', mandatory: true]}"/>

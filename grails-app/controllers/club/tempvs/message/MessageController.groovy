@@ -7,8 +7,10 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
+import groovy.util.logging.Slf4j
 import org.springframework.security.access.AccessDeniedException
 
+@Slf4j
 @GrailsCompileStatic
 class MessageController {
 
@@ -25,6 +27,7 @@ class MessageController {
             conversation: 'GET',
             createDialogue: 'POST',
             add: 'POST',
+            updateParticipants: 'POST'
     ]
 
     static defaultAction = 'conversation'
@@ -95,11 +98,35 @@ class MessageController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
+    def updateParticipants(Long conversationId) {
+        String actionString = params.updateAction as String
+        Profile initiator = profileService.getProfileById(params.initiator as Long)
+        Profile subject = profileService.getProfileById(params.subject as Long)
+        UpdateParticipantsPayload.Action action = UpdateParticipantsPayload.Action.valueOf(actionString.toUpperCase())
+        Conversation conversation = messageProxy.updateParticipants(conversationId, initiator, subject, action)
+        Map model = [conversation: conversation, currentProfile: profileService.currentProfile]
+        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
+        render([action: REPLACE_ACTION, template: template] as JSON)
+    }
+
     def accessDeniedThrown(AccessDeniedException exception) {
+        log.error exception.message
+
         if (request.xhr) {
             render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect(controller: 'auth')
+        }
+    }
+
+    def exceptionThrown(Exception exception) {
+        String refererLink = request.getHeader('referer')
+        log.error exception.message
+
+        if (request.xhr) {
+            render ajaxResponseHelper.renderRedirect(refererLink)
+        } else {
+            redirect(refererLink)
         }
     }
 }

@@ -6,7 +6,7 @@
         <g:if test="${avatar}">
           <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.deleteAvatar.tooltip')}">
             <g:render template="/common/templates/modalButton"
-                model="${[id: 'deleteAvatar', size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
+                model="${[elementId: 'deleteAvatar', size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
               <g:message code='profile.avatar.deleteConfirmation.text'/>
               <br/>
               <g:render template="/ajax/templates/ajaxLink"
@@ -19,7 +19,7 @@
         </g:if>
         <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.editAvatar.tooltip')}">
           <g:render template="/common/templates/modalButton"
-              model="${[id: 'uploadAvatar', icon: 'glyphicon glyphicon-picture']}">
+              model="${[elementId: 'uploadAvatar', icon: 'glyphicon glyphicon-picture']}">
             <g:render template="/ajax/templates/ajaxForm"
                 model="${[controller: 'profile', action: 'uploadAvatar', selector: 'div#avatar']}">
               <g:render template="/common/templates/formField" model="${[type: 'file', name: 'image', label: 'profile.avatar.label']}"/>

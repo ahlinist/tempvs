@@ -56,7 +56,7 @@
             <div class="pull-right">
               <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.create.tooltip')}">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'sourceForm', message: 'source.add.button']}">
+                    model="${[elementId: 'sourceForm', message: 'source.add.button']}">
                   <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'source', action: 'createSource']}">
                     <g:render template="/image/templates/imageUploader"/>
                     <g:render template="/common/templates/formField" model="${[type: 'text', name: 'fake-period', label: 'periodization.period.form.label', disabled: true, value: period.value]}"/>

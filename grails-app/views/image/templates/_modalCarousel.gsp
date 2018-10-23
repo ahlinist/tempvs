@@ -17,7 +17,7 @@
             <g:if test="${deletingAllowed}">
               <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'image.delete.tooltip')}">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'deleteImage', size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
+                    model="${[elementId: 'deleteImage', size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='image.delete.confirmation.text'/>
                   <br/>
                   <span class="btn btn-default submit-button" onclick="modalCarousel.deleteImage(this, '${controllerName}', '${objectId}');">

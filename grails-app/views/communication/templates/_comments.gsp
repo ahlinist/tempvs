@@ -8,7 +8,7 @@
             <div class="pull-right">
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'comment.delete.button')}">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'deleteComment' + comment.id, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
+                    model="${[elementId: 'deleteComment' + comment.id, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='comment.deleteConfirmation.text'/>
                   <br/>
                   <g:render template="/ajax/templates/ajaxLink"

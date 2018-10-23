@@ -22,7 +22,7 @@
             <div class="row">
               <div class="pull-left">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'deletePassport' + passportId, size: 'modal-sm', message: 'passport.delete.button']}">
+                    model="${[elementId: 'deletePassport' + passportId, size: 'modal-sm', message: 'passport.delete.button']}">
                   <g:message code='passport.deleteConfirmation.text' args="${[passport.name]}"/>
                   <br/>
                   <g:render template="/ajax/templates/ajaxLink"

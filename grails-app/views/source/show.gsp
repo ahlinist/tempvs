@@ -38,7 +38,7 @@
               <g:if test="${isArchivarius}">
                 <div class="pull-left">
                   <g:render template="/common/templates/modalButton"
-                      model="${[id: 'deleteSource' + sourceId, size: 'modal-sm', message: 'source.delete.button']}">
+                      model="${[elementId: 'deleteSource' + sourceId, size: 'modal-sm', message: 'source.delete.button']}">
                     <g:message code='source.deleteConfirmation.text' args="${[source.name]}"/>
                     <br/>
                     <g:render template="/ajax/templates/ajaxLink"

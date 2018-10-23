@@ -13,7 +13,7 @@
             <div class="pull-left">
               <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'source.unlink.button')}">
                 <g:render template="/common/templates/modalButton"
-                    model="${[id: 'unlinkSource' + sourceId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
+                    model="${[elementId: 'unlinkSource' + sourceId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='source.unlinkConfirmation.text' args="${[source.name]}"/>
                   <br/>
                   <g:render template="/ajax/templates/ajaxLink"

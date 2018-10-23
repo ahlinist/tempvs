@@ -1,4 +1,5 @@
 import club.tempvs.image.Image
+import club.tempvs.message.UpdateParticipantsPayload
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
@@ -33,7 +34,7 @@ class BootStrap {
         pingMicroService(EMAIL_SERVICE_URL, 'Email', 'EMAIL_SERVICE_URL')
         pingMicroService(IMAGE_SERVICE_URL, 'Image', 'IMAGE_SERVICE_URL')
         pingMicroService(MESSAGE_SERVICE_URL, 'Message', 'MESSAGE_SERVICE_URL')
-        registerImageMarshaller()
+        registerCustomJSONMarshallers()
     }
 
     def destroy = {
@@ -79,12 +80,20 @@ class BootStrap {
         }
     }
 
-    private void registerImageMarshaller() {
+    private void registerCustomJSONMarshallers() {
         JSON.registerObjectMarshaller(Image) { Image image ->
             [
                     objectId:   image.objectId,
                     collection: image.collection,
                     imageInfo:  image.imageInfo,
+            ]
+        }
+
+        JSON.registerObjectMarshaller(UpdateParticipantsPayload) { UpdateParticipantsPayload payload ->
+            [
+                    initiator: payload.initiator,
+                    subject: payload.subject,
+                    action: payload.action.toString(),
             ]
         }
     }

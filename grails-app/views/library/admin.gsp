@@ -36,7 +36,7 @@
                   </td>
                   <td>
                     <g:render template="/common/templates/modalButton"
-                        model="${[id: 'roleRequestId' + roleRequestId, size: 'modal-sm', icon: 'glyphicon glyphicon-ok', styles: 'color: green; border-radius: 150px !important;']}">
+                        model="${[elementId: 'roleRequestId' + roleRequestId, size: 'modal-sm', icon: 'glyphicon glyphicon-ok', styles: 'color: green; border-radius: 150px !important;']}">
                       <g:message code='library.roleRequest.approve.text'/>
                       <br/>
                       <g:render template="/ajax/templates/ajaxLink"
@@ -46,7 +46,7 @@
                       <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                     </g:render>
                     <g:render template="/common/templates/modalButton"
-                        model="${[id: 'roleRequestId' + roleRequestId, size: 'modal-sm', icon: 'glyphicon glyphicon-remove', styles: 'color: red; border-radius: 150px !important;']}">
+                        model="${[elementId: 'roleRequestId' + roleRequestId, size: 'modal-sm', icon: 'glyphicon glyphicon-remove', styles: 'color: red; border-radius: 150px !important;']}">
                       <g:message code='library.roleRequest.reject.text'/>
                       <br/>
                       <g:render template="/ajax/templates/ajaxLink"

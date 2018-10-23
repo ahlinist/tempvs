@@ -90,7 +90,7 @@
         <div class="col-sm-4">
           <span class="pull-right">
             <g:render template="/common/templates/modalButton"
-                model="${[id: 'loginForm', message: g.message(code: 'auth.login.signup.button')]}">
+                model="${[elementId: 'loginForm', message: g.message(code: 'auth.login.signup.button')]}">
               <g:render template="/auth/templates/loginForm"/>
             </g:render>
           </span>

@@ -17,7 +17,7 @@
           <sec:ifNotLoggedIn>
             <g:message code="auth.enlist.message.start"/>
             <g:render template="/common/templates/modalButton"
-                model="${[id: 'loginForm', message: 'auth.login.signup.button']}">
+                model="${[elementId: 'loginForm', message: 'auth.login.signup.button']}">
               <g:render template="/auth/templates/loginForm"/>
             </g:render>
             <g:message code="auth.enlist.message.end"/>

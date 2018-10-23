@@ -22,7 +22,7 @@
               <g:if test="${editAllowed}">
                 <div class="pull-right">
                   <g:render template="/common/templates/modalButton"
-                      model="${[id: 'deleteGroup-' + itemGroupId, message: 'item.group.delete.button', size: 'modal-sm']}">
+                      model="${[elementId: 'deleteGroup-' + itemGroupId, message: 'item.group.delete.button', size: 'modal-sm']}">
                     <g:message code='item.group.deleteConfirmation.text' args="${[itemGroup.name]}"/>
                     <br/>
                     <g:render template="/ajax/templates/ajaxLink"
@@ -59,7 +59,7 @@
               <g:if test="${editAllowed}">
                 <div class="pull-right">
                   <g:render template="/common/templates/modalButton"
-                      model="${[id: 'itemForm', message: 'item.create.item.button']}">
+                      model="${[elementId: 'itemForm', message: 'item.create.item.button']}">
                     <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'item', action: 'createItem']}">
                       <g:render template="/image/templates/imageUploader"/>
                       <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'item.name.label', mandatory: true]}"/>

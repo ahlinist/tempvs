@@ -9,7 +9,6 @@ import grails.converters.JSON
 import groovy.transform.CompileStatic
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
-import org.springframework.security.access.AccessDeniedException
 
 @CompileStatic
 class MessageProxy {
@@ -34,7 +33,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(ConversationsPayload, response.responseBody)
         } else {
-            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
+            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
@@ -53,7 +52,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
+            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
@@ -75,7 +74,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
+            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
@@ -90,7 +89,28 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
+            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+        }
+    }
+
+    Conversation updateParticipants(Long conversationId, Profile initiator, Profile subject, UpdateParticipantsPayload.Action action) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
+
+        if (initiator.type != subject.type) {
+            throw new RuntimeException("Profiles can't be of different type.")
+        }
+
+        Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
+        Participant subjectDto = objectFactory.getInstance(Participant, [id: subject.id, name: subject.toString()])
+        UpdateParticipantsPayload updateParticipantsPayload =
+                objectFactory.getInstance(UpdateParticipantsPayload, [initiator: initiatorDto, subject: subjectDto, action: action])
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, updateParticipantsPayload as JSON)
+        HttpStatus httpStatus = response.statusCode
+
+        if (httpStatus == HttpStatus.OK) {
+            return jsonConverter.convert(Conversation, response.responseBody)
+        } else {
+            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 }

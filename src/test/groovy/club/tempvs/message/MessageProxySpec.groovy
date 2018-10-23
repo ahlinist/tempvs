@@ -5,15 +5,17 @@ import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
+import club.tempvs.user.ProfileType
 import grails.converters.JSON
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.security.access.AccessDeniedException
 import spock.lang.Specification
 
 class MessageProxySpec extends Specification {
 
     private static final String COUNT_HEADER = 'X-Total-Count'
+    private static final Long LONG_ONE = 1L
+    private static final Long LONG_TWO = 2L
 
     MessageProxy messageProxy
 
@@ -21,6 +23,8 @@ class MessageProxySpec extends Specification {
     def jsonConverter = Mock JsonConverter
     def objectFactory = Mock ObjectFactory
     def profile = Mock Profile
+    def initiator = Mock Profile
+    def subject = Mock Profile
     def restResponse = Mock RestResponse
     def conversationDto = Mock Conversation
     def conversationsDto = Mock ConversationsPayload
@@ -28,6 +32,9 @@ class MessageProxySpec extends Specification {
     def participantDto = Mock Participant
     def createConversationDto = Mock CreateConversationPayload
     def addMessageDto = Mock AddMessagePayload
+    def action = GroovyMock UpdateParticipantsPayload.Action
+    def type = GroovyMock ProfileType
+    def updateParticipantsPayload = Mock UpdateParticipantsPayload
 
     def setup() {
         messageProxy = new MessageProxy(restCaller: restCaller, jsonConverter: jsonConverter, objectFactory: objectFactory)
@@ -74,7 +81,7 @@ class MessageProxySpec extends Specification {
         0 * _
 
         and:
-        thrown(AccessDeniedException)
+        thrown(RuntimeException)
     }
 
     void "test getNewConversationsCount()"() {
@@ -162,6 +169,36 @@ class MessageProxySpec extends Specification {
         1 * profile.toString() >> profileName
         1 * objectFactory.getInstance(Participant, [id: profileId, name: profileName]) >> participantDto
         1 * objectFactory.getInstance(AddMessagePayload, [author: participantDto, text: text]) >> addMessageDto
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody >> jsonResponse
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
+        0 * _
+
+        and:
+        result == conversationDto
+    }
+
+    void "test updateParticipants()"() {
+        given:
+        String jsonResponse = "{response}"
+        Long conversationId = 1L
+        String profileName = "profile name"
+        Map payloadMap = [initiator: participantDto, subject: participantDto, action: action]
+
+        when:
+        Conversation result = messageProxy.updateParticipants(conversationId, initiator, subject, action)
+
+        then:
+        1 * initiator.type >> type
+        1 * subject.type >> type
+        1 * initiator.id >> LONG_ONE
+        1 * initiator.toString() >> profileName
+        1 * subject.id >> LONG_TWO
+        1 * subject.toString() >> profileName
+        1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participantDto
+        1 * objectFactory.getInstance(Participant, [id: LONG_TWO, name: profileName]) >> participantDto
+        1 * objectFactory.getInstance(UpdateParticipantsPayload, payloadMap) >> updateParticipantsPayload
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
