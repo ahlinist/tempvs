@@ -22,12 +22,12 @@ class MessageProxySpec extends Specification {
     def objectFactory = Mock ObjectFactory
     def profile = Mock Profile
     def restResponse = Mock RestResponse
-    def conversationDto = Mock ConversationDto
-    def conversationsDto = Mock ConversationsDto
+    def conversationDto = Mock Conversation
+    def conversationsDto = Mock ConversationsPayload
     def httpHeaders = Mock HttpHeaders
-    def participantDto = Mock ParticipantDto
-    def createConversationDto = Mock CreateConversationDto
-    def addMessageDto = Mock AddMessageDto
+    def participantDto = Mock Participant
+    def createConversationDto = Mock CreateConversationPayload
+    def addMessageDto = Mock AddMessagePayload
 
     def setup() {
         messageProxy = new MessageProxy(restCaller: restCaller, jsonConverter: jsonConverter, objectFactory: objectFactory)
@@ -44,14 +44,14 @@ class MessageProxySpec extends Specification {
         Long profileId = 1L
 
         when:
-        ConversationsDto result = messageProxy.getConversations(profile, page, size)
+        ConversationsPayload result = messageProxy.getConversations(profile, page, size)
 
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(ConversationsDto, jsonResponse) >> conversationsDto
+        1 * jsonConverter.convert(ConversationsPayload, jsonResponse) >> conversationsDto
         0 * _
 
         and:
@@ -105,14 +105,14 @@ class MessageProxySpec extends Specification {
         Long conversationId = 2L
 
         when:
-        ConversationDto result = messageProxy.getConversation(conversationId, profile, page, size)
+        Conversation result = messageProxy.getConversation(conversationId, profile, page, size)
 
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(ConversationDto, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
         0 * _
 
         and:
@@ -129,17 +129,17 @@ class MessageProxySpec extends Specification {
         String profileName = "profile name"
 
         when:
-        ConversationDto result = messageProxy.createConversation(profile, receivers, text, name)
+        Conversation result = messageProxy.createConversation(profile, receivers, text, name)
 
         then:
         2 * profile.id >> profileId
         2 * profile.toString() >> profileName
-        2 * objectFactory.getInstance(ParticipantDto, [id: profileId, name: profileName]) >> participantDto
-        1 * objectFactory.getInstance(CreateConversationDto, _ as Map) >> createConversationDto
+        2 * objectFactory.getInstance(Participant, [id: profileId, name: profileName]) >> participantDto
+        1 * objectFactory.getInstance(CreateConversationPayload, _ as Map) >> createConversationDto
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(ConversationDto, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
         0 * _
 
         and:
@@ -155,17 +155,17 @@ class MessageProxySpec extends Specification {
         String text = "message text"
 
         when:
-        ConversationDto result = messageProxy.addMessage(conversationId, profile, text)
+        Conversation result = messageProxy.addMessage(conversationId, profile, text)
 
         then:
         1 * profile.id >> profileId
         1 * profile.toString() >> profileName
-        1 * objectFactory.getInstance(ParticipantDto, [id: profileId, name: profileName]) >> participantDto
-        1 * objectFactory.getInstance(AddMessageDto, [author: participantDto, text: text]) >> addMessageDto
+        1 * objectFactory.getInstance(Participant, [id: profileId, name: profileName]) >> participantDto
+        1 * objectFactory.getInstance(AddMessagePayload, [author: participantDto, text: text]) >> addMessageDto
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(ConversationDto, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
         0 * _
 
         and:

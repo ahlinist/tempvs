@@ -18,9 +18,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     def json = Mock JSON
     def profile = Mock Profile
-    def conversationsDto = Mock ConversationsDto
-    def conversationDtoBean = Mock ConversationDtoBean
-    def conversationDto = Mock ConversationDto
+    def conversationsDto = Mock ConversationsPayload
+    def conversationDtoBean = Mock ConversationsPayload.ConversationBean
+    def conversationDto = Mock Conversation
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
     def createDialogueCommand = Mock CreateDialogueCommand
@@ -146,6 +146,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         Long conversationId = 1L
         String message = "msg text"
         params.message = message
+        Map model = [conversation: conversationDto, currentProfile: profile]
 
         when:
         controller.add(conversationId)
@@ -153,7 +154,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * messageProxy.addMessage(conversationId, profile, message) >> conversationDto
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: [conversation: conversationDto]])
+        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
 
         and:

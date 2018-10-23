@@ -3,11 +3,11 @@ package club.tempvs.message
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class MessageDtoBean {
+class MessageBean {
     Long id
     String text
-    ParticipantDto author
-    ParticipantDto subject
+    Participant author
+    Participant subject
     String createdDate
     Boolean unread
     Boolean system

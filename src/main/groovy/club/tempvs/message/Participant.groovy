@@ -3,10 +3,7 @@ package club.tempvs.message
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class ConversationDtoBean {
+class Participant {
     Long id
-    String type
     String name
-    MessageDtoBean lastMessage
-    String conversant
 }

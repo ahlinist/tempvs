@@ -40,8 +40,8 @@ class MessageController {
             Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
             Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
             Profile currentProfile = profileService.currentProfile
-            ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, page, size)
-            render view: '/message/conversation', model: [conversation: conversationDto, currentProfile: currentProfile]
+            Conversation conversation = messageProxy.getConversation(id, currentProfile, page, size)
+            render view: '/message/conversation', model: [conversation: conversation, currentProfile: currentProfile]
         }
     }
 
@@ -55,8 +55,8 @@ class MessageController {
         Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
         Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
-        ConversationsDto conversationsDto = messageProxy.getConversations(currentProfile, page, size)
-        Map model = [conversations: conversationsDto.conversations]
+        ConversationsPayload conversationsPayload = messageProxy.getConversations(currentProfile, page, size)
+        Map model = [conversations: conversationsPayload.conversations]
         String template = groovyPageRenderer.render(template: '/message/templates/conversations', model: model)
         render([action: APPEND_ACTION, template: template] as JSON)
     }
@@ -65,8 +65,8 @@ class MessageController {
         Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
         Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
-        ConversationDto conversationDto = messageProxy.getConversation(id, currentProfile, page, size)
-        Map model = [conversation: conversationDto, currentProfile: currentProfile]
+        Conversation conversation = messageProxy.getConversation(id, currentProfile, page, size)
+        Map model = [conversation: conversation, currentProfile: currentProfile]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
@@ -83,14 +83,14 @@ class MessageController {
             return render(ajaxResponseHelper.renderFormMessage(false, SELF_SENT_MESSAGE))
         }
 
-        ConversationDto conversationDto = messageProxy.createConversation(currentProfile, [receiver], command.text)
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'message', action: 'conversation', id: conversationDto.id))
+        Conversation conversation = messageProxy.createConversation(currentProfile, [receiver], command.text)
+        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'message', action: 'conversation', id: conversation.id))
     }
 
     def add(Long id) {
         Profile currentProfile = profileService.currentProfile
-        ConversationDto conversationDto = messageProxy.addMessage(id, currentProfile, params.message as String)
-        Map model = [conversation: conversationDto]
+        Conversation conversation = messageProxy.addMessage(id, currentProfile, params.message as String)
+        Map model = [conversation: conversation, currentProfile: currentProfile]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }

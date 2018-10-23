@@ -3,9 +3,9 @@ package club.tempvs.message
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class CreateConversationDto {
-    ParticipantDto author
-    List<ParticipantDto> receivers
+class CreateConversationPayload {
+    Participant author
+    List<Participant> receivers
     String text
     String name
 }

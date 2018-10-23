@@ -25,14 +25,14 @@ class MessageProxy {
     @Autowired
     ObjectFactory objectFactory
 
-    ConversationsDto getConversations(Profile profile, int page, int size) {
+    ConversationsPayload getConversations(Profile profile, int page, int size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&page=${page}&size=${size}"
 
         RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(ConversationsDto, response.responseBody)
+            return jsonConverter.convert(ConversationsPayload, response.responseBody)
         } else {
             throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
@@ -44,51 +44,51 @@ class MessageProxy {
         return response.headers?.getFirst(COUNT_HEADER) as Integer
     }
 
-    ConversationDto getConversation(long conversationId, Profile profile, int page, int size) {
+    Conversation getConversation(long conversationId, Profile profile, int page, int size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/?page=${page}&size=${size}&caller=${profile.id}"
 
         RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(ConversationDto, response.responseBody)
+            return jsonConverter.convert(Conversation, response.responseBody)
         } else {
             throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
-    ConversationDto createConversation(Profile author, List<Profile> receivers, String text, String name = null) {
+    Conversation createConversation(Profile author, List<Profile> receivers, String text, String name = null) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations"
 
-        ParticipantDto authorDto = objectFactory.getInstance(ParticipantDto, [id: author.id, name: author.toString()])
+        Participant authorDto = objectFactory.getInstance(Participant, [id: author.id, name: author.toString()])
 
-        List<ParticipantDto> receiverDtos = receivers.unique().collect { Profile profile ->
-            objectFactory.getInstance(ParticipantDto, [id: profile.id, name: profile.toString()])
+        List<Participant> receiverDtos = receivers.unique().collect { Profile profile ->
+            objectFactory.getInstance(Participant, [id: profile.id, name: profile.toString()])
         }
 
         Map argumentMap = [author: authorDto, receivers: receiverDtos, text: text, name: name]
-        CreateConversationDto createConversationDto = objectFactory.getInstance(CreateConversationDto, argumentMap)
+        CreateConversationPayload createConversationPayload = objectFactory.getInstance(CreateConversationPayload, argumentMap)
 
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, createConversationDto as JSON)
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, createConversationPayload as JSON)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(ConversationDto, response.responseBody)
+            return jsonConverter.convert(Conversation, response.responseBody)
         } else {
             throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
 
-    ConversationDto addMessage(Long conversationId, Profile author, String text) {
+    Conversation addMessage(Long conversationId, Profile author, String text) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/messages"
-        ParticipantDto authorDto = objectFactory.getInstance(ParticipantDto, [id: author.id, name: author.toString()])
+        Participant authorDto = objectFactory.getInstance(Participant, [id: author.id, name: author.toString()])
         Map argumentMap = [author: authorDto, text: text]
-        AddMessageDto addMessageDto = objectFactory.getInstance(AddMessageDto, argumentMap)
+        AddMessagePayload addMessageDto = objectFactory.getInstance(AddMessagePayload, argumentMap)
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addMessageDto as JSON)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(ConversationDto, response.responseBody)
+            return jsonConverter.convert(Conversation, response.responseBody)
         } else {
             throw new AccessDeniedException("Response with code ${httpStatus.value()} has been returned.")
         }
