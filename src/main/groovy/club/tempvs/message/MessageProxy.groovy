@@ -24,14 +24,14 @@ class MessageProxy {
     @Autowired
     ObjectFactory objectFactory
 
-    ConversationsPayload getConversations(Profile profile, int page, int size) {
+    String getConversations(Profile profile, int page, int size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&page=${page}&size=${size}"
 
         RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(ConversationsPayload, response.responseBody)
+            return response.responseBody
         } else {
             throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
         }

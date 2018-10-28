@@ -9,9 +9,11 @@ import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
 import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.access.annotation.Secured
 
 @Slf4j
 @GrailsCompileStatic
+@Secured('isAuthenticated()')
 class MessageController {
 
     private static final String DISPLAY_COUNTER = 'displayCounter'
@@ -58,10 +60,7 @@ class MessageController {
         Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
         Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
-        ConversationsPayload conversationsPayload = messageProxy.getConversations(currentProfile, page, size)
-        Map model = [conversations: conversationsPayload.conversations]
-        String template = groovyPageRenderer.render(template: '/message/templates/conversations', model: model)
-        render([action: APPEND_ACTION, template: template] as JSON)
+        render messageProxy.getConversations(currentProfile, page, size)
     }
 
     def loadMessages(Long id) {

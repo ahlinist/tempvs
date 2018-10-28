@@ -27,7 +27,6 @@ class MessageProxySpec extends Specification {
     def subject = Mock Profile
     def restResponse = Mock RestResponse
     def conversationDto = Mock Conversation
-    def conversationsDto = Mock ConversationsPayload
     def httpHeaders = Mock HttpHeaders
     def participantDto = Mock Participant
     def createConversationDto = Mock CreateConversationPayload
@@ -51,18 +50,17 @@ class MessageProxySpec extends Specification {
         Long profileId = 1L
 
         when:
-        ConversationsPayload result = messageProxy.getConversations(profile, page, size)
+        String result = messageProxy.getConversations(profile, page, size)
 
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(ConversationsPayload, jsonResponse) >> conversationsDto
         0 * _
 
         and:
-        result == conversationsDto
+        result == jsonResponse
     }
 
     void "test getConversations() for bad request"() {

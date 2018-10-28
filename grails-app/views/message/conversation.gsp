@@ -13,7 +13,7 @@
     <body>
     <div class="container">
       <div class="col-sm-3" style="border-right: 1px solid #AAA; height: calc(100vh - 75px); overflow: auto;">
-        <div id="conversationsBox"></div>
+        <ul id="conversationsBox"></ul>
       </div>
       <div class="col-sm-9">
         <g:render template="/message/templates/messages" model="${[conversation: conversation]}"/>

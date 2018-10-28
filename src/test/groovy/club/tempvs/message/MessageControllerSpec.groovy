@@ -21,8 +21,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     def json = Mock JSON
     def profile = Mock Profile
-    def conversationsDto = Mock ConversationsPayload
-    def conversationDtoBean = Mock ConversationsPayload.ConversationBean
     def conversation = Mock Conversation
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
@@ -130,19 +128,15 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         int size = 20
         params.page = page
         params.size = size
+        String jsonResponse = '{}'
 
         when:
         controller.loadConversations()
 
         then:
         1 * profileService.currentProfile >> profile
-        1 * messageProxy.getConversations(profile, page, size) >> conversationsDto
-        1 * conversationsDto.conversations >> [conversationDtoBean]
-        1 * groovyPageRenderer.render([template: '/message/templates/conversations', model: [conversations: [conversationDtoBean]]])
+        1 * messageProxy.getConversations(profile, page, size) >> jsonResponse
         0 * _
-
-        and:
-        response.json.action == APPEND_ACTION
     }
 
     void "test add()"() {
