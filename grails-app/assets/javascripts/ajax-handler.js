@@ -151,5 +151,23 @@ var ajaxHandler = {
                 submitButton.removeAttribute("disabled");
             }
         }
+    },
+    fetch: function(url, payload, actions) {
+      fetch(url, payload)
+        .then(
+          function(response) {
+            if (response.status !== 200) {
+              console.log('Looks like there was a problem. Status Code: ' + response.status);
+              return;
+            }
+
+            response.json().then(function(data) {
+              actions.success(data);
+            });
+          }
+        )
+        .catch(function(error) {
+          actions.error(error);
+        });
     }
 };

@@ -69,9 +69,7 @@ class ProfileController {
 
     def search(String query, Integer offset) {
         List<Profile> profiles = profileService.searchProfiles(profileService.currentProfile, query, offset)
-        Map model = [profiles: profiles]
-        String template = groovyPageRenderer.render(template: '/profile/templates/profileSearchResult', model: model)
-        render([action: profiles ? REPLACE_ACTION : NO_ACTION, template: template] as JSON)
+        render(profiles.collect { Profile profile -> [id: profile.id, name: profile.toString()]} as JSON)
     }
 
     @Secured('permitAll')

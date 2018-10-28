@@ -6,7 +6,6 @@ import club.tempvs.communication.FollowingService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
-import club.tempvs.item.Passport
 import club.tempvs.periodization.Period
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -88,6 +87,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         params.query = QUERY
         params.offset = OFFSET
         request.method = GET_METHOD
+        String name = 'name'
 
         when:
         controller.search()
@@ -95,11 +95,14 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * profileService.searchProfiles(profile, QUERY, OFFSET) >> [profile]
-        1 * groovyPageRenderer.render(_ as Map)
+        1 * profile.id >> LONG_ID
+        1 * profile.toString() >> name
         0 * _
 
         and:
-        response.json.action == REPLACE_ACTION
+        response.json.size() == 1
+        response.json[0].id == LONG_ID
+        response.json[0].name == name
     }
 
     void "Test show()"() {
