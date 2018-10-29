@@ -8,19 +8,6 @@
 //= require_tree .
 //= require_self
 
-var overlay = document.createElement('div');
-overlay.classList.add('overlay');
-
-function blockUI() {
-    document.body.appendChild(overlay);
-}
-
-function unblockUI() {
-    if (overlay.parentNode == document.body) {
-        document.body.removeChild(overlay);
-    }
-}
-
 $(function (){
     //preventing double clicking
     $('.disableable').click(function() {
@@ -38,7 +25,7 @@ $(function (){
     //hide inner modals and their backdrops after hiding the outer modal
     $('.modal').on('hidden.bs.modal', function (e) {
         if ($('.modal:visible').length == 0) {
-            hideModals();
+            ajaxHandler.hideModals();
         }
     });
 
@@ -54,11 +41,6 @@ $(function (){
     horizontalMenuCounter.displayCounter('span#new-conversations', '/message/getNewConversationsCount');
     horizontalMenuCounter.displayCounter('span#new-followings', '/following/getNewFollowersCount');
 });
-
-function hideModals() {
-    $('.modal-backdrop').remove();
-    $('.modal').modal('hide');
-}
 
 function setFileUploadPlaceholder(element) {
     //cutting off "fakepath"

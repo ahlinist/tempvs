@@ -1,34 +1,18 @@
 var ajaxHandler = {
     actions: {
         redirect: function(element, response){
-            hideModals();
-            blockUI();
+            ajaxHandler.hideModals();
+            ajaxHandler.blockUI();
             window.location.href = response.location;
         },
         replaceElement: function(element, response, selector) {
-            var backdrop = document.querySelector('.modal-backdrop');
+            ajaxHandler.hideModals();
             var container = document.querySelector(selector);
-
-            if (backdrop) {
-                backdrop.parentNode.removeChild(backdrop);
-            }
-
-            $(element).modal('hide');
-            hideModals();
-            document.querySelector('body').classList.remove('modal-open');
             container.innerHTML = response.template;
         },
         appendElement: function(element, response, selector) {
-            var backdrop = document.querySelector('.modal-backdrop');
+            ajaxHandler.hideModals();
             var container = document.querySelector(selector);
-
-            if (backdrop) {
-                backdrop.parentNode.removeChild(backdrop);
-            }
-
-            $(element).modal('hide');
-            hideModals();
-            document.querySelector('body').classList.remove('modal-open');
             container.innerHTML += response.template;
         },
         formMessage: function(element, response) {
@@ -80,7 +64,7 @@ var ajaxHandler = {
                 contentType: false,
                 beforeSend: function() {
                     if (!isSpinnerHidden) {
-                        blockUI();
+                        ajaxHandler.blockUI();
                     }
 
                     if (submitButton) {
@@ -145,7 +129,7 @@ var ajaxHandler = {
         }
 
         function complete(submitButton) {
-            unblockUI();
+            ajaxHandler.unblockUI();
 
             if (submitButton) {
                 submitButton.removeAttribute("disabled");
@@ -167,7 +151,30 @@ var ajaxHandler = {
           }
         )
         .catch(function(error) {
-          actions.error(error);
+          console.log('Error: ' + error);
         });
+    },
+    hideModals: function() {
+      var backdrop = document.querySelector('.modal-backdrop');
+
+      if (backdrop) {
+          backdrop.parentNode.removeChild(backdrop);
+      }
+
+      $('.modal-backdrop').remove();
+      $('.modal').modal('hide');
+      document.querySelector('body').classList.remove('modal-open');
+    },
+    blockUI: function() {
+      var overlay = document.createElement('div');
+      overlay.id = 'overlay';
+      document.body.appendChild(overlay);
+    },
+    unblockUI: function() {
+      var overlay = document.querySelector('#overlay');
+
+      if (overlay && overlay.parentNode == document.body) {
+          document.body.removeChild(overlay);
+      }
     }
 };

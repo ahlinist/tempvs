@@ -56,13 +56,13 @@
         <div class="col-sm-4">
           <span class="dropdown" style="margin:10px;">
             <input style="width: 300px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
-            <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0);">
+            <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, profileSearcher.actions);">
               <span class="glyphicon glyphicon-search"></span>
             </button>
             <div class="dropdown-menu" style="width: 300px;">
               <ul class="profile-search-result">
               </ul>
-              <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10);">
+              <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, profileSearcher.actions);">
                 <i><g:message code="profile.search.loadMore.link"/></i>
               </button>
             </div>

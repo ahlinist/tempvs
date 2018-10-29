@@ -1,6 +1,7 @@
 <div class="row" id="messagesBox">
   <div id="messagesScroll" class="col-sm-8" style="position: relative; height: calc(100vh - 75px); overflow: auto;">
     <g:if test="${conversation}">
+      <div id="conversationIdHolder" style="display: none;" >${conversation.id}</div>
       <ul>
         <g:each var="message" in="${conversation.messages}">
           <li>
@@ -9,6 +10,9 @@
               <b>${message.author.name}</b>:
               </g:link>
               ${message.text}
+              <g:if test="${message.subject}">
+                <b>${message.subject.name}</b>
+              </g:if>
               <span class="pull-right">${message.createdDate}</span>
             </div>
           </li>
@@ -26,11 +30,10 @@
     <g:if test="${conversation}">
       <b><g:message code="message.participants.label"/>:</b>
       <ul style="margin: 10px;">
-        <g:set var="currentProfileId" value="${currentProfile.id}"/>
         <g:each var="participant" in="${conversation.participants}">
           <g:set var="participantId" value="${participant.id}"/>
           <g:set var="participantName" value="${participant.name}"/>
-          <g:if test="${participantId != currentProfileId}">
+          <g:if test="${participantId != currentProfile.id}">
             <li>
               <g:link class="btn btn-default col-sm-10" controller="profile" action="show" id="${participantId}">
                 ${participant.name}
@@ -40,12 +43,11 @@
                     model="${[elementId: 'removeParticipant' + participantId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                   <g:message code='message.remove.participant.text' args="${[participantName]}"/>
                   <br/>
-                  <g:render template="/ajax/templates/ajaxLink"
-                      model="${[controller: 'message', action: 'updateParticipants', id: conversation.id,
-                      params: [updateAction: 'REMOVE', initiator: currentProfileId, subject: participantId],
-                      method: 'POST', selector: 'div#messagesBox', classes: 'btn btn-default']}">
-                    <g:message code="yes"/>
-                  </g:render>
+                  <span onclick="messaging.updateParticipants(${participantId}, 'REMOVE');">
+                    <span class="btn btn-default">
+                      <g:message code="yes"/>
+                    </span>
+                  </span>
                   <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
                 </g:render>
               </span>
@@ -53,6 +55,24 @@
           </g:if>
         </g:each>
       <ul>
+      <g:render template="/common/templates/modalButton"
+          model="${[elementId: 'addParticipantProfileSearch', size: 'modal-sm', icon: 'glyphicon glyphicon-plus']}">
+        <span class="dropdown" style="margin:10px;">
+          <input style="width: 300px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
+          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.actions);">
+            <span class="glyphicon glyphicon-search"></span>
+          </button>
+          <div class="dropdown-menu" style="width: 300px;">
+            <ul class="profile-search-result">
+            </ul>
+            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.actions);">
+              <i><g:message code="profile.search.loadMore.link"/></i>
+            </button>
+          </div>
+        </span>
+        <div id="profileToAdd" style="height: 50px;">
+        </div>
+      </g:render>
     </g:if>
   </div>
 </div>

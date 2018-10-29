@@ -167,20 +167,16 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         params.initiator = LONG_TWO
         params.subject = LONG_THREE
         UpdateParticipantsPayload.Action action = UpdateParticipantsPayload.Action.REMOVE
-        Map model = [conversation: conversation, currentProfile: profile]
+        Map model = [conversation: conversation, currentProfile: initiator]
 
         when:
         controller.updateParticipants(LONG_ONE)
 
         then:
-        1 * profileService.getProfileById(LONG_TWO) >> initiator
+        1 * profileService.currentProfile >> initiator
         1 * profileService.getProfileById(LONG_THREE) >> subject
         1 * messageProxy.updateParticipants(LONG_ONE, initiator, subject, action) >> conversation
-        1 * profileService.currentProfile >> profile
         1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 }

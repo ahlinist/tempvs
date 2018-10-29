@@ -10,7 +10,7 @@ var modalCarousel = {
     },
     deleteImage: function(button, controller, objectId) {
         $('.carousel').off('slide.bs.carousel');
-        hideModals();
+        ajaxHandler.hideModals();
         var imageId = modalCarousel.slideMapping[modalCarousel.currentSlide];
         var url = '/' + controller + '/deleteImage?objectId=' + objectId + '&imageId=' + imageId;
         ajaxHandler.processAjaxRequest(button, url, '', 'DELETE', '#modal-carousel', ajaxHandler.actions);

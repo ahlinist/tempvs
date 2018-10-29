@@ -97,15 +97,15 @@ class MessageController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def updateParticipants(Long conversationId) {
+    def updateParticipants(Long id) {
         String actionString = params.updateAction as String
-        Profile initiator = profileService.getProfileById(params.initiator as Long)
+        Profile initiator = profileService.currentProfile
         Profile subject = profileService.getProfileById(params.subject as Long)
         UpdateParticipantsPayload.Action action = UpdateParticipantsPayload.Action.valueOf(actionString.toUpperCase())
-        Conversation conversation = messageProxy.updateParticipants(conversationId, initiator, subject, action)
-        Map model = [conversation: conversation, currentProfile: profileService.currentProfile]
+        Conversation conversation = messageProxy.updateParticipants(id, initiator, subject, action)
+        Map model = [conversation: conversation, currentProfile: initiator]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render([template: template] as JSON)
     }
 
     def accessDeniedThrown(AccessDeniedException exception) {

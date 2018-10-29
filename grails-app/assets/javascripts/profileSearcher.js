@@ -4,7 +4,7 @@ var profileSearcher = {
   searchButton: '',
   searchResult: '',
   loadMoreButton: '',
-  search: function(element, offset) {
+  search: function(element, offset, actions) {
     profileSearcher.searchPanel = element.closest('.dropdown');
     profileSearcher.searchResult = profileSearcher.searchPanel.querySelector('.profile-search-result');
     profileSearcher.searchButton = profileSearcher.searchPanel.querySelector('.profile-search-button');
@@ -24,7 +24,7 @@ var profileSearcher = {
 
     var profileSearchBox = profileSearcher.searchPanel.querySelector('.profile-search-box');
     var url = '/profile/search?query=' + profileSearchBox.value + '&offset=' + profileSearcher.offsetCounter;
-    ajaxHandler.fetch(url, {method: 'GET'}, profileSearcher.actions);
+    ajaxHandler.fetch(url, {method: 'GET'}, actions);
   },
   recoverUI: function() {
     var eventListener = function(event) {
@@ -53,9 +53,6 @@ var profileSearcher = {
         li.appendChild(a);
         profileSearcher.searchResult.appendChild(li);
       }
-    },
-    error: function(error) {
-      console.log('Error: ' + error);
     }
   }
 }
