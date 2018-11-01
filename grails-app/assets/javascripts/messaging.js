@@ -59,11 +59,13 @@ var messaging = {
           }
 
           function buildConversationOption(conversation) {
+            var lastMessage = conversation.lastMessage;
+            var subject = lastMessage.subject;
             var li = document.createElement('li');
             li.classList.add('btn', 'btn-default', 'col-sm-12');
             li.onclick = function() {messaging.conversation(conversation.id, '#messagesBox', 0, 40);}
 
-            if (conversation.lastMessage.unread) {
+            if (lastMessage.unread) {
               li.style.backgroundColor = '#E9F9FF';
             }
 
@@ -72,10 +74,13 @@ var messaging = {
             b.innerHTML = conversation.conversant;
 
             var br = document.createElement('br');
-
             var i = document.createElement('i');
             i.classList.add('pull-left');
-            i.innerHTML = conversation.lastMessage.text;
+            i.innerHTML = lastMessage.author.name + ': ' + lastMessage.text;
+
+            if (subject) {
+              i.innerHTML += ' ' + subject.name;
+            }
 
             li.appendChild(b);
             li.appendChild(br);

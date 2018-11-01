@@ -4,14 +4,16 @@
       <div id="conversationIdHolder" style="display: none;" >${conversation.id}</div>
       <ul>
         <g:each var="message" in="${conversation.messages}">
-          <li>
+          <li style="${message.system ? 'font-style: italic;' : ''}">
             <div style="margin: 5px; padding: 5px; ${message.unread ? 'background-color: #E9F9FF;' : ''}">
               <g:link controller='profile' action='show' id="${message.author.id}">
-              <b>${message.author.name}</b>:
-              </g:link>
+                <b>${message.author.name}</b>
+              </g:link>:
               ${message.text}
               <g:if test="${message.subject}">
-                <b>${message.subject.name}</b>
+                <g:link controller='profile' action='show' id="${message.subject.id}">
+                  <b>${message.subject.name}</b>
+                </g:link>
               </g:if>
               <span class="pull-right">${message.createdDate}</span>
             </div>
