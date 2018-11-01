@@ -9,39 +9,61 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
+import org.springframework.context.i18n.LocaleContextHolder
 
 @Slf4j
 @GrailsCompileStatic
 class RestCaller {
 
     private static final String AUTHORIZATION = 'Authorization'
+    private static final String ACCEPT_LANGUAGE = 'Accept-Language'
     private static final String CONTENT_TYPE = 'Content-Type'
     private static final String JSON_CONTENT_TYPE = 'application/json; charset=UTF-8'
 
     RestHelper restHelper
 
     RestResponse doGet(String url, String token = null) {
+        Map<String,String> headers = [
+                (AUTHORIZATION): token,
+                (ACCEPT_LANGUAGE): getLanguage(),
+        ]
+
         RestTemplate restTemplate = restHelper.newTemplate()
-        HttpEntity<String> entity = restHelper.newHttpEntity([(AUTHORIZATION): token])
+        HttpEntity<String> entity = restHelper.newHttpEntity(headers)
         execute(restTemplate, url, HttpMethod.GET, entity)
     }
 
     RestResponse doHead(String url, String token = null) {
+        Map<String,String> headers = [
+                (AUTHORIZATION): token,
+                (ACCEPT_LANGUAGE): getLanguage(),
+        ]
+
         RestTemplate restTemplate = restHelper.newTemplate()
-        HttpEntity<String> entity = restHelper.newHttpEntity([(AUTHORIZATION): token])
+        HttpEntity<String> entity = restHelper.newHttpEntity(headers)
         execute(restTemplate, url, HttpMethod.HEAD, entity)
     }
 
     RestResponse doPost(String url, String token = null, JSON payload = new JSON()) {
+        Map<String,String> headers = [
+                (AUTHORIZATION): token,
+                (ACCEPT_LANGUAGE): getLanguage(),
+                (CONTENT_TYPE): JSON_CONTENT_TYPE,
+        ]
+
         RestTemplate restTemplate = restHelper.newTemplate()
-        Map<String, String> headers = [(AUTHORIZATION): token, (CONTENT_TYPE): JSON_CONTENT_TYPE]
         HttpEntity<String> entity = restHelper.newHttpEntity(headers, payload?.toString())
         execute(restTemplate, url, HttpMethod.POST, entity)
     }
 
     RestResponse doDelete(String url, String token = null) {
+        Map<String,String> headers = [
+                (AUTHORIZATION): token,
+                (ACCEPT_LANGUAGE): getLanguage(),
+        ]
+
         RestTemplate restTemplate = restHelper.newTemplate()
-        HttpEntity<String> entity = restHelper.newHttpEntity([(AUTHORIZATION): token])
+        HttpEntity<String> entity = restHelper.newHttpEntity(headers)
         execute(restTemplate, url, HttpMethod.DELETE, entity)
     }
 
@@ -55,5 +77,9 @@ class RestCaller {
         } catch (HttpStatusCodeException e) {
             return restHelper.newRestResponse(e)
         }
+    }
+
+    private String getLanguage() {
+        LocaleContextHolder.locale.language
     }
 }

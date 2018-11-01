@@ -18,7 +18,6 @@ class MessageController {
 
     private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
-    private static final String APPEND_ACTION = 'appendElement'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final Integer DEFAULT_PAGE_NUMBER = 0
     private static final Integer DEFAULT_PAGE_SIZE = 40
@@ -115,17 +114,6 @@ class MessageController {
             render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
         } else {
             redirect(controller: 'auth')
-        }
-    }
-
-    def exceptionThrown(Exception exception) {
-        String refererLink = request.getHeader('referer')
-        log.error exception.message
-
-        if (request.xhr) {
-            render ajaxResponseHelper.renderRedirect(refererLink)
-        } else {
-            redirect(refererLink)
         }
     }
 }
