@@ -31,32 +31,34 @@
   <div class="col-sm-4">
     <g:if test="${conversation}">
       <b><g:message code="message.participants.label"/>:</b>
-      <ul style="margin: 10px;">
+      <ul>
         <g:each var="participant" in="${conversation.participants}">
           <g:set var="participantId" value="${participant.id}"/>
           <g:set var="participantName" value="${participant.name}"/>
           <g:if test="${participantId != currentProfile.id}">
-            <li>
+            <li class="row">
               <g:link class="btn btn-default col-sm-10" controller="profile" action="show" id="${participantId}">
                 ${participant.name}
               </g:link>
-              <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'message.remove.participant.button')}">
-                <g:render template="/common/templates/modalButton"
-                    model="${[elementId: 'removeParticipant' + participantId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
-                  <g:message code='message.remove.participant.text' args="${[participantName]}"/>
-                  <br/>
-                  <span onclick="messaging.updateParticipants(${participantId}, 'REMOVE');">
-                    <span class="btn btn-default">
-                      <g:message code="yes"/>
-                    </span>
+                <g:if test="${currentProfile.id == conversation.admin?.id}">
+                  <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'message.remove.participant.button')}">
+                    <g:render template="/common/templates/modalButton"
+                        model="${[elementId: 'removeParticipant' + participantId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
+                      <g:message code='message.remove.participant.text' args="${[participantName]}"/>
+                      <br/>
+                      <span onclick="messaging.updateParticipants(${participantId}, 'REMOVE');">
+                        <span class="btn btn-default">
+                          <g:message code="yes"/>
+                        </span>
+                      </span>
+                      <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                    </g:render>
                   </span>
-                  <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-                </g:render>
-              </span>
+                </g:if>
             </li>
           </g:if>
         </g:each>
-      <ul>
+      </ul>
       <g:render template="/common/templates/modalButton"
           model="${[elementId: 'addParticipantProfileSearch', size: 'modal-sm', icon: 'glyphicon glyphicon-plus']}">
         <span class="dropdown" style="margin:10px;">
