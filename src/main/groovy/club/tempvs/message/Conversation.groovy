@@ -6,6 +6,7 @@ import groovy.transform.CompileStatic
 class Conversation {
     Long id
     String type
+    String name
     Participant admin
     Set<Participant> participants
     MessageBean lastMessage
