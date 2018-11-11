@@ -30,6 +30,12 @@
   </div>
   <div class="col-sm-4">
     <g:if test="${conversation}">
+      <g:set var="conversationName" value="${conversation.name}"/>
+      <g:if test="${conversationName}">
+        <div class="row">
+          <b><g:message code="conversation.name.label"/></b>: ${conversationName}
+        </div>
+      </g:if>
       <b><g:message code="message.participants.label"/>:</b>
       <ul>
         <g:each var="participant" in="${conversation.participants}">
