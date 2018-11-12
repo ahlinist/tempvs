@@ -13,10 +13,8 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     private static final String POST_METHOD = 'POST'
     private static final String DISPLAY_COUNTER = 'displayCounter'
-    private static final String APPEND_ACTION = 'appendElement'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final Long LONG_ONE = 1L
-    private static final Long LONG_TWO = 2L
     private static final Long LONG_THREE = 3L
 
     def json = Mock JSON
@@ -164,7 +162,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         given:
         request.method = POST_METHOD
         params.updateAction = 'REMOVE'
-        params.initiator = LONG_TWO
         params.subject = LONG_THREE
         UpdateParticipantsPayload.Action action = UpdateParticipantsPayload.Action.REMOVE
         Map model = [conversation: conversation, currentProfile: initiator]
@@ -176,6 +173,23 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.currentProfile >> initiator
         1 * profileService.getProfileById(LONG_THREE) >> subject
         1 * messageProxy.updateParticipants(LONG_ONE, initiator, subject, action) >> conversation
+        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        0 * _
+    }
+
+    void "test updateConversationName() for remove"() {
+        given:
+        request.method = POST_METHOD
+        String conversationName = 'new name'
+        params.conversationName = conversationName
+        Map model = [conversation: conversation, currentProfile: initiator]
+
+        when:
+        controller.updateConversationName(LONG_ONE)
+
+        then:
+        1 * profileService.currentProfile >> initiator
+        1 * messageProxy.updateConversationName(LONG_ONE, initiator, conversationName) >> conversation
         1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
     }

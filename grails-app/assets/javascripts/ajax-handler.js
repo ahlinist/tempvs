@@ -140,18 +140,11 @@ var ajaxHandler = {
       fetch(url, payload)
         .then(
           function(response) {
-            if (response.status !== 200) {
-              console.log('Looks like there was a problem. Status Code: ' + response.status);
-              return;
-            }
-
-            response.json().then(function(data) {
-              actions.success(data);
-            });
+            actions[response.status](response);
           }
         )
         .catch(function(error) {
-          console.log('Error: ' + error);
+          console.log('Looks like there was a problem: ' + error);
         });
     },
     hideModals: function() {
@@ -176,5 +169,59 @@ var ajaxHandler = {
       if (overlay && overlay.parentNode == document.body) {
           document.body.removeChild(overlay);
       }
+    },
+    activateSmartForm: function(editButton, actions) {
+      var smartForm = editButton.closest('form');
+      var textWrapper = smartForm.querySelector('.text-wrapper');
+      var textHolder = textWrapper.querySelector('.text-holder');
+      var inputWrapper = smartForm.querySelector('.input-wrapper');
+      var input = inputWrapper.querySelector('input');
+      var textValue = textHolder.innerHTML;
+
+      textWrapper.classList.add('hidden');
+      inputWrapper.classList.remove('hidden');
+
+      var clickOutEventListener = function(event) {
+        if((event.target !== input) && (event.target !== editButton)) {
+          submitSmartForm();
+        }
+      }
+
+      var keyPressEventListener = function(event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          submitSmartForm();
+        }
+
+        if (event.key === 'Escape') {
+          inputWrapper.classList.add('hidden');
+          textWrapper.classList.remove('hidden');
+          input.value = textValue;
+          window.removeEventListener("click", clickOutEventListener);
+          window.removeEventListener("keydown", keyPressEventListener);
+        }
+      }
+
+      function submitSmartForm() {
+        if(!!(inputWrapper.offsetWidth || inputWrapper.offsetHeight || inputWrapper.getClientRects().length)) {
+          var value = input.value;
+          textHolder.innerHTML = value;
+          inputWrapper.classList.add('hidden');
+          textWrapper.classList.remove('hidden');
+          window.removeEventListener("click", clickOutEventListener);
+          window.removeEventListener("keydown", keyPressEventListener);
+
+          //TODO: roll the spinner
+          var payload = {
+            method: 'POST',
+            body: new FormData(smartForm)
+          }
+
+          ajaxHandler.fetch(smartForm.action, payload, actions);
+        }
+      }
+
+      window.addEventListener("click", clickOutEventListener);
+      window.addEventListener("keydown", keyPressEventListener);
     }
 };

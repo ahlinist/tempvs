@@ -113,4 +113,20 @@ class MessageProxy {
             throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
         }
     }
+
+    Conversation updateConversationName(Long conversationId, Profile initiator, String name) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/name"
+
+        Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
+        UpdateConversationNamePayload updateConversationNamePayload =
+                objectFactory.getInstance(UpdateConversationNamePayload, [name: name, initiator: initiatorDto])
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, updateConversationNamePayload as JSON)
+        HttpStatus httpStatus = response.statusCode
+
+        if (httpStatus == HttpStatus.OK) {
+            return jsonConverter.convert(Conversation, response.responseBody)
+        } else {
+            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+        }
+    }
 }

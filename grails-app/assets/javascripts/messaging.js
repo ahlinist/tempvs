@@ -1,30 +1,34 @@
 var messaging = {
     actions: {
+        //TODO: replace with statuscode
         replaceElement: function(element, response, selector) {
             var container = document.querySelector(selector);
             container.innerHTML = response.template;
             messaging.scrollMessagesDown();
         },
+        //TODO: replace with statuscode
         appendElement: function(element, response, selector) {
             var container = document.querySelector(selector);
             container.innerHTML += response.template;
             messaging.scrollMessagesDown();
         },
-        success: function(data) {
-          profileSearcher.recoverUI();
+        200: function(response) {
+          response.json().then(function(data) {
+            profileSearcher.recoverUI();
 
-          for (var i = 0; i < data.length; i++) {
-            var li = document.createElement('li');
-            li.classList.add('row');
-            var a = document.createElement('a');
-            a.classList.add('btn', 'btn-default', 'col-sm-12');
-            var profileId = data[i].id;
-            var profileName = data[i].name;
-            a.onclick = function() { messaging.chooseProfile(profileId, profileName); };
-            a.innerHTML = data[i].name;
-            li.appendChild(a);
-            profileSearcher.searchResult.appendChild(li);
-          }
+            for (var i = 0; i < data.length; i++) {
+              var li = document.createElement('li');
+              li.classList.add('row');
+              var a = document.createElement('a');
+              a.classList.add('btn', 'btn-default', 'col-sm-12');
+              var profileId = data[i].id;
+              var profileName = data[i].name;
+              a.onclick = function() { messaging.chooseProfile(profileId, profileName); };
+              a.innerHTML = data[i].name;
+              li.appendChild(a);
+              profileSearcher.searchResult.appendChild(li);
+            }
+          });
         }
     },
     send: function(form, selector, conversationId) {
@@ -48,46 +52,48 @@ var messaging = {
     },
     loadConversations: function() {
       var actions = {
-        success: function(data) {
-          var conversations = data.conversations
-          var conversationsBox = document.querySelector('ul#conversationsBox');
-          conversationsBox.innerHTML = '';
+        200: function(response) {
+          response.json().then(function(data) {
+            var conversations = data.conversations
+            var conversationsBox = document.querySelector('ul#conversationsBox');
+            conversationsBox.innerHTML = '';
 
-          for (var j = 0; j < conversations.length; j++) {
-            var conversationRow = buildConversationOption(conversations[j]);
-            conversationsBox.appendChild(conversationRow);
-          }
-
-          function buildConversationOption(conversation) {
-            var lastMessage = conversation.lastMessage;
-            var subject = lastMessage.subject;
-            var li = document.createElement('li');
-            li.classList.add('btn', 'btn-default', 'col-sm-12');
-            li.onclick = function() {messaging.conversation(conversation.id, '#messagesBox', 0, 40);}
-
-            if (lastMessage.unread) {
-              li.style.backgroundColor = '#E9F9FF';
+            for (var j = 0; j < conversations.length; j++) {
+              var conversationRow = buildConversationOption(conversations[j]);
+              conversationsBox.appendChild(conversationRow);
             }
 
-            var b = document.createElement('b');
-            b.classList.add('pull-left');
-            b.innerHTML = conversation.conversant;
+            function buildConversationOption(conversation) {
+              var lastMessage = conversation.lastMessage;
+              var subject = lastMessage.subject;
+              var li = document.createElement('li');
+              li.classList.add('btn', 'btn-default', 'col-sm-12');
+              li.onclick = function() {messaging.conversation(conversation.id, '#messagesBox', 0, 40);}
 
-            var br = document.createElement('br');
-            var i = document.createElement('i');
-            i.classList.add('pull-left');
-            i.innerHTML = lastMessage.author.name + ': ' + lastMessage.text;
+              if (lastMessage.unread) {
+                li.style.backgroundColor = '#E9F9FF';
+              }
 
-            if (subject) {
-              i.innerHTML += ' ' + subject.name;
+              var b = document.createElement('b');
+              b.classList.add('pull-left');
+              b.innerHTML = conversation.conversant;
+
+              var br = document.createElement('br');
+              var i = document.createElement('i');
+              i.classList.add('pull-left');
+              i.innerHTML = lastMessage.author.name + ': ' + lastMessage.text;
+
+              if (subject) {
+                i.innerHTML += ' ' + subject.name;
+              }
+
+              li.appendChild(b);
+              li.appendChild(br);
+              li.appendChild(i);
+
+              return li;
             }
-
-            li.appendChild(b);
-            li.appendChild(br);
-            li.appendChild(i);
-
-            return li;
-          }
+          });
         }
       }
 
@@ -123,7 +129,6 @@ var messaging = {
       profileToAdd.appendChild(remove);
     },
     updateParticipants: function(subjectId, updateAction) {
-      var messageBox = document.querySelector('div#messagesBox');
       var conversationId = document.querySelector('div#conversationIdHolder').innerHTML;
       var url = '/message/updateParticipants/' + conversationId;
 
@@ -135,8 +140,13 @@ var messaging = {
         body: 'updateAction=' + updateAction + '&subject=' + subjectId
       };
 
-      var updateParticipantsActions = {
-        success: function(data) {
+      ajaxHandler.blockUI();
+      ajaxHandler.fetch(url, payload, messaging.loadMessagesActions);
+    },
+    loadMessagesActions: {
+      200: function(response) {
+        response.json().then(function(data) {
+          var messageBox = document.querySelector('div#messagesBox');
           ajaxHandler.hideModals();
           messageBox.innerHTML = data.template;
           var newConversationId = document.querySelector('div#conversationIdHolder').innerHTML;
@@ -144,10 +154,10 @@ var messaging = {
           ajaxHandler.unblockUI();
           messaging.scrollMessagesDown();
           messaging.loadConversations();
-        }
+        });
+      },
+      404: function(response) {
+        console.log('Status code 404 returned.');
       }
-
-      ajaxHandler.blockUI();
-      ajaxHandler.fetch(url, payload, updateParticipantsActions);
     }
 }

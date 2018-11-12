@@ -28,7 +28,8 @@ class MessageController {
             conversation: 'GET',
             createDialogue: 'POST',
             add: 'POST',
-            updateParticipants: 'POST'
+            updateParticipants: 'POST',
+            conversationName: 'POST',
     ]
 
     static defaultAction = 'conversation'
@@ -102,6 +103,15 @@ class MessageController {
         Profile subject = profileService.getProfileById(params.subject as Long)
         UpdateParticipantsPayload.Action action = UpdateParticipantsPayload.Action.valueOf(actionString.toUpperCase())
         Conversation conversation = messageProxy.updateParticipants(id, initiator, subject, action)
+        Map model = [conversation: conversation, currentProfile: initiator]
+        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
+        render([template: template] as JSON)
+    }
+
+    def updateConversationName(Long id) {
+        String conversationName = params.conversationName as String
+        Profile initiator = profileService.currentProfile
+        Conversation conversation = messageProxy.updateConversationName(id, initiator, conversationName)
         Map model = [conversation: conversation, currentProfile: initiator]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
         render([template: template] as JSON)

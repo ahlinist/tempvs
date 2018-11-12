@@ -40,19 +40,21 @@ var profileSearcher = {
     window.addEventListener('click', eventListener);
   },
   actions: {
-    success: function(data) {
-      profileSearcher.recoverUI();
+    200: function(response) {
+      response.json().then(function(data) {
+        profileSearcher.recoverUI();
 
-      for (var i = 0; i < data.length; i++) {
-        var li = document.createElement('li');
-        li.classList.add('row');
-        var a = document.createElement('a');
-        a.classList.add('btn', 'btn-default', 'col-sm-12');
-        a.href = '/profile/show/' + data[i].id;
-        a.innerHTML = data[i].name;
-        li.appendChild(a);
-        profileSearcher.searchResult.appendChild(li);
-      }
+        for (var i = 0; i < data.length; i++) {
+          var li = document.createElement('li');
+          li.classList.add('row');
+          var a = document.createElement('a');
+          a.classList.add('btn', 'btn-default', 'col-sm-12');
+          a.href = '/profile/show/' + data[i].id;
+          a.innerHTML = data[i].name;
+          li.appendChild(a);
+          profileSearcher.searchResult.appendChild(li);
+        }
+      });
     }
   }
 }

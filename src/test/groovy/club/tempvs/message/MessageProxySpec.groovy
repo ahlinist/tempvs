@@ -34,6 +34,7 @@ class MessageProxySpec extends Specification {
     def action = GroovyMock UpdateParticipantsPayload.Action
     def type = GroovyMock ProfileType
     def updateParticipantsPayload = Mock UpdateParticipantsPayload
+    def updateConversationNamePayload = Mock UpdateConversationNamePayload
 
     def setup() {
         messageProxy = new MessageProxy(restCaller: restCaller, jsonConverter: jsonConverter, objectFactory: objectFactory)
@@ -197,6 +198,32 @@ class MessageProxySpec extends Specification {
         1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participantDto
         1 * objectFactory.getInstance(Participant, [id: LONG_TWO, name: profileName]) >> participantDto
         1 * objectFactory.getInstance(UpdateParticipantsPayload, payloadMap) >> updateParticipantsPayload
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody >> jsonResponse
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
+        0 * _
+
+        and:
+        result == conversationDto
+    }
+
+    void "test updateConversationName()"() {
+        given:
+        String jsonResponse = "{response}"
+        Long conversationId = 1L
+        String profileName = "profile name"
+        String conversationName = "conversation name"
+        Map payloadMap = [name: conversationName, initiator: participantDto]
+
+        when:
+        Conversation result = messageProxy.updateConversationName(conversationId, initiator, conversationName)
+
+        then:
+        1 * initiator.id >> LONG_ONE
+        1 * initiator.toString() >> profileName
+        1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participantDto
+        1 * objectFactory.getInstance(UpdateConversationNamePayload, payloadMap) >> updateConversationNamePayload
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
