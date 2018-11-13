@@ -1,10 +1,5 @@
 <button class="btn btn-default ${icon} ${classes}" style="${styles}" data-toggle="modal" data-target="#${elementId}">
-  <g:if test="${template}">
-    <g:render template="${template}"/>
-  </g:if>
-  <g:else>
-    <g:message code="${message}"/>
-  </g:else>
+  <g:message code="${message}"/>
 </button>
 
 <div id="${elementId}" class="modal fade" role="dialog">
