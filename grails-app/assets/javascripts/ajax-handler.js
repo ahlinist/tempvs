@@ -176,6 +176,7 @@ var ajaxHandler = {
       var textHolder = textWrapper.querySelector('.text-holder');
       var inputWrapper = smartForm.querySelector('.input-wrapper');
       var input = inputWrapper.querySelector('input');
+      var spinner = smartForm.querySelector('.spinner');
       var textValue = textHolder.innerHTML;
 
       textWrapper.classList.add('hidden');
@@ -211,12 +212,13 @@ var ajaxHandler = {
           window.removeEventListener("click", clickOutEventListener);
           window.removeEventListener("keydown", keyPressEventListener);
 
-          //TODO: roll the spinner
           var payload = {
             method: 'POST',
             body: new FormData(smartForm)
           }
 
+          spinner.classList.remove('hidden');
+          spinner.classList.add('hide-me');
           ajaxHandler.fetch(smartForm.action, payload, actions);
         }
       }

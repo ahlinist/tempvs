@@ -40,7 +40,7 @@
             </span>
             <span class="hidden input-wrapper">
               <g:field style="margin: 4px 0px;" type="text" name="conversationName" value="${conversation.name}" autocomplete="off"/>
-            </span>
+            </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/assets/spinner-sm.gif">
           </g:form>
         </div>
       </g:if>
