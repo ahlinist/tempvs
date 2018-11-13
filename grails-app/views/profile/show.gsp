@@ -57,7 +57,7 @@
                 <g:render template="/common/templates/modalButton"
                     model="${[elementId: 'writeMessageBox', template: '/message/templates/writeMessageButton', classes: 'col-sm-12']}">
                   <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'message', action: 'createDialogue']}">
-                    <input name="text" style="width: 100%; height: 100px;">
+                    <textarea name="text" style="width: 100%; height: 100px;"></textarea>
                     <input type="hidden" name="receiver" value="${profileId}">
                     <div>
                       <g:render template="/ajax/templates/submitButton">
