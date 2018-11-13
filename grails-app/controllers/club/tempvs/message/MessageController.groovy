@@ -89,12 +89,12 @@ class MessageController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'message', action: 'conversation', id: conversation.id))
     }
 
-    def add(Long id) {
+    def send(Long id) {
         Profile currentProfile = profileService.currentProfile
         Conversation conversation = messageProxy.addMessage(id, currentProfile, params.message as String)
         Map model = [conversation: conversation, currentProfile: currentProfile]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render([template: template] as JSON)
     }
 
     def updateParticipants(Long id) {

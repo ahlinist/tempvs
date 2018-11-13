@@ -137,7 +137,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
     }
 
-    void "test add()"() {
+    void "test send()"() {
         given:
         request.method = POST_METHOD
         Long conversationId = 1L
@@ -146,16 +146,13 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         Map model = [conversation: conversation, currentProfile: profile]
 
         when:
-        controller.add(conversationId)
+        controller.send(conversationId)
 
         then:
         1 * profileService.currentProfile >> profile
         1 * messageProxy.addMessage(conversationId, profile, message) >> conversation
         1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 
     void "test updateParticipants() for remove"() {

@@ -31,17 +31,20 @@ var messaging = {
           });
         }
     },
-    send: function(form, selector, conversationId) {
-        var isValid = true;
-        var isHidden = true;
-        var data = new FormData(form);
-        var url = '/message/add/' + conversationId
+    send: function(form, conversationId) {
+      var url = '/message/send/' + conversationId;
+      var data = new FormData(form);
 
-        if (!data.get('message')) {
-            return;
-        }
+      if (!data.get('message')) {
+        return;
+      }
 
-        ajaxHandler.processAjaxRequest(document, url, data, 'POST', selector, messaging.actions, isValid, isHidden);
+      var payload = {
+        method: 'POST',
+        body: data
+      };
+
+      ajaxHandler.fetch(url, payload, messaging.loadMessagesActions);
     },
     conversation: function(conversationId, selector, page, size) {
         var isValid = true;
