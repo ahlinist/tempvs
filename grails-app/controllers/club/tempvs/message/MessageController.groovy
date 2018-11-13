@@ -18,6 +18,7 @@ class MessageController {
 
     private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
+    private static final String MULTIPLE_RECEIVERS = 'dialogue.multiple.receivers.error'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final Integer DEFAULT_PAGE_NUMBER = 0
     private static final Integer DEFAULT_PAGE_SIZE = 40
@@ -73,20 +74,43 @@ class MessageController {
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
-    def createDialogue(CreateDialogueCommand command) {
+    def createDialogue(CreateConversationCommand command) {
         if (!command.validate()) {
             return render(ajaxResponseHelper.renderValidationResponse(command))
         }
 
-        Profile currentProfile = profileService.currentProfile
-        Profile receiver = command.receiver
+        Profile author = profileService.currentProfile
+        List<Profile> receivers = command.receivers.findAll()
 
-        if (currentProfile == receiver) {
+        if (receivers.size() > 1) {
+            return render(ajaxResponseHelper.renderFormMessage(false, MULTIPLE_RECEIVERS))
+        }
+
+        if (receivers.find { Profile profile -> profile.id == author.id}) {
             return render(ajaxResponseHelper.renderFormMessage(false, SELF_SENT_MESSAGE))
         }
 
-        Conversation conversation = messageProxy.createConversation(currentProfile, [receiver], command.text)
+        Conversation conversation = messageProxy.createConversation(author, receivers, command.text, null)
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'message', action: 'conversation', id: conversation.id))
+    }
+
+    //TODO: process validation responces correctly (mb status 400 or so)
+    def createConversation(CreateConversationCommand command) {
+        if (!command.validate()) {
+            return render(ajaxResponseHelper.renderValidationResponse(command))
+        }
+
+        Profile author = profileService.currentProfile
+        List<Profile> receivers = command.receivers.findAll().unique()
+
+        if (receivers.find { Profile profile -> profile.id == author.id}) {
+            return render(ajaxResponseHelper.renderFormMessage(false, SELF_SENT_MESSAGE))
+        }
+
+        Conversation conversation = messageProxy.createConversation(author, receivers, command.text, command.name)
+        Map model = [conversation: conversation, currentProfile: author]
+        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
+        render([template: template] as JSON)
     }
 
     def send(Long id) {

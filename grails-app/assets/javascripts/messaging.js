@@ -11,25 +11,133 @@ var messaging = {
             var container = document.querySelector(selector);
             container.innerHTML += response.template;
             messaging.scrollMessagesDown();
-        },
-        200: function(response) {
-          response.json().then(function(data) {
-            profileSearcher.recoverUI();
+        }
+    },
+    addParticipantActions: {
+      200: function(response) {
+        response.json().then(function(data) {
+          var container = document.querySelector('#add-participant-to-conversation-container');
+          profileSearcher.recoverUI();
 
-            for (var i = 0; i < data.length; i++) {
-              var li = document.createElement('li');
-              li.classList.add('row');
-              var a = document.createElement('a');
-              a.classList.add('btn', 'btn-default', 'col-sm-12');
+          for (var i = 0; i < data.length; i++) {
+            var li = document.createElement('li');
+            li.classList.add('row');
+            var a = document.createElement('a');
+            a.classList.add('btn', 'btn-default', 'col-sm-12');
+            var profileId = data[i].id;
+            var profileName = data[i].name;
+            a.onclick = function() { appendProfile(profileId, profileName); };
+            a.innerHTML = data[i].name;
+            li.appendChild(a);
+            profileSearcher.searchResult.appendChild(li);
+          }
+
+          function appendProfile(profileId, profileName) {
+            container.innerHTML = '';
+            var a = document.createElement('a');
+            a.classList.add('btn', 'btn-default', 'col-sm-10');
+            a.href = '/profile/show/' + profileId;
+            a.innerHTML = profileName;
+
+            var ok = document.createElement('span');
+            ok.classList.add('glyphicon', 'glyphicon-ok', 'btn', 'btn-default', 'col-sm-1');
+            ok.style.color = 'green';
+            ok.style.borderRadius = '150px';
+            ok.onclick = function() { messaging.updateParticipants(profileId, 'ADD') };
+
+            var remove = document.createElement('span');
+            remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default', 'col-sm-1');
+            remove.style.color = 'red';
+            remove.style.borderRadius = '150px';
+            remove.onclick = function() { container.innerHTML = '';};
+
+            container.appendChild(a);
+            container.appendChild(ok);
+            container.appendChild(remove);
+          }
+        });
+      }
+    },
+    createConversation: function(form) {
+      ajaxHandler.blockUI();
+      var url = form.action;
+
+      var payload = {
+        method: 'POST',
+        body: new FormData(form)
+      }
+
+      ajaxHandler.fetch(url, payload, messaging.loadMessagesActions);
+    },
+    createConversationActions: {
+      200: function(response) {
+        response.json().then(function(data) {
+          var createConversationPopup = document.querySelector('#create-conversation-popup');
+          var conversationNameContainer = createConversationPopup.querySelector('#conversation-name-container');
+          var participantsList = createConversationPopup.querySelector('#create-conversation-participants-container');
+          profileSearcher.recoverUI();
+
+          for (var i = 0; i < data.length; i++) {
+            var li = document.createElement('li');
+            var a = document.createElement('a');
+            a.classList.add('btn', 'btn-default', 'col-sm-12');
+
+            (function(){
               var profileId = data[i].id;
               var profileName = data[i].name;
-              a.onclick = function() { messaging.chooseProfile(profileId, profileName); };
-              a.innerHTML = data[i].name;
-              li.appendChild(a);
-              profileSearcher.searchResult.appendChild(li);
-            }
-          });
-        }
+
+              a.onclick = function() {
+                if (participantsList.querySelector('input[name^="receivers"][value="' + profileId + '"]')) {
+                  return;
+                }
+
+                var participantsCounterHolder = createConversationPopup.querySelector('span#participants-counter');
+                var participantsCounter = participantsCounterHolder.innerHTML;
+                var li = document.createElement('li');
+                var a = document.createElement('a');
+                a.classList.add('btn', 'btn-default');
+                a.style.width = '524px';
+                a.style.margin = '0 4px 0 0';
+                a.href = '/profile/show/' + profileId;
+                a.innerHTML = profileName;
+
+                var remove = document.createElement('span');
+                remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default');
+                remove.style.color = 'red';
+                remove.style.borderRadius = '150px';
+                remove.onclick = function() {
+                  participantsList.removeChild(li);
+                  toggleConversationNameContainer();
+                };
+
+                var hidden = document.createElement('input');
+                hidden.type = 'hidden';
+                hidden.value = profileId;
+                hidden.name = 'receivers[' + participantsCounter + ']';
+                participantsCounterHolder.innerHTML = ++participantsCounter;
+
+                li.appendChild(a);
+                li.appendChild(remove);
+                li.appendChild(hidden);
+                participantsList.appendChild(li);
+                toggleConversationNameContainer();
+
+                function toggleConversationNameContainer() {
+                  if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
+                    conversationNameContainer.style.display = 'block';
+                  } else {
+                    conversationNameContainer.style.display = 'none';
+                  }
+                }
+              };
+            })();
+
+            a.innerHTML = data[i].name;
+            li.appendChild(a);
+            profileSearcher.searchResult.appendChild(li);
+          }
+        });
+      }
     },
     send: function(form, conversationId) {
       var url = '/message/send/' + conversationId;
@@ -51,6 +159,7 @@ var messaging = {
         var isHidden = true;
         var url = '/message/loadMessages/' + conversationId + '?page=' + page + '&size=' + size;
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversationId);
+        //TODO: replace with fetch
         ajaxHandler.processAjaxRequest(document, url, null, 'GET', selector, messaging.actions, isValid, isHidden);
     },
     loadConversations: function() {
@@ -79,7 +188,12 @@ var messaging = {
 
               var b = document.createElement('b');
               b.classList.add('pull-left');
-              b.innerHTML = conversation.conversant;
+
+              if (conversation.type == 'CONFERENCE' && conversation.name) {
+                b.innerHTML = conversation.name;
+              } else {
+                b.innerHTML = conversation.conversant;
+              }
 
               var br = document.createElement('br');
               var i = document.createElement('i');
@@ -106,30 +220,6 @@ var messaging = {
     scrollMessagesDown: function() {
         var scrollable = document.querySelector('div#messagesScroll');
         scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
-    },
-    chooseProfile: function(profileId, profileName) {
-      var profileToAdd = document.querySelector('#profileToAdd');
-      profileToAdd.innerHTML = '';
-      var a = document.createElement('a');
-      a.classList.add('btn', 'btn-default', 'col-sm-10');
-      a.href = '/profile/show/' + profileId;
-      a.innerHTML = profileName;
-
-      var ok = document.createElement('span');
-      ok.classList.add('glyphicon', 'glyphicon-ok', 'btn', 'btn-default', 'col-sm-1');
-      ok.style.color = 'green';
-      ok.style.borderRadius = '150px';
-      ok.onclick = function() { messaging.updateParticipants(profileId, 'ADD') };
-
-      var remove = document.createElement('span');
-      remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default', 'col-sm-1');
-      remove.style.color = 'red';
-      remove.style.borderRadius = '150px';
-      remove.onclick = function() { profileToAdd.innerHTML = '';};
-
-      profileToAdd.appendChild(a);
-      profileToAdd.appendChild(ok);
-      profileToAdd.appendChild(remove);
     },
     updateParticipants: function(subjectId, updateAction) {
       var conversationId = document.querySelector('div#conversationIdHolder').innerHTML;

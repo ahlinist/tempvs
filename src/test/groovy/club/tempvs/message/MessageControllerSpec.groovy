@@ -22,7 +22,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def conversation = Mock Conversation
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
-    def createDialogueCommand = Mock CreateDialogueCommand
+    def createConversationCommand = Mock CreateConversationCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
     def groovyPageRenderer = Mock PageRenderer
     def initiator = Mock Profile
@@ -104,19 +104,47 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         String text = "msg text"
         Long conversationId = 1L
         def receiver = Mock Profile
+        List<Profile> receivers = [receiver]
 
         when:
-        controller.createDialogue(createDialogueCommand)
+        controller.createDialogue(createConversationCommand)
 
         then:
-        1 * createDialogueCommand.validate() >> true
-        1 * createDialogueCommand.receiver >> receiver
-        1 * createDialogueCommand.text >> text
+        1 * createConversationCommand.validate() >> true
+        1 * createConversationCommand.receivers >> receivers
+        1 * receiver.id >> LONG_ONE
         1 * profileService.currentProfile >> profile
-        1 * messageProxy.createConversation(profile, [receiver], text) >> conversation
+        1 * profile.id >> LONG_THREE
+        1 * createConversationCommand.text >> text
+        1 * messageProxy.createConversation(profile, [receiver], text, null) >> conversation
         1 * conversation.id >> conversationId
         1 * ajaxResponseHelper.renderRedirect("/message/conversation/" + conversationId) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "test createConversation()"() {
+        given:
+        request.method = POST_METHOD
+        String text = "msg text"
+        String name = "conversation name"
+        def receiver = Mock Profile
+        List<Profile> receivers = [receiver]
+        Map model = [conversation: conversation, currentProfile: initiator]
+
+        when:
+        controller.createConversation(createConversationCommand)
+
+        then:
+        1 * createConversationCommand.validate() >> true
+        1 * createConversationCommand.receivers >> receivers
+        1 * receiver.id >> LONG_ONE
+        1 * profileService.currentProfile >> initiator
+        1 * initiator.id >> LONG_THREE
+        1 * createConversationCommand.text >> text
+        1 * createConversationCommand.name >> name
+        1 * messageProxy.createConversation(initiator, [receiver], text, name) >> conversation
+        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
     }
 

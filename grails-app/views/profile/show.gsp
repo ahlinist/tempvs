@@ -68,7 +68,7 @@
                       <div class="modal-body">
                         <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'message', action: 'createDialogue']}">
                           <textarea name="text" style="width: 100%; height: 100px;"></textarea>
-                          <input type="hidden" name="receiver" value="${profileId}">
+                          <input type="hidden" name="receivers[0]" value="${profileId}">
                           <div>
                             <g:render template="/ajax/templates/submitButton">
                               <g:message code="message.send.message.button"/>

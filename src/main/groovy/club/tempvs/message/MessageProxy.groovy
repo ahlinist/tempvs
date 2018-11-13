@@ -24,6 +24,7 @@ class MessageProxy {
     @Autowired
     ObjectFactory objectFactory
 
+    //TODO: return DTO instead of pure json
     String getConversations(Profile profile, int page, int size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&page=${page}&size=${size}"
 
@@ -56,7 +57,7 @@ class MessageProxy {
         }
     }
 
-    Conversation createConversation(Profile author, List<Profile> receivers, String text, String name = null) {
+    Conversation createConversation(Profile author, List<Profile> receivers, String text, String name) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations"
 
         Participant authorDto = objectFactory.getInstance(Participant, [id: author.id, name: author.toString()])

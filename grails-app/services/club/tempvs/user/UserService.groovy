@@ -51,6 +51,7 @@ class UserService {
             EmailVerification emailVerification = verifyService.getRegistrationVerificationByUser(user)
             emailVerification.delete()
 
+            //TODO: should be moved further to user profile creation page
             Profile profile = user.userProfile
             ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
             JSON jsonPayload = profileDto as JSON

@@ -77,21 +77,20 @@
       </div>
       <g:render template="/common/templates/modalButton"
           model="${[elementId: 'addParticipantProfileSearch', size: 'modal-sm', icon: 'glyphicon glyphicon-plus']}">
-        <span class="dropdown" style="margin:10px;">
-          <input style="width: 300px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
-          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.actions);">
+        <span class="dropdown" style="margin:10px 0px;">
+          <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
+          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantActions);">
             <span class="glyphicon glyphicon-search"></span>
           </button>
           <div class="dropdown-menu" style="width: 300px;">
             <ul class="profile-search-result">
             </ul>
-            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.actions);">
+            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantActions);">
               <i><g:message code="profile.search.loadMore.link"/></i>
             </button>
           </div>
         </span>
-        <div id="profileToAdd" style="height: 50px;">
-        </div>
+        <div id="add-participant-to-conversation-container" style="height: 50px;"></div>
       </g:render>
     </g:if>
   </div>
