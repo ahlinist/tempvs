@@ -24,36 +24,38 @@ var messaging = {
             li.classList.add('row');
             var a = document.createElement('a');
             a.classList.add('btn', 'btn-default', 'col-sm-12');
-            var profileId = data[i].id;
-            var profileName = data[i].name;
-            a.onclick = function() { appendProfile(profileId, profileName); };
+
+            (function(){
+              var profileId = data[i].id;
+              var profileName = data[i].name;
+              a.onclick = function() {
+                container.innerHTML = '';
+                var a = document.createElement('a');
+                a.classList.add('btn', 'btn-default', 'col-sm-10');
+                a.href = '/profile/show/' + profileId;
+                a.innerHTML = profileName;
+
+                var ok = document.createElement('span');
+                ok.classList.add('glyphicon', 'glyphicon-ok', 'btn', 'btn-default', 'col-sm-1');
+                ok.style.color = 'green';
+                ok.style.borderRadius = '150px';
+                ok.onclick = function() { messaging.updateParticipants(profileId, 'ADD') };
+
+                var remove = document.createElement('span');
+                remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default', 'col-sm-1');
+                remove.style.color = 'red';
+                remove.style.borderRadius = '150px';
+                remove.onclick = function() { container.innerHTML = '';};
+
+                container.appendChild(a);
+                container.appendChild(ok);
+                container.appendChild(remove);
+              };
+            })();
+
             a.innerHTML = data[i].name;
             li.appendChild(a);
             profileSearcher.searchResult.appendChild(li);
-          }
-
-          function appendProfile(profileId, profileName) {
-            container.innerHTML = '';
-            var a = document.createElement('a');
-            a.classList.add('btn', 'btn-default', 'col-sm-10');
-            a.href = '/profile/show/' + profileId;
-            a.innerHTML = profileName;
-
-            var ok = document.createElement('span');
-            ok.classList.add('glyphicon', 'glyphicon-ok', 'btn', 'btn-default', 'col-sm-1');
-            ok.style.color = 'green';
-            ok.style.borderRadius = '150px';
-            ok.onclick = function() { messaging.updateParticipants(profileId, 'ADD') };
-
-            var remove = document.createElement('span');
-            remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default', 'col-sm-1');
-            remove.style.color = 'red';
-            remove.style.borderRadius = '150px';
-            remove.onclick = function() { container.innerHTML = '';};
-
-            container.appendChild(a);
-            container.appendChild(ok);
-            container.appendChild(remove);
           }
         });
       }
