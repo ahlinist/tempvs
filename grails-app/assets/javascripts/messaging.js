@@ -59,6 +59,17 @@ var messaging = {
       }
     },
     createConversation: function(form) {
+      var text = form.querySelector('textarea[name=text]');
+      var receivers = form.querySelector('input[name^="receivers["]');
+
+      if (!text.value || !text.value.trim()) {
+        return;
+      }
+
+      if (!receivers) {
+        return;
+      }
+
       ajaxHandler.blockUI();
       var url = form.action;
 
@@ -250,12 +261,9 @@ var messaging = {
       },
       400: function(response, form) {
         response.json().then(function (data) {
-          var fieldEntry;
-          var field;
-
           for (entry in data) {
-            fieldEntry = data[entry];
-            field = form.querySelector('[name="' + fieldEntry.name + '"]')
+            var fieldEntry = data[entry];
+            var field = form.querySelector('[name="' + fieldEntry.name + '"]')
 
             if (!field) {
                 field = form.querySelector('.submit-button');
