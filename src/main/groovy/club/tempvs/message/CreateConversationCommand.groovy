@@ -11,7 +11,7 @@ class CreateConversationCommand implements Validateable {
     String name
 
     static constraints = {
-        receivers minSize: 1
+        receivers size: 1..19, nullable: false
         name nullable: true, blank: true
     }
 }

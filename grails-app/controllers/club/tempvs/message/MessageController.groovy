@@ -22,6 +22,7 @@ class MessageController {
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final Integer DEFAULT_PAGE_NUMBER = 0
     private static final Integer DEFAULT_PAGE_SIZE = 40
+    private static final String RECEIVERS_FIELD = 'receivers'
 
     static allowedMethods = [
             getNewConversationsCount: 'GET',
@@ -94,17 +95,17 @@ class MessageController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'message', action: 'conversation', id: conversation.id))
     }
 
-    //TODO: process validation responces correctly (mb status 400 or so)
     def createConversation(CreateConversationCommand command) {
         if (!command.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(command))
+            return render(status: 400, text: ajaxResponseHelper.renderErrors(command))
         }
 
         Profile author = profileService.currentProfile
         List<Profile> receivers = command.receivers.findAll().unique()
 
         if (receivers.find { Profile profile -> profile.id == author.id}) {
-            return render(ajaxResponseHelper.renderFormMessage(false, SELF_SENT_MESSAGE))
+            List errorList = [[name: RECEIVERS_FIELD, message: SELF_SENT_MESSAGE]]
+            return render(status: 400, text: ajaxResponseHelper.renderErrors(errorList))
         }
 
         Conversation conversation = messageProxy.createConversation(author, receivers, command.text, command.name)

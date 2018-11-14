@@ -16,8 +16,8 @@ var messaging = {
     addParticipantActions: {
       200: function(response) {
         response.json().then(function(data) {
-          var container = document.querySelector('#add-participant-to-conversation-container');
           profileSearcher.recoverUI();
+          var container = document.querySelector('#add-participant-to-conversation-container');
 
           for (var i = 0; i < data.length; i++) {
             var li = document.createElement('li');
@@ -67,15 +67,15 @@ var messaging = {
         body: new FormData(form)
       }
 
-      ajaxHandler.fetch(url, payload, messaging.loadMessagesActions);
+      ajaxHandler.fetch(form, url, payload, messaging.loadMessagesActions);
     },
     createConversationActions: {
       200: function(response) {
         response.json().then(function(data) {
+          profileSearcher.recoverUI();
           var createConversationPopup = document.querySelector('#create-conversation-popup');
           var conversationNameContainer = createConversationPopup.querySelector('#conversation-name-container');
           var participantsList = createConversationPopup.querySelector('#create-conversation-participants-container');
-          profileSearcher.recoverUI();
 
           for (var i = 0; i < data.length; i++) {
             var li = document.createElement('li');
@@ -152,7 +152,7 @@ var messaging = {
         body: data
       };
 
-      ajaxHandler.fetch(url, payload, messaging.loadMessagesActions);
+      ajaxHandler.fetch(form, url, payload, messaging.loadMessagesActions);
     },
     conversation: function(conversationId, selector, page, size) {
         var isValid = true;
@@ -215,7 +215,7 @@ var messaging = {
       }
 
       var url = '/message/loadConversations?page=0&size=40';
-      ajaxHandler.fetch(url, {method: 'GET'}, actions);
+      ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
     },
     scrollMessagesDown: function() {
         var scrollable = document.querySelector('div#messagesScroll');
@@ -234,7 +234,7 @@ var messaging = {
       };
 
       ajaxHandler.blockUI();
-      ajaxHandler.fetch(url, payload, messaging.loadMessagesActions);
+      ajaxHandler.fetch(null, url, payload, messaging.loadMessagesActions);
     },
     loadMessagesActions: {
       200: function(response) {
@@ -244,9 +244,32 @@ var messaging = {
           messageBox.innerHTML = data.template;
           var newConversationId = document.querySelector('div#conversationIdHolder').innerHTML;
           window.history.pushState("", "Tempvs - Message", '/message/conversation/' + newConversationId);
-          ajaxHandler.unblockUI();
           messaging.scrollMessagesDown();
           messaging.loadConversations();
+        });
+      },
+      400: function(response, form) {
+        response.json().then(function (data) {
+          var fieldEntry;
+          var field;
+
+          for (entry in data) {
+            fieldEntry = data[entry];
+            field = form.querySelector('[name="' + fieldEntry.name + '"]')
+
+            if (!field) {
+                field = form.querySelector('.submit-button');
+            }
+
+            field.classList.add('popped-over');
+
+            $(field).popover({
+                placement: 'bottom',
+                content: fieldEntry.message,
+                html: true,
+                container: 'body'
+            }).popover('show');
+          }
         });
       },
       404: function(response) {

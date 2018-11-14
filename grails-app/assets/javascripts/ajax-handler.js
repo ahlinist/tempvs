@@ -136,14 +136,17 @@ var ajaxHandler = {
             }
         }
     },
-    fetch: function(url, payload, actions) {
+    fetch: function(form, url, payload, actions) {
       fetch(url, payload)
         .then(
           function(response) {
-            actions[response.status](response);
+            ajaxHandler.unblockUI();
+            actions[response.status](response, form);
           }
         )
         .catch(function(error) {
+          ajaxHandler.unblockUI();
+
           console.log('Looks like there was a problem: ' + error);
         });
     },
@@ -219,7 +222,7 @@ var ajaxHandler = {
 
           spinner.classList.remove('hidden');
           spinner.classList.add('hide-me');
-          ajaxHandler.fetch(smartForm.action, payload, actions);
+          ajaxHandler.fetch(smartForm, smartForm.action, payload, actions);
         }
       }
 

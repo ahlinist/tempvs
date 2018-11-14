@@ -33,6 +33,36 @@ class AjaxResponseHelperSpec extends Specification {
     def cleanup() {
     }
 
+    void "Test renderErrors() for validateable"() {
+        when:
+        def result = ajaxResponseHelper.renderErrors(user)
+
+        then:
+        1 * user.errors >> errors
+        1 * errors.allErrors >> [fieldError, fieldError]
+        2 * validationTagLib.message([error: fieldError]) >> FAIL_MESSAGE
+        2 * fieldError.field >> FIELD
+        0 * _
+
+        and:
+        result.target.size() == 2
+    }
+
+    void "Test renderErrors() for list of maps"() {
+        given:
+        List errorList = [[name: 'name', message: 'error code']]
+
+        when:
+        def result = ajaxResponseHelper.renderErrors(errorList)
+
+        then:
+        1 * validationTagLib.message([code: 'error code']) >> FAIL_MESSAGE
+        0 * _
+
+        and:
+        result.target.size() == 1
+    }
+
     void "Check successful renderValidationResponse() for 2 args"() {
         given:
         Map messageMap = [code: SUCCESS_MESSAGE]

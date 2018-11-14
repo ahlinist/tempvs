@@ -39,6 +39,7 @@
                     </div>
                   </span>
                   <g:form controller="message" action="createConversation" onsubmit="messaging.createConversation(this); return false;">
+                    <input style="height:0; width:0; padding:0; border:none; display: block;" name="receivers">
                     <span style="display: none;" id="participants-counter">0</span>
                     <ul id="create-conversation-participants-container" class="row"></ul>
                     <div id="conversation-name-container" class="row" style="display: none;">
@@ -47,7 +48,7 @@
                     </div>
                     <hr style="margin: 10px 0px;"/>
                     <textarea placeholder="${g.message(code: 'message.create.text')}" name="text" style="width: 100%; height: 100px;"></textarea>
-                    <button class="btn btn-default">
+                    <button class="btn btn-default submit-button">
                       <g:message code="message.send.message.button"/>
                     </button>
                   </g:form>

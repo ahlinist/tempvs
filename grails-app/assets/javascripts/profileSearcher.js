@@ -24,7 +24,7 @@ var profileSearcher = {
 
     var profileSearchBox = profileSearcher.searchPanel.querySelector('.profile-search-box');
     var url = '/profile/search?query=' + profileSearchBox.value + '&offset=' + profileSearcher.offsetCounter;
-    ajaxHandler.fetch(url, {method: 'GET'}, actions);
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   },
   recoverUI: function() {
     var eventListener = function(event) {

@@ -15,8 +15,8 @@ $(function (){
     });
 
     $('body').click(function() {
-        $('.popped-over').popover('hide');
-        $('[data-toggle="tooltip"]').tooltip('hide');
+        $('.popped-over').popover('destroy');
+        $('[data-toggle="tooltip"]').tooltip('destroy');
     });
 
     //enabling tooltips for glyphiconed buttons

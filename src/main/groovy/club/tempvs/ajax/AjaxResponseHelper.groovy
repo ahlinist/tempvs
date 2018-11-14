@@ -20,6 +20,18 @@ class AjaxResponseHelper {
 
     ValidationTagLib validationTagLib
 
+    JSON renderErrors(Validateable instance) {
+        instance.errors.allErrors.collect { ObjectError error ->
+            [message: validationTagLib.message(error: error), name: ((FieldError) error).field]
+        } as JSON
+    }
+
+    JSON renderErrors(List<LinkedHashMap> messages) {
+        messages.collect { Map messageMap ->
+            [message: validationTagLib.message(code: messageMap.message), name: messageMap.name]
+        } as JSON
+    }
+
     JSON renderValidationResponse(Validateable instance, String successMessage = null) {
         if (instance.hasErrors()) {
             List result = instance.errors.allErrors.collect { ObjectError error ->
