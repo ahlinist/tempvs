@@ -257,6 +257,7 @@ var messaging = {
           window.history.pushState("", "Tempvs - Message", '/message/conversation/' + newConversationId);
           messaging.scrollMessagesDown();
           messaging.loadConversations();
+          messaging.displayNewMessagesCounter();
         });
       },
       400: function(response, form) {
@@ -278,10 +279,21 @@ var messaging = {
                 container: 'body'
             }).popover('show');
           }
+
+          messaging.scrollMessagesDown();
+          messaging.loadConversations();
+          messaging.displayNewMessagesCounter();
         });
       },
       404: function(response) {
         console.log('Status code 404 returned.');
+
+        messaging.scrollMessagesDown();
+        messaging.loadConversations();
+        messaging.displayNewMessagesCounter();
       }
+    },
+    displayNewMessagesCounter: function() {
+      horizontalMenuCounter.displayCounter('span#new-conversations', '/message/getNewConversationsCount');
     }
 }
