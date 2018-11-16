@@ -7,9 +7,11 @@ import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
 import grails.converters.JSON
 import groovy.transform.CompileStatic
+import groovy.util.logging.Slf4j
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 
+@Slf4j
 @CompileStatic
 class MessageProxy {
 
@@ -34,7 +36,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return response.responseBody
         } else {
-            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+            return processError(response)
         }
     }
 
@@ -53,7 +55,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+            return processError(response)
         }
     }
 
@@ -75,7 +77,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+            return processError(response)
         }
     }
 
@@ -90,7 +92,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+            return processError(response)
         }
     }
 
@@ -111,7 +113,7 @@ class MessageProxy {
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+            return processError(response)
         }
     }
 
@@ -122,12 +124,17 @@ class MessageProxy {
         UpdateConversationNamePayload updateConversationNamePayload =
                 objectFactory.getInstance(UpdateConversationNamePayload, [name: name, initiator: initiatorDto])
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, updateConversationNamePayload as JSON)
-        HttpStatus httpStatus = response.statusCode
 
-        if (httpStatus == HttpStatus.OK) {
+        if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
-            throw new RuntimeException("Response with code ${httpStatus.value()} has been returned.")
+            return processError(response)
         }
+    }
+
+    private Conversation processError(RestResponse response) {
+        HttpStatus httpStatus = response.statusCode
+        log.error "Response status code ${httpStatus.value()}.\nMessage: ${response.responseBody}"
+        throw new RuntimeException(String.valueOf(httpStatus.value()))
     }
 }

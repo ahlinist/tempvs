@@ -142,13 +142,12 @@ class MessageController {
         render([template: template] as JSON)
     }
 
-    def accessDeniedThrown(AccessDeniedException exception) {
-        log.error exception.message
+    def exceptionThrown(Exception exception) {
+        return render(status: exception.message as Integer, text: 'An error occurred')
+    }
 
-        if (request.xhr) {
-            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
-        } else {
-            redirect(controller: 'auth')
-        }
+    def accessDeniedExceptionThrown(AccessDeniedException exception) {
+        log.error exception.message
+        return render(status: 403, text: 'An authorization error occurred')
     }
 }

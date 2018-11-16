@@ -76,7 +76,8 @@ class MessageProxySpec extends Specification {
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.INTERNAL_SERVER_ERROR
+        2 * restResponse.statusCode >> HttpStatus.INTERNAL_SERVER_ERROR
+        1 * restResponse.responseBody
         0 * _
 
         and:
