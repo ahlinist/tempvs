@@ -52,7 +52,7 @@
             <g:set var="participantName" value="${participant.name}"/>
             <g:if test="${participantId != currentProfile.id}">
               <li class="row">
-                <g:link class="btn btn-default col-sm-10" controller="profile" action="show" id="${participantId}">
+                <g:link class="btn btn-default col-sm-10 active-conversation-participant" controller="profile" action="show" id="${participantId}">
                   ${participant.name}
                 </g:link>
                   <g:if test="${currentProfile.id == conversation.admin?.id}">

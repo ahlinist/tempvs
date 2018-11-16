@@ -15,19 +15,25 @@ var messaging = {
     },
     addParticipantActions: {
       200: function(response) {
+        var container = document.querySelector('#add-participant-to-conversation-container');
+
         response.json().then(function(data) {
           profileSearcher.recoverUI();
-          var container = document.querySelector('#add-participant-to-conversation-container');
 
           for (var i = 0; i < data.length; i++) {
-            var li = document.createElement('li');
-            li.classList.add('row');
-            var a = document.createElement('a');
-            a.classList.add('btn', 'btn-default', 'col-sm-12');
-
             (function(){
               var profileId = data[i].id;
               var profileName = data[i].name;
+
+              if (document.querySelector('.active-conversation-participant[href$="' + data[i].id + '"]')) {
+                return;
+              }
+
+              var li = document.createElement('li');
+              li.classList.add('row');
+              var a = document.createElement('a');
+              a.classList.add('btn', 'btn-default', 'col-sm-12');
+
               a.onclick = function() {
                 container.innerHTML = '';
                 var a = document.createElement('a');
@@ -51,16 +57,18 @@ var messaging = {
                 container.appendChild(ok);
                 container.appendChild(remove);
               };
-            })();
 
-            a.innerHTML = data[i].name;
-            li.appendChild(a);
-            profileSearcher.searchResult.appendChild(li);
+              a.innerHTML = data[i].name;
+              li.appendChild(a);
+              profileSearcher.searchResult.appendChild(li);
+            })();
           }
         });
       }
     },
     createConversation: function(form) {
+      //TODO: add UI internationalized validation messages
+
       var text = form.querySelector('textarea[name=text]');
       var receivers = form.querySelector('input[name^="receivers["]');
 
@@ -91,24 +99,24 @@ var messaging = {
           var participantsList = createConversationPopup.querySelector('#create-conversation-participants-container');
 
           for (var i = 0; i < data.length; i++) {
-            var li = document.createElement('li');
-            var a = document.createElement('a');
-            a.classList.add('btn', 'btn-default', 'col-sm-12');
-
             (function(){
               var profileId = data[i].id;
               var profileName = data[i].name;
 
-              a.onclick = function() {
-                if (participantsList.querySelector('input[name^="receivers"][value="' + profileId + '"]')) {
-                  return;
-                }
+              if (participantsList.querySelector('input[name^="receivers"][value="' + profileId + '"]')) {
+                return;
+              }
 
+              var li = document.createElement('li');
+              var a = document.createElement('a');
+              a.classList.add('btn', 'btn-default', 'col-sm-12');
+
+              a.onclick = function() {
                 var participantsCounterHolder = createConversationPopup.querySelector('span#participants-counter');
                 var participantsCounter = participantsCounterHolder.innerHTML;
                 var li = document.createElement('li');
                 var a = document.createElement('a');
-                a.classList.add('btn', 'btn-default');
+                a.classList.add('btn', 'btn-default', 'create-conversation-participant');
                 a.style.width = '524px';
                 a.style.margin = '0 4px 0 0';
                 a.href = '/profile/show/' + profileId;
@@ -143,11 +151,11 @@ var messaging = {
                   }
                 }
               };
-            })();
 
-            a.innerHTML = data[i].name;
-            li.appendChild(a);
-            profileSearcher.searchResult.appendChild(li);
+              a.innerHTML = data[i].name;
+              li.appendChild(a);
+              profileSearcher.searchResult.appendChild(li);
+            })();
           }
         });
       }
