@@ -19,7 +19,6 @@ class MessageController {
     private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
     private static final String MULTIPLE_RECEIVERS = 'dialogue.multiple.receivers.error'
-    private static final String REPLACE_ACTION = 'replaceElement'
     private static final Integer DEFAULT_PAGE_NUMBER = 0
     private static final Integer DEFAULT_PAGE_SIZE = 40
     private static final String RECEIVERS_FIELD = 'receivers'
@@ -72,7 +71,7 @@ class MessageController {
         Conversation conversation = messageProxy.getConversation(id, currentProfile, page, size)
         Map model = [conversation: conversation, currentProfile: currentProfile]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
+        render([template: template] as JSON)
     }
 
     def createDialogue(CreateConversationCommand command) {

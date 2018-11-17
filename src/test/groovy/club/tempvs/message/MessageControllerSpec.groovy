@@ -13,7 +13,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     private static final String POST_METHOD = 'POST'
     private static final String DISPLAY_COUNTER = 'displayCounter'
-    private static final String REPLACE_ACTION = 'replaceElement'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_THREE = 3L
 
@@ -77,9 +76,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         1 * messageProxy.getConversation(id, profile, page, size) >> conversation
         1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 
     void "test getNewConversationsCount()"() {

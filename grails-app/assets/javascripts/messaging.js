@@ -4,12 +4,6 @@ var messaging = {
     currentConversationsPage: 0,
     actions: {
         //TODO: replace with statuscode
-        replaceElement: function(element, response, selector) {
-            var container = document.querySelector(selector);
-            container.innerHTML = response.template;
-            messaging.scrollMessagesDown();
-        },
-        //TODO: replace with statuscode
         appendElement: function(element, response, selector) {
             var container = document.querySelector(selector);
             container.innerHTML += response.template;
@@ -179,12 +173,9 @@ var messaging = {
       ajaxHandler.fetch(form, url, payload, messaging.loadMessagesActions);
     },
     conversation: function(conversationId, selector, page, size) {
-        var isValid = true;
-        var isHidden = true;
         var url = '/message/loadMessages/' + conversationId + '?page=' + page + '&size=' + size;
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversationId);
-        //TODO: replace with fetch
-        ajaxHandler.processAjaxRequest(document, url, null, 'GET', selector, messaging.actions, isValid, isHidden);
+        ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.loadMessagesActions);
     },
     loadConversations: function(append) {
       var conversationsContainer = document.querySelector('#conversations-container');
