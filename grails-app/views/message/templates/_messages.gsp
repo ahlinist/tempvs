@@ -36,7 +36,7 @@
           <g:form controller="message" action="updateConversationName" id="${conversation.id}" style="display: inline;">
             <span class="hovering text-wrapper">
               <span class="text-holder" style="line-height: 40px; padding-left: 15px;">${conversation.name}</span>
-              <span onclick="ajaxHandler.activateSmartForm(this, messaging.loadMessagesActions);" class="glyphicon glyphicon-pencil"></span>
+              <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions);" class="glyphicon glyphicon-pencil"></span>
             </span>
             <span class="hidden input-wrapper">
               <g:field style="margin: 4px 0px;" type="text" name="conversationName" value="${conversation.name}" autocomplete="off"/>

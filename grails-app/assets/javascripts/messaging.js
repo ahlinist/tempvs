@@ -3,12 +3,50 @@ var messaging = {
     defaultConversationsSize: 40,
     currentConversationsPage: 0,
     actions: {
-        //TODO: replace with statuscode
-        appendElement: function(element, response, selector) {
-            var container = document.querySelector(selector);
-            container.innerHTML += response.template;
-            messaging.scrollMessagesDown();
-        }
+      200: function(response) {
+        response.json().then(function(data) {
+          var messageBox = document.querySelector('div#messagesBox');
+          ajaxHandler.hideModals();
+          messageBox.innerHTML = data.template;
+          var newConversationId = document.querySelector('div#conversationIdHolder').innerHTML;
+          window.history.pushState("", "Tempvs - Message", '/message/conversation/' + newConversationId);
+          messaging.scrollMessagesDown();
+          messaging.loadConversations(false);
+          messaging.displayNewMessagesCounter();
+        });
+      },
+      400: function(response, form) {
+        response.json().then(function (data) {
+          for (entry in data) {
+            var fieldEntry = data[entry];
+            var field = form.querySelector('[name="' + fieldEntry.name + '"]')
+
+            if (!field) {
+                field = form.querySelector('.submit-button');
+            }
+
+            field.classList.add('popped-over');
+
+            $(field).popover({
+                placement: 'bottom',
+                content: fieldEntry.message,
+                html: true,
+                container: 'body'
+            }).popover('show');
+          }
+
+          messaging.scrollMessagesDown();
+          messaging.loadConversations(false);
+          messaging.displayNewMessagesCounter();
+        });
+      },
+      404: function(response) {
+        console.log('Status code 404 returned.');
+
+        messaging.scrollMessagesDown();
+        messaging.loadConversations(false);
+        messaging.displayNewMessagesCounter();
+      }
     },
     addParticipantActions: {
       200: function(response) {
@@ -85,7 +123,7 @@ var messaging = {
         body: new FormData(form)
       }
 
-      ajaxHandler.fetch(form, url, payload, messaging.loadMessagesActions);
+      ajaxHandler.fetch(form, url, payload, messaging.actions);
     },
     createConversationActions: {
       200: function(response) {
@@ -170,12 +208,12 @@ var messaging = {
         body: data
       };
 
-      ajaxHandler.fetch(form, url, payload, messaging.loadMessagesActions);
+      ajaxHandler.fetch(form, url, payload, messaging.actions);
     },
     conversation: function(conversationId, selector, page, size) {
         var url = '/message/loadMessages/' + conversationId + '?page=' + page + '&size=' + size;
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversationId);
-        ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.loadMessagesActions);
+        ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.actions);
     },
     loadConversations: function(append) {
       var conversationsContainer = document.querySelector('#conversations-container');
@@ -274,53 +312,7 @@ var messaging = {
       };
 
       ajaxHandler.blockUI();
-      ajaxHandler.fetch(null, url, payload, messaging.loadMessagesActions);
-    },
-    loadMessagesActions: {
-      200: function(response) {
-        response.json().then(function(data) {
-          var messageBox = document.querySelector('div#messagesBox');
-          ajaxHandler.hideModals();
-          messageBox.innerHTML = data.template;
-          var newConversationId = document.querySelector('div#conversationIdHolder').innerHTML;
-          window.history.pushState("", "Tempvs - Message", '/message/conversation/' + newConversationId);
-          messaging.scrollMessagesDown();
-          messaging.loadConversations(false);
-          messaging.displayNewMessagesCounter();
-        });
-      },
-      400: function(response, form) {
-        response.json().then(function (data) {
-          for (entry in data) {
-            var fieldEntry = data[entry];
-            var field = form.querySelector('[name="' + fieldEntry.name + '"]')
-
-            if (!field) {
-                field = form.querySelector('.submit-button');
-            }
-
-            field.classList.add('popped-over');
-
-            $(field).popover({
-                placement: 'bottom',
-                content: fieldEntry.message,
-                html: true,
-                container: 'body'
-            }).popover('show');
-          }
-
-          messaging.scrollMessagesDown();
-          messaging.loadConversations(false);
-          messaging.displayNewMessagesCounter();
-        });
-      },
-      404: function(response) {
-        console.log('Status code 404 returned.');
-
-        messaging.scrollMessagesDown();
-        messaging.loadConversations(false);
-        messaging.displayNewMessagesCounter();
-      }
+      ajaxHandler.fetch(null, url, payload, messaging.actions);
     },
     displayNewMessagesCounter: function() {
       horizontalMenuCounter.displayCounter('span#new-conversations', '/message/getNewConversationsCount');
