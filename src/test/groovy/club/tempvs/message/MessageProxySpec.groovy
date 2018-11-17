@@ -26,7 +26,8 @@ class MessageProxySpec extends Specification {
     def initiator = Mock Profile
     def subject = Mock Profile
     def restResponse = Mock RestResponse
-    def conversationDto = Mock Conversation
+    def conversation = Mock Conversation
+    def conversationList = Mock ConversationList
     def httpHeaders = Mock HttpHeaders
     def participantDto = Mock Participant
     def createConversationDto = Mock CreateConversationPayload
@@ -51,17 +52,18 @@ class MessageProxySpec extends Specification {
         Long profileId = 1L
 
         when:
-        String result = messageProxy.getConversations(profile, page, size)
+        ConversationList result = messageProxy.getConversations(profile, page, size)
 
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
+        1 * jsonConverter.convert(ConversationList, jsonResponse) >> conversationList
         0 * _
 
         and:
-        result == jsonResponse
+        result == conversationList
     }
 
     void "test getConversations() for bad request"() {
@@ -76,7 +78,7 @@ class MessageProxySpec extends Specification {
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
-        2 * restResponse.statusCode >> HttpStatus.INTERNAL_SERVER_ERROR
+        1 * restResponse.statusCode >> HttpStatus.INTERNAL_SERVER_ERROR
         1 * restResponse.responseBody
         0 * _
 
@@ -119,11 +121,11 @@ class MessageProxySpec extends Specification {
         1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
         0 * _
 
         and:
-        result == conversationDto
+        result == conversation
     }
 
     void "test createConversation()"() {
@@ -146,11 +148,11 @@ class MessageProxySpec extends Specification {
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
         0 * _
 
         and:
-        result == conversationDto
+        result == conversation
     }
 
     void "test addMessage()"() {
@@ -172,11 +174,11 @@ class MessageProxySpec extends Specification {
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
         0 * _
 
         and:
-        result == conversationDto
+        result == conversation
     }
 
     void "test updateParticipants()"() {
@@ -202,11 +204,11 @@ class MessageProxySpec extends Specification {
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
         0 * _
 
         and:
-        result == conversationDto
+        result == conversation
     }
 
     void "test updateConversationName()"() {
@@ -228,10 +230,10 @@ class MessageProxySpec extends Specification {
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversationDto
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
         0 * _
 
         and:
-        result == conversationDto
+        result == conversation
     }
 }

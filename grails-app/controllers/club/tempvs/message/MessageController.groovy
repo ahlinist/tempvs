@@ -62,7 +62,7 @@ class MessageController {
         Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
         Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
-        render messageProxy.getConversations(currentProfile, page, size)
+        render(messageProxy.getConversations(currentProfile, page, size) as JSON)
     }
 
     def loadMessages(Long id) {
@@ -142,7 +142,7 @@ class MessageController {
         render([template: template] as JSON)
     }
 
-    def exceptionThrown(Exception exception) {
+    def runtimeExceptionThrown(RuntimeException exception) {
         return render(status: exception.message as Integer, text: 'An error occurred')
     }
 

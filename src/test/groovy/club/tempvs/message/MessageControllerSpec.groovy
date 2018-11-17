@@ -20,6 +20,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def json = Mock JSON
     def profile = Mock Profile
     def conversation = Mock Conversation
+    def conversationList = Mock ConversationList
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
     def createConversationCommand = Mock CreateConversationCommand
@@ -154,14 +155,14 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         int size = 20
         params.page = page
         params.size = size
-        String jsonResponse = '{}'
 
         when:
         controller.loadConversations()
 
         then:
         1 * profileService.currentProfile >> profile
-        1 * messageProxy.getConversations(profile, page, size) >> jsonResponse
+        1 * messageProxy.getConversations(profile, page, size) >> conversationList
+        1 * conversationList.conversations
         0 * _
     }
 

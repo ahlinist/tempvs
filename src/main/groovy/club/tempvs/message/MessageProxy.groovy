@@ -26,17 +26,17 @@ class MessageProxy {
     @Autowired
     ObjectFactory objectFactory
 
-    //TODO: return DTO instead of pure json
-    String getConversations(Profile profile, int page, int size) {
+    ConversationList getConversations(Profile profile, int page, int size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&page=${page}&size=${size}"
 
         RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
-            return response.responseBody
+            return jsonConverter.convert(ConversationList, response.responseBody)
         } else {
-            return processError(response)
+            log.error "Response status code ${httpStatus.value()}.\nMessage: ${response.responseBody}"
+            throw new RuntimeException(String.valueOf(httpStatus.value()))
         }
     }
 
