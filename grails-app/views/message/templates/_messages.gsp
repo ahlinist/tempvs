@@ -61,7 +61,7 @@
                           model="${[elementId: 'removeParticipant' + participantId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
                         <g:message code='message.remove.participant.text' args="${[participantName]}"/>
                         <br/>
-                        <span onclick="messaging.updateParticipants(${participantId}, 'REMOVE');">
+                        <span onclick="messaging.removeParticipant(${participantId});">
                           <span class="btn btn-default">
                             <g:message code="yes"/>
                           </span>

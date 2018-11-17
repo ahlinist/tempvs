@@ -96,21 +96,35 @@ class MessageProxy {
         }
     }
 
-    Conversation updateParticipants(Long conversationId, Profile initiator, Profile subject, UpdateParticipantsPayload.Action action) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
-
+    Conversation addParticipant(Long conversationId, Profile initiator, Profile subject) {
         if (initiator.type != subject.type) {
             throw new RuntimeException("Profiles can't be of different type.")
         }
 
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
+
         Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
         Participant subjectDto = objectFactory.getInstance(Participant, [id: subject.id, name: subject.toString()])
-        UpdateParticipantsPayload updateParticipantsPayload =
-                objectFactory.getInstance(UpdateParticipantsPayload, [initiator: initiatorDto, subject: subjectDto, action: action])
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, updateParticipantsPayload as JSON)
-        HttpStatus httpStatus = response.statusCode
+        AddParticipantPayload addParticipantPayload =
+                objectFactory.getInstance(AddParticipantPayload, [initiator: initiatorDto, subject: subjectDto])
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addParticipantPayload as JSON)
 
-        if (httpStatus == HttpStatus.OK) {
+        if (response.statusCode == HttpStatus.OK) {
+            return jsonConverter.convert(Conversation, response.responseBody)
+        } else {
+            return processError(response)
+        }
+    }
+
+    Conversation removeParticipant(Long conversationId, Profile initiator, Profile subject) {
+        if (initiator.type != subject.type) {
+            throw new RuntimeException("Profiles can't be of different type.")
+        }
+
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants/${subject.id}?initiator=${initiator.id}"
+        RestResponse response = restCaller.doDelete(url, MESSAGE_SECURITY_TOKEN)
+
+        if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
         } else {
             return processError(response)

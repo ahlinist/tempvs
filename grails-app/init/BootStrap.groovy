@@ -1,5 +1,5 @@
 import club.tempvs.image.Image
-import club.tempvs.message.UpdateParticipantsPayload
+import club.tempvs.message.AddParticipantPayload
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
@@ -86,14 +86,6 @@ class BootStrap {
                     objectId:   image.objectId,
                     collection: image.collection,
                     imageInfo:  image.imageInfo,
-            ]
-        }
-
-        JSON.registerObjectMarshaller(UpdateParticipantsPayload) { UpdateParticipantsPayload payload ->
-            [
-                    initiator: payload.initiator,
-                    subject: payload.subject,
-                    action: payload.action.toString(),
             ]
         }
     }

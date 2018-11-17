@@ -180,21 +180,36 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
     }
 
-    void "test updateParticipants() for remove"() {
+    void "test addParticipant()"() {
         given:
         request.method = POST_METHOD
-        params.updateAction = 'REMOVE'
         params.subject = LONG_THREE
-        UpdateParticipantsPayload.Action action = UpdateParticipantsPayload.Action.REMOVE
         Map model = [conversation: conversation, currentProfile: initiator]
 
         when:
-        controller.updateParticipants(LONG_ONE)
+        controller.addParticipant(LONG_ONE)
 
         then:
         1 * profileService.currentProfile >> initiator
         1 * profileService.getProfileById(LONG_THREE) >> subject
-        1 * messageProxy.updateParticipants(LONG_ONE, initiator, subject, action) >> conversation
+        1 * messageProxy.addParticipant(LONG_ONE, initiator, subject) >> conversation
+        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        0 * _
+    }
+
+    void "test removeParticipant()"() {
+        given:
+        request.method = POST_METHOD
+        params.subject = LONG_THREE
+        Map model = [conversation: conversation, currentProfile: initiator]
+
+        when:
+        controller.removeParticipant(LONG_ONE)
+
+        then:
+        1 * profileService.currentProfile >> initiator
+        1 * profileService.getProfileById(LONG_THREE) >> subject
+        1 * messageProxy.removeParticipant(LONG_ONE, initiator, subject) >> conversation
         1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
         0 * _
     }

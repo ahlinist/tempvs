@@ -32,9 +32,8 @@ class MessageProxySpec extends Specification {
     def participantDto = Mock Participant
     def createConversationDto = Mock CreateConversationPayload
     def addMessageDto = Mock AddMessagePayload
-    def action = GroovyMock UpdateParticipantsPayload.Action
     def type = GroovyMock ProfileType
-    def updateParticipantsPayload = Mock UpdateParticipantsPayload
+    def addParticipantPayload = Mock AddParticipantPayload
     def updateConversationNamePayload = Mock UpdateConversationNamePayload
 
     def setup() {
@@ -181,15 +180,15 @@ class MessageProxySpec extends Specification {
         result == conversation
     }
 
-    void "test updateParticipants()"() {
+    void "test addParticipant()"() {
         given:
         String jsonResponse = "{response}"
         Long conversationId = 1L
         String profileName = "profile name"
-        Map payloadMap = [initiator: participantDto, subject: participantDto, action: action]
+        Map payloadMap = [initiator: participantDto, subject: participantDto]
 
         when:
-        Conversation result = messageProxy.updateParticipants(conversationId, initiator, subject, action)
+        Conversation result = messageProxy.addParticipant(conversationId, initiator, subject)
 
         then:
         1 * initiator.type >> type
@@ -200,8 +199,31 @@ class MessageProxySpec extends Specification {
         1 * subject.toString() >> profileName
         1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participantDto
         1 * objectFactory.getInstance(Participant, [id: LONG_TWO, name: profileName]) >> participantDto
-        1 * objectFactory.getInstance(UpdateParticipantsPayload, payloadMap) >> updateParticipantsPayload
+        1 * objectFactory.getInstance(AddParticipantPayload, payloadMap) >> addParticipantPayload
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody >> jsonResponse
+        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
+        0 * _
+
+        and:
+        result == conversation
+    }
+
+    void "test removeParticipant()"() {
+        given:
+        String jsonResponse = "{response}"
+        Long conversationId = 1L
+
+        when:
+        Conversation result = messageProxy.removeParticipant(conversationId, initiator, subject)
+
+        then:
+        1 * initiator.type >> type
+        1 * subject.type >> type
+        1 * initiator.id >> LONG_ONE
+        1 * subject.id >> LONG_TWO
+        1 * restCaller.doDelete(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation

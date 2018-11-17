@@ -121,12 +121,19 @@ class MessageController {
         render([template: template] as JSON)
     }
 
-    def updateParticipants(Long id) {
-        String actionString = params.updateAction as String
+    def addParticipant(Long id) {
         Profile initiator = profileService.currentProfile
         Profile subject = profileService.getProfileById(params.subject as Long)
-        UpdateParticipantsPayload.Action action = UpdateParticipantsPayload.Action.valueOf(actionString.toUpperCase())
-        Conversation conversation = messageProxy.updateParticipants(id, initiator, subject, action)
+        Conversation conversation = messageProxy.addParticipant(id, initiator, subject)
+        Map model = [conversation: conversation, currentProfile: initiator]
+        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
+        render([template: template] as JSON)
+    }
+
+    def removeParticipant(Long id) {
+        Profile initiator = profileService.currentProfile
+        Profile subject = profileService.getProfileById(params.subject as Long)
+        Conversation conversation = messageProxy.removeParticipant(id, initiator, subject)
         Map model = [conversation: conversation, currentProfile: initiator]
         String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
         render([template: template] as JSON)

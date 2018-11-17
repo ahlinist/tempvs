@@ -80,7 +80,7 @@ var messaging = {
                 ok.classList.add('glyphicon', 'glyphicon-ok', 'btn', 'btn-default', 'col-sm-1');
                 ok.style.color = 'green';
                 ok.style.borderRadius = '150px';
-                ok.onclick = function() { messaging.updateParticipants(profileId, 'ADD') };
+                ok.onclick = function() { messaging.addParticipant(profileId) };
 
                 var remove = document.createElement('span');
                 remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default', 'col-sm-1');
@@ -299,16 +299,31 @@ var messaging = {
         var scrollable = document.querySelector('div#messagesScroll');
         scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
     },
-    updateParticipants: function(subjectId, updateAction) {
+    addParticipant: function(subjectId) {
       var conversationId = document.querySelector('div#conversationIdHolder').innerHTML;
-      var url = '/message/updateParticipants/' + conversationId;
+      var url = '/message/addParticipant/' + conversationId;
 
       var payload = {
         method: 'POST',
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: 'updateAction=' + updateAction + '&subject=' + subjectId
+        body: 'subject=' + subjectId
+      };
+
+      ajaxHandler.blockUI();
+      ajaxHandler.fetch(null, url, payload, messaging.actions);
+    },
+    removeParticipant: function(subjectId) {
+      var conversationId = document.querySelector('div#conversationIdHolder').innerHTML;
+      var url = '/message/removeParticipant/' + conversationId;
+
+      var payload = {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: '&subject=' + subjectId
       };
 
       ajaxHandler.blockUI();
