@@ -53,33 +53,35 @@
                   </span>
                 </g:link>
               </li>
-              <li class="row">
-                <button class="btn btn-default col-sm-12" data-toggle="modal" data-target="#writeMessageButton">
-                  <span class="pull-left">
-                    <g:message code="message.write.message.button"/>&nbsp;
-                  </span>
-                  <span class="pull-right">
-                    <span class="fa fa-envelope"></span>
-                  </span>
-                </button>
-                <div id="writeMessageButton" class="modal fade" role="dialog">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-body">
-                        <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'message', action: 'createDialogue']}">
-                          <textarea name="text" style="width: 100%; height: 100px;"></textarea>
-                          <input type="hidden" name="receivers[0]" value="${profileId}">
-                          <div>
-                            <g:render template="/ajax/templates/submitButton">
-                              <g:message code="message.send.message.button"/>
-                            </g:render>
-                          </div>
-                        </g:render>
+              <g:if test="${profile.type == currentProfile.type}">
+                <li class="row">
+                  <button class="btn btn-default col-sm-12" data-toggle="modal" data-target="#writeMessageButton">
+                    <span class="pull-left">
+                      <g:message code="message.write.message.button"/>&nbsp;
+                    </span>
+                    <span class="pull-right">
+                      <span class="fa fa-envelope"></span>
+                    </span>
+                  </button>
+                  <div id="writeMessageButton" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-body">
+                          <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'message', action: 'createDialogue']}">
+                            <textarea name="text" style="width: 100%; height: 100px;"></textarea>
+                            <input type="hidden" name="receivers[0]" value="${profileId}">
+                            <div>
+                              <g:render template="/ajax/templates/submitButton">
+                                <g:message code="message.send.message.button"/>
+                              </g:render>
+                            </div>
+                          </g:render>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </li>
+                </li>
+              <g:if>
               <li class="row">
                 <g:if test="${profile.ofClubType && editAllowed && active}">
                   <g:render template="/common/templates/modalButton"

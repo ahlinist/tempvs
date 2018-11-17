@@ -44,10 +44,11 @@
           </g:form>
         </div>
       </g:if>
+      <g:set var="participants" value="${conversation.participants}"/>
       <div class="row">
         <b><g:message code="message.participants.label"/>:</b>
         <ul>
-          <g:each var="participant" in="${conversation.participants}">
+          <g:each var="participant" in="${participants}">
             <g:set var="participantId" value="${participant.id}"/>
             <g:set var="participantName" value="${participant.name}"/>
             <g:if test="${participantId != currentProfile.id}">
@@ -55,7 +56,7 @@
                 <g:link class="btn btn-default col-sm-10 active-conversation-participant" controller="profile" action="show" id="${participantId}">
                   ${participant.name}
                 </g:link>
-                  <g:if test="${currentProfile.id == conversation.admin?.id}">
+                  <g:if test="${(currentProfile.id == conversation.admin?.id) && (participants.size() > 2)}">
                     <span data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'message.remove.participant.button')}">
                       <g:render template="/common/templates/modalButton"
                           model="${[elementId: 'removeParticipant' + participantId, size: 'modal-sm', icon: 'glyphicon glyphicon-trash']}">
@@ -75,23 +76,25 @@
           </g:each>
         </ul>
       </div>
-      <g:render template="/common/templates/modalButton"
-          model="${[elementId: 'addParticipantProfileSearch', size: 'modal-sm', icon: 'glyphicon glyphicon-plus']}">
-        <span class="dropdown" style="margin:10px 0px;">
-          <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
-          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantActions);">
-            <span class="glyphicon glyphicon-search"></span>
-          </button>
-          <div class="dropdown-menu" style="width: 300px;">
-            <ul class="profile-search-result">
-            </ul>
-            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantActions);">
-              <i><g:message code="profile.search.loadMore.link"/></i>
+      <g:if test="${participants.size() < 20}">
+        <g:render template="/common/templates/modalButton"
+            model="${[elementId: 'addParticipantProfileSearch', size: 'modal-sm', icon: 'glyphicon glyphicon-plus']}">
+          <span class="dropdown" style="margin:10px 0px;">
+            <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
+            <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantActions);">
+              <span class="glyphicon glyphicon-search"></span>
             </button>
-          </div>
-        </span>
-        <div id="add-participant-to-conversation-container" style="height: 50px;"></div>
-      </g:render>
+            <div class="dropdown-menu" style="width: 300px;">
+              <ul class="profile-search-result">
+              </ul>
+              <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantActions);">
+                <i><g:message code="profile.search.loadMore.link"/></i>
+              </button>
+            </div>
+          </span>
+          <div id="add-participant-to-conversation-container" style="height: 50px;"></div>
+        </g:render>
+      </g:if>
     </g:if>
   </div>
 </div>

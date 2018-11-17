@@ -137,6 +137,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
                 activeProfiles: [profile],
                 inactiveProfiles: [],
                 periods: Period.values(),
+                currentProfile: profile,
         ]
     }
 

@@ -101,6 +101,7 @@ class ProfileController {
                     activeProfiles: clubProfiles.findAll { it.active },
                     inactiveProfiles: clubProfiles.findAll { !it.active },
                     periods: Period.values(),
+                    currentProfile: currentProfile,
             ]
         } else if (profile.ofClubType) {
             Profile userProfile = user.userProfile
@@ -116,6 +117,7 @@ class ProfileController {
                     mayBeFollowed: followingService.mayBeFollowed(currentProfile, profile),
                     isFollowed: followingService.getFollowing(currentProfile, profile) as Boolean,
                     periods: Period.values(),
+                    currentProfile: currentProfile,
             ]
         }
     }
