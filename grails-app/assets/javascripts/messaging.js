@@ -1,4 +1,7 @@
 var messaging = {
+    defaultConversationsPage: 0,
+    defaultConversationsSize: 40,
+    currentConversationsPage: 0,
     actions: {
         //TODO: replace with statuscode
         replaceElement: function(element, response, selector) {
@@ -183,17 +186,42 @@ var messaging = {
         //TODO: replace with fetch
         ajaxHandler.processAjaxRequest(document, url, null, 'GET', selector, messaging.actions, isValid, isHidden);
     },
-    loadConversations: function() {
+    loadConversations: function(append) {
+      var conversationsContainer = document.querySelector('#conversations-container');
+      var conversationsBox = conversationsContainer.querySelector('ul#conversationsBox');
+      var spinner = conversationsContainer.querySelector('img.spinner');
+
+
+      if (!append) {
+        messaging.currentConversationsPage = messaging.defaultConversationsPage;
+      } else {
+        spinner.classList.remove('hidden');
+      }
+
       var actions = {
         200: function(response) {
           response.json().then(function(data) {
+            spinner.classList.add('hidden');
+
+            if (!append) {
+              conversationsBox.innerHTML = '';
+            }
+
             var conversations = data.conversations
-            var conversationsBox = document.querySelector('ul#conversationsBox');
-            conversationsBox.innerHTML = '';
 
             for (var j = 0; j < conversations.length; j++) {
               var conversationRow = buildConversationOption(conversations[j]);
               conversationsBox.appendChild(conversationRow);
+            }
+
+            messaging.currentConversationsPage++;
+
+            var loadMoreButton = conversationsContainer.querySelector('div#load-more-conversations');
+
+            if (conversations.length == messaging.defaultConversationsSize) {
+              loadMoreButton.classList.remove('hidden');
+            } else {
+              loadMoreButton.classList.add('hidden');
             }
 
             function buildConversationOption(conversation) {
@@ -235,7 +263,7 @@ var messaging = {
         }
       }
 
-      var url = '/message/loadConversations?page=0&size=40';
+      var url = '/message/loadConversations?page=' + messaging.currentConversationsPage + '&size=' + messaging.defaultConversationsSize;
       ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
     },
     scrollMessagesDown: function() {
@@ -266,7 +294,7 @@ var messaging = {
           var newConversationId = document.querySelector('div#conversationIdHolder').innerHTML;
           window.history.pushState("", "Tempvs - Message", '/message/conversation/' + newConversationId);
           messaging.scrollMessagesDown();
-          messaging.loadConversations();
+          messaging.loadConversations(false);
           messaging.displayNewMessagesCounter();
         });
       },
@@ -291,7 +319,7 @@ var messaging = {
           }
 
           messaging.scrollMessagesDown();
-          messaging.loadConversations();
+          messaging.loadConversations(false);
           messaging.displayNewMessagesCounter();
         });
       },
@@ -299,7 +327,7 @@ var messaging = {
         console.log('Status code 404 returned.');
 
         messaging.scrollMessagesDown();
-        messaging.loadConversations();
+        messaging.loadConversations(false);
         messaging.displayNewMessagesCounter();
       }
     },

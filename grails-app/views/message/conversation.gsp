@@ -5,8 +5,9 @@
       <title>Tempvs - <g:message code="message.title"/></title>
       <script>
         window.onload = function() {
-            messaging.loadConversations();
-            messaging.scrollMessagesDown();
+          var appendConversations = true;
+          messaging.loadConversations(appendConversations);
+          messaging.scrollMessagesDown();
         };
       </script>
     </head>
@@ -58,7 +59,17 @@
           </div>
         </div>
         <hr/>
-        <ul style="margin:10px 0px;" id="conversationsBox"></ul>
+        <div id="conversations-container">
+          <ul style="margin:10px 0px;" id="conversationsBox" class="row"></ul>
+          <div id="load-more-conversations" class="row hidden">
+            <button class="btn btn-default" onclick="messaging.loadConversations(true)">
+              <g:message code="conversations.load.more.button"/>
+            </button>
+          </div>
+          <div class="row">
+            <img style="margin: 0 auto;" class="spinner load-more hidden" src="/assets/spinner.gif">
+          </div>
+        </div>
       </div>
       <div class="col-sm-9">
         <g:render template="/message/templates/messages" model="${[conversation: conversation]}"/>
