@@ -23,7 +23,7 @@
             </g:link>
           </span>
           <span id="profile-dropdown" class="dropdown pull-left">
-            <button id="current-profile" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+            <button style="width: 180px;" id="current-profile" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
               <span id="current-profile-name"></span>
               <span class="caret"></span>
             </button>

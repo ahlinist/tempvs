@@ -81,7 +81,7 @@
                     </div>
                   </div>
                 </li>
-              <g:if>
+              </g:if>
               <li class="row">
                 <g:if test="${profile.ofClubType && editAllowed && active}">
                   <g:render template="/common/templates/modalButton"
