@@ -53,8 +53,10 @@ var messaging = {
           });
 
           //conversation name section
+          var conversationNameContainer = document.querySelector('div.conversation-name-container');
+          conversationNameContainer.classList.add('hidden');
+
           if (conversation.type == 'CONFERENCE') {
-            var conversationNameContainer = document.querySelector('div.conversation-name-container');
             var conversationNameForm = conversationNameContainer.querySelector('form');
             var conversationNameSpinner = conversationNameContainer.querySelector('.spinner');
             conversationNameSpinner.classList.add('hidden');
@@ -62,8 +64,6 @@ var messaging = {
             conversationNameForm.querySelector('.text-holder').innerHTML = conversation.name;
             conversationNameForm.querySelector('input[name=conversationName]').value = conversation.name;
             conversationNameForm.action = '/message/updateConversationName/' + conversation.id;
-          } else {
-            //conversationNameContainer.classList.add('hidden');
           }
 
           //participants section
