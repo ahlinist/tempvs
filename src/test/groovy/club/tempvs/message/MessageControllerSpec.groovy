@@ -1,10 +1,10 @@
 package club.tempvs.message
 
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.object.ObjectFactory
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import grails.converters.JSON
-import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
@@ -24,39 +24,45 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def messageProxy = Mock MessageProxy
     def createConversationCommand = Mock CreateConversationCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
-    def groovyPageRenderer = Mock PageRenderer
     def initiator = Mock Profile
     def subject = Mock Profile
+    def objectFactory = Mock ObjectFactory
+    def conversationWrapper = Mock ConversationWrapper
 
     def setup() {
         controller.profileService = profileService
         controller.messageProxy = messageProxy
         controller.ajaxResponseHelper = ajaxResponseHelper
-        controller.groovyPageRenderer = groovyPageRenderer
+        controller.objectFactory = objectFactory
     }
 
     def cleanup() {
     }
 
     void "test conversation()"() {
-        given:
-        long conversationId = 1L
-        int page = 0
-        int size = 20
-        params.page = page
-        params.size = size
-
         when:
-        controller.conversation(conversationId)
+        controller.conversation()
 
         then:
-        1 * profileService.currentProfile >> profile
-        1 * messageProxy.getConversation(conversationId, profile, page, size) >> conversation
         0 * _
 
         and:
-        controller.modelAndView.model == [conversation: conversation, currentProfile: profile]
-        view == '/message/conversation'
+        !controller.modelAndView
+        !response.redirectedUrl
+    }
+
+    void "test conversation() with id"() {
+        given:
+        long conversationId = 1L
+
+        when:
+        def result = controller.conversation(conversationId)
+
+        then:
+        0 * _
+
+        and:
+        result == [conversationId: conversationId]
     }
 
     void "test loadMessages()"() {
@@ -66,7 +72,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         int size = 20
         params.page = page
         params.size = size
-        Map model = [conversation: conversation, currentProfile: profile]
+        Map argMap = [conversation: conversation, currentProfile: profile]
 
         when:
         controller.loadMessages(id)
@@ -74,7 +80,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * messageProxy.getConversation(id, profile, page, size) >> conversation
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        1 * objectFactory.getInstance(ConversationWrapper, argMap) >> conversationWrapper
+        1 * conversationWrapper.conversation
+        1 * conversationWrapper.currentProfile
         0 * _
     }
 
@@ -127,7 +135,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         String name = "conversation name"
         def receiver = Mock Profile
         List<Profile> receivers = [receiver]
-        Map model = [conversation: conversation, currentProfile: initiator]
+        Map argMap = [conversation: conversation, currentProfile: initiator]
 
         when:
         controller.createConversation(createConversationCommand)
@@ -141,7 +149,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         1 * createConversationCommand.text >> text
         1 * createConversationCommand.name >> name
         1 * messageProxy.createConversation(initiator, [receiver], text, name) >> conversation
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        1 * objectFactory.getInstance(ConversationWrapper, argMap) >> conversationWrapper
+        1 * conversationWrapper.conversation
+        1 * conversationWrapper.currentProfile
         0 * _
     }
 
@@ -168,7 +178,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         Long conversationId = 1L
         String message = "msg text"
         params.message = message
-        Map model = [conversation: conversation, currentProfile: profile]
+        Map argMap = [conversation: conversation, currentProfile: profile]
 
         when:
         controller.send(conversationId)
@@ -176,7 +186,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * messageProxy.addMessage(conversationId, profile, message) >> conversation
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        1 * objectFactory.getInstance(ConversationWrapper, argMap) >> conversationWrapper
+        1 * conversationWrapper.conversation
+        1 * conversationWrapper.currentProfile
         0 * _
     }
 
@@ -184,7 +196,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         given:
         request.method = POST_METHOD
         params.subject = LONG_THREE
-        Map model = [conversation: conversation, currentProfile: initiator]
+        Map argMap = [conversation: conversation, currentProfile: initiator]
 
         when:
         controller.addParticipant(LONG_ONE)
@@ -193,7 +205,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.currentProfile >> initiator
         1 * profileService.getProfileById(LONG_THREE) >> subject
         1 * messageProxy.addParticipant(LONG_ONE, initiator, subject) >> conversation
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        1 * objectFactory.getInstance(ConversationWrapper, argMap) >> conversationWrapper
+        1 * conversationWrapper.conversation
+        1 * conversationWrapper.currentProfile
         0 * _
     }
 
@@ -201,7 +215,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         given:
         request.method = POST_METHOD
         params.subject = LONG_THREE
-        Map model = [conversation: conversation, currentProfile: initiator]
+        Map argMap = [conversation: conversation, currentProfile: initiator]
 
         when:
         controller.removeParticipant(LONG_ONE)
@@ -210,7 +224,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         1 * profileService.currentProfile >> initiator
         1 * profileService.getProfileById(LONG_THREE) >> subject
         1 * messageProxy.removeParticipant(LONG_ONE, initiator, subject) >> conversation
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        1 * objectFactory.getInstance(ConversationWrapper, argMap) >> conversationWrapper
+        1 * conversationWrapper.conversation
+        1 * conversationWrapper.currentProfile
         0 * _
     }
 
@@ -219,7 +235,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         request.method = POST_METHOD
         String conversationName = 'new name'
         params.conversationName = conversationName
-        Map model = [conversation: conversation, currentProfile: initiator]
+        Map argMap = [conversation: conversation, currentProfile: initiator]
 
         when:
         controller.updateConversationName(LONG_ONE)
@@ -227,7 +243,9 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> initiator
         1 * messageProxy.updateConversationName(LONG_ONE, initiator, conversationName) >> conversation
-        1 * groovyPageRenderer.render([template: '/message/templates/messages', model: model])
+        1 * objectFactory.getInstance(ConversationWrapper, argMap) >> conversationWrapper
+        1 * conversationWrapper.conversation
+        1 * conversationWrapper.currentProfile
         0 * _
     }
 }

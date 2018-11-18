@@ -1,11 +1,11 @@
 package club.tempvs.message
 
 import club.tempvs.ajax.AjaxResponseHelper
+import club.tempvs.object.ObjectFactory
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
-import grails.gsp.PageRenderer
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
 import org.springframework.security.access.AccessDeniedException
@@ -39,15 +39,11 @@ class MessageController {
     MessageProxy messageProxy
     AjaxResponseHelper ajaxResponseHelper
     LinkGenerator grailsLinkGenerator
-    PageRenderer groovyPageRenderer
+    ObjectFactory objectFactory
 
     def conversation(Long id) {
-        if (id) {
-            Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
-            Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
-            Profile currentProfile = profileService.currentProfile
-            Conversation conversation = messageProxy.getConversation(id, currentProfile, page, size)
-            render view: '/message/conversation', model: [conversation: conversation, currentProfile: currentProfile]
+        if (id != null) {
+            [conversationId: id]
         }
     }
 
@@ -69,9 +65,7 @@ class MessageController {
         Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
         Profile currentProfile = profileService.currentProfile
         Conversation conversation = messageProxy.getConversation(id, currentProfile, page, size)
-        Map model = [conversation: conversation, currentProfile: currentProfile]
-        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([template: template] as JSON)
+        render(objectFactory.getInstance(ConversationWrapper, conversation, currentProfile) as JSON)
     }
 
     def createDialogue(CreateConversationCommand command) {
@@ -108,44 +102,34 @@ class MessageController {
         }
 
         Conversation conversation = messageProxy.createConversation(author, receivers, command.text, command.name)
-        Map model = [conversation: conversation, currentProfile: author]
-        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([template: template] as JSON)
+        render(objectFactory.getInstance(ConversationWrapper, conversation, author) as JSON)
     }
 
     def send(Long id) {
         Profile currentProfile = profileService.currentProfile
         Conversation conversation = messageProxy.addMessage(id, currentProfile, params.message as String)
-        Map model = [conversation: conversation, currentProfile: currentProfile]
-        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([template: template] as JSON)
+        render(objectFactory.getInstance(ConversationWrapper, conversation, currentProfile) as JSON)
     }
 
     def addParticipant(Long id) {
         Profile initiator = profileService.currentProfile
         Profile subject = profileService.getProfileById(params.subject as Long)
         Conversation conversation = messageProxy.addParticipant(id, initiator, subject)
-        Map model = [conversation: conversation, currentProfile: initiator]
-        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([template: template] as JSON)
+        render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
     }
 
     def removeParticipant(Long id) {
         Profile initiator = profileService.currentProfile
         Profile subject = profileService.getProfileById(params.subject as Long)
         Conversation conversation = messageProxy.removeParticipant(id, initiator, subject)
-        Map model = [conversation: conversation, currentProfile: initiator]
-        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([template: template] as JSON)
+        render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
     }
 
     def updateConversationName(Long id) {
         String conversationName = params.conversationName as String
         Profile initiator = profileService.currentProfile
         Conversation conversation = messageProxy.updateConversationName(id, initiator, conversationName)
-        Map model = [conversation: conversation, currentProfile: initiator]
-        String template = groovyPageRenderer.render(template: '/message/templates/messages', model: model)
-        render([template: template] as JSON)
+        render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
     }
 
     def runtimeExceptionThrown(RuntimeException exception) {
