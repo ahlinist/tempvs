@@ -132,10 +132,6 @@ class MessageController {
         render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
     }
 
-    def runtimeExceptionThrown(RuntimeException exception) {
-        return render(status: exception.message as Integer, text: 'An error occurred')
-    }
-
     def accessDeniedExceptionThrown(AccessDeniedException exception) {
         log.error exception.message
         return render(status: 403, text: 'An authorization error occurred')

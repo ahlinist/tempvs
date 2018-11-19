@@ -148,7 +148,8 @@ class MessageProxy {
 
     private Conversation processError(RestResponse response) {
         HttpStatus httpStatus = response.statusCode
-        log.error "Response status code ${httpStatus.value()}.\nMessage: ${response.responseBody}"
-        throw new RuntimeException(String.valueOf(httpStatus.value()))
+        String message = "Response status code ${httpStatus.value()}.\nMessage: ${response.responseBody}"
+        log.error message
+        throw new RuntimeException(message)
     }
 }
