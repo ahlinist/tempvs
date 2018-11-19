@@ -60,7 +60,14 @@
       </div>
       <hr/>
       <div id="conversations-container">
-        <ul style="margin:10px 0px;" id="conversationsBox" class="row"></ul>
+        <template id="conversation-template">
+          <li class="btn btn-default col-sm-12">
+            <b class="pull-left conversation-name"></b>
+            <br>
+            <i class="pull-left last-message"></i>
+          </li>
+        </template>
+        <ul style="margin:10px 0px;" id="conversations-list" class="row"></ul>
         <div id="load-more-conversations" class="row hidden">
           <button class="btn btn-default" onclick="messaging.loadConversations(true)">
             <g:message code="conversations.load.more.button"/>

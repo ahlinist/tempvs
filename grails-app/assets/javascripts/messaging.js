@@ -310,7 +310,7 @@ var messaging = {
     },
     loadConversations: function(append) {
       var conversationsContainer = document.querySelector('#conversations-container');
-      var conversationsBox = conversationsContainer.querySelector('ul#conversationsBox');
+      var conversationsList = conversationsContainer.querySelector('ul#conversations-list');
       var spinner = conversationsContainer.querySelector('img.spinner');
 
       if (!append) {
@@ -322,18 +322,44 @@ var messaging = {
       var actions = {
         200: function(response) {
           response.json().then(function(data) {
+            var conversations = data.conversations
+            var conversationTemplate = document.querySelector('template#conversation-template');
+
             spinner.classList.add('hidden');
 
             if (!append) {
-              conversationsBox.innerHTML = '';
+              conversationsList.innerHTML = '';
             }
 
-            var conversations = data.conversations
+            conversations.forEach(function(conversation) {
+              var lastMessage = conversation.lastMessage;
+              var conversationListItem = conversationTemplate.content.querySelector('li');
+              var conversationNode = document.importNode(conversationListItem, true);
+              var conversationNameContainer = conversationNode.querySelector('b.conversation-name');
+              var lastMessageContainer = conversationNode.querySelector('i.last-message');
 
-            for (var j = 0; j < conversations.length; j++) {
-              var conversationRow = buildConversationOption(conversations[j]);
-              conversationsBox.appendChild(conversationRow);
-            }
+              conversationNode.onclick = function() {
+                messaging.conversation(conversation.id, messaging.defaultConversationsPage, messaging.defaultConversationsSize);
+              }
+
+              if (lastMessage.unread) {
+                conversationNode.style.backgroundColor = '#E9F9FF';
+              }
+
+              if (conversation.type == 'CONFERENCE' && conversation.name) {
+                conversationNameContainer.innerHTML = conversation.name;
+              } else {
+                conversationNameContainer.innerHTML = conversation.conversant;
+              }
+
+              lastMessageContainer.innerHTML = lastMessage.author.name + ': ' + lastMessage.text;
+
+              if (lastMessage.subject) {
+                lastMessageContainer.innerHTML += ' ' + lastMessage.subject.name;
+              }
+
+              conversationsList.appendChild(conversationNode);
+            });
 
             messaging.currentConversationsPage++;
 
@@ -343,42 +369,6 @@ var messaging = {
               loadMoreButton.classList.remove('hidden');
             } else {
               loadMoreButton.classList.add('hidden');
-            }
-
-            function buildConversationOption(conversation) {
-              var lastMessage = conversation.lastMessage;
-              var subject = lastMessage.subject;
-              var li = document.createElement('li');
-              li.classList.add('btn', 'btn-default', 'col-sm-12');
-              li.onclick = function() {messaging.conversation(conversation.id, 0, 40);}
-
-              if (lastMessage.unread) {
-                li.style.backgroundColor = '#E9F9FF';
-              }
-
-              var b = document.createElement('b');
-              b.classList.add('pull-left');
-
-              if (conversation.type == 'CONFERENCE' && conversation.name) {
-                b.innerHTML = conversation.name;
-              } else {
-                b.innerHTML = conversation.conversant;
-              }
-
-              var br = document.createElement('br');
-              var i = document.createElement('i');
-              i.classList.add('pull-left');
-              i.innerHTML = lastMessage.author.name + ': ' + lastMessage.text;
-
-              if (subject) {
-                i.innerHTML += ' ' + subject.name;
-              }
-
-              li.appendChild(b);
-              li.appendChild(br);
-              li.appendChild(i);
-
-              return li;
             }
           });
         }
