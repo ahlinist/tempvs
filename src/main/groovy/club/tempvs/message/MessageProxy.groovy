@@ -46,7 +46,7 @@ class MessageProxy {
         return response.headers?.getFirst(COUNT_HEADER) as Integer
     }
 
-    Conversation getConversation(long conversationId, Profile profile, int page, int size) {
+    Conversation getConversation(Long conversationId, Profile profile, Integer page, Integer size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/?page=${page}&size=${size}&caller=${profile.id}"
 
         RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)

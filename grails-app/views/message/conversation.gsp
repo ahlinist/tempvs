@@ -7,7 +7,7 @@
       window.onload = function() {
         var appendConversations = true;
         messaging.loadConversations(appendConversations);
-        messaging.conversation('${conversationId}', 0, 40);
+        messaging.conversation('${conversationId}', messaging.defaultPageNumber, messaging.defaultMessagesSize);
       };
     </script>
   </head>
@@ -69,18 +69,21 @@
         </template>
         <ul style="margin:10px 0px;" id="conversations-list" class="row"></ul>
         <div id="load-more-conversations" class="row hidden">
-          <button class="btn btn-default" onclick="messaging.loadConversations(true)">
+          <button class="btn btn-default center-block" onclick="messaging.loadConversations(true)">
             <g:message code="conversations.load.more.button"/>
           </button>
         </div>
         <div class="row">
-          <img style="margin: 0 auto;" class="spinner load-more hidden" src="/assets/spinner.gif">
+          <img class="spinner load-more hidden center-block" src="/assets/spinner.gif">
         </div>
       </div>
     </div>
     <div class="col-sm-9">
       <div class="row hidden" id="conversation-details">
         <div id="messages-container" class="col-sm-8" style="position: relative; height: calc(100vh - 75px); overflow: auto;">
+          <div class="row">
+            <img class="load-more-messages-spinner hidden center-block" src="/assets/spinner.gif">
+          </div>
           <template id="message-template">
             <li>
               <div style="margin: 5px; padding: 5px;">
@@ -91,6 +94,11 @@
               </div>
             </li>
           </template>
+          <div id="load-more-messages" class="row hidden" style="margin: 10px 0 11px 0;">
+            <button class="btn btn-default center-block" onclick="messaging.loadMessages();">
+              <g:message code="messages.load.more.button"/>
+            </button>
+          </div>
           <ul id="messages-list"></ul>
           <form id="message-form">
             <input type="text" style="width: calc(100% - 45px);" name="message">

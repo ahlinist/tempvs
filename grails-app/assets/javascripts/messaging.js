@@ -1,56 +1,23 @@
 var messaging = {
     conversationId: null,
-    defaultConversationsPage: 0,
+    defaultPageNumber: 0,
     defaultConversationsSize: 40,
+    defaultMessagesSize: 40,
     currentConversationsPage: 0,
+    currentMessagesPage: 0,
     actions: {
       200: function(response) {
         response.json().then(function(data) {
           var conversation = data.conversation;
           var conversationDetails = document.querySelector('div#conversation-details');
           ajaxHandler.hideModals();
+          messaging.currentMessagesPage = messaging.defaultPageNumber;
           messaging.conversationId = conversation.id;
           conversationDetails.classList.remove('hidden');
 
           //messages section
-          var messages = conversation.messages;
-          var messagesContainer = conversationDetails.querySelector('div#messages-container');
-          var messagesList = messagesContainer.querySelector('ul#messages-list');
-          var messageTemplate = messagesContainer.querySelector('template#message-template');
-          var messageForm = messagesContainer.querySelector('form#message-form');
-          messagesList.innerHTML = '';
-
-          messageForm.onsubmit = function() {
-            messaging.send(this);
-            return false;
-          }
-
-          messages.forEach(function(message) {
-            var messageListItem = messageTemplate.content.querySelector('li');
-            var messageNode = document.importNode(messageListItem, true);
-
-            if (message.system) {
-              messageNode.style.fontStyle = 'italic';
-            }
-
-            var authorLink = messageNode.querySelector('a.message-author');
-            authorLink.setAttribute('href', '/profile/show/' + message.author.id);
-            authorLink.querySelector('b').innerHTML = message.author.name;
-            messageNode.querySelector('span.message-text').innerHTML = message.text;
-
-            if (message.subject) {
-              var subjectLink = messageNode.querySelector('a.message-subject');
-              subjectLink.setAttribute('href', '/profile/show/' + message.subject.id);
-              subjectLink.querySelector('b').innerHTML = message.subject.name;
-            }
-
-            if (message.unread) {
-              messageNode.style.backgroundColor = '#E9F9FF';
-            }
-
-            messageNode.querySelector('span.message-created-date').innerHTML = message.createdDate;
-            messagesList.appendChild(messageNode);
-          });
+          var append = false;
+          messaging.appendMessages(conversation.messages, conversationDetails, append);
 
           //conversation name section
           var conversationNameContainer = document.querySelector('div.conversation-name-container');
@@ -308,13 +275,90 @@ var messaging = {
         ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.actions);
       }
     },
+    appendMessages: function(messages, conversationDetails, append) {
+      var messagesContainer = conversationDetails.querySelector('div#messages-container');
+      var messagesList = messagesContainer.querySelector('ul#messages-list');
+      var messageTemplate = messagesContainer.querySelector('template#message-template');
+      var messageForm = messagesContainer.querySelector('form#message-form');
+      var firstListItem = messagesList.firstChild;
+      var spinner = document.querySelector('img.load-more-messages-spinner');
+      spinner.classList.add('hidden');
+
+      if (!append) {
+        messagesList.innerHTML = '';
+
+        messageForm.onsubmit = function() {
+          messaging.send(this);
+          return false;
+        }
+      }
+
+      messages.forEach(function(message) {
+        var messageListItem = messageTemplate.content.querySelector('li');
+        var messageNode = document.importNode(messageListItem, true);
+
+        if (message.system) {
+          messageNode.style.fontStyle = 'italic';
+        }
+
+        var authorLink = messageNode.querySelector('a.message-author');
+        authorLink.setAttribute('href', '/profile/show/' + message.author.id);
+        authorLink.querySelector('b').innerHTML = message.author.name;
+        messageNode.querySelector('span.message-text').innerHTML = message.text;
+
+        if (message.subject) {
+          var subjectLink = messageNode.querySelector('a.message-subject');
+          subjectLink.setAttribute('href', '/profile/show/' + message.subject.id);
+          subjectLink.querySelector('b').innerHTML = message.subject.name;
+        }
+
+        if (message.unread) {
+          messageNode.style.backgroundColor = '#E9F9FF';
+        }
+
+        messageNode.querySelector('span.message-created-date').innerHTML = message.createdDate;
+
+        append ? messagesList.insertBefore(messageNode, firstListItem) : messagesList.appendChild(messageNode);
+      });
+
+      var loadMoreButton = messagesContainer.querySelector('div#load-more-messages');
+
+      if (messages.length == messaging.defaultMessagesSize) {
+        loadMoreButton.classList.remove('hidden');
+      } else {
+        loadMoreButton.classList.add('hidden');
+      }
+    },
+    loadMessages: function() {
+      var page = ++messaging.currentMessagesPage;
+      var size = messaging.defaultMessagesSize;
+      var url = '/message/loadMessages/' + messaging.conversationId + '?page=' + page + '&size=' + size;
+      var append = true;
+      var conversationDetails = document.querySelector('div#conversation-details');
+      var messagesContainer = conversationDetails.querySelector('div#messages-container');
+      var loadMoreButton = messagesContainer.querySelector('div#load-more-messages');
+      loadMoreButton.classList.add('hidden');
+      var spinner = document.querySelector('img.load-more-messages-spinner');
+      spinner.classList.remove('hidden');
+
+      var actions = {
+        200: function(response) {
+          response.json().then(function(data) {
+            var conversation = data.conversation;
+            messaging.appendMessages(conversation.messages, conversationDetails, append);
+          });
+        }
+      }
+
+      ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+    },
     loadConversations: function(append) {
       var conversationsContainer = document.querySelector('#conversations-container');
       var conversationsList = conversationsContainer.querySelector('ul#conversations-list');
       var spinner = conversationsContainer.querySelector('img.spinner');
 
       if (!append) {
-        messaging.currentConversationsPage = messaging.defaultConversationsPage;
+        messaging.currentConversationsPage = messaging.defaultPageNumber;
       } else {
         spinner.classList.remove('hidden');
       }
@@ -339,7 +383,7 @@ var messaging = {
               var lastMessageContainer = conversationNode.querySelector('i.last-message');
 
               conversationNode.onclick = function() {
-                messaging.conversation(conversation.id, messaging.defaultConversationsPage, messaging.defaultConversationsSize);
+                messaging.conversation(conversation.id, messaging.defaultPageNumber, messaging.defaultConversationsSize);
               }
 
               if (lastMessage.unread) {
@@ -362,7 +406,6 @@ var messaging = {
             });
 
             messaging.currentConversationsPage++;
-
             var loadMoreButton = conversationsContainer.querySelector('div#load-more-conversations');
 
             if (conversations.length == messaging.defaultConversationsSize) {
