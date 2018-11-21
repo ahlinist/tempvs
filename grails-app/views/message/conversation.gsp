@@ -116,7 +116,7 @@
                 <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions);" class="glyphicon glyphicon-pencil"></span>
               </span>
               <span class="hidden input-wrapper">
-                <input style="margin: 4px 0px;" type="text" name="conversationName" value="" autocomplete="off">
+                <input style="margin: 4px 0px 3px 0px;" type="text" name="conversationName" value="" autocomplete="off">
               </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/assets/spinner-sm.gif">
             </form>
           </div>
@@ -144,8 +144,8 @@
             </template>
             <ul id="participants-list"></ul>
           </div>
-          <button class="btn btn-default glyphicon glyphicon-plus" data-toggle="modal" data-target="#addParticipantProfileSearch"></button>
-          <div id="addParticipantProfileSearch" class="modal fade" role="dialog">
+          <button class="btn btn-default glyphicon glyphicon-plus" data-toggle="modal" data-target="#add-participant-profile-search"></button>
+          <div id="add-participant-profile-search" class="modal fade" role="dialog">
             <div class="modal-dialog modal-sm">
               <div class="modal-content">
                 <div class="modal-body">
