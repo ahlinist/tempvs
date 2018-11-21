@@ -111,49 +111,47 @@ var messaging = {
         response.json().then(function(data) {
           profileSearcher.recoverUI();
 
-          for (var i = 0; i < data.length; i++) {
-            (function(){
-              var profileId = data[i].id;
-              var profileName = data[i].name;
+          data.forEach(function(dataEntry){
+            var profileId = dataEntry.id;
+            var profileName = dataEntry.name;
 
-              if (document.querySelector('.active-conversation-participant[href$="' + data[i].id + '"]')) {
-                return;
-              }
+            if (document.querySelector('.active-conversation-participant[href$="' + dataEntry + '"]')) {
+              return;
+            }
 
-              var li = document.createElement('li');
-              li.classList.add('row');
+            var li = document.createElement('li');
+            li.classList.add('row');
+            var a = document.createElement('a');
+            a.classList.add('btn', 'btn-default', 'col-sm-12');
+
+            a.onclick = function() {
+              container.innerHTML = '';
               var a = document.createElement('a');
-              a.classList.add('btn', 'btn-default', 'col-sm-12');
+              a.classList.add('btn', 'btn-default', 'col-sm-10');
+              a.href = '/profile/show/' + profileId;
+              a.innerHTML = profileName;
 
-              a.onclick = function() {
-                container.innerHTML = '';
-                var a = document.createElement('a');
-                a.classList.add('btn', 'btn-default', 'col-sm-10');
-                a.href = '/profile/show/' + profileId;
-                a.innerHTML = profileName;
+              var ok = document.createElement('span');
+              ok.classList.add('glyphicon', 'glyphicon-ok', 'btn', 'btn-default', 'col-sm-1');
+              ok.style.color = 'green';
+              ok.style.borderRadius = '150px';
+              ok.onclick = function() { messaging.addParticipant(profileId) };
 
-                var ok = document.createElement('span');
-                ok.classList.add('glyphicon', 'glyphicon-ok', 'btn', 'btn-default', 'col-sm-1');
-                ok.style.color = 'green';
-                ok.style.borderRadius = '150px';
-                ok.onclick = function() { messaging.addParticipant(profileId) };
+              var remove = document.createElement('span');
+              remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default', 'col-sm-1');
+              remove.style.color = 'red';
+              remove.style.borderRadius = '150px';
+              remove.onclick = function() { container.innerHTML = '';};
 
-                var remove = document.createElement('span');
-                remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default', 'col-sm-1');
-                remove.style.color = 'red';
-                remove.style.borderRadius = '150px';
-                remove.onclick = function() { container.innerHTML = '';};
+              container.appendChild(a);
+              container.appendChild(ok);
+              container.appendChild(remove);
+            };
 
-                container.appendChild(a);
-                container.appendChild(ok);
-                container.appendChild(remove);
-              };
-
-              a.innerHTML = data[i].name;
-              li.appendChild(a);
-              profileSearcher.searchResult.appendChild(li);
-            })();
-          }
+            a.innerHTML = dataEntry.name;
+            li.appendChild(a);
+            profileSearcher.searchResult.appendChild(li);
+          });
         });
       }
     },
@@ -189,65 +187,63 @@ var messaging = {
           var conversationNameContainer = createConversationPopup.querySelector('#new-conversation-name-container');
           var participantsList = createConversationPopup.querySelector('#create-conversation-participants-container');
 
-          for (var i = 0; i < data.length; i++) {
-            (function(){
-              var profileId = data[i].id;
-              var profileName = data[i].name;
+          data.forEach(function(dataEntry){
+            var profileId = dataEntry.id;
+            var profileName = dataEntry.name;
 
-              if (participantsList.querySelector('input[name^="receivers"][value="' + profileId + '"]')) {
-                return;
-              }
+            if (participantsList.querySelector('input[name^="receivers"][value="' + profileId + '"]')) {
+              return;
+            }
 
+            var li = document.createElement('li');
+            var a = document.createElement('a');
+            a.classList.add('btn', 'btn-default', 'col-sm-12');
+
+            a.onclick = function() {
+              var participantsCounterHolder = createConversationPopup.querySelector('span#participants-counter');
+              var participantsCounter = participantsCounterHolder.innerHTML;
               var li = document.createElement('li');
               var a = document.createElement('a');
-              a.classList.add('btn', 'btn-default', 'col-sm-12');
+              a.classList.add('btn', 'btn-default', 'create-conversation-participant');
+              a.style.width = '524px';
+              a.style.margin = '0 4px 0 0';
+              a.href = '/profile/show/' + profileId;
+              a.innerHTML = profileName;
 
-              a.onclick = function() {
-                var participantsCounterHolder = createConversationPopup.querySelector('span#participants-counter');
-                var participantsCounter = participantsCounterHolder.innerHTML;
-                var li = document.createElement('li');
-                var a = document.createElement('a');
-                a.classList.add('btn', 'btn-default', 'create-conversation-participant');
-                a.style.width = '524px';
-                a.style.margin = '0 4px 0 0';
-                a.href = '/profile/show/' + profileId;
-                a.innerHTML = profileName;
-
-                var remove = document.createElement('span');
-                remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default');
-                remove.style.color = 'red';
-                remove.style.borderRadius = '150px';
-                remove.onclick = function() {
-                  participantsList.removeChild(li);
-                  toggleConversationNameContainer();
-                };
-
-                var hidden = document.createElement('input');
-                hidden.type = 'hidden';
-                hidden.value = profileId;
-                hidden.name = 'receivers[' + participantsCounter + ']';
-                participantsCounterHolder.innerHTML = ++participantsCounter;
-
-                li.appendChild(a);
-                li.appendChild(remove);
-                li.appendChild(hidden);
-                participantsList.appendChild(li);
+              var remove = document.createElement('span');
+              remove.classList.add('glyphicon', 'glyphicon-remove', 'btn', 'btn-default');
+              remove.style.color = 'red';
+              remove.style.borderRadius = '150px';
+              remove.onclick = function() {
+                participantsList.removeChild(li);
                 toggleConversationNameContainer();
-
-                function toggleConversationNameContainer() {
-                  if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
-                    conversationNameContainer.style.display = 'block';
-                  } else {
-                    conversationNameContainer.style.display = 'none';
-                  }
-                }
               };
 
-              a.innerHTML = data[i].name;
+              var hidden = document.createElement('input');
+              hidden.type = 'hidden';
+              hidden.value = profileId;
+              hidden.name = 'receivers[' + participantsCounter + ']';
+              participantsCounterHolder.innerHTML = ++participantsCounter;
+
               li.appendChild(a);
-              profileSearcher.searchResult.appendChild(li);
-            })();
-          }
+              li.appendChild(remove);
+              li.appendChild(hidden);
+              participantsList.appendChild(li);
+              toggleConversationNameContainer();
+
+              function toggleConversationNameContainer() {
+                if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
+                  conversationNameContainer.style.display = 'block';
+                } else {
+                  conversationNameContainer.style.display = 'none';
+                }
+              }
+            };
+
+            a.innerHTML = dataEntry.name;
+            li.appendChild(a);
+            profileSearcher.searchResult.appendChild(li);
+           });
         });
       }
     },
