@@ -30,7 +30,7 @@
                 <span class="dropdown" style="margin:10px 0px;">
                   <input style="width: 524px;" placeholder="${g.message(code: 'conversation.search.participants.placeholder')}" type="text" class="profile-search-box" name="query"/>
                   <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.createConversationActions); return false;">
-                    <span class="glyphicon glyphicon-search"></span>
+                    <span class="fa fa-search"></span>
                   </button>
                   <div class="dropdown-menu" style="width: 300px;">
                     <ul class="profile-search-result"></ul>
@@ -113,7 +113,7 @@
             <form class="conversation-name-form" style="display: inline;">
               <span class="hovering text-wrapper">
                 <span class="text-holder" style="line-height: 40px; padding-left: 15px;"></span>
-                <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions);" class="glyphicon glyphicon-pencil"></span>
+                <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions);" class="fa fa-pencil"></span>
               </span>
               <span class="hidden input-wrapper">
                 <input style="margin: 4px 0px 3px 0px;" type="text" name="conversationName" value="" autocomplete="off">
@@ -126,7 +126,7 @@
               <li class="row">
                 <a class="btn btn-default col-sm-10 active-conversation-participant"></a>
                 <span class="hidden remove-participant-button">
-                  <button class="btn btn-default glyphicon glyphicon-trash" data-toggle="modal" data-target="#removeParticipantModal-"></button>
+                  <button class="btn btn-default fa fa-trash" data-toggle="modal" data-target="#removeParticipantModal-"></button>
                   <div class="modal fade" role="dialog">
                     <div class="modal-dialog modal-sm">
                       <div class="modal-content">
@@ -144,7 +144,7 @@
             </template>
             <ul id="participants-list"></ul>
           </div>
-          <button class="btn btn-default glyphicon glyphicon-plus" data-toggle="modal" data-target="#add-participant-profile-search"></button>
+          <button class="btn btn-default fa fa-plus" data-toggle="modal" data-target="#add-participant-profile-search"></button>
           <div id="add-participant-profile-search" class="modal fade" role="dialog">
             <div class="modal-dialog modal-sm">
               <div class="modal-content">
@@ -152,7 +152,7 @@
                   <span class="dropdown" style="margin:10px 0px;">
                     <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
                     <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantActions);">
-                      <span class="glyphicon glyphicon-search"></span>
+                      <span class="fa fa-search"></span>
                     </button>
                     <div class="dropdown-menu" style="width: 300px;">
                       <ul class="profile-search-result"></ul>

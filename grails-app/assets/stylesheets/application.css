@@ -75,11 +75,11 @@ select:disabled {
     border: 1px #DDD solid;
 }
 
-.hovering > .glyphicon-pencil {
+.hovering > .glyphicon-pencil, .hovering > .fa-pencil {
     display: none;
 }
 
-.hovering:hover > .glyphicon-pencil {
+.hovering:hover > .glyphicon-pencil, .hovering:hover > .fa-pencil {
     color: #AAA;
     display: inline-block;
 }
@@ -135,4 +135,8 @@ footer {
     background-color: red;
     position: absolute !important;
     border-radius: 10px !important;
+}
+
+.fa {
+    line-height: 20px;
 }
