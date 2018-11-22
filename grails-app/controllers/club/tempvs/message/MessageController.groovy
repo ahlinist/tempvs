@@ -16,7 +16,6 @@ import org.springframework.security.access.annotation.Secured
 @Secured('isAuthenticated()')
 class MessageController {
 
-    private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
     private static final String MULTIPLE_RECEIVERS = 'dialogue.multiple.receivers.error'
     private static final Integer DEFAULT_PAGE_NUMBER = 0
@@ -50,8 +49,7 @@ class MessageController {
     def getNewConversationsCount() {
         Profile currentProfile = profileService.currentProfile
         Integer count = messageProxy.getNewConversationsCount(currentProfile)
-        //TODO: use fetch instead of jquery ajax
-        render([action: DISPLAY_COUNTER, count: count] as JSON)
+        render([count: count] as JSON)
     }
 
     def loadConversations() {

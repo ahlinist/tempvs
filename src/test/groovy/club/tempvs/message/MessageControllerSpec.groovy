@@ -12,7 +12,6 @@ import spock.lang.Specification
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
     private static final String POST_METHOD = 'POST'
-    private static final String DISPLAY_COUNTER = 'displayCounter'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_THREE = 3L
 
@@ -98,7 +97,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
 
         and:
-        response.json.action == DISPLAY_COUNTER
         response.json.count == count
     }
 

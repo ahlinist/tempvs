@@ -450,7 +450,25 @@ var messaging = {
     ajaxHandler.fetch(null, url, payload, messaging.actions);
   },
   displayNewMessagesCounter: function() {
-    //TODO: use fetch instead of jquery ajax
-    horizontalMenuCounter.displayCounter('span#new-conversations', '/message/getNewConversationsCount');
+    var counter = document.querySelector('span#new-conversations');
+    var url = '/message/getNewConversationsCount';
+
+    var actions = {
+      200: function(response) {
+        response.json().then(function(data) {
+          var count = data.count;
+
+          if (count > 0) {
+            counter.classList.remove('hidden');
+            counter.innerHTML = count;
+          } else {
+            counter.classList.add('hidden');
+            counter.innerHTML = '';
+          }
+        });
+      }
+    };
+
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   }
 }
