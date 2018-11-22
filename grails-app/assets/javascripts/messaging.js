@@ -119,6 +119,7 @@ var messaging = {
               return;
             }
 
+            //TODO: apply templates
             var li = document.createElement('li');
             li.classList.add('row');
             var a = document.createElement('a');
@@ -195,6 +196,7 @@ var messaging = {
               return;
             }
 
+            //TODO: Apply templates
             var li = document.createElement('li');
             var a = document.createElement('a');
             a.classList.add('btn', 'btn-default', 'col-sm-12');
@@ -422,33 +424,32 @@ var messaging = {
     },
     addParticipant: function(subjectId) {
       var url = '/message/addParticipant/' + messaging.conversationId;
+      var data = new FormData();
+      data.append('subject', subjectId);
 
       var payload = {
         method: 'POST',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: 'subject=' + subjectId
+        body: data
       };
 
       ajaxHandler.blockUI();
       ajaxHandler.fetch(null, url, payload, messaging.actions);
     },
-    removeParticipant: function(participantId) {
+    removeParticipant: function(subjectId) {
       var url = '/message/removeParticipant/' + messaging.conversationId;
+      var data = new FormData();
+      data.append('subject', subjectId);
 
       var payload = {
         method: 'POST',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: '&subject=' + participantId
+        body: data
       };
 
       ajaxHandler.blockUI();
       ajaxHandler.fetch(null, url, payload, messaging.actions);
     },
     displayNewMessagesCounter: function() {
+      //TODO: use fetch instead of jquery ajax
       horizontalMenuCounter.displayCounter('span#new-conversations', '/message/getNewConversationsCount');
     }
 }

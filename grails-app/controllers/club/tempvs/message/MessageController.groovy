@@ -50,6 +50,7 @@ class MessageController {
     def getNewConversationsCount() {
         Profile currentProfile = profileService.currentProfile
         Integer count = messageProxy.getNewConversationsCount(currentProfile)
+        //TODO: use fetch instead of jquery ajax
         render([action: DISPLAY_COUNTER, count: count] as JSON)
     }
 
