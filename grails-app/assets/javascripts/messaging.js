@@ -5,6 +5,7 @@ var messaging = {
   defaultMessagesSize: 40,
   currentConversationsPage: 0,
   currentMessagesPage: 0,
+  newParticipantsCounter: 0,
   actions: {
     200: function(response) {
       response.json().then(function(data) {
@@ -66,6 +67,8 @@ var messaging = {
         });
 
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
+        //TODO: implement clearing function to clean up forms and popups
+        messaging.newParticipantsCounter = 0;
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
         messaging.displayNewMessagesCounter();
@@ -105,53 +108,46 @@ var messaging = {
     }
   },
   addParticipantActions: {
+    //TODO: move "add" button down and support multiple participants to be added
     200: function(response) {
-      var container = document.querySelector('#add-participant-to-conversation-container');
+      var resultContainer = document.querySelector('#add-participant-to-conversation-container');
+      var resultList = resultContainer.querySelector('ul');
 
       response.json().then(function(data) {
         profileSearcher.recoverUI();
+        var profileSearchContainer = document.querySelector('#add-participant-profile-search');
+        var profileSearchTemplate = profileSearchContainer.querySelector('template.profile-search-template');
+        var profileSearchListItem = profileSearchTemplate.content.querySelector('li');
 
         data.forEach(function(dataEntry){
           var profileId = dataEntry.id;
           var profileName = dataEntry.name;
 
-          if (document.querySelector('.active-conversation-participant[href$="' + dataEntry + '"]')) {
+          if (document.querySelector('.active-conversation-participant[href$="/' + profileId + '"]')) {
             return;
           }
 
-          //TODO: apply templates
-          var li = document.createElement('li');
-          li.classList.add('row');
-          var a = document.createElement('a');
-          a.classList.add('btn', 'btn-default', 'col-sm-12');
+          var profileSearchNode = document.importNode(profileSearchListItem, true);
+          var profileResultLink = profileSearchNode.querySelector('a.search-result');
+          profileResultLink.innerHTML = profileName;
 
-          a.onclick = function() {
-            container.innerHTML = '';
-            var a = document.createElement('a');
-            a.classList.add('btn', 'btn-default', 'col-sm-10');
-            a.href = '/profile/show/' + profileId;
-            a.innerHTML = profileName;
+          profileResultLink.onclick = function() {
+            var searchResultTemplate = profileSearchContainer.querySelector('template.profile-search-result-template');
+            var searchResultListItem = searchResultTemplate.content.querySelector('li');
+            var searchResultNode = document.importNode(searchResultListItem, true);
+            var searchResultLink = searchResultNode.querySelector('a.search-result-link');
+            var check = searchResultNode.querySelector('span.fa-check');
+            var remove = searchResultNode.querySelector('span.fa-remove');
 
-            var ok = document.createElement('span');
-            ok.classList.add('fa', 'fa-check', 'btn', 'btn-default', 'col-sm-1');
-            ok.style.color = 'green';
-            ok.style.borderRadius = '150px';
-            ok.onclick = function() { messaging.addParticipant(profileId) };
-
-            var remove = document.createElement('span');
-            remove.classList.add('fa', 'fa-remove', 'btn', 'btn-default', 'col-sm-1');
-            remove.style.color = 'red';
-            remove.style.borderRadius = '150px';
-            remove.onclick = function() { container.innerHTML = '';};
-
-            container.appendChild(a);
-            container.appendChild(ok);
-            container.appendChild(remove);
+            resultList.innerHTML = '';
+            searchResultLink.href = '/profile/show/' + profileId;
+            searchResultLink.innerHTML = profileName;
+            check.onclick = function() {messaging.addParticipant(profileId);};
+            remove.onclick = function() {resultList.innerHTML = '';};
+            resultList.appendChild(searchResultNode);
           };
 
-          a.innerHTML = dataEntry.name;
-          li.appendChild(a);
-          profileSearcher.searchResult.appendChild(li);
+          profileSearcher.searchResult.appendChild(profileSearchNode);
         });
       });
     }
@@ -187,7 +183,9 @@ var messaging = {
         profileSearcher.recoverUI();
         var createConversationPopup = document.querySelector('#create-conversation-popup');
         var conversationNameContainer = createConversationPopup.querySelector('#new-conversation-name-container');
-        var participantsList = createConversationPopup.querySelector('#create-conversation-participants-container');
+        var participantsList = createConversationPopup.querySelector('ul#create-conversation-participants-container');
+        var profileSearchTemplate = createConversationPopup.querySelector('template.profile-search-template');
+        var profileSearchListItem = profileSearchTemplate.content.querySelector('li');
 
         data.forEach(function(dataEntry){
           var profileId = dataEntry.id;
@@ -197,42 +195,30 @@ var messaging = {
             return;
           }
 
-          //TODO: Apply templates
-          var li = document.createElement('li');
-          var a = document.createElement('a');
-          a.classList.add('btn', 'btn-default', 'col-sm-12');
+          var profileSearchNode = document.importNode(profileSearchListItem, true);
+          var profileResultLink = profileSearchNode.querySelector('a.search-result');
+          profileResultLink.innerHTML = profileName;
 
-          a.onclick = function() {
-            var participantsCounterHolder = createConversationPopup.querySelector('span#participants-counter');
-            var participantsCounter = participantsCounterHolder.innerHTML;
-            var li = document.createElement('li');
-            var a = document.createElement('a');
-            a.classList.add('btn', 'btn-default', 'create-conversation-participant');
-            a.style.width = '524px';
-            a.style.margin = '0 4px 0 0';
-            a.href = '/profile/show/' + profileId;
-            a.innerHTML = profileName;
+          profileResultLink.onclick = function() {
+            var participantsCounter = messaging.newParticipantsCounter;
+            var searchResultTemplate = createConversationPopup.querySelector('template.profile-search-result-template');
+            var searchResultListItem = searchResultTemplate.content.querySelector('li');
+            var searchResultNode = document.importNode(searchResultListItem, true);
+            var searchResultLink = searchResultNode.querySelector('a.search-result-link');
+            var remove = searchResultNode.querySelector('span.fa-remove');
+            var input = searchResultNode.querySelector('input[type=hidden]');
 
-            var remove = document.createElement('span');
-            remove.classList.add('fa', 'fa-remove', 'btn', 'btn-default');
-            remove.style.color = 'red';
-            remove.style.borderRadius = '150px';
+            searchResultLink.href = '/profile/show/' + profileId;
+            searchResultLink.innerHTML = profileName;
+            input.value = profileId;
+            input.name = 'receivers[' + participantsCounter + ']';
+            messaging.newParticipantsCounter++;
+            toggleConversationNameContainer();
+
             remove.onclick = function() {
-              participantsList.removeChild(li);
+              participantsList.removeChild(searchResultNode);
               toggleConversationNameContainer();
             };
-
-            var hidden = document.createElement('input');
-            hidden.type = 'hidden';
-            hidden.value = profileId;
-            hidden.name = 'receivers[' + participantsCounter + ']';
-            participantsCounterHolder.innerHTML = ++participantsCounter;
-
-            li.appendChild(a);
-            li.appendChild(remove);
-            li.appendChild(hidden);
-            participantsList.appendChild(li);
-            toggleConversationNameContainer();
 
             function toggleConversationNameContainer() {
               if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
@@ -241,11 +227,11 @@ var messaging = {
                 conversationNameContainer.style.display = 'none';
               }
             }
+
+            participantsList.appendChild(searchResultNode);
           };
 
-          a.innerHTML = dataEntry.name;
-          li.appendChild(a);
-          profileSearcher.searchResult.appendChild(li);
+          profileSearcher.searchResult.appendChild(profileSearchNode);
          });
       });
     }

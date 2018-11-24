@@ -41,7 +41,20 @@
                 </span>
                 <g:form controller="message" action="createConversation" onsubmit="messaging.createConversation(this); return false;">
                   <input style="height:0; width:0; padding:0; border:none; display: block;" name="receivers">
-                  <span style="display: none;" id="participants-counter">0</span>
+                  <template class="profile-search-template">
+                    <li>
+                      <a class="btn btn-default col-sm-12 search-result"></a>
+                    </li>
+                  </template>
+                  <template class="profile-search-result-template">
+                    <li>
+                      <a class="btn btn-default search-result-link" style="width: 524px;"></a>
+                      <button class="btn btn-default" style="width: 39px;">
+                        <span class="fa fa-remove" style="color: red;"></span>
+                      </button>
+                      <input type="hidden">
+                    </li>
+                  </template>
                   <ul id="create-conversation-participants-container" class="row"></ul>
                   <div id="new-conversation-name-container" class="row" style="display: none;">
                     <hr style="margin: 10px 0px;"/>
@@ -155,17 +168,32 @@
                       <span class="fa fa-search"></span>
                     </button>
                     <div class="dropdown-menu" style="width: 300px;">
+                      <template class="profile-search-template">
+                        <li class="row">
+                          <a class="btn btn-default col-sm-12 search-result"></a>
+                        </li>
+                      </template>
                       <ul class="profile-search-result"></ul>
                       <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantActions);">
                         <i><g:message code="profile.search.loadMore.link"/></i>
                       </button>
                     </div>
                   </span>
-                  <div id="add-participant-to-conversation-container" style="height: 50px;"></div>
+                  <template class="profile-search-result-template">
+                    <li>
+                      <a class="btn btn-default col-sm-10 search-result-link"></a>
+                      <span class="fa fa-check btn btn-default col-sm-1" style="color: green;"></span>
+                      <span class="fa fa-remove btn btn-default col-sm-1" style="color: red;"></span>
+                    </li>
+                  </template>
+                  <div id="add-participant-to-conversation-container" style="height: 50px;">
+                    <ul></ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
       </div>
     </div>
   </body>
