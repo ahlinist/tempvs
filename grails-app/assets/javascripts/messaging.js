@@ -136,11 +136,11 @@ var messaging = {
           profileResultLink.innerHTML = profileName;
 
           profileResultLink.onclick = function() {
-            var searchResultTemplate = profileSearchContainer.querySelector('template.profile-search-result-template');
+            var searchResultTemplate = document.querySelector('template#profile-search-result-template');
             var searchResultListItem = searchResultTemplate.content.querySelector('li');
             var searchResultNode = document.importNode(searchResultListItem, true);
             var searchResultLink = searchResultNode.querySelector('a.search-result-link');
-            var remove = searchResultNode.querySelector('button span.fa-remove');
+            var remove = searchResultNode.querySelector('span.remove-participant');
             var input = searchResultNode.querySelector('input[type=hidden]');
 
             resultList.innerHTML = '';
@@ -162,13 +162,12 @@ var messaging = {
     //TODO: add UI internationalized validation messages
 
     var text = form.querySelector('textarea[name=text]');
-    var receivers = form.querySelector('input[name^="receivers["]');
 
     if (!text.value || !text.value.trim()) {
       return;
     }
 
-    if (!receivers) {
+    if (!form.querySelector('input[name^="receivers"]')) {
       return;
     }
 
@@ -188,7 +187,6 @@ var messaging = {
       response.json().then(function(data) {
         profileSearcher.recoverUI();
         var createConversationPopup = document.querySelector('#create-conversation-popup');
-        var conversationNameContainer = createConversationPopup.querySelector('#new-conversation-name-container');
         var participantsList = createConversationPopup.querySelector('ul#create-conversation-participants-container');
         var profileSearchTemplate = createConversationPopup.querySelector('template.profile-search-template');
         var profileSearchListItem = profileSearchTemplate.content.querySelector('li');
@@ -207,11 +205,11 @@ var messaging = {
 
           profileResultLink.onclick = function() {
             var participantsCounter = messaging.newParticipantsCounter;
-            var searchResultTemplate = createConversationPopup.querySelector('template.profile-search-result-template');
+            var searchResultTemplate = document.querySelector('template#profile-search-result-template');
             var searchResultListItem = searchResultTemplate.content.querySelector('li');
             var searchResultNode = document.importNode(searchResultListItem, true);
             var searchResultLink = searchResultNode.querySelector('a.search-result-link');
-            var remove = searchResultNode.querySelector('button.remove-participant');
+            var remove = searchResultNode.querySelector('span.remove-participant');
             var input = searchResultNode.querySelector('input[type=hidden]');
 
             searchResultLink.href = '/profile/show/' + profileId;
@@ -219,26 +217,28 @@ var messaging = {
             input.value = profileId;
             input.name = 'receivers[' + participantsCounter + ']';
             messaging.newParticipantsCounter++;
-            toggleConversationNameContainer();
 
             remove.onclick = function() {
               participantsList.removeChild(searchResultNode);
               toggleConversationNameContainer();
             };
 
-            function toggleConversationNameContainer() {
-              if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
-                conversationNameContainer.style.display = 'block';
-              } else {
-                conversationNameContainer.style.display = 'none';
-              }
-            }
-
             participantsList.appendChild(searchResultNode);
+            toggleConversationNameContainer();
           };
 
           profileSearcher.searchResult.appendChild(profileSearchNode);
-         });
+
+          function toggleConversationNameContainer() {
+            var conversationNameContainer = createConversationPopup.querySelector('#new-conversation-name-container');
+
+            if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
+              conversationNameContainer.style.display = 'block';
+            } else {
+              conversationNameContainer.style.display = 'none';
+            }
+          }
+        });
       });
     }
   },
