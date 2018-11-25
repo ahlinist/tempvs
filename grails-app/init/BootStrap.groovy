@@ -1,5 +1,4 @@
 import club.tempvs.image.Image
-import club.tempvs.message.AddParticipantPayload
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile

@@ -27,6 +27,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def subject = Mock Profile
     def objectFactory = Mock ObjectFactory
     def conversationWrapper = Mock ConversationWrapper
+    def addParticipantsCommand = Mock AddParticipantsCommand
 
     def setup() {
         controller.profileService = profileService
@@ -187,18 +188,19 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         0 * _
     }
 
-    void "test addParticipant()"() {
+    void "test addParticipants()"() {
         given:
         request.method = POST_METHOD
         params.subject = LONG_THREE
 
         when:
-        controller.addParticipant(LONG_ONE)
+        controller.addParticipants(LONG_ONE, addParticipantsCommand)
 
         then:
+        1 * addParticipantsCommand.validate() >> true
+        1 * addParticipantsCommand.participants >> [subject]
         1 * profileService.currentProfile >> initiator
-        1 * profileService.getProfileById(LONG_THREE) >> subject
-        1 * messageProxy.addParticipant(LONG_ONE, initiator, subject) >> conversation
+        1 * messageProxy.addParticipants(LONG_ONE, initiator, [subject]) >> conversation
         1 * objectFactory.getInstance(ConversationWrapper, conversation, initiator) >> conversationWrapper
         1 * conversationWrapper.conversation
         1 * conversationWrapper.currentProfile

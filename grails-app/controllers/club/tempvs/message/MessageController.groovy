@@ -110,10 +110,14 @@ class MessageController {
         render(objectFactory.getInstance(ConversationWrapper, conversation, currentProfile) as JSON)
     }
 
-    def addParticipant(Long id) {
+    def addParticipants(Long id, AddParticipantsCommand command) {
+        if (!command.validate()) {
+            return render(status: 400, text: ajaxResponseHelper.renderErrors(command))
+        }
+
         Profile initiator = profileService.currentProfile
-        Profile subject = profileService.getProfileById(params.subject as Long)
-        Conversation conversation = messageProxy.addParticipant(id, initiator, subject)
+        List<Profile> subjects = command.participants
+        Conversation conversation = messageProxy.addParticipants(id, initiator, subjects)
         render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
     }
 

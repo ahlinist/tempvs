@@ -5,6 +5,7 @@ import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
+import club.tempvs.user.ProfileType
 import grails.converters.JSON
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -96,18 +97,22 @@ class MessageProxy {
         }
     }
 
-    Conversation addParticipant(Long conversationId, Profile initiator, Profile subject) {
-        if (initiator.type != subject.type) {
+    Conversation addParticipants(Long conversationId, Profile initiator, List<Profile> subjects) {
+        if (subjects.type.any { ProfileType type -> type != initiator.type}) {
             throw new RuntimeException("Profiles can't be of different type.")
         }
 
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
 
         Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
-        Participant subjectDto = objectFactory.getInstance(Participant, [id: subject.id, name: subject.toString()])
-        AddParticipantPayload addParticipantPayload =
-                objectFactory.getInstance(AddParticipantPayload, [initiator: initiatorDto, subject: subjectDto])
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addParticipantPayload as JSON)
+
+        List<Participant> subjectDtos = subjects.collect { Profile subject ->
+            objectFactory.getInstance(Participant, [id: subject.id, name: subject.toString()])
+        }
+
+        AddParticipantsPayload addParticipantsPayload =
+                objectFactory.getInstance(AddParticipantsPayload, [initiator: initiatorDto, subjects: subjectDtos])
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addParticipantsPayload as JSON)
 
         if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)

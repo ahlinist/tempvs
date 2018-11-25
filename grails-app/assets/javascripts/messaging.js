@@ -5,7 +5,8 @@ var messaging = {
   defaultMessagesSize: 40,
   currentConversationsPage: 0,
   currentMessagesPage: 0,
-  newParticipantsCounter: 0,
+  newConversationParticipantsCounter: 0,
+  conversationAddParticipantsCounter: 0,
   actions: {
     200: function(response) {
       response.json().then(function(data) {
@@ -68,7 +69,7 @@ var messaging = {
 
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
         //TODO: implement clearing function to clean up forms and popups
-        messaging.newParticipantsCounter = 0;
+        messaging.newConversationParticipantsCounter = 0;
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
         messaging.displayNewMessagesCounter();
@@ -107,15 +108,14 @@ var messaging = {
       messaging.displayNewMessagesCounter();
     }
   },
-  addParticipantActions: {
+  addParticipantsActions: {
     //TODO: support multiple participants to be added
     200: function(response) {
       var resultContainer = document.querySelector('#add-participant-to-conversation-container');
       var resultList = resultContainer.querySelector('ul');
       var addParticipantForm = resultContainer.querySelector('form.add-participant-to-conversation-form');
       var addParticipantButton = addParticipantForm.querySelector('button');
-      addParticipantForm.action = '/message/addParticipant/' + messaging.conversationId;
-      addParticipantButton.classList.add('hidden');
+      addParticipantForm.action = '/message/addParticipants/' + messaging.conversationId;
 
       response.json().then(function(data) {
         profileSearcher.recoverUI();
@@ -127,7 +127,10 @@ var messaging = {
           var profileId = dataEntry.id;
           var profileName = dataEntry.name;
 
-          if (document.querySelector('.active-conversation-participant[href$="/' + profileId + '"]')) {
+          var isParticipant = document.querySelector('.active-conversation-participant[href$="/' + profileId + '"]');
+          var isForAddition = profileSearchContainer.querySelector('.search-result-link[href$="/' + profileId + '"]');
+
+          if (isParticipant || isForAddition) {
             return;
           }
 
@@ -142,19 +145,35 @@ var messaging = {
             var searchResultLink = searchResultNode.querySelector('a.search-result-link');
             var remove = searchResultNode.querySelector('span.remove-participant');
             var input = searchResultNode.querySelector('input[type=hidden]');
+            var participantsCounter = messaging.conversationAddParticipantsCounter;
 
-            resultList.innerHTML = '';
-            addParticipantButton.classList.remove('hidden');
-            input.name = 'subject';
+            input.name = 'participants[' + participantsCounter + ']';
             input.value = profileId;
             searchResultLink.href = '/profile/show/' + profileId;
             searchResultLink.innerHTML = profileName;
-            remove.onclick = function() {resultList.innerHTML = '';};
+            messaging.conversationAddParticipantsCounter++;
+
+            remove.onclick = function() {
+              resultList.removeChild(searchResultNode);
+              toggleAddButton();
+            };
+
             resultList.appendChild(searchResultNode);
+            toggleAddButton();
           };
 
           profileSearcher.searchResult.appendChild(profileSearchNode);
         });
+
+        toggleAddButton();
+
+        function toggleAddButton() {
+          if (addParticipantForm.querySelectorAll('a.search-result-link').length > 0) {
+            addParticipantButton.classList.remove('hidden');
+          } else {
+            addParticipantButton.classList.add('hidden');
+          }
+        }
       });
     }
   },
@@ -181,7 +200,6 @@ var messaging = {
 
     ajaxHandler.fetch(form, url, payload, messaging.actions);
   },
-  //TODO: unite with addParticipants logic
   createConversationActions: {
     200: function(response) {
       response.json().then(function(data) {
@@ -204,7 +222,7 @@ var messaging = {
           profileResultLink.innerHTML = profileName;
 
           profileResultLink.onclick = function() {
-            var participantsCounter = messaging.newParticipantsCounter;
+            var participantsCounter = messaging.newConversationParticipantsCounter;
             var searchResultTemplate = document.querySelector('template#profile-search-result-template');
             var searchResultListItem = searchResultTemplate.content.querySelector('li');
             var searchResultNode = document.importNode(searchResultListItem, true);
@@ -216,7 +234,7 @@ var messaging = {
             searchResultLink.innerHTML = profileName;
             input.value = profileId;
             input.name = 'receivers[' + participantsCounter + ']';
-            messaging.newParticipantsCounter++;
+            messaging.newConversationParticipantsCounter++;
 
             remove.onclick = function() {
               participantsList.removeChild(searchResultNode);
@@ -415,7 +433,7 @@ var messaging = {
     var scrollable = document.querySelector('div#messages-container');
     scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
   },
-  addParticipant: function(form) {
+  addParticipants: function(form) {
     var data = new FormData(form);
 
     var payload = {

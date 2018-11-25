@@ -3,8 +3,7 @@ package club.tempvs.message
 import groovy.transform.CompileStatic
 
 @CompileStatic
-class AddParticipantPayload {
-
+class AddParticipantsPayload {
     Participant initiator
-    Participant subject
+    List<Participant> subjects
 }

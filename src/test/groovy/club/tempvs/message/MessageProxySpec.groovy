@@ -33,7 +33,7 @@ class MessageProxySpec extends Specification {
     def createConversationDto = Mock CreateConversationPayload
     def addMessageDto = Mock AddMessagePayload
     def type = GroovyMock ProfileType
-    def addParticipantPayload = Mock AddParticipantPayload
+    def addParticipantPayload = Mock AddParticipantsPayload
     def updateConversationNamePayload = Mock UpdateConversationNamePayload
 
     def setup() {
@@ -180,26 +180,26 @@ class MessageProxySpec extends Specification {
         result == conversation
     }
 
-    void "test addParticipant()"() {
+    void "test addParticipants()"() {
         given:
         String jsonResponse = "{response}"
         Long conversationId = 1L
         String profileName = "profile name"
-        Map payloadMap = [initiator: participantDto, subject: participantDto]
+        Map payloadMap = [initiator: participantDto, subjects: [participantDto]]
 
         when:
-        Conversation result = messageProxy.addParticipant(conversationId, initiator, subject)
+        Conversation result = messageProxy.addParticipants(conversationId, initiator, [subject])
 
         then:
         1 * initiator.type >> type
-        1 * subject.type >> type
+        1 * subject.getProperty('type') >> type
         1 * initiator.id >> LONG_ONE
         1 * initiator.toString() >> profileName
         1 * subject.id >> LONG_TWO
         1 * subject.toString() >> profileName
         1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participantDto
         1 * objectFactory.getInstance(Participant, [id: LONG_TWO, name: profileName]) >> participantDto
-        1 * objectFactory.getInstance(AddParticipantPayload, payloadMap) >> addParticipantPayload
+        1 * objectFactory.getInstance(AddParticipantsPayload, payloadMap) >> addParticipantPayload
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse

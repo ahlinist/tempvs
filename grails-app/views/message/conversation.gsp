@@ -163,7 +163,7 @@
                   <div class="modal-body">
                     <span class="dropdown" style="margin:10px 0px;">
                       <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
-                      <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantActions);">
+                      <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantsActions);">
                         <span class="fa fa-search"></span>
                       </button>
                       <div class="dropdown-menu" style="width: 300px;">
@@ -173,17 +173,19 @@
                           </li>
                         </template>
                         <ul class="profile-search-result"></ul>
-                        <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantActions);">
+                        <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantsActions);">
                           <i><g:message code="profile.search.loadMore.link"/></i>
                         </button>
                       </div>
                     </span>
-                    <div id="add-participant-to-conversation-container" style="height: 60px;">
-                      <g:form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipant(this); return false;">
+                    <div id="add-participant-to-conversation-container">
+                      <g:form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipants(this); return false;">
                         <ul></ul>
-                        <button type="submit" class="btn btn-default hidden">
-                          <g:message code="conversation.participant.add.button"/>
-                        </button>
+                        <div style="height: 35px;">
+                          <button type="submit" class="btn btn-default hidden">
+                            <g:message code="conversation.participant.add.button"/>
+                          </button>
+                        </div>
                       </g:form>
                     </div>
                   </div>
