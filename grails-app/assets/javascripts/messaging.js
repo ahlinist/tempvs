@@ -109,7 +109,6 @@ var messaging = {
     }
   },
   addParticipantsActions: {
-    //TODO: support multiple participants to be added
     200: function(response) {
       var resultContainer = document.querySelector('#add-participant-to-conversation-container');
       var resultList = resultContainer.querySelector('ul');
@@ -178,15 +177,21 @@ var messaging = {
     }
   },
   createConversation: function(form) {
-    //TODO: add UI internationalized validation messages
+    var createConversationPopup = document.querySelector('div#create-conversation-popup');
+    var profileSearchField = createConversationPopup.querySelector('input[name="query"]');
+    var textarea = form.querySelector('textarea[name=text]');
+    var blankMessageError = !textarea.value || !textarea.value.trim();
+    var noParticipantsError = !form.querySelector('input[name^="receivers"]');
 
-    var text = form.querySelector('textarea[name=text]');
-
-    if (!text.value || !text.value.trim()) {
-      return;
+    if (blankMessageError) {
+      $(textarea).tooltip('show');
     }
 
-    if (!form.querySelector('input[name^="receivers"]')) {
+    if (noParticipantsError) {
+      $(profileSearchField).tooltip('show');
+    }
+
+    if (blankMessageError || noParticipantsError) {
       return;
     }
 
@@ -262,8 +267,10 @@ var messaging = {
   },
   send: function(form) {
     var data = new FormData(form);
+    var inputBox = form.querySelector('input[name=message]');
 
     if (!data.get('message')) {
+      $(inputBox).tooltip('show');
       return;
     }
 

@@ -37,7 +37,9 @@
               <div class="modal-content">
                 <div class="modal-body">
                   <span class="dropdown" style="margin:10px 0px;">
-                    <input style="width: 524px;" placeholder="${g.message(code: 'conversation.search.participants.placeholder')}" type="text" class="profile-search-box" name="query"/>
+                    <input style="width: 524px;" type="text" class="profile-search-box" name="query"
+                        placeholder="${g.message(code: 'conversation.search.participants.placeholder')}" data-toggle="tooltip"
+                        data-placement="bottom" title="${g.message(code: 'conversation.new.participants.missing.tooltip')}">
                     <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.createConversationActions); return false;">
                       <span class="fa fa-search"></span>
                     </button>
@@ -60,7 +62,9 @@
                       <input class="col-sm-12" placeholder="${g.message(code: 'conversation.name.placeholder')}" type="text" name="name">
                     </div>
                     <hr style="margin: 10px 0px;"/>
-                    <textarea placeholder="${g.message(code: 'message.create.text')}" name="text" style="width: 100%; height: 100px;"></textarea>
+                    <textarea placeholder="${g.message(code: 'message.create.text')}" data-toggle="tooltip"
+                        data-placement="bottom"  title="${g.message(code: 'conversation.new.message.blank.tooltip')}"
+                        name="text" style="width: 100%; height: 100px;"></textarea>
                     <button class="btn btn-default submit-button">
                       <g:message code="message.send.message.button"/>
                     </button>
@@ -113,7 +117,8 @@
             </div>
             <ul id="messages-list"></ul>
             <form id="message-form">
-              <input type="text" style="width: calc(100% - 45px);" name="message">
+              <input type="text" style="width: calc(100% - 45px);" name="message"
+              data-toggle="tooltip" data-placement="top" title="${g.message(code: 'conversation.new.message.blank.tooltip')}">
               <button class="btn btn-default">
                 <span class="fa fa-paper-plane" aria-hidden="true"></span>
               </button>
