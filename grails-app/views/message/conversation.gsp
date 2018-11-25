@@ -49,7 +49,7 @@
                   <template class="profile-search-result-template">
                     <li>
                       <a class="btn btn-default search-result-link" style="width: 524px;"></a>
-                      <button class="btn btn-default" style="width: 39px;">
+                      <button class="btn btn-default remove-participant" style="width: 39px;">
                         <span class="fa fa-remove" style="color: red;"></span>
                       </button>
                       <input type="hidden">
@@ -179,15 +179,23 @@
                       </button>
                     </div>
                   </span>
+                  %{-- TODO: consider merging with the similar template for conversation creation. --}%
                   <template class="profile-search-result-template">
                     <li>
-                      <a class="btn btn-default col-sm-10 search-result-link"></a>
-                      <span class="fa fa-check btn btn-default col-sm-1" style="color: green;"></span>
-                      <span class="fa fa-remove btn btn-default col-sm-1" style="color: red;"></span>
+                      <a class="btn btn-default search-result-link" style="width: 524px;"></a>
+                      <button class="btn btn-default" style="width: 39px;">
+                        <span class="fa fa-remove" style="color: red;"></span>
+                      </button>
+                      <input type="hidden">
                     </li>
                   </template>
-                  <div id="add-participant-to-conversation-container" style="height: 50px;">
-                    <ul></ul>
+                  <div id="add-participant-to-conversation-container" style="height: 60px;">
+                    <g:form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipant(this); return false;">
+                      <ul></ul>
+                      <button type="submit" class="btn btn-default hidden">
+                        <g:message code="conversation.participant.add.button"/>
+                      </button>
+                    </g:form>
                   </div>
                 </div>
               </div>

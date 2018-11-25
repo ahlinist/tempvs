@@ -108,10 +108,14 @@ var messaging = {
     }
   },
   addParticipantActions: {
-    //TODO: move "add" button down and support multiple participants to be added
+    //TODO: support multiple participants to be added
     200: function(response) {
       var resultContainer = document.querySelector('#add-participant-to-conversation-container');
       var resultList = resultContainer.querySelector('ul');
+      var addParticipantForm = resultContainer.querySelector('form.add-participant-to-conversation-form');
+      var addParticipantButton = addParticipantForm.querySelector('button');
+      addParticipantForm.action = '/message/addParticipant/' + messaging.conversationId;
+      addParticipantButton.classList.add('hidden');
 
       response.json().then(function(data) {
         profileSearcher.recoverUI();
@@ -136,13 +140,15 @@ var messaging = {
             var searchResultListItem = searchResultTemplate.content.querySelector('li');
             var searchResultNode = document.importNode(searchResultListItem, true);
             var searchResultLink = searchResultNode.querySelector('a.search-result-link');
-            var check = searchResultNode.querySelector('span.fa-check');
-            var remove = searchResultNode.querySelector('span.fa-remove');
+            var remove = searchResultNode.querySelector('button span.fa-remove');
+            var input = searchResultNode.querySelector('input[type=hidden]');
 
             resultList.innerHTML = '';
+            addParticipantButton.classList.remove('hidden');
+            input.name = 'subject';
+            input.value = profileId;
             searchResultLink.href = '/profile/show/' + profileId;
             searchResultLink.innerHTML = profileName;
-            check.onclick = function() {messaging.addParticipant(profileId);};
             remove.onclick = function() {resultList.innerHTML = '';};
             resultList.appendChild(searchResultNode);
           };
@@ -176,7 +182,7 @@ var messaging = {
 
     ajaxHandler.fetch(form, url, payload, messaging.actions);
   },
-  //TODO: move "add" button down and unite with addParticipants logic
+  //TODO: unite with addParticipants logic
   createConversationActions: {
     200: function(response) {
       response.json().then(function(data) {
@@ -205,7 +211,7 @@ var messaging = {
             var searchResultListItem = searchResultTemplate.content.querySelector('li');
             var searchResultNode = document.importNode(searchResultListItem, true);
             var searchResultLink = searchResultNode.querySelector('a.search-result-link');
-            var remove = searchResultNode.querySelector('span.fa-remove');
+            var remove = searchResultNode.querySelector('button.remove-participant');
             var input = searchResultNode.querySelector('input[type=hidden]');
 
             searchResultLink.href = '/profile/show/' + profileId;
@@ -409,10 +415,8 @@ var messaging = {
     var scrollable = document.querySelector('div#messages-container');
     scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
   },
-  addParticipant: function(subjectId) {
-    var url = '/message/addParticipant/' + messaging.conversationId;
-    var data = new FormData();
-    data.append('subject', subjectId);
+  addParticipant: function(form) {
+    var data = new FormData(form);
 
     var payload = {
       method: 'POST',
@@ -420,7 +424,7 @@ var messaging = {
     };
 
     ajaxHandler.blockUI();
-    ajaxHandler.fetch(null, url, payload, messaging.actions);
+    ajaxHandler.fetch(form, form.action, payload, messaging.actions);
   },
   removeParticipant: function(subjectId) {
     var url = '/message/removeParticipant/' + messaging.conversationId;
