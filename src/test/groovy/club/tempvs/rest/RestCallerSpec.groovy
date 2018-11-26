@@ -12,6 +12,8 @@ class RestCallerSpec extends Specification {
     private static final String URL = 'url'
     private static final String AUTHORIZATION = 'Authorization'
     private static final String ACCEPT_LANGUAGE = 'Accept-Language'
+    private static final String ACCEPT_TIMEZONE = 'Accept-Timezone'
+    private static final String TIMEZONE = 'Europe/Minsk'
     private static final String ENGLISH = 'en'
     private static final String TEST_JSON = 'test json'
     private static final String CONTENT_TYPE = 'Content-Type'
@@ -36,10 +38,14 @@ class RestCallerSpec extends Specification {
 
     void "Test doGet()"() {
         given:
-        Map<String, String> headers = [(AUTHORIZATION): AUTHORIZATION, (ACCEPT_LANGUAGE): ENGLISH]
+        Map<String, String> headers = [
+                (AUTHORIZATION): AUTHORIZATION,
+                (ACCEPT_LANGUAGE): ENGLISH,
+                (ACCEPT_TIMEZONE): TIMEZONE,
+        ]
 
         when:
-        def result = restCaller.doGet(URL, AUTHORIZATION)
+        def result = restCaller.doGet(URL, AUTHORIZATION, TIMEZONE)
 
         then:
         1 * restHelper.newTemplate() >> restTemplate
@@ -54,10 +60,14 @@ class RestCallerSpec extends Specification {
 
     void "Test doHead()"() {
         given:
-        Map<String, String> headers = [(AUTHORIZATION): AUTHORIZATION, (ACCEPT_LANGUAGE): ENGLISH]
+        Map<String, String> headers = [
+                (AUTHORIZATION): AUTHORIZATION,
+                (ACCEPT_LANGUAGE): ENGLISH,
+                (ACCEPT_TIMEZONE): TIMEZONE,
+        ]
 
         when:
-        def result = restCaller.doHead(URL, AUTHORIZATION)
+        def result = restCaller.doHead(URL, AUTHORIZATION, TIMEZONE)
 
         then:
         1 * restHelper.newTemplate() >> restTemplate
@@ -75,11 +85,12 @@ class RestCallerSpec extends Specification {
         Map<String, String> headers = [
                 (AUTHORIZATION): AUTHORIZATION,
                 (ACCEPT_LANGUAGE): ENGLISH,
+                (ACCEPT_TIMEZONE): TIMEZONE,
                 (CONTENT_TYPE): JSON_CONTENT_TYPE,
         ]
 
         when:
-        def result = restCaller.doPost(URL, AUTHORIZATION, json)
+        def result = restCaller.doPost(URL, AUTHORIZATION, json, TIMEZONE)
 
         then:
         1 * restHelper.newTemplate() >> restTemplate
@@ -95,10 +106,14 @@ class RestCallerSpec extends Specification {
 
     void "Test doDelete()"() {
         given:
-        Map<String, String> headers = [(AUTHORIZATION): AUTHORIZATION, (ACCEPT_LANGUAGE): ENGLISH]
+        Map<String, String> headers = [
+                (AUTHORIZATION): AUTHORIZATION,
+                (ACCEPT_LANGUAGE): ENGLISH,
+                (ACCEPT_TIMEZONE): TIMEZONE,
+        ]
 
         when:
-        def result = restCaller.doDelete(URL, AUTHORIZATION)
+        def result = restCaller.doDelete(URL, AUTHORIZATION, TIMEZONE)
 
         then:
         1 * restHelper.newTemplate() >> restTemplate

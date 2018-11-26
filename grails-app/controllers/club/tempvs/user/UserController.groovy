@@ -17,8 +17,10 @@ class UserController {
     private static final String PASSWORD = 'password'
     private static final String UPDATE_EMAIL_ACTION = 'email'
     private static final String EMAIL_FIELD = 'email'
+    private static final String TIME_ZONE_FIELD = 'timeZone'
     private static final String EMAIL_USED_CODE = 'user.email.used.error'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
+    private static final String TIME_ZONE_UPDATED_MESSAGE = 'user.edit.timezone.success.message'
     private static final String PASSWORDS_MISMATCH_MESSAGE = 'user.register.password.mismatch.message'
     private static final String UPDATE_EMAIL_MESSAGE_SENT = 'user.edit.email.verification.sent.message'
     private static final String UPDATE_EMAIL_FAILED_MESSAGE = 'user.edit.email.verification.failed.message'
@@ -28,6 +30,7 @@ class UserController {
             edit: 'GET',
             updateEmail: 'POST',
             updatePassword: 'POST',
+            updateTimeZone: 'POST',
             register: 'POST',
     ]
 
@@ -76,6 +79,16 @@ class UserController {
 
         if (!user.hasErrors()) {
             render ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE)
+        } else {
+            render ajaxResponseHelper.renderValidationResponse(user)
+        }
+    }
+
+    def updateTimeZone(String timeZone) {
+        User user = userService.editUserField(userService.currentUser, TIME_ZONE_FIELD, timeZone)
+
+        if (!user.hasErrors()) {
+            render ajaxResponseHelper.renderFormMessage(Boolean.TRUE, TIME_ZONE_UPDATED_MESSAGE)
         } else {
             render ajaxResponseHelper.renderValidationResponse(user)
         }

@@ -53,7 +53,7 @@
                   </span>
                 </g:link>
               </li>
-              <g:if test="${profile.type == currentProfile.type}">
+              <g:if test="${profile.type == currentProfile?.type}">
                 <li class="row">
                   <button class="btn btn-default col-sm-12" data-toggle="modal" data-target="#writeMessageButton">
                     <span class="pull-left">

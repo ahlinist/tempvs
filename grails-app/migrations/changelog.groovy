@@ -839,4 +839,5 @@ databaseChangeLog = {
     changeSet(author: "albvs (generated)", id: "1532526192663-68") {
         addForeignKeyConstraint(baseColumnNames: "comment_id", baseTableName: "passport_comment", constraintName: "FKyyu8k8oa59y5eg4pdonqyu2h", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "id", referencedTableName: "comment")
     }
+    include file: 'updates/user-add-time-zone.groovy'
 }

@@ -6,6 +6,8 @@ import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
 
+import java.time.ZoneId
+
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='email')
 @ToString(includes='email', includeNames=true, includePackage=false)
@@ -22,6 +24,7 @@ class User implements BasePersistent {
     Long currentProfileId
     List<Profile> profiles
     List<ItemGroup> itemGroups
+    String timeZone
 
     transient Profile currentProfile
 
@@ -52,6 +55,13 @@ class User implements BasePersistent {
     static constraints = {
         email email: true, unique: true, blank: false, size: 0..35
         currentProfileId nullable: true
+        timeZone nullable: true, blank: true, validator: { String timeZone ->
+            if (timeZone) {
+                return ZoneId.getAvailableZoneIds().contains(timeZone)
+            }
+
+            return true
+        }
     }
 
     static mapping = {

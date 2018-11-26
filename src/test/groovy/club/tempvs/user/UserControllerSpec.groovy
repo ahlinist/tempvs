@@ -5,7 +5,6 @@ import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.testing.web.controllers.ControllerUnitTest
 import org.grails.plugins.testing.GrailsMockHttpServletResponse
-import org.springframework.validation.Errors
 import spock.lang.Specification
 
 class UserControllerSpec extends Specification implements ControllerUnitTest<UserController> {
@@ -14,9 +13,11 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
     private static final String EMAIL = 'email'
     private static final String POST_METHOD = 'POST'
     private static final String PASSWORD = 'password'
+    private static final String TIME_ZONE = 'timeZone'
     private static final String NEW_PASSWORD = 'newPassword'
     private static final String PROFILE_PAGE_URI = '/profile'
     private static final String PASSWORD_UPDATED_MESSAGE = 'user.edit.password.success.message'
+    private static final String TIME_ZONE_UPDATED_MESSAGE = 'user.edit.timezone.success.message'
 
     def user = Mock User
     def json = Mock JSON
@@ -105,6 +106,23 @@ class UserControllerSpec extends Specification implements ControllerUnitTest<Use
         1 * userService.editUserField(user, PASSWORD, NEW_PASSWORD) >> user
         1 * user.hasErrors() >> Boolean.FALSE
         1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, PASSWORD_UPDATED_MESSAGE) >> json
+        1 * json.render(_ as GrailsMockHttpServletResponse)
+        0 * _
+    }
+
+    void "Test updateTimeZone()"() {
+        given:
+        request.method = POST_METHOD
+        params.timeZone = 'timeZone'
+
+        when:
+        controller.updateTimeZone()
+
+        then:
+        1 * userService.currentUser >> user
+        1 * userService.editUserField(user, TIME_ZONE, TIME_ZONE) >> user
+        1 * user.hasErrors() >> Boolean.FALSE
+        1 * ajaxResponseHelper.renderFormMessage(Boolean.TRUE, TIME_ZONE_UPDATED_MESSAGE) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _
     }

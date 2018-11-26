@@ -17,51 +17,36 @@ class RestCaller {
 
     private static final String AUTHORIZATION = 'Authorization'
     private static final String ACCEPT_LANGUAGE = 'Accept-Language'
+    private static final String ACCEPT_TIMEZONE = 'Accept-Timezone'
     private static final String CONTENT_TYPE = 'Content-Type'
     private static final String JSON_CONTENT_TYPE = 'application/json; charset=UTF-8'
 
     RestHelper restHelper
 
-    RestResponse doGet(String url, String token = null) {
-        Map<String,String> headers = [
-                (AUTHORIZATION): token,
-                (ACCEPT_LANGUAGE): getLanguage(),
-        ]
-
+    RestResponse doGet(String url, String token = null, String timeZone = null) {
+        Map<String,String> headers = buildHeaders(token, timeZone)
         RestTemplate restTemplate = restHelper.newTemplate()
         HttpEntity<String> entity = restHelper.newHttpEntity(headers)
         execute(restTemplate, url, HttpMethod.GET, entity)
     }
 
-    RestResponse doHead(String url, String token = null) {
-        Map<String,String> headers = [
-                (AUTHORIZATION): token,
-                (ACCEPT_LANGUAGE): getLanguage(),
-        ]
-
+    RestResponse doHead(String url, String token, String timeZone = null) {
+        Map<String,String> headers = buildHeaders(token, timeZone)
         RestTemplate restTemplate = restHelper.newTemplate()
         HttpEntity<String> entity = restHelper.newHttpEntity(headers)
         execute(restTemplate, url, HttpMethod.HEAD, entity)
     }
 
-    RestResponse doPost(String url, String token = null, JSON payload = new JSON()) {
-        Map<String,String> headers = [
-                (AUTHORIZATION): token,
-                (ACCEPT_LANGUAGE): getLanguage(),
-                (CONTENT_TYPE): JSON_CONTENT_TYPE,
-        ]
-
+    RestResponse doPost(String url, String token, JSON payload, String timeZone = null) {
+        Map<String,String> headers = buildHeaders(token, timeZone)
+        headers.put(CONTENT_TYPE, JSON_CONTENT_TYPE)
         RestTemplate restTemplate = restHelper.newTemplate()
         HttpEntity<String> entity = restHelper.newHttpEntity(headers, payload?.toString())
         execute(restTemplate, url, HttpMethod.POST, entity)
     }
 
-    RestResponse doDelete(String url, String token = null) {
-        Map<String,String> headers = [
-                (AUTHORIZATION): token,
-                (ACCEPT_LANGUAGE): getLanguage(),
-        ]
-
+    RestResponse doDelete(String url, String token, String timeZone = null) {
+        Map<String,String> headers = buildHeaders(token, timeZone)
         RestTemplate restTemplate = restHelper.newTemplate()
         HttpEntity<String> entity = restHelper.newHttpEntity(headers)
         execute(restTemplate, url, HttpMethod.DELETE, entity)
@@ -81,5 +66,13 @@ class RestCaller {
 
     private String getLanguage() {
         LocaleContextHolder.locale.language
+    }
+
+    private Map<String, String> buildHeaders(String token, String timeZone) {
+        [
+                (AUTHORIZATION): token,
+                (ACCEPT_LANGUAGE): getLanguage(),
+                (ACCEPT_TIMEZONE): timeZone,
+        ]
     }
 }
