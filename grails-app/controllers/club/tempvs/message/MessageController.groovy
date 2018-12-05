@@ -95,6 +95,8 @@ class MessageController {
         Profile author = profileService.currentProfile
         List<Profile> receivers = command.receivers.findAll().unique()
 
+        //TODO: Add profile type/period validation
+
         if (receivers.find { Profile profile -> profile.id == author.id}) {
             List errorList = [[name: RECEIVERS_FIELD, message: SELF_SENT_MESSAGE]]
             return render(status: 400, text: ajaxResponseHelper.renderErrors(errorList))
