@@ -7,6 +7,7 @@ var messaging = {
   currentMessagesPage: 0,
   newConversationParticipantsCounter: 0,
   conversationAddParticipantsCounter: 0,
+  didScroll: false,
   actions: {
     200: function(response) {
       response.json().then(function(data) {
@@ -70,6 +71,7 @@ var messaging = {
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
         //TODO: implement clearing function to clean up forms and popups
         messaging.newConversationParticipantsCounter = 0;
+        messaging.markAsRead();
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
         messaging.displayNewMessagesCounter();
@@ -329,10 +331,11 @@ var messaging = {
       }
 
       if (message.unread) {
-        messageNode.style.backgroundColor = '#E9F9FF';
+        messageNode.classList.add('message-unread');
       }
 
       messageNode.querySelector('span.message-created-date').innerHTML = message.createdDate;
+      messageNode.setAttribute('message-id', message.id);
 
       append ? messagesList.insertBefore(messageNode, firstListItem) : messagesList.appendChild(messageNode);
     });
@@ -485,5 +488,80 @@ var messaging = {
     };
 
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+  },
+  markAsRead: function() {
+    if (messaging.didScroll) {
+      return;
+    }
+
+    messaging.didScroll = true;
+    var conversationId = messaging.conversationId;
+
+    if (!conversationId) {
+      messaging.didScroll = false;
+      return;
+    }
+
+    var messagesList = document.querySelector('ul#messages-list');
+    var unreadMessages = messagesList.getElementsByClassName('message-unread');
+    var messagesToMarkAsRead = [];
+
+    setTimeout(function() {
+      for (var message of unreadMessages) {
+        if (isMessageVisible(message)) {
+          messagesToMarkAsRead.push(message);
+        }
+      }
+
+      if (!messagesToMarkAsRead.length) {
+        messaging.didScroll = false;
+        return;
+      }
+
+      var url = '/message/readMessages/' + conversationId;
+      var data = {'messageIds': messagesToMarkAsRead.map(getMessageId)};
+
+      var payload = {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      };
+
+      var actions = {
+        200: function(response) {
+          if (response.ok) {
+            setTimeout(function() {
+              var appendConversations = false;
+              messaging.loadConversations(appendConversations);
+              messaging.displayNewMessagesCounter();
+              [].slice.call(messagesToMarkAsRead).forEach(dropUnreadState)
+            }, 1000);
+          }
+        }
+      };
+
+      messaging.didScroll = false;
+      ajaxHandler.fetch(null, url, payload, actions);
+    }, 1000);
+
+    function getMessageId(message) {
+      return message.getAttribute('message-id');
+    }
+
+    function dropUnreadState(message) {
+      message.classList.remove('message-unread');
+    }
+
+    function isMessageVisible(message) {
+      var top = message.getBoundingClientRect().top
+
+      if ((top > 40) && (top < window.innerHeight - 40)) {
+        return true;
+      }
+
+      return false;
+    }
   }
 }

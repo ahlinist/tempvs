@@ -96,7 +96,8 @@
       </div>
       <div class="col-sm-9">
         <div class="row hidden" id="conversation-details">
-          <div id="messages-container" class="col-sm-8" style="position: relative; height: calc(100vh - 75px); overflow: auto;">
+          <div id="messages-container" class="col-sm-8" onscroll="messaging.markAsRead();"
+              style="position: relative; height: calc(100vh - 75px); overflow: auto;">
             <div class="row">
               <img class="load-more-messages-spinner hidden center-block" src="/assets/spinner.gif">
             </div>

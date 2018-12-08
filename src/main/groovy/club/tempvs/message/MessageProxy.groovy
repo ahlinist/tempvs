@@ -151,6 +151,16 @@ class MessageProxy {
         }
     }
 
+    boolean readMessage(Long conversationId, Profile initiator, List messageIds) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/read"
+
+        Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
+        ReadMessagesPayload readMessagesPayload =
+                objectFactory.getInstance(ReadMessagesPayload, [participant: initiatorDto, messageIds: messageIds])
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, readMessagesPayload as JSON)
+        return (response.statusCode == HttpStatus.OK) ? true : false
+    }
+
     private Conversation processError(RestResponse response) {
         HttpStatus httpStatus = response.statusCode
         String message = "Response status code ${httpStatus.value()}.\nMessage: ${response.responseBody}"

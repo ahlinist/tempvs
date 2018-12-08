@@ -140,3 +140,7 @@ footer {
 .fa {
     line-height: 20px;
 }
+
+.message-unread {
+  background-color: #E9F9FF;
+}

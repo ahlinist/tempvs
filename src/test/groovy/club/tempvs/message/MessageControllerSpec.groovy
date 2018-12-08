@@ -242,4 +242,40 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         1 * conversationWrapper.currentProfile
         0 * _
     }
+
+    void "test readMessages()"() {
+        given:
+        List messageIds = [2, 3, 4]
+        request.method = POST_METHOD
+        request.json = [messageIds: messageIds]
+
+        when:
+        controller.readMessages(LONG_ONE)
+
+        then:
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.readMessage(LONG_ONE, profile, messageIds) >> true
+        0 * _
+
+        and:
+        response.status == 200
+    }
+
+    void "test unsuccessful readMessages()"() {
+        given:
+        List messageIds = [2, 3, 4]
+        request.method = POST_METHOD
+        request.json = [messageIds: messageIds]
+
+        when:
+        controller.readMessages(LONG_ONE)
+
+        then:
+        1 * profileService.currentProfile >> profile
+        1 * messageProxy.readMessage(LONG_ONE, profile, messageIds) >> false
+        0 * _
+
+        and:
+        response.status == 400
+    }
 }

@@ -8,6 +8,7 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
+import org.grails.web.json.JSONObject
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -30,6 +31,7 @@ class MessageController {
             add: 'POST',
             updateParticipants: 'POST',
             conversationName: 'POST',
+            readMessages: 'POST',
     ]
 
     static defaultAction = 'conversation'
@@ -135,6 +137,13 @@ class MessageController {
         Profile initiator = profileService.currentProfile
         Conversation conversation = messageProxy.updateConversationName(id, initiator, conversationName)
         render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
+    }
+
+    def readMessages(Long id) {
+        Profile currentProfile = profileService.currentProfile
+        JSONObject json = request.JSON as JSONObject
+        boolean result = messageProxy.readMessage(id, currentProfile, json.messageIds as List)
+        render(status: result ? 200 : 400)
     }
 
     def accessDeniedExceptionThrown(AccessDeniedException exception) {
