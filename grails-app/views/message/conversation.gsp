@@ -78,9 +78,16 @@
         <div id="conversations-container">
           <template id="conversation-template">
             <li class="btn btn-default col-sm-12">
-              <b class="pull-left conversation-name"></b>
-              <br>
-              <i class="pull-left last-message"></i>
+              <div class="row">
+                <div class="col-sm-10">
+                  <b class="pull-left conversation-name"></b>
+                  <br>
+                  <i class="pull-left last-message"></i>
+                </div>
+                <div class="col-sm-2" style="padding: 12px;">
+                  <span class="badge badge-notify counter pull-right"></span>
+                </div>
+              </div>
             </li>
           </template>
           <ul style="margin:10px 0px;" id="conversations-list" class="row"></ul>

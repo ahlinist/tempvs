@@ -132,8 +132,7 @@ footer {
 }
 
 .counter {
-    background-color: red;
-    position: absolute !important;
+    background-color: red !important;
     border-radius: 10px !important;
 }
 

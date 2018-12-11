@@ -400,6 +400,9 @@ var messaging = {
             var conversationNode = document.importNode(conversationListItem, true);
             var conversationNameContainer = conversationNode.querySelector('b.conversation-name');
             var lastMessageContainer = conversationNode.querySelector('i.last-message');
+            var unreadCounter = conversationNode.querySelector('.badge-notify');
+
+            unreadCounter.innerHTML = conversation.unreadMessagesCount;
 
             conversationNode.onclick = function() {
               messaging.conversation(conversation.id, messaging.defaultPageNumber, messaging.defaultConversationsSize);

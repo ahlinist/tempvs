@@ -45,7 +45,7 @@
                   <span class="pull-right">
                     <span class="fa fa-users">
                       <g:if test="${newFollowings}">
-                        <span class="badge badge-notify rounded" style="background-color: red; position: absolute; border-radius: 10px !important;">
+                        <span class="badge badge-notify counter" style="position: absolute;">
                           ${newFollowings}
                         </span>
                       </g:if>
