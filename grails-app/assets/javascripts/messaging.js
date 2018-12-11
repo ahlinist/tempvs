@@ -510,7 +510,9 @@ var messaging = {
     var messagesToMarkAsRead = [];
 
     setTimeout(function() {
-      for (var message of unreadMessages) {
+      for (var i = 0; i < unreadMessages.length; i++) {
+        var message = unreadMessages[i];
+        
         if (isMessageVisible(message)) {
           messagesToMarkAsRead.push(message);
         }
