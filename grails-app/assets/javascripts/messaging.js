@@ -13,6 +13,7 @@ var messaging = {
       response.json().then(function(data) {
         var conversation = data.conversation;
         var conversationDetails = document.querySelector('div#conversation-details');
+        messaging.clearForms();
         ajaxHandler.hideModals();
         messaging.currentMessagesPage = messaging.defaultPageNumber;
         messaging.conversationId = conversation.id;
@@ -211,9 +212,9 @@ var messaging = {
     200: function(response) {
       response.json().then(function(data) {
         profileSearcher.recoverUI();
-        var createConversationPopup = document.querySelector('#create-conversation-popup');
-        var participantsList = createConversationPopup.querySelector('ul#create-conversation-participants-container');
-        var profileSearchTemplate = createConversationPopup.querySelector('template.profile-search-template');
+        var createConversationWrapper = document.querySelector('#conversation-popup-wrapper');
+        var participantsList = createConversationWrapper.querySelector('ul.create-conversation-participants-container');
+        var profileSearchTemplate = createConversationWrapper.querySelector('template.profile-search-template');
         var profileSearchListItem = profileSearchTemplate.content.querySelector('li');
 
         data.forEach(function(dataEntry){
@@ -255,7 +256,7 @@ var messaging = {
           profileSearcher.searchResult.appendChild(profileSearchNode);
 
           function toggleConversationNameContainer() {
-            var conversationNameContainer = createConversationPopup.querySelector('#new-conversation-name-container');
+            var conversationNameContainer = createConversationWrapper.querySelector('div.new-conversation-name-container');
 
             if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
               conversationNameContainer.style.display = 'block';
@@ -568,5 +569,20 @@ var messaging = {
 
       return false;
     }
+  },
+  clearForms: function() {
+    var conversationPopupWrapper = document.querySelector('div#conversation-popup-wrapper');
+    var conversationPopupTemplate = document.querySelector('template#conversation-popup-template');
+    var conversationPopupContent = conversationPopupTemplate.content.querySelector('div');
+    var conversationPopupNode = document.importNode(conversationPopupContent, true);
+    conversationPopupWrapper.innerHTML = '';
+    conversationPopupWrapper.appendChild(conversationPopupNode);
+
+    var addParticipantWrapper = document.querySelector('div#add-participant-wrapper');
+    var addParticipantTemplate = document.querySelector('template#add-participant-template');
+    var addParticipantContent = addParticipantTemplate.content.querySelector('div');
+    var addParticipantNode = document.importNode(addParticipantContent, true);
+    addParticipantWrapper.innerHTML = '';
+    addParticipantWrapper.appendChild(addParticipantNode);
   }
 }

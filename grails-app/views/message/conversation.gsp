@@ -6,6 +6,7 @@
     <script>
       window.onload = function() {
         var appendConversations = true;
+        messaging.clearForms();
         messaging.loadConversations(appendConversations);
         messaging.conversation('${conversationId}', messaging.defaultPageNumber, messaging.defaultMessagesSize);
       };
@@ -36,39 +37,44 @@
             <div class="modal-dialog">
               <div class="modal-content">
                 <div class="modal-body">
-                  <span class="dropdown" style="margin:10px 0px;">
-                    <input style="width: 524px;" type="text" class="profile-search-box" name="query"
-                        placeholder="${g.message(code: 'conversation.search.participants.placeholder')}" data-toggle="tooltip"
-                        data-placement="bottom" title="${g.message(code: 'conversation.new.participants.missing.tooltip')}">
-                    <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.createConversationActions); return false;">
-                      <span class="fa fa-search"></span>
-                    </button>
-                    <div class="dropdown-menu" style="width: 300px;">
-                      <ul class="profile-search-result"></ul>
-                      <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.createConversationActions); return false;">
-                        <i><g:message code="profile.search.loadMore.link"/></i>
-                      </button>
+                  <template id="conversation-popup-template">
+                    <div>
+                      <span class="dropdown" style="margin:10px 0px;">
+                        <input style="width: 524px;" type="text" class="profile-search-box" name="query"
+                            placeholder="${g.message(code: 'conversation.search.participants.placeholder')}" data-toggle="tooltip"
+                            data-placement="bottom" title="${g.message(code: 'conversation.new.participants.missing.tooltip')}">
+                        <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.createConversationActions); return false;">
+                          <span class="fa fa-search"></span>
+                        </button>
+                        <div class="dropdown-menu" style="width: 300px;">
+                          <ul class="profile-search-result"></ul>
+                          <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.createConversationActions); return false;">
+                            <i><g:message code="profile.search.loadMore.link"/></i>
+                          </button>
+                        </div>
+                      </span>
+                      <g:form controller="message" action="createConversation" onsubmit="messaging.createConversation(this); return false;">
+                        <template class="profile-search-template">
+                          <li>
+                            <a class="btn btn-default col-sm-12 search-result"></a>
+                          </li>
+                        </template>
+                        <ul class="create-conversation-participants-container" class="row"></ul>
+                        <div class="new-conversation-name-container" class="row" style="display: none;">
+                          <hr style="margin: 10px 0px;"/>
+                          <input class="col-sm-12" placeholder="${g.message(code: 'conversation.name.placeholder')}" type="text" name="name">
+                        </div>
+                        <hr style="margin: 10px 0px;"/>
+                        <textarea placeholder="${g.message(code: 'message.create.text')}" data-toggle="tooltip"
+                            data-placement="bottom"  title="${g.message(code: 'conversation.new.message.blank.tooltip')}"
+                            name="text" style="width: 100%; height: 100px;"></textarea>
+                        <button class="btn btn-default submit-button">
+                          <g:message code="message.send.message.button"/>
+                        </button>
+                      </g:form>
                     </div>
-                  </span>
-                  <g:form controller="message" action="createConversation" onsubmit="messaging.createConversation(this); return false;">
-                    <template class="profile-search-template">
-                      <li>
-                        <a class="btn btn-default col-sm-12 search-result"></a>
-                      </li>
-                    </template>
-                    <ul id="create-conversation-participants-container" class="row"></ul>
-                    <div id="new-conversation-name-container" class="row" style="display: none;">
-                      <hr style="margin: 10px 0px;"/>
-                      <input class="col-sm-12" placeholder="${g.message(code: 'conversation.name.placeholder')}" type="text" name="name">
-                    </div>
-                    <hr style="margin: 10px 0px;"/>
-                    <textarea placeholder="${g.message(code: 'message.create.text')}" data-toggle="tooltip"
-                        data-placement="bottom"  title="${g.message(code: 'conversation.new.message.blank.tooltip')}"
-                        name="text" style="width: 100%; height: 100px;"></textarea>
-                    <button class="btn btn-default submit-button">
-                      <g:message code="message.send.message.button"/>
-                    </button>
-                  </g:form>
+                  </template>
+                  <div id="conversation-popup-wrapper"></div>
                 </div>
               </div>
             </div>
@@ -174,33 +180,38 @@
               <div class="modal-dialog modal-sm">
                 <div class="modal-content">
                   <div class="modal-body">
-                    <span class="dropdown" style="margin:10px 0px;">
-                      <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
-                      <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantsActions);">
-                        <span class="fa fa-search"></span>
-                      </button>
-                      <div class="dropdown-menu" style="width: 300px;">
-                        <template class="profile-search-template">
-                          <li class="row">
-                            <a class="btn btn-default col-sm-12 search-result"></a>
-                          </li>
-                        </template>
-                        <ul class="profile-search-result"></ul>
-                        <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantsActions);">
-                          <i><g:message code="profile.search.loadMore.link"/></i>
-                        </button>
-                      </div>
-                    </span>
-                    <div id="add-participant-to-conversation-container">
-                      <g:form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipants(this); return false;">
-                        <ul></ul>
-                        <div style="height: 35px;">
-                          <button type="submit" class="btn btn-default hidden">
-                            <g:message code="conversation.participant.add.button"/>
+                    <template id="add-participant-template">
+                      <div>
+                        <span class="dropdown" style="margin:10px 0px;">
+                          <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
+                          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantsActions);">
+                            <span class="fa fa-search"></span>
                           </button>
+                          <div class="dropdown-menu" style="width: 300px;">
+                            <template class="profile-search-template">
+                              <li class="row">
+                                <a class="btn btn-default col-sm-12 search-result"></a>
+                              </li>
+                            </template>
+                            <ul class="profile-search-result"></ul>
+                            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantsActions);">
+                              <i><g:message code="profile.search.loadMore.link"/></i>
+                            </button>
+                          </div>
+                        </span>
+                        <div id="add-participant-to-conversation-container">
+                          <g:form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipants(this); return false;">
+                            <ul></ul>
+                            <div style="height: 35px;">
+                              <button type="submit" class="btn btn-default hidden">
+                                <g:message code="conversation.participant.add.button"/>
+                              </button>
+                            </div>
+                          </g:form>
                         </div>
-                      </g:form>
-                    </div>
+                      </div>
+                    </template>
+                    <div id="add-participant-wrapper"></div>
                   </div>
                 </div>
               </div>
