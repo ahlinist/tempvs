@@ -70,7 +70,6 @@ var messaging = {
         });
 
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
-        //TODO: implement clearing function to clean up forms and popups
         messaging.newConversationParticipantsCounter = 0;
         messaging.markAsRead();
         messaging.scrollMessagesDown();
