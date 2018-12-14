@@ -79,9 +79,11 @@ var messaging = {
     },
     400: function(response, form) {
       response.json().then(function (data) {
-        for (entry in data) {
-          var fieldEntry = data[entry];
-          var field = form.querySelector('[name="' + fieldEntry.name + '"]')
+        var errors = data.errors;
+
+        for (fieldName in errors) {
+          var validationMessage = errors[fieldName];
+          var field = form.querySelector('[name="' + fieldName + '"]')
 
           if (!field) {
               field = form.querySelector('.submit-button');
@@ -91,7 +93,7 @@ var messaging = {
 
           $(field).popover({
               placement: 'bottom',
-              content: fieldEntry.message,
+              content: validationMessage,
               html: true,
               container: 'body'
           }).popover('show');

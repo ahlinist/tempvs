@@ -45,7 +45,7 @@ class AjaxResponseHelperSpec extends Specification {
         0 * _
 
         and:
-        result.target.size() == 2
+        result.target.size() == 1
     }
 
     void "Test renderErrors() for list of maps"() {

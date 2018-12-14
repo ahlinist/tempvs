@@ -143,3 +143,7 @@ footer {
 .message-unread {
   background-color: #E9F9FF;
 }
+
+.popover-title {
+  display: none;
+}

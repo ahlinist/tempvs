@@ -21,15 +21,15 @@ class AjaxResponseHelper {
     ValidationTagLib validationTagLib
 
     JSON renderErrors(Validateable instance) {
-        instance.errors.allErrors.collect { ObjectError error ->
-            [message: validationTagLib.message(error: error), name: ((FieldError) error).field]
-        } as JSON
+        [errors: instance.errors.allErrors.collectEntries { ObjectError error ->
+            [(((FieldError) error).field): (validationTagLib.message(error: error))]
+        }] as JSON
     }
 
     JSON renderErrors(List<LinkedHashMap> messages) {
-        messages.collect { Map messageMap ->
-            [message: validationTagLib.message(code: messageMap.message), name: messageMap.name]
-        } as JSON
+        [errors: messages.collectEntries { Map messageMap ->
+            [(messageMap.name): (validationTagLib.message(code: messageMap.message))]
+        }] as JSON
     }
 
     JSON renderValidationResponse(Validateable instance, String successMessage = null) {
