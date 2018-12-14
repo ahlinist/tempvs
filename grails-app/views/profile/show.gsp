@@ -67,15 +67,15 @@
                     <div class="modal-dialog">
                       <div class="modal-content">
                         <div class="modal-body">
-                          <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'message', action: 'createDialogue']}">
-                            <textarea name="text" style="width: 100%; height: 100px;"></textarea>
+                          <g:form controller="message" action="createConversation" onsubmit="messaging.createConversation(this); return false;">
+                            <textarea placeholder="${g.message(code: 'message.create.text')}" data-toggle="tooltip"
+                                data-placement="bottom"  title="${g.message(code: 'conversation.new.message.blank.tooltip')}"
+                                name="text" style="width: 100%; height: 100px;"></textarea>
                             <input type="hidden" name="receivers[0]" value="${profileId}">
-                            <div>
-                              <g:render template="/ajax/templates/submitButton">
-                                <g:message code="message.send.message.button"/>
-                              </g:render>
-                            </div>
-                          </g:render>
+                            <button class="btn btn-default submit-button">
+                              <g:message code="message.send.message.button"/>
+                            </button>
+                          </g:form>
                         </div>
                       </div>
                     </div>

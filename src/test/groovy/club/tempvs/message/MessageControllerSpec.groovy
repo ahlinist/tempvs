@@ -6,7 +6,6 @@ import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import spock.lang.Specification
 
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
@@ -99,31 +98,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
         and:
         response.json.count == count
-    }
-
-    void "text createDialogue()"() {
-        given:
-        request.method = POST_METHOD
-        String text = "msg text"
-        Long conversationId = 1L
-        def receiver = Mock Profile
-        List<Profile> receivers = [receiver]
-
-        when:
-        controller.createDialogue(createConversationCommand)
-
-        then:
-        1 * createConversationCommand.validate() >> true
-        1 * createConversationCommand.receivers >> receivers
-        1 * receiver.id >> LONG_ONE
-        1 * profileService.currentProfile >> profile
-        1 * profile.id >> LONG_THREE
-        1 * createConversationCommand.text >> text
-        1 * messageProxy.createConversation(profile, [receiver], text, null) >> conversation
-        1 * conversation.id >> conversationId
-        1 * ajaxResponseHelper.renderRedirect("/message/conversation/" + conversationId) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
     }
 
     void "test createConversation()"() {

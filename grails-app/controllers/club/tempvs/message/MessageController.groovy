@@ -18,7 +18,6 @@ import org.springframework.security.access.annotation.Secured
 class MessageController {
 
     private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
-    private static final String MULTIPLE_RECEIVERS = 'dialogue.multiple.receivers.error'
     private static final Integer DEFAULT_PAGE_NUMBER = 0
     private static final Integer DEFAULT_PAGE_SIZE = 40
     private static final String RECEIVERS_FIELD = 'receivers'
@@ -27,7 +26,7 @@ class MessageController {
             getNewConversationsCount: 'GET',
             loadConversations: 'GET',
             conversation: 'GET',
-            createDialogue: 'POST',
+            createConversation: 'POST',
             add: 'POST',
             updateParticipants: 'POST',
             conversationName: 'POST',
@@ -67,26 +66,6 @@ class MessageController {
         Profile currentProfile = profileService.currentProfile
         Conversation conversation = messageProxy.getConversation(id, currentProfile, page, size)
         render(objectFactory.getInstance(ConversationWrapper, conversation, currentProfile) as JSON)
-    }
-
-    def createDialogue(CreateConversationCommand command) {
-        if (!command.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(command))
-        }
-
-        Profile author = profileService.currentProfile
-        List<Profile> receivers = command.receivers.findAll()
-
-        if (receivers.size() > 1) {
-            return render(ajaxResponseHelper.renderFormMessage(false, MULTIPLE_RECEIVERS))
-        }
-
-        if (receivers.find { Profile profile -> profile.id == author.id}) {
-            return render(ajaxResponseHelper.renderFormMessage(false, SELF_SENT_MESSAGE))
-        }
-
-        Conversation conversation = messageProxy.createConversation(author, receivers, command.text, null)
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'message', action: 'conversation', id: conversation.id))
     }
 
     def createConversation(CreateConversationCommand command) {

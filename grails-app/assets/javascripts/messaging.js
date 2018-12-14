@@ -12,6 +12,12 @@ var messaging = {
     200: function(response) {
       response.json().then(function(data) {
         var conversation = data.conversation;
+
+        if (!window.location.href.includes('/message')) {
+          window.location.href = "/message/conversation/" + conversation.id;
+          return;
+        }
+
         var conversationDetails = document.querySelector('div#conversation-details');
         messaging.clearForms();
         ajaxHandler.hideModals();
@@ -181,8 +187,7 @@ var messaging = {
     }
   },
   createConversation: function(form) {
-    var createConversationPopup = document.querySelector('div#create-conversation-popup');
-    var profileSearchField = createConversationPopup.querySelector('input[name="query"]');
+    var profileSearchField = document.querySelector('#create-conversation-popup input[name="query"]');
     var textarea = form.querySelector('textarea[name=text]');
     var blankMessageError = !textarea.value || !textarea.value.trim();
     var noParticipantsError = !form.querySelector('input[name^="receivers"]');
