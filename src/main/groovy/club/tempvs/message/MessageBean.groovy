@@ -1,13 +1,14 @@
 package club.tempvs.message
 
+import club.tempvs.profile.ProfileDto
 import groovy.transform.CompileStatic
 
 @CompileStatic
 class MessageBean {
     Long id
     String text
-    Participant author
-    Participant subject
+    ProfileDto author
+    ProfileDto subject
     String createdDate
     Boolean unread
     Boolean system

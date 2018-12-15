@@ -2,6 +2,7 @@ package club.tempvs.message
 
 import club.tempvs.json.JsonConverter
 import club.tempvs.object.ObjectFactory
+import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
@@ -63,10 +64,10 @@ class MessageProxy {
     Conversation createConversation(Profile author, List<Profile> receivers, String text, String name) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations"
 
-        Participant authorDto = objectFactory.getInstance(Participant, [id: author.id, name: author.toString()])
+        ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)
 
-        List<Participant> receiverDtos = receivers.unique().collect { Profile profile ->
-            objectFactory.getInstance(Participant, [id: profile.id, name: profile.toString()])
+        List<ProfileDto> receiverDtos = receivers.unique().collect { Profile profile ->
+            objectFactory.getInstance(ProfileDto, profile)
         }
 
         Map argumentMap = [author: authorDto, receivers: receiverDtos, text: text, name: name]
@@ -84,7 +85,7 @@ class MessageProxy {
 
     Conversation addMessage(Long conversationId, Profile author, String text) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/messages"
-        Participant authorDto = objectFactory.getInstance(Participant, [id: author.id, name: author.toString()])
+        ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)
         Map argumentMap = [author: authorDto, text: text]
         AddMessagePayload addMessageDto = objectFactory.getInstance(AddMessagePayload, argumentMap)
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addMessageDto as JSON, author.user.timeZone)
@@ -104,10 +105,10 @@ class MessageProxy {
 
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
 
-        Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
+        ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, initiator)
 
-        List<Participant> subjectDtos = subjects.collect { Profile subject ->
-            objectFactory.getInstance(Participant, [id: subject.id, name: subject.toString()])
+        List<ProfileDto> subjectDtos = subjects.collect { Profile subject ->
+            objectFactory.getInstance(ProfileDto, subject)
         }
 
         AddParticipantsPayload addParticipantsPayload =
@@ -139,7 +140,7 @@ class MessageProxy {
     Conversation updateConversationName(Long conversationId, Profile initiator, String name) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/name"
 
-        Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
+        ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, initiator)
         UpdateConversationNamePayload updateConversationNamePayload =
                 objectFactory.getInstance(UpdateConversationNamePayload, [name: name, initiator: initiatorDto])
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, updateConversationNamePayload as JSON, initiator.user.timeZone)
@@ -154,7 +155,7 @@ class MessageProxy {
     boolean readMessage(Long conversationId, Profile initiator, List messageIds) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/read"
 
-        Participant initiatorDto = objectFactory.getInstance(Participant, [id: initiator.id, name: initiator.toString()])
+        ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, initiator)
         ReadMessagesPayload readMessagesPayload =
                 objectFactory.getInstance(ReadMessagesPayload, [participant: initiatorDto, messageIds: messageIds])
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, readMessagesPayload as JSON)

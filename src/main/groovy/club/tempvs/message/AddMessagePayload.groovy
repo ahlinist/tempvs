@@ -1,9 +1,10 @@
 package club.tempvs.message
 
+import club.tempvs.profile.ProfileDto
 import groovy.transform.CompileStatic
 
 @CompileStatic
 class AddMessagePayload {
-    Participant author
+    ProfileDto author
     String text
 }

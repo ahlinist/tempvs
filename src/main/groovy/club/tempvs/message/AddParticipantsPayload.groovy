@@ -1,9 +1,10 @@
 package club.tempvs.message
 
+import club.tempvs.profile.ProfileDto
 import groovy.transform.CompileStatic
 
 @CompileStatic
 class AddParticipantsPayload {
-    Participant initiator
-    List<Participant> subjects
+    ProfileDto initiator
+    List<ProfileDto> subjects
 }

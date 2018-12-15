@@ -2,6 +2,7 @@ package club.tempvs.message
 
 import club.tempvs.json.JsonConverter
 import club.tempvs.object.ObjectFactory
+import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
@@ -32,7 +33,7 @@ class MessageProxySpec extends Specification {
     def conversation = Mock Conversation
     def conversationList = Mock ConversationList
     def httpHeaders = Mock HttpHeaders
-    def participant = Mock Participant
+    def profileDto = Mock ProfileDto
     def createConversationDto = Mock CreateConversationPayload
     def addMessageDto = Mock AddMessagePayload
     def type = GroovyMock ProfileType
@@ -145,18 +146,14 @@ class MessageProxySpec extends Specification {
         List<Profile> receivers = [profile]
         String text = "msg txt"
         String name = "conversation name"
-        Long profileId = 1L
-        String profileName = "profile name"
 
         when:
         Conversation result = messageProxy.createConversation(profile, receivers, text, name)
 
         then:
-        2 * profile.id >> profileId
         1 * profile.user >> user
         1 * user.timeZone >> TIME_ZONE
-        2 * profile.toString() >> profileName
-        2 * objectFactory.getInstance(Participant, [id: profileId, name: profileName]) >> participant
+        2 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
         1 * objectFactory.getInstance(CreateConversationPayload, _ as Map) >> createConversationDto
         1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -172,20 +169,16 @@ class MessageProxySpec extends Specification {
         given:
         String jsonResponse = "{response}"
         Long conversationId = 1L
-        Long profileId = 1L
-        String profileName = "profile name"
         String text = "message text"
 
         when:
         Conversation result = messageProxy.addMessage(conversationId, profile, text)
 
         then:
-        1 * profile.id >> profileId
-        1 * profile.toString() >> profileName
         1 * profile.user >> user
         1 * user.timeZone >> TIME_ZONE
-        1 * objectFactory.getInstance(Participant, [id: profileId, name: profileName]) >> participant
-        1 * objectFactory.getInstance(AddMessagePayload, [author: participant, text: text]) >> addMessageDto
+        1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
+        1 * objectFactory.getInstance(AddMessagePayload, [author: profileDto, text: text]) >> addMessageDto
         1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
@@ -200,8 +193,7 @@ class MessageProxySpec extends Specification {
         given:
         String jsonResponse = "{response}"
         Long conversationId = 1L
-        String profileName = "profile name"
-        Map payloadMap = [initiator: participant, subjects: [participant]]
+        Map payloadMap = [initiator: profileDto, subjects: [profileDto]]
 
         when:
         Conversation result = messageProxy.addParticipants(conversationId, initiator, [subject])
@@ -211,12 +203,8 @@ class MessageProxySpec extends Specification {
         1 * initiator.user >> user
         1 * user.timeZone >> TIME_ZONE
         1 * subject.getProperty('type') >> type
-        1 * initiator.id >> LONG_ONE
-        1 * initiator.toString() >> profileName
-        1 * subject.id >> LONG_TWO
-        1 * subject.toString() >> profileName
-        1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participant
-        1 * objectFactory.getInstance(Participant, [id: LONG_TWO, name: profileName]) >> participant
+        1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
+        1 * objectFactory.getInstance(ProfileDto, subject) >> profileDto
         1 * objectFactory.getInstance(AddParticipantsPayload, payloadMap) >> addParticipantPayload
         1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -257,19 +245,16 @@ class MessageProxySpec extends Specification {
         given:
         String jsonResponse = "{response}"
         Long conversationId = 1L
-        String profileName = "profile name"
         String conversationName = "conversation name"
-        Map payloadMap = [name: conversationName, initiator: participant]
+        Map payloadMap = [name: conversationName, initiator: profileDto]
 
         when:
         Conversation result = messageProxy.updateConversationName(conversationId, initiator, conversationName)
 
         then:
-        1 * initiator.id >> LONG_ONE
-        1 * initiator.toString() >> profileName
         1 * initiator.user >> user
         1 * user.timeZone >> TIME_ZONE
-        1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participant
+        1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
         1 * objectFactory.getInstance(UpdateConversationNamePayload, payloadMap) >> updateConversationNamePayload
         1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -284,17 +269,14 @@ class MessageProxySpec extends Specification {
     void "test readMessages"() {
         given:
         Long conversationId = 1L
-        String profileName = "profile name"
         List<Long> messageIds = [2L, 3L, 4L]
-        Map payloadMap = [participant: participant, messageIds: messageIds]
+        Map payloadMap = [participant: profileDto, messageIds: messageIds]
 
         when:
         boolean result = messageProxy.readMessage(conversationId, initiator, messageIds)
 
         then:
-        1 * initiator.id >> LONG_ONE
-        1 * initiator.toString() >> profileName
-        1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participant
+        1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
         1 * objectFactory.getInstance(ReadMessagesPayload, payloadMap) >> readMessagesPayload
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -307,17 +289,14 @@ class MessageProxySpec extends Specification {
     void "test unsuccessful readMessages"() {
         given:
         Long conversationId = 1L
-        String profileName = "profile name"
         List<Long> messageIds = [2L, 3L, 4L]
-        Map payloadMap = [participant: participant, messageIds: messageIds]
+        Map payloadMap = [participant: profileDto, messageIds: messageIds]
 
         when:
         boolean result = messageProxy.readMessage(conversationId, initiator, messageIds)
 
         then:
-        1 * initiator.id >> LONG_ONE
-        1 * initiator.toString() >> profileName
-        1 * objectFactory.getInstance(Participant, [id: LONG_ONE, name: profileName]) >> participant
+        1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
         1 * objectFactory.getInstance(ReadMessagesPayload, payloadMap) >> readMessagesPayload
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.BAD_REQUEST
