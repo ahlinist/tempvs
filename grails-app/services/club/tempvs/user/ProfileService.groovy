@@ -124,7 +124,7 @@ class ProfileService {
         }
 
         if (profile.save()) {
-            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
+            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, profile)
             JSON jsonPayload = profileDto as JSON
             amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
         }
@@ -159,7 +159,7 @@ class ProfileService {
         }
 
         if (profile.save()) {
-            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, [id: profile.id, name: profile.toString()])
+            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, profile)
             JSON jsonPayload = profileDto as JSON
             amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
         }

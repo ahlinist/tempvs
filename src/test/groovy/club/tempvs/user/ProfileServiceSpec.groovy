@@ -74,7 +74,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     void "Test createProfile()"() {
         given:
-        String profileAsString = "profileAsString"
         String profileDtoAsJsonString = "profileDtoAsJsonString"
 
         when:
@@ -86,9 +85,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         1 * user.addToProfiles(profile)
         1 * profile.profileEmail
         1 * profile.save() >> profile
-        1 * profile.id >> LONG_ONE
-        1 * profile.toString() >> profileAsString
-        1 * objectFactory.getInstance(ProfileDto, [id: LONG_ONE, name: profileAsString]) >> profileDto
+        1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
         1 * amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
@@ -126,7 +123,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
     void "Test editProfileField()"() {
         given:
-        String profileAsString = "profileAsString"
         String profileDtoAsJsonString = "profileDtoAsJsonString"
 
         when:
@@ -135,9 +131,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         then:
         1 * profile.setFirstName(FIELD_VALUE)
         1 * profile.save() >> profile
-        1 * profile.id >> LONG_ONE
-        1 * profile.toString() >> profileAsString
-        1 * objectFactory.getInstance(ProfileDto, [id: LONG_ONE, name: profileAsString]) >> profileDto
+        1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
         1 * amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
