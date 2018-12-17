@@ -164,8 +164,15 @@
                           <div class="modal-body">
                             <g:message code='message.remove.participant.text'/>
                             <br/>
-                            <button class="btn btn-default confirm-remove-participant-button"><g:message code="yes"/></button>
-                            <button class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
+                            <form class="participant-deletion-form" onsubmit="messaging.removeParticipant(this); return false;">
+                              <input type="hidden" name="subject">
+                              <button class="btn btn-default submit-button">
+                                <g:message code="yes"/>
+                              </button>
+                              <span class="btn btn-default" data-dismiss="modal">
+                                <g:message code="no"/>
+                              </span>
+                            </form>
                           </div>
                         </div>
                       </div>

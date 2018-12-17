@@ -123,15 +123,13 @@ class MessageProxy {
     }
 
     Conversation removeParticipant(Long conversationId, Profile initiator, Profile subject) {
-        if (initiator.type != subject.type) {
-            throw new RuntimeException("Profiles can't be of different type.")
-        }
-
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants/${subject.id}?initiator=${initiator.id}"
         RestResponse response = restCaller.doDelete(url, MESSAGE_SECURITY_TOKEN, initiator.user.timeZone)
 
         if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
+        } else if (response.statusCode == HttpStatus.BAD_REQUEST) {
+            throw new IllegalArgumentException(response.responseBody)
         } else {
             return processError(response)
         }

@@ -59,17 +59,18 @@ var messaging = {
           var participantListItem = participantTemplate.content.querySelector('li');
           var participantNode = document.importNode(participantListItem, true);
           var profileLink = participantNode.querySelector('.active-conversation-participant');
-          var removeButton = participantNode.querySelector('.remove-participant-button');
           profileLink.setAttribute('href', '/profile/show/' + participant.id);
           profileLink.innerHTML = participant.name;
 
           if ((conversation.type == 'CONFERENCE') && (conversation.admin.id == currentProfile.id) && (participants.length > 2)) {
+            var removeForm = participantNode.querySelector('form.participant-deletion-form');
+            removeForm.action = '/message/removeParticipant/' + conversation.id;
+            var subjectField = removeForm.querySelector('input[name=subject]');
+            subjectField.value = participant.id;
+            var removeButton = participantNode.querySelector('.remove-participant-button');
             removeButton.classList.remove('hidden');
             removeButton.querySelector('[data-toggle=modal]').setAttribute('data-target', '#removeParticipantModal-' + participant.id);
             removeButton.querySelector('[role=dialog]').setAttribute('id', 'removeParticipantModal-' + participant.id);
-            removeButton.querySelector('.confirm-remove-participant-button').onclick = function() {
-              messaging.removeParticipant(participant.id);
-            };
           }
 
           participantsList.appendChild(participantNode);
@@ -464,18 +465,16 @@ var messaging = {
     ajaxHandler.blockUI();
     ajaxHandler.fetch(form, form.action, payload, messaging.actions);
   },
-  removeParticipant: function(subjectId) {
-    var url = '/message/removeParticipant/' + messaging.conversationId;
-    var data = new FormData();
-    data.append('subject', subjectId);
+  removeParticipant: function(form) {
+    var url = form.action;
 
     var payload = {
       method: 'POST',
-      body: data
+      body: new FormData(form)
     };
 
     ajaxHandler.blockUI();
-    ajaxHandler.fetch(null, url, payload, messaging.actions);
+    ajaxHandler.fetch(form, url, payload, messaging.actions);
   },
   displayNewMessagesCounter: function() {
     var counter = document.querySelector('span#new-conversations');

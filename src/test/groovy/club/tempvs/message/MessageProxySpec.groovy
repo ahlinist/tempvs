@@ -225,8 +225,6 @@ class MessageProxySpec extends Specification {
         Conversation result = messageProxy.removeParticipant(conversationId, initiator, subject)
 
         then:
-        1 * initiator.type >> type
-        1 * subject.type >> type
         1 * initiator.id >> LONG_ONE
         1 * subject.id >> LONG_TWO
         1 * initiator.user >> user
