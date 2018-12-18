@@ -164,7 +164,7 @@
                           <div class="modal-body">
                             <g:message code='message.remove.participant.text'/>
                             <br/>
-                            <form class="participant-deletion-form" onsubmit="messaging.removeParticipant(this); return false;">
+                            <form class="participant-deletion-form" onsubmit="messaging.updateParticipants(this); return false;">
                               <input type="hidden" name="subject">
                               <button class="btn btn-default submit-button">
                                 <g:message code="yes"/>
@@ -207,14 +207,14 @@
                           </div>
                         </span>
                         <div id="add-participant-to-conversation-container">
-                          <g:form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipants(this); return false;">
+                          <form class="add-participant-to-conversation-form" onsubmit="messaging.updateParticipants(this); return false;">
                             <ul></ul>
                             <div style="height: 35px;">
-                              <button type="submit" class="btn btn-default hidden">
+                              <button type="submit" class="btn btn-default hidden submit-button">
                                 <g:message code="conversation.participant.add.button"/>
                               </button>
                             </div>
-                          </g:form>
+                          </form>
                         </div>
                       </div>
                     </template>

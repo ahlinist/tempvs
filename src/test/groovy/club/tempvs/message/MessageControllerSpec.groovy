@@ -171,7 +171,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.addParticipants(LONG_ONE, addParticipantsCommand)
 
         then:
-        1 * addParticipantsCommand.validate() >> true
         1 * addParticipantsCommand.participants >> [subject]
         1 * profileService.currentProfile >> initiator
         1 * messageProxy.addParticipants(LONG_ONE, initiator, [subject]) >> conversation

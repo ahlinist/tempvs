@@ -96,10 +96,6 @@ class MessageController {
     }
 
     def addParticipants(Long id, AddParticipantsCommand command) {
-        if (!command.validate()) {
-            return render(status: 400, text: ajaxResponseHelper.renderErrors(command))
-        }
-
         Profile initiator = profileService.currentProfile
         List<Profile> subjects = command.participants
         Conversation conversation = messageProxy.addParticipants(id, initiator, subjects)

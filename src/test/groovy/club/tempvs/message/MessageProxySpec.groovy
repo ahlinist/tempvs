@@ -199,10 +199,8 @@ class MessageProxySpec extends Specification {
         Conversation result = messageProxy.addParticipants(conversationId, initiator, [subject])
 
         then:
-        1 * initiator.type >> type
         1 * initiator.user >> user
         1 * user.timeZone >> TIME_ZONE
-        1 * subject.getProperty('type') >> type
         1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
         1 * objectFactory.getInstance(ProfileDto, subject) >> profileDto
         1 * objectFactory.getInstance(AddParticipantsPayload, payloadMap) >> addParticipantPayload

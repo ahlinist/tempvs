@@ -454,27 +454,14 @@ var messaging = {
     var scrollable = document.querySelector('div#messages-container');
     scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
   },
-  addParticipants: function(form) {
-    var data = new FormData(form);
-
-    var payload = {
-      method: 'POST',
-      body: data
-    };
-
-    ajaxHandler.blockUI();
-    ajaxHandler.fetch(form, form.action, payload, messaging.actions);
-  },
-  removeParticipant: function(form) {
-    var url = form.action;
-
+  updateParticipants: function(form) {
     var payload = {
       method: 'POST',
       body: new FormData(form)
     };
 
     ajaxHandler.blockUI();
-    ajaxHandler.fetch(form, url, payload, messaging.actions);
+    ajaxHandler.fetch(form, form.action, payload, messaging.actions);
   },
   displayNewMessagesCounter: function() {
     var counter = document.querySelector('span#new-conversations');

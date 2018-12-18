@@ -99,12 +99,7 @@ class MessageProxy {
     }
 
     Conversation addParticipants(Long conversationId, Profile initiator, List<Profile> subjects) {
-        if (subjects.type.any { ProfileType type -> type != initiator.type}) {
-            throw new RuntimeException("Profiles can't be of different type.")
-        }
-
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
-
         ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, initiator)
 
         List<ProfileDto> subjectDtos = subjects.collect { Profile subject ->
@@ -117,6 +112,8 @@ class MessageProxy {
 
         if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
+        } else if (response.statusCode == HttpStatus.BAD_REQUEST) {
+            throw new IllegalArgumentException(response.responseBody)
         } else {
             return processError(response)
         }
