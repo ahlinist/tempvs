@@ -19,6 +19,6 @@ class ProfileDto {
         this.id = profile.id
         this.name = profile.toString()
         this.type = profile.type.toString()
-        this.period = profile.period?.toString()
+        this.period = profile.period?.toString() ?: ""
     }
 }
