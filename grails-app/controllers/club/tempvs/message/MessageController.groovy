@@ -69,22 +69,8 @@ class MessageController {
     }
 
     def createConversation(CreateConversationCommand command) {
-        //TODO: move to microservice
-        if (!command.validate()) {
-            return render(status: 400, text: ajaxResponseHelper.renderErrors(command))
-        }
-
         Profile author = profileService.currentProfile
-        List<Profile> receivers = command.receivers.findAll().unique()
-
-        //TODO: Add profile type/period validation. UPD: move to microservice
-
-        //TODO: move to microservice
-        if (receivers.find { Profile profile -> profile.id == author.id}) {
-            List errorList = [[name: RECEIVERS_FIELD, message: SELF_SENT_MESSAGE]]
-            return render(status: 400, text: ajaxResponseHelper.renderErrors(errorList))
-        }
-
+        List<Profile> receivers = command.receivers?.findAll()
         Conversation conversation = messageProxy.createConversation(author, receivers, command.text, command.name)
         render(objectFactory.getInstance(ConversationWrapper, conversation, author) as JSON)
     }

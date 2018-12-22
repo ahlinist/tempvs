@@ -66,7 +66,7 @@ class MessageProxy {
 
         ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)
 
-        List<ProfileDto> receiverDtos = receivers.unique().collect { Profile profile ->
+        List<ProfileDto> receiverDtos = receivers?.collect { Profile profile ->
             objectFactory.getInstance(ProfileDto, profile)
         }
 
@@ -78,6 +78,8 @@ class MessageProxy {
 
         if (httpStatus == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
+        } else if (response.statusCode == HttpStatus.BAD_REQUEST) {
+            throw new IllegalArgumentException(response.responseBody)
         } else {
             return processError(response)
         }
