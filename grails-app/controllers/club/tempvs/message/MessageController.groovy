@@ -12,7 +12,6 @@ import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
-import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 

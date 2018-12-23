@@ -34,7 +34,6 @@ class MessageProxySpec extends Specification {
     def addMessageDto = Mock AddMessagePayload
     def addParticipantPayload = Mock AddParticipantsPayload
     def updateConversationNamePayload = Mock UpdateConversationNamePayload
-    def readMessagesPayload = Mock ReadMessagesPayload
 
     def setup() {
         messageProxy = new MessageProxy(restCaller: restCaller, jsonConverter: jsonConverter, objectFactory: objectFactory)
