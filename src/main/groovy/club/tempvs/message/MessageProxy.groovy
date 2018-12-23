@@ -6,7 +6,6 @@ import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
-import club.tempvs.user.ProfileType
 import grails.converters.JSON
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -19,7 +18,6 @@ class MessageProxy {
 
     private static final String MESSAGE_SERVICE_URL = System.getenv('MESSAGE_SERVICE_URL')
     private static final String MESSAGE_SECURITY_TOKEN = System.getenv('MESSAGE_SECURITY_TOKEN').encodeAsMD5() as String
-    private static final String COUNT_HEADER = 'X-Total-Count'
 
     @Autowired
     RestCaller restCaller
@@ -40,12 +38,6 @@ class MessageProxy {
             log.error "Response status code ${httpStatus.value()}.\nMessage: ${response.responseBody}"
             throw new RuntimeException(String.valueOf(httpStatus.value()))
         }
-    }
-
-    Integer getNewConversationsCount(Profile profile) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&new=${true}"
-        RestResponse response = restCaller.doHead(url, MESSAGE_SECURITY_TOKEN, profile.user.timeZone)
-        return response.headers?.getFirst(COUNT_HEADER) as Integer
     }
 
     Conversation getConversation(Long conversationId, Profile profile, Integer page, Integer size) {

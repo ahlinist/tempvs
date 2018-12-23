@@ -2,10 +2,14 @@ package club.tempvs.message
 
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.object.ObjectFactory
+import club.tempvs.rest.RestCaller
+import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.User
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
+import org.springframework.http.HttpHeaders
 import spock.lang.Specification
 
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
@@ -13,13 +17,19 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     private static final String POST_METHOD = 'POST'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_THREE = 3L
+    private static final String TIME_ZONE = 'timeZone'
+    private static final String COUNT_HEADER = 'X-Total-Count'
 
     def json = Mock JSON
+    def user = Mock User
     def profile = Mock Profile
     def conversation = Mock Conversation
     def conversationList = Mock ConversationList
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
+    def restCaller = Mock RestCaller
+    def restResponse = Mock RestResponse
+    def httpHeaders = Mock HttpHeaders
     def createConversationCommand = Mock CreateConversationCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
     def initiator = Mock Profile
@@ -33,6 +43,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.messageProxy = messageProxy
         controller.ajaxResponseHelper = ajaxResponseHelper
         controller.objectFactory = objectFactory
+        controller.restCaller = restCaller
     }
 
     def cleanup() {
@@ -93,7 +104,12 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.currentProfile >> profile
-        1 * messageProxy.getNewConversationsCount(profile) >> count
+        1 * profile.id
+        1 * profile.user >> user
+        1 * user.timeZone >> TIME_ZONE
+        1 * restCaller.doHead(_ as String, _, TIME_ZONE) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(COUNT_HEADER) >> count
         0 * _
 
         and:
@@ -112,11 +128,8 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.createConversation(createConversationCommand)
 
         then:
-        1 * createConversationCommand.validate() >> true
-        1 * createConversationCommand.receivers >> receivers
-        1 * receiver.id >> LONG_ONE
         1 * profileService.currentProfile >> initiator
-        1 * initiator.id >> LONG_THREE
+        1 * createConversationCommand.receivers >> receivers
         1 * createConversationCommand.text >> text
         1 * createConversationCommand.name >> name
         1 * messageProxy.createConversation(initiator, [receiver], text, name) >> conversation

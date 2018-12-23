@@ -2,6 +2,8 @@ package club.tempvs.message
 
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.object.ObjectFactory
+import club.tempvs.rest.RestCaller
+import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
 import grails.compiler.GrailsCompileStatic
@@ -17,10 +19,11 @@ import org.springframework.security.access.annotation.Secured
 @Secured('isAuthenticated()')
 class MessageController {
 
-    private static final String SELF_SENT_MESSAGE = 'message.selfsent.error'
     private static final Integer DEFAULT_PAGE_NUMBER = 0
     private static final Integer DEFAULT_PAGE_SIZE = 40
-    private static final String RECEIVERS_FIELD = 'receivers'
+    private static final String MESSAGE_SERVICE_URL = System.getenv('MESSAGE_SERVICE_URL')
+    private static final String MESSAGE_SECURITY_TOKEN = System.getenv('MESSAGE_SECURITY_TOKEN').encodeAsMD5() as String
+    private static final String COUNT_HEADER = 'X-Total-Count'
 
     static allowedMethods = [
             getNewConversationsCount: 'GET',
@@ -40,6 +43,7 @@ class MessageController {
     AjaxResponseHelper ajaxResponseHelper
     LinkGenerator grailsLinkGenerator
     ObjectFactory objectFactory
+    RestCaller restCaller
 
     def conversation(Long id) {
         if (id != null) {
@@ -48,8 +52,10 @@ class MessageController {
     }
 
     def getNewConversationsCount() {
-        Profile currentProfile = profileService.currentProfile
-        Integer count = messageProxy.getNewConversationsCount(currentProfile)
+        Profile profile = profileService.currentProfile
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&new=${true}"
+        RestResponse response = restCaller.doHead(url, MESSAGE_SECURITY_TOKEN, profile.user.timeZone)
+        Integer count = response.headers?.getFirst(COUNT_HEADER) as Integer
         render([count: count] as JSON)
     }
 

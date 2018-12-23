@@ -6,16 +6,13 @@ import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
-import club.tempvs.user.ProfileType
 import club.tempvs.user.User
 import grails.converters.JSON
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
 class MessageProxySpec extends Specification {
 
-    private static final String COUNT_HEADER = 'X-Total-Count'
     private static final String TIME_ZONE = 'timeZone'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
@@ -32,11 +29,9 @@ class MessageProxySpec extends Specification {
     def restResponse = Mock RestResponse
     def conversation = Mock Conversation
     def conversationList = Mock ConversationList
-    def httpHeaders = Mock HttpHeaders
     def profileDto = Mock ProfileDto
     def createConversationDto = Mock CreateConversationPayload
     def addMessageDto = Mock AddMessagePayload
-    def type = GroovyMock ProfileType
     def addParticipantPayload = Mock AddParticipantsPayload
     def updateConversationNamePayload = Mock UpdateConversationNamePayload
     def readMessagesPayload = Mock ReadMessagesPayload
@@ -92,27 +87,6 @@ class MessageProxySpec extends Specification {
 
         and:
         thrown(RuntimeException)
-    }
-
-    void "test getNewConversationsCount()"() {
-        given:
-        Long profileId = 1L
-        Integer newConversationsCount = 5
-
-        when:
-        Integer result = messageProxy.getNewConversationsCount(profile)
-
-        then:
-        1 * profile.id >> profileId
-        1 * profile.user >> user
-        1 * user.timeZone >> TIME_ZONE
-        1 * restCaller.doHead(_ as String, _, TIME_ZONE) >> restResponse
-        1 * restResponse.headers >> httpHeaders
-        1 * httpHeaders.getFirst(COUNT_HEADER) >> newConversationsCount
-        0 * _
-
-        and:
-        result == newConversationsCount
     }
 
     void "test getConversation()"() {
