@@ -2,6 +2,7 @@ package club.tempvs.message
 
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.object.ObjectFactory
+import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
@@ -11,6 +12,7 @@ import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -111,8 +113,12 @@ class MessageController {
     def readMessages(Long id) {
         Profile currentProfile = profileService.currentProfile
         JSONObject json = request.JSON as JSONObject
-        boolean result = messageProxy.readMessage(id, currentProfile, json.messageIds as List)
-        render(status: result ? 200 : 400)
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/read"
+        ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, currentProfile)
+        ReadMessagesPayload readMessagesPayload =
+                objectFactory.getInstance(ReadMessagesPayload, [participant: initiatorDto, messageIds: json.messageIds as List])
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, readMessagesPayload as JSON)
+        render(status: response.statusCode.value())
     }
 
     def accessDeniedExceptionThrown(AccessDeniedException exception) {

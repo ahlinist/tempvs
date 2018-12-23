@@ -235,44 +235,4 @@ class MessageProxySpec extends Specification {
         and:
         result == conversation
     }
-
-    void "test readMessages"() {
-        given:
-        Long conversationId = 1L
-        List<Long> messageIds = [2L, 3L, 4L]
-        Map payloadMap = [participant: profileDto, messageIds: messageIds]
-
-        when:
-        boolean result = messageProxy.readMessage(conversationId, initiator, messageIds)
-
-        then:
-        1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
-        1 * objectFactory.getInstance(ReadMessagesPayload, payloadMap) >> readMessagesPayload
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.OK
-        0 * _
-
-        and:
-        result
-    }
-
-    void "test unsuccessful readMessages"() {
-        given:
-        Long conversationId = 1L
-        List<Long> messageIds = [2L, 3L, 4L]
-        Map payloadMap = [participant: profileDto, messageIds: messageIds]
-
-        when:
-        boolean result = messageProxy.readMessage(conversationId, initiator, messageIds)
-
-        then:
-        1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
-        1 * objectFactory.getInstance(ReadMessagesPayload, payloadMap) >> readMessagesPayload
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.BAD_REQUEST
-        0 * _
-
-        and:
-        !result
-    }
 }

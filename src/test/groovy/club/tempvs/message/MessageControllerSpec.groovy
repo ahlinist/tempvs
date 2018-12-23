@@ -2,6 +2,7 @@ package club.tempvs.message
 
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.object.ObjectFactory
+import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
@@ -10,6 +11,7 @@ import club.tempvs.user.User
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
@@ -34,9 +36,11 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def ajaxResponseHelper = Mock AjaxResponseHelper
     def initiator = Mock Profile
     def subject = Mock Profile
+    def profileDto = Mock ProfileDto
     def objectFactory = Mock ObjectFactory
     def conversationWrapper = Mock ConversationWrapper
     def addParticipantsCommand = Mock AddParticipantsCommand
+    def readMessagesPayload = Mock ReadMessagesPayload
 
     def setup() {
         controller.profileService = profileService
@@ -240,28 +244,13 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.currentProfile >> profile
-        1 * messageProxy.readMessage(LONG_ONE, profile, messageIds) >> true
+        1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
+        1 * objectFactory.getInstance(ReadMessagesPayload, [participant: profileDto, messageIds: messageIds]) >> readMessagesPayload
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 
         and:
         response.status == 200
-    }
-
-    void "test unsuccessful readMessages()"() {
-        given:
-        List messageIds = [2, 3, 4]
-        request.method = POST_METHOD
-        request.json = [messageIds: messageIds]
-
-        when:
-        controller.readMessages(LONG_ONE)
-
-        then:
-        1 * profileService.currentProfile >> profile
-        1 * messageProxy.readMessage(LONG_ONE, profile, messageIds) >> false
-        0 * _
-
-        and:
-        response.status == 400
     }
 }
