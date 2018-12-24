@@ -83,19 +83,20 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         Long id = 1L
         int page = 0
         int size = 20
-        params.page = page
-        params.size = size
 
         when:
-        controller.loadMessages(id)
+        controller.loadMessages(id, page, size)
 
         then:
-        1 * profileService.currentProfile >> profile
-        1 * messageProxy.getConversation(id, profile, page, size) >> conversation
-        1 * objectFactory.getInstance(ConversationWrapper, conversation, profile) >> conversationWrapper
-        1 * conversationWrapper.conversation
-        1 * conversationWrapper.currentProfile
+        1 * restCaller.doGet(_ as String, _) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody
         0 * _
+
+        and:
+        response.status == 200
     }
 
     void "test getNewConversationsCount()"() {

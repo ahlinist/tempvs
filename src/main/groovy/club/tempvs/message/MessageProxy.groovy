@@ -40,19 +40,6 @@ class MessageProxy {
         }
     }
 
-    Conversation getConversation(Long conversationId, Profile profile, Integer page, Integer size) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/?page=${page}&size=${size}&caller=${profile.id}"
-
-        RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
-        HttpStatus httpStatus = response.statusCode
-
-        if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(Conversation, response.responseBody)
-        } else {
-            return processError(response)
-        }
-    }
-
     Conversation addMessage(Long conversationId, Profile author, String text) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/messages"
         ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)

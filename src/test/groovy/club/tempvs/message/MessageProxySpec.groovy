@@ -82,29 +82,6 @@ class MessageProxySpec extends Specification {
         thrown(RuntimeException)
     }
 
-    void "test getConversation()"() {
-        given:
-        int page = 0
-        int size = 20
-        String jsonResponse = "{response}"
-        Long profileId = 1L
-        Long conversationId = 2L
-
-        when:
-        Conversation result = messageProxy.getConversation(conversationId, profile, page, size)
-
-        then:
-        1 * profile.id >> profileId
-        1 * restCaller.doGet(_ as String, _) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.OK
-        1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
-        0 * _
-
-        and:
-        result == conversation
-    }
-
     void "test addMessage()"() {
         given:
         String jsonResponse = "{response}"

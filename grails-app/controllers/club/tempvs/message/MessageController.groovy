@@ -67,12 +67,11 @@ class MessageController {
         render(messageProxy.getConversations(currentProfile, page, size) as JSON)
     }
 
-    def loadMessages(Long id) {
-        Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
-        Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
-        Profile currentProfile = profileService.currentProfile
-        Conversation conversation = messageProxy.getConversation(id, currentProfile, page, size)
-        render(objectFactory.getInstance(ConversationWrapper, conversation, currentProfile) as JSON)
+    def loadMessages(Long id, Integer page, Integer size) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/?page=${page}&size=${size}"
+        RestResponse restResponse = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
+        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
+        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
     }
 
     def createConversation() {
