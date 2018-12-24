@@ -55,7 +55,7 @@ class MessageController {
     def getNewConversationsCount() {
         Profile profile = profileService.currentProfile
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&new=${true}"
-        RestResponse response = restCaller.doHead(url, MESSAGE_SECURITY_TOKEN, profile.user.timeZone)
+        RestResponse response = restCaller.doHead(url, MESSAGE_SECURITY_TOKEN)
         Integer count = response.headers?.getFirst(COUNT_HEADER) as Integer
         render([count: count] as JSON)
     }

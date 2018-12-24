@@ -19,7 +19,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     private static final String POST_METHOD = 'POST'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_THREE = 3L
-    private static final String TIME_ZONE = 'timeZone'
     private static final String COUNT_HEADER = 'X-Total-Count'
 
     def json = Mock JSON
@@ -109,9 +108,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * profileService.currentProfile >> profile
         1 * profile.id
-        1 * profile.user >> user
-        1 * user.timeZone >> TIME_ZONE
-        1 * restCaller.doHead(_ as String, _, TIME_ZONE) >> restResponse
+        1 * restCaller.doHead(_ as String, _) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(COUNT_HEADER) >> count
         0 * _

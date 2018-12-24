@@ -13,7 +13,6 @@ import spock.lang.Specification
 
 class MessageProxySpec extends Specification {
 
-    private static final String TIME_ZONE = 'timeZone'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
 
@@ -54,9 +53,7 @@ class MessageProxySpec extends Specification {
 
         then:
         1 * profile.id >> profileId
-        1 * profile.user >> user
-        1 * user.timeZone >> TIME_ZONE
-        1 * restCaller.doGet(_ as String, _, TIME_ZONE) >> restResponse
+        1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(ConversationList, jsonResponse) >> conversationList
@@ -77,9 +74,7 @@ class MessageProxySpec extends Specification {
 
         then:
         1 * profile.id >> profileId
-        1 * profile.user >> user
-        1 * user.timeZone >> TIME_ZONE
-        1 * restCaller.doGet(_ as String, _, TIME_ZONE) >> restResponse
+        1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.INTERNAL_SERVER_ERROR
         1 * restResponse.responseBody
         0 * _
@@ -101,9 +96,7 @@ class MessageProxySpec extends Specification {
 
         then:
         1 * profile.id >> profileId
-        1 * profile.user >> user
-        1 * user.timeZone >> TIME_ZONE
-        1 * restCaller.doGet(_ as String, _, TIME_ZONE) >> restResponse
+        1 * restCaller.doGet(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
@@ -124,11 +117,9 @@ class MessageProxySpec extends Specification {
         Conversation result = messageProxy.createConversation(profile, receivers, text, name)
 
         then:
-        1 * profile.user >> user
-        1 * user.timeZone >> TIME_ZONE
         2 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
         1 * objectFactory.getInstance(CreateConversationPayload, _ as Map) >> createConversationDto
-        1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
@@ -148,11 +139,9 @@ class MessageProxySpec extends Specification {
         Conversation result = messageProxy.addMessage(conversationId, profile, text)
 
         then:
-        1 * profile.user >> user
-        1 * user.timeZone >> TIME_ZONE
         1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
         1 * objectFactory.getInstance(AddMessagePayload, [author: profileDto, text: text]) >> addMessageDto
-        1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
@@ -172,12 +161,10 @@ class MessageProxySpec extends Specification {
         Conversation result = messageProxy.addParticipants(conversationId, initiator, [subject])
 
         then:
-        1 * initiator.user >> user
-        1 * user.timeZone >> TIME_ZONE
         1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
         1 * objectFactory.getInstance(ProfileDto, subject) >> profileDto
         1 * objectFactory.getInstance(AddParticipantsPayload, payloadMap) >> addParticipantPayload
-        1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
@@ -198,9 +185,7 @@ class MessageProxySpec extends Specification {
         then:
         1 * initiator.id >> LONG_ONE
         1 * subject.id >> LONG_TWO
-        1 * initiator.user >> user
-        1 * user.timeZone >> TIME_ZONE
-        1 * restCaller.doDelete(_ as String, _, TIME_ZONE) >> restResponse
+        1 * restCaller.doDelete(_ as String, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
@@ -221,11 +206,9 @@ class MessageProxySpec extends Specification {
         Conversation result = messageProxy.updateConversationName(conversationId, initiator, conversationName)
 
         then:
-        1 * initiator.user >> user
-        1 * user.timeZone >> TIME_ZONE
         1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
         1 * objectFactory.getInstance(UpdateConversationNamePayload, payloadMap) >> updateConversationNamePayload
-        1 * restCaller.doPost(_ as String, _, _ as JSON, TIME_ZONE) >> restResponse
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation

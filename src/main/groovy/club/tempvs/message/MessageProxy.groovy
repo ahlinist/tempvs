@@ -29,7 +29,7 @@ class MessageProxy {
     ConversationList getConversations(Profile profile, int page, int size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?participant=${profile.id}&page=${page}&size=${size}"
 
-        RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN, profile.user.timeZone)
+        RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
@@ -43,7 +43,7 @@ class MessageProxy {
     Conversation getConversation(Long conversationId, Profile profile, Integer page, Integer size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/?page=${page}&size=${size}&caller=${profile.id}"
 
-        RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN, profile.user.timeZone)
+        RestResponse response = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
@@ -65,7 +65,7 @@ class MessageProxy {
         Map argumentMap = [author: authorDto, receivers: receiverDtos, text: text, name: name]
         CreateConversationPayload createConversationPayload = objectFactory.getInstance(CreateConversationPayload, argumentMap)
 
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, createConversationPayload as JSON, author.user.timeZone)
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, createConversationPayload as JSON)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
@@ -82,7 +82,7 @@ class MessageProxy {
         ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)
         Map argumentMap = [author: authorDto, text: text]
         AddMessagePayload addMessageDto = objectFactory.getInstance(AddMessagePayload, argumentMap)
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addMessageDto as JSON, author.user.timeZone)
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addMessageDto as JSON)
         HttpStatus httpStatus = response.statusCode
 
         if (httpStatus == HttpStatus.OK) {
@@ -102,7 +102,7 @@ class MessageProxy {
 
         AddParticipantsPayload addParticipantsPayload =
                 objectFactory.getInstance(AddParticipantsPayload, [initiator: initiatorDto, subjects: subjectDtos])
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addParticipantsPayload as JSON, initiator.user.timeZone)
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addParticipantsPayload as JSON)
 
         if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
@@ -115,7 +115,7 @@ class MessageProxy {
 
     Conversation removeParticipant(Long conversationId, Profile initiator, Profile subject) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants/${subject.id}?initiator=${initiator.id}"
-        RestResponse response = restCaller.doDelete(url, MESSAGE_SECURITY_TOKEN, initiator.user.timeZone)
+        RestResponse response = restCaller.doDelete(url, MESSAGE_SECURITY_TOKEN)
 
         if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)
@@ -132,7 +132,7 @@ class MessageProxy {
         ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, initiator)
         UpdateConversationNamePayload updateConversationNamePayload =
                 objectFactory.getInstance(UpdateConversationNamePayload, [name: name, initiator: initiatorDto])
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, updateConversationNamePayload as JSON, initiator.user.timeZone)
+        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, updateConversationNamePayload as JSON)
 
         if (response.statusCode == HttpStatus.OK) {
             return jsonConverter.convert(Conversation, response.responseBody)

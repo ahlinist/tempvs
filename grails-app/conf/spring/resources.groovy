@@ -16,6 +16,7 @@ beans = {
 
     restCaller(RestCaller) {
         restHelper = ref "restHelper"
+        profileService = ref "profileService"
     }
 
     messageProxy(MessageProxy) {
