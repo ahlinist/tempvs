@@ -17,6 +17,7 @@ import spock.lang.Specification
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
     private static final String POST_METHOD = 'POST'
+    private static final String PROFILE_HEADER = 'Profile'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_THREE = 3L
     private static final String COUNT_HEADER = 'X-Total-Count'
@@ -31,7 +32,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def restCaller = Mock RestCaller
     def restResponse = Mock RestResponse
     def httpHeaders = Mock HttpHeaders
-    def createConversationCommand = Mock CreateConversationCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
     def initiator = Mock Profile
     def subject = Mock Profile
@@ -120,24 +120,20 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     void "test createConversation()"() {
         given:
         request.method = POST_METHOD
-        String text = "msg text"
-        String name = "conversation name"
-        def receiver = Mock Profile
-        List<Profile> receivers = [receiver]
 
         when:
-        controller.createConversation(createConversationCommand)
+        controller.createConversation()
 
         then:
-        1 * profileService.currentProfile >> initiator
-        1 * createConversationCommand.receivers >> receivers
-        1 * createConversationCommand.text >> text
-        1 * createConversationCommand.name >> name
-        1 * messageProxy.createConversation(initiator, [receiver], text, name) >> conversation
-        1 * objectFactory.getInstance(ConversationWrapper, conversation, initiator) >> conversationWrapper
-        1 * conversationWrapper.conversation
-        1 * conversationWrapper.currentProfile
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody
         0 * _
+
+        and:
+        response.status == 200
     }
 
     void "test loadConversations()"() {

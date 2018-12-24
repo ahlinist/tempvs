@@ -75,11 +75,11 @@ class RestCaller {
 
     private Map<String, String> buildHeaders(String token) {
         Profile currentProfile = profileService.currentProfile
-        User user = currentProfile.user
-        String timeZone = user.timeZone
+        User user = currentProfile?.user
+        String timeZone = user?.timeZone
 
         [
-                (PROFILE): currentProfile.id.toString(),
+                (PROFILE): currentProfile?.id?.toString(),
                 (AUTHORIZATION): token,
                 (ACCEPT_LANGUAGE): getLanguage(),
                 (ACCEPT_TIMEZONE): timeZone,

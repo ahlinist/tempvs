@@ -29,7 +29,6 @@ class MessageProxySpec extends Specification {
     def conversation = Mock Conversation
     def conversationList = Mock ConversationList
     def profileDto = Mock ProfileDto
-    def createConversationDto = Mock CreateConversationPayload
     def addMessageDto = Mock AddMessagePayload
     def addParticipantPayload = Mock AddParticipantsPayload
     def updateConversationNamePayload = Mock UpdateConversationNamePayload
@@ -97,29 +96,6 @@ class MessageProxySpec extends Specification {
         then:
         1 * profile.id >> profileId
         1 * restCaller.doGet(_ as String, _) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.OK
-        1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
-        0 * _
-
-        and:
-        result == conversation
-    }
-
-    void "test createConversation()"() {
-        given:
-        String jsonResponse = "{response}"
-        List<Profile> receivers = [profile]
-        String text = "msg txt"
-        String name = "conversation name"
-
-        when:
-        Conversation result = messageProxy.createConversation(profile, receivers, text, name)
-
-        then:
-        2 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
-        1 * objectFactory.getInstance(CreateConversationPayload, _ as Map) >> createConversationDto
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> jsonResponse
         1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation

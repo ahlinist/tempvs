@@ -25,6 +25,7 @@ class MessageController {
     private static final String MESSAGE_SERVICE_URL = System.getenv('MESSAGE_SERVICE_URL')
     private static final String MESSAGE_SECURITY_TOKEN = System.getenv('MESSAGE_SECURITY_TOKEN').encodeAsMD5() as String
     private static final String COUNT_HEADER = 'X-Total-Count'
+    private static final String PROFILE_HEADER = 'Profile'
 
     static allowedMethods = [
             getNewConversationsCount: 'GET',
@@ -75,11 +76,11 @@ class MessageController {
         render(objectFactory.getInstance(ConversationWrapper, conversation, currentProfile) as JSON)
     }
 
-    def createConversation(CreateConversationCommand command) {
-        Profile author = profileService.currentProfile
-        List<Profile> receivers = command.receivers?.findAll()
-        Conversation conversation = messageProxy.createConversation(author, receivers, command.text, command.name)
-        render(objectFactory.getInstance(ConversationWrapper, conversation, author) as JSON)
+    def createConversation() {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations"
+        RestResponse restResponse = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
+        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
+        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
     }
 
     def send(Long id) {

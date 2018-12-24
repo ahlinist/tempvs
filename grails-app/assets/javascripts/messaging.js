@@ -10,9 +10,9 @@ var messaging = {
   didScroll: false,
   actions: {
     200: function(response) {
-      response.json().then(function(data) {
-        var conversation = data.conversation;
 
+      var currentProfileId = response.headers.get("Profile");
+      response.json().then(function(conversation) {
         if (!window.location.href.includes('/message')) {
           window.location.href = "/message/conversation/" + conversation.id;
           return;
@@ -45,14 +45,13 @@ var messaging = {
 
         //participants section
         var participants = conversation.participants;
-        var currentProfile = data.currentProfile;
         var participantsContainer = conversationDetails.querySelector('.participants-container');
         var participantTemplate = conversationDetails.querySelector('template.participant-template');
         var participantsList = conversationDetails.querySelector('ul#participants-list');
         participantsList.innerHTML = '';
 
         participants.forEach(function(participant) {
-          if (participant.id == currentProfile.id) {
+          if (participant.id == currentProfileId) {
             return;
           }
 
@@ -62,7 +61,7 @@ var messaging = {
           profileLink.setAttribute('href', '/profile/show/' + participant.id);
           profileLink.innerHTML = participant.name;
 
-          if ((conversation.type == 'CONFERENCE') && (conversation.admin.id == currentProfile.id) && (participants.length > 2)) {
+          if ((conversation.type == 'CONFERENCE') && (conversation.admin.id == currentProfileId) && (participants.length > 2)) {
             var removeForm = participantNode.querySelector('form.participant-deletion-form');
             removeForm.action = '/message/removeParticipant/' + conversation.id;
             var subjectField = removeForm.querySelector('input[name=subject]');
@@ -207,10 +206,20 @@ var messaging = {
 
     ajaxHandler.blockUI();
     var url = form.action;
+    var formData = new FormData(form);
+
+    var object = {
+      name: formData.get('name'),
+      text: formData.get('text'),
+      receivers: formData.getAll('receivers')
+    };
 
     var payload = {
       method: 'POST',
-      body: new FormData(form)
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(object)
     }
 
     ajaxHandler.fetch(form, url, payload, messaging.actions);
@@ -228,7 +237,7 @@ var messaging = {
           var profileId = dataEntry.id;
           var profileName = dataEntry.name;
 
-          if (participantsList.querySelector('input[name^="receivers"][value="' + profileId + '"]')) {
+          if (participantsList.querySelector('input[name=receivers][value="' + profileId + '"]')) {
             return;
           }
 
@@ -248,7 +257,6 @@ var messaging = {
             searchResultLink.href = '/profile/show/' + profileId;
             searchResultLink.innerHTML = profileName;
             input.value = profileId;
-            input.name = 'receivers[' + participantsCounter + ']';
             messaging.newConversationParticipantsCounter++;
 
             remove.onclick = function() {
@@ -265,7 +273,7 @@ var messaging = {
           function toggleConversationNameContainer() {
             var conversationNameContainer = createConversationWrapper.querySelector('div.new-conversation-name-container');
 
-            if (participantsList.querySelectorAll('input[name^="receivers"]').length > 1) {
+            if (participantsList.querySelectorAll('input[name=receivers]').length > 1) {
               conversationNameContainer.style.display = 'block';
             } else {
               conversationNameContainer.style.display = 'none';

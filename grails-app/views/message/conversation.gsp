@@ -19,7 +19,7 @@
         <span class="btn btn-default remove-participant" style="width: 39px;">
           <span class="fa fa-remove" style="color: red;"></span>
         </span>
-        <input type="hidden">
+        <input type="hidden" name="receivers">
       </li>
     </template>
     <div class="container">

@@ -53,30 +53,6 @@ class MessageProxy {
         }
     }
 
-    Conversation createConversation(Profile author, List<Profile> receivers, String text, String name) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations"
-
-        ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)
-
-        List<ProfileDto> receiverDtos = receivers?.collect { Profile profile ->
-            objectFactory.getInstance(ProfileDto, profile)
-        }
-
-        Map argumentMap = [author: authorDto, receivers: receiverDtos, text: text, name: name]
-        CreateConversationPayload createConversationPayload = objectFactory.getInstance(CreateConversationPayload, argumentMap)
-
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, createConversationPayload as JSON)
-        HttpStatus httpStatus = response.statusCode
-
-        if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(Conversation, response.responseBody)
-        } else if (response.statusCode == HttpStatus.BAD_REQUEST) {
-            throw new IllegalArgumentException(response.responseBody)
-        } else {
-            return processError(response)
-        }
-    }
-
     Conversation addMessage(Long conversationId, Profile author, String text) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/messages"
         ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)
