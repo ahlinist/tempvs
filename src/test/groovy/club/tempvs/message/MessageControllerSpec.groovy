@@ -106,14 +106,14 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.getNewConversationsCount()
 
         then:
-        1 * profileService.currentProfile >> profile
-        1 * profile.id
         1 * restCaller.doHead(_ as String, _) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(COUNT_HEADER) >> count
+        1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 
         and:
+        response.status == 200
         response.json.count == count
     }
 
