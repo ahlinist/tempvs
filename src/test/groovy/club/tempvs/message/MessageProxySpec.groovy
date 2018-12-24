@@ -40,48 +40,6 @@ class MessageProxySpec extends Specification {
     def cleanup() {
     }
 
-    void "test getConversations()"() {
-        given:
-        int page = 0
-        int size = 20
-        String jsonResponse = "{response}"
-        Long profileId = 1L
-
-        when:
-        ConversationList result = messageProxy.getConversations(profile, page, size)
-
-        then:
-        1 * profile.id >> profileId
-        1 * restCaller.doGet(_ as String, _) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.OK
-        1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(ConversationList, jsonResponse) >> conversationList
-        0 * _
-
-        and:
-        result == conversationList
-    }
-
-    void "test getConversations() for bad request"() {
-        given:
-        int page = 0
-        int size = 20
-        Long profileId = 1L
-
-        when:
-        messageProxy.getConversations(profile, page, size)
-
-        then:
-        1 * profile.id >> profileId
-        1 * restCaller.doGet(_ as String, _) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.INTERNAL_SERVER_ERROR
-        1 * restResponse.responseBody
-        0 * _
-
-        and:
-        thrown(RuntimeException)
-    }
-
     void "test addMessage()"() {
         given:
         String jsonResponse = "{response}"

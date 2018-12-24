@@ -12,6 +12,7 @@ import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
+import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -60,11 +61,11 @@ class MessageController {
         render(status: restResponse.statusCode.value(), text: [count: count] as JSON)
     }
 
-    def loadConversations() {
-        Integer page = params.page as Integer ?: DEFAULT_PAGE_NUMBER
-        Integer size = params.size as Integer ?: DEFAULT_PAGE_SIZE
-        Profile currentProfile = profileService.currentProfile
-        render(messageProxy.getConversations(currentProfile, page, size) as JSON)
+    def loadConversations(Integer page, Integer size) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations?page=${page}&size=${size}"
+        RestResponse restResponse = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
+        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
+        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
     }
 
     def loadMessages(Long id, Integer page, Integer size) {
