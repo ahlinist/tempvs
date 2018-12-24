@@ -6,7 +6,6 @@ var messaging = {
   currentConversationsPage: 0,
   currentMessagesPage: 0,
   newConversationParticipantsCounter: 0,
-  conversationAddParticipantsCounter: 0,
   didScroll: false,
   actions: {
     200: function(response) {
@@ -154,13 +153,10 @@ var messaging = {
             var searchResultLink = searchResultNode.querySelector('a.search-result-link');
             var remove = searchResultNode.querySelector('span.remove-participant');
             var input = searchResultNode.querySelector('input[type=hidden]');
-            var participantsCounter = messaging.conversationAddParticipantsCounter;
 
-            input.name = 'participants[' + participantsCounter + ']';
             input.value = profileId;
             searchResultLink.href = '/profile/show/' + profileId;
             searchResultLink.innerHTML = profileName;
-            messaging.conversationAddParticipantsCounter++;
 
             remove.onclick = function() {
               resultList.removeChild(searchResultNode);
@@ -466,10 +462,28 @@ var messaging = {
     var scrollable = document.querySelector('div#messages-container');
     scrollable.scrollTop = scrollable.scrollHeight - scrollable.clientHeight;
   },
-  updateParticipants: function(form) {
+  removeParticipant: function(form) {
     var payload = {
       method: 'POST',
       body: new FormData(form)
+    };
+
+    ajaxHandler.blockUI();
+    ajaxHandler.fetch(form, form.action, payload, messaging.actions);
+  },
+  addParticipants: function(form) {
+    var formData = new FormData(form);
+
+    var object = {
+      participants: formData.getAll('participants')
+    };
+
+    var payload = {
+      method: 'POST',
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(object)
     };
 
     ajaxHandler.blockUI();

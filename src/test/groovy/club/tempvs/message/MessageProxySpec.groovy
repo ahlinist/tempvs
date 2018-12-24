@@ -28,7 +28,6 @@ class MessageProxySpec extends Specification {
     def restResponse = Mock RestResponse
     def conversation = Mock Conversation
     def profileDto = Mock ProfileDto
-    def addParticipantPayload = Mock AddParticipantsPayload
     def updateConversationNamePayload = Mock UpdateConversationNamePayload
 
     def setup() {
@@ -36,29 +35,6 @@ class MessageProxySpec extends Specification {
     }
 
     def cleanup() {
-    }
-
-    void "test addParticipants()"() {
-        given:
-        String jsonResponse = "{response}"
-        Long conversationId = 1L
-        Map payloadMap = [initiator: profileDto, subjects: [profileDto]]
-
-        when:
-        Conversation result = messageProxy.addParticipants(conversationId, initiator, [subject])
-
-        then:
-        1 * objectFactory.getInstance(ProfileDto, initiator) >> profileDto
-        1 * objectFactory.getInstance(ProfileDto, subject) >> profileDto
-        1 * objectFactory.getInstance(AddParticipantsPayload, payloadMap) >> addParticipantPayload
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.OK
-        1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
-        0 * _
-
-        and:
-        result == conversation
     }
 
     void "test removeParticipant()"() {

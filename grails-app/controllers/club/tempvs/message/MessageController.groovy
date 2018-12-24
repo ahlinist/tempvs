@@ -12,7 +12,6 @@ import grails.converters.JSON
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
-import org.springframework.http.HttpStatus
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -21,8 +20,6 @@ import org.springframework.security.access.annotation.Secured
 @Secured('isAuthenticated()')
 class MessageController {
 
-    private static final Integer DEFAULT_PAGE_NUMBER = 0
-    private static final Integer DEFAULT_PAGE_SIZE = 40
     private static final String MESSAGE_SERVICE_URL = System.getenv('MESSAGE_SERVICE_URL')
     private static final String MESSAGE_SECURITY_TOKEN = System.getenv('MESSAGE_SECURITY_TOKEN').encodeAsMD5() as String
     private static final String COUNT_HEADER = 'X-Total-Count'
@@ -64,36 +61,31 @@ class MessageController {
     def loadConversations(Integer page, Integer size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations?page=${page}&size=${size}"
         RestResponse restResponse = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
-        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
-        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
+        buildResponse(restResponse)
     }
 
     def loadMessages(Long id, Integer page, Integer size) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/?page=${page}&size=${size}"
         RestResponse restResponse = restCaller.doGet(url, MESSAGE_SECURITY_TOKEN)
-        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
-        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
+        buildResponse(restResponse)
     }
 
     def createConversation() {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations"
         RestResponse restResponse = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
-        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
-        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
+        buildResponse(restResponse)
     }
 
     def send(Long id) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/messages"
         RestResponse restResponse = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
-        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
-        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
+        buildResponse(restResponse)
     }
 
-    def addParticipants(Long id, AddParticipantsCommand command) {
-        Profile initiator = profileService.currentProfile
-        List<Profile> subjects = command.participants
-        Conversation conversation = messageProxy.addParticipants(id, initiator, subjects)
-        render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
+    def addParticipants(Long id) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/participants"
+        RestResponse restResponse = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
+        buildResponse(restResponse)
     }
 
     def removeParticipant(Long id) {
@@ -119,6 +111,11 @@ class MessageController {
                 objectFactory.getInstance(ReadMessagesPayload, [participant: initiatorDto, messageIds: json.messageIds as List])
         RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, readMessagesPayload as JSON)
         render(status: response.statusCode.value())
+    }
+
+    private def buildResponse(RestResponse restResponse) {
+        response.setHeader(PROFILE_HEADER, restResponse?.headers?.getFirst(PROFILE_HEADER))
+        render(status: restResponse?.statusCode?.value(), text: restResponse?.responseBody)
     }
 
     def accessDeniedExceptionThrown(AccessDeniedException exception) {

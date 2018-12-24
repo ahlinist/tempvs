@@ -26,27 +26,6 @@ class MessageProxy {
     @Autowired
     ObjectFactory objectFactory
 
-    Conversation addParticipants(Long conversationId, Profile initiator, List<Profile> subjects) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
-        ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, initiator)
-
-        List<ProfileDto> subjectDtos = subjects.collect { Profile subject ->
-            objectFactory.getInstance(ProfileDto, subject)
-        }
-
-        AddParticipantsPayload addParticipantsPayload =
-                objectFactory.getInstance(AddParticipantsPayload, [initiator: initiatorDto, subjects: subjectDtos])
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addParticipantsPayload as JSON)
-
-        if (response.statusCode == HttpStatus.OK) {
-            return jsonConverter.convert(Conversation, response.responseBody)
-        } else if (response.statusCode == HttpStatus.BAD_REQUEST) {
-            throw new IllegalArgumentException(response.responseBody)
-        } else {
-            return processError(response)
-        }
-    }
-
     Conversation removeParticipant(Long conversationId, Profile initiator, Profile subject) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants/${subject.id}?initiator=${initiator.id}"
         RestResponse response = restCaller.doDelete(url, MESSAGE_SECURITY_TOKEN)

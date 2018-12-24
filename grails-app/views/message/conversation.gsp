@@ -19,7 +19,7 @@
         <span class="btn btn-default remove-participant" style="width: 39px;">
           <span class="fa fa-remove" style="color: red;"></span>
         </span>
-        <input type="hidden" name="receivers">
+        <input type="hidden" name="participants">
       </li>
     </template>
     <div class="container">
@@ -164,7 +164,7 @@
                           <div class="modal-body">
                             <g:message code='message.remove.participant.text'/>
                             <br/>
-                            <form class="participant-deletion-form" onsubmit="messaging.updateParticipants(this); return false;">
+                            <form class="participant-deletion-form" onsubmit="messaging.removeParticipant(this); return false;">
                               <input type="hidden" name="subject">
                               <button class="btn btn-default submit-button">
                                 <g:message code="yes"/>
@@ -207,7 +207,7 @@
                           </div>
                         </span>
                         <div id="add-participant-to-conversation-container">
-                          <form class="add-participant-to-conversation-form" onsubmit="messaging.updateParticipants(this); return false;">
+                          <form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipants(this); return false;">
                             <ul></ul>
                             <div style="height: 35px;">
                               <button type="submit" class="btn btn-default hidden submit-button">

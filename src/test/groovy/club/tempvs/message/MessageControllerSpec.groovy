@@ -37,7 +37,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def profileDto = Mock ProfileDto
     def objectFactory = Mock ObjectFactory
     def conversationWrapper = Mock ConversationWrapper
-    def addParticipantsCommand = Mock AddParticipantsCommand
     def readMessagesPayload = Mock ReadMessagesPayload
 
     def setup() {
@@ -179,19 +178,20 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     void "test addParticipants()"() {
         given:
         request.method = POST_METHOD
-        params.subject = LONG_THREE
 
         when:
-        controller.addParticipants(LONG_ONE, addParticipantsCommand)
+        controller.addParticipants(LONG_ONE)
 
         then:
-        1 * addParticipantsCommand.participants >> [subject]
-        1 * profileService.currentProfile >> initiator
-        1 * messageProxy.addParticipants(LONG_ONE, initiator, [subject]) >> conversation
-        1 * objectFactory.getInstance(ConversationWrapper, conversation, initiator) >> conversationWrapper
-        1 * conversationWrapper.conversation
-        1 * conversationWrapper.currentProfile
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody
         0 * _
+
+        and:
+        response.status == 200
     }
 
     void "test removeParticipant()"() {
