@@ -26,21 +26,6 @@ class MessageProxy {
     @Autowired
     ObjectFactory objectFactory
 
-    Conversation addMessage(Long conversationId, Profile author, String text) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/messages"
-        ProfileDto authorDto = objectFactory.getInstance(ProfileDto, author)
-        Map argumentMap = [author: authorDto, text: text]
-        AddMessagePayload addMessageDto = objectFactory.getInstance(AddMessagePayload, argumentMap)
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, addMessageDto as JSON)
-        HttpStatus httpStatus = response.statusCode
-
-        if (httpStatus == HttpStatus.OK) {
-            return jsonConverter.convert(Conversation, response.responseBody)
-        } else {
-            return processError(response)
-        }
-    }
-
     Conversation addParticipants(Long conversationId, Profile initiator, List<Profile> subjects) {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${conversationId}/participants"
         ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, initiator)

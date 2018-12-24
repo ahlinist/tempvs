@@ -284,10 +284,11 @@ var messaging = {
     }
   },
   send: function(form) {
-    var data = new FormData(form);
-    var inputBox = form.querySelector('input[name=message]');
+    var formData = new FormData(form);
+    var message = formData.get('message');
 
-    if (!data.get('message')) {
+    if (!message) {
+      var inputBox = form.querySelector('input[name=message]');
       $(inputBox).tooltip('show');
       return;
     }
@@ -297,7 +298,10 @@ var messaging = {
 
     var payload = {
       method: 'POST',
-      body: data
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({text: message})
     };
 
     ajaxHandler.fetch(form, url, payload, messaging.actions);

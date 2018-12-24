@@ -83,9 +83,10 @@ class MessageController {
     }
 
     def send(Long id) {
-        Profile currentProfile = profileService.currentProfile
-        Conversation conversation = messageProxy.addMessage(id, currentProfile, params.message as String)
-        render(objectFactory.getInstance(ConversationWrapper, conversation, currentProfile) as JSON)
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/messages"
+        RestResponse restResponse = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
+        response.setHeader(PROFILE_HEADER, restResponse.headers.getFirst(PROFILE_HEADER))
+        render(status: restResponse.statusCode.value(), text: restResponse.responseBody)
     }
 
     def addParticipants(Long id, AddParticipantsCommand command) {

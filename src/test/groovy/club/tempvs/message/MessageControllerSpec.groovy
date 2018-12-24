@@ -26,7 +26,6 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def user = Mock User
     def profile = Mock Profile
     def conversation = Mock Conversation
-    def conversationList = Mock ConversationList
     def profileService = Mock ProfileService
     def messageProxy = Mock MessageProxy
     def restCaller = Mock RestCaller
@@ -161,19 +160,20 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         given:
         request.method = POST_METHOD
         Long conversationId = 1L
-        String message = "msg text"
-        params.message = message
 
         when:
         controller.send(conversationId)
 
         then:
-        1 * profileService.currentProfile >> profile
-        1 * messageProxy.addMessage(conversationId, profile, message) >> conversation
-        1 * objectFactory.getInstance(ConversationWrapper, conversation, profile) >> conversationWrapper
-        1 * conversationWrapper.conversation
-        1 * conversationWrapper.currentProfile
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody
         0 * _
+
+        and:
+        response.status == 200
     }
 
     void "test addParticipants()"() {
