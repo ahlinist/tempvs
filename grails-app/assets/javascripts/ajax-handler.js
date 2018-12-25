@@ -215,9 +215,18 @@ var ajaxHandler = {
           window.removeEventListener("click", clickOutEventListener);
           window.removeEventListener("keydown", keyPressEventListener);
 
+          var object = {};
+
+          new FormData(smartForm).forEach(function(value, key){
+            object[key] = value;
+          });
+
           var payload = {
             method: 'POST',
-            body: new FormData(smartForm)
+            headers:{
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(object)
           }
 
           spinner.classList.remove('hidden');

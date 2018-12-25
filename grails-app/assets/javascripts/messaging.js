@@ -5,7 +5,6 @@ var messaging = {
   defaultMessagesSize: 40,
   currentConversationsPage: 0,
   currentMessagesPage: 0,
-  newConversationParticipantsCounter: 0,
   didScroll: false,
   actions: {
     200: function(response) {
@@ -38,7 +37,7 @@ var messaging = {
           conversationNameSpinner.classList.add('hidden');
           conversationNameContainer.classList.remove('hidden');
           conversationNameForm.querySelector('.text-holder').innerHTML = conversation.name;
-          conversationNameForm.querySelector('input[name=conversationName]').value = conversation.name;
+          conversationNameForm.querySelector('input[name=name]').value = conversation.name;
           conversationNameForm.action = '/message/updateConversationName/' + conversation.id;
         }
 
@@ -75,7 +74,6 @@ var messaging = {
         });
 
         window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
-        messaging.newConversationParticipantsCounter = 0;
         messaging.markAsRead();
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
@@ -186,7 +184,7 @@ var messaging = {
     var profileSearchField = document.querySelector('#create-conversation-popup input[name="query"]');
     var textarea = form.querySelector('textarea[name=text]');
     var blankMessageError = !textarea.value || !textarea.value.trim();
-    var noParticipantsError = !form.querySelector('input[name^="receivers"]');
+    var noParticipantsError = !form.querySelector('input[name=participants]');
 
     if (blankMessageError) {
       $(textarea).tooltip('show');
@@ -207,7 +205,7 @@ var messaging = {
     var object = {
       name: formData.get('name'),
       text: formData.get('text'),
-      receivers: formData.getAll('receivers')
+      receivers: formData.getAll('participants')
     };
 
     var payload = {
@@ -233,7 +231,7 @@ var messaging = {
           var profileId = dataEntry.id;
           var profileName = dataEntry.name;
 
-          if (participantsList.querySelector('input[name=receivers][value="' + profileId + '"]')) {
+          if (participantsList.querySelector('input[name=participants][value="' + profileId + '"]')) {
             return;
           }
 
@@ -242,7 +240,6 @@ var messaging = {
           profileResultLink.innerHTML = profileName;
 
           profileResultLink.onclick = function() {
-            var participantsCounter = messaging.newConversationParticipantsCounter;
             var searchResultTemplate = document.querySelector('template#profile-search-result-template');
             var searchResultListItem = searchResultTemplate.content.querySelector('li');
             var searchResultNode = document.importNode(searchResultListItem, true);
@@ -253,7 +250,6 @@ var messaging = {
             searchResultLink.href = '/profile/show/' + profileId;
             searchResultLink.innerHTML = profileName;
             input.value = profileId;
-            messaging.newConversationParticipantsCounter++;
 
             remove.onclick = function() {
               participantsList.removeChild(searchResultNode);
@@ -269,7 +265,7 @@ var messaging = {
           function toggleConversationNameContainer() {
             var conversationNameContainer = createConversationWrapper.querySelector('div.new-conversation-name-container');
 
-            if (participantsList.querySelectorAll('input[name=receivers]').length > 1) {
+            if (participantsList.querySelectorAll('input[name=participants]').length > 1) {
               conversationNameContainer.style.display = 'block';
             } else {
               conversationNameContainer.style.display = 'none';
@@ -464,12 +460,8 @@ var messaging = {
   },
   removeParticipant: function(form) {
     var payload = {
-      subject: new FormData(form).get('subject')
-    };
-
-    var payload = {
-      method: 'POST',
-      body: JSON.stringify(payload)
+      method: 'DELETE',
+      body: new FormData(form)
     };
 
     ajaxHandler.blockUI();

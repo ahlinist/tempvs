@@ -1,7 +1,6 @@
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.ampq.AmqpSender
 import club.tempvs.json.JsonConverter
-import club.tempvs.message.MessageProxy
 import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestHelper
@@ -17,11 +16,6 @@ beans = {
     restCaller(RestCaller) {
         restHelper = ref "restHelper"
         profileService = ref "profileService"
-    }
-
-    messageProxy(MessageProxy) {
-        restCaller = ref "restCaller"
-        objectFactory = ref "objectFactory"
     }
 
     objectFactory(ObjectFactory)

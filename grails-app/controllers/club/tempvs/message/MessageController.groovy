@@ -34,12 +34,12 @@ class MessageController {
             updateParticipants: 'POST',
             conversationName: 'POST',
             readMessages: 'POST',
+            removeParticipant: 'DELETE',
     ]
 
     static defaultAction = 'conversation'
 
     ProfileService profileService
-    MessageProxy messageProxy
     AjaxResponseHelper ajaxResponseHelper
     LinkGenerator grailsLinkGenerator
     ObjectFactory objectFactory
@@ -54,8 +54,8 @@ class MessageController {
     def getNewConversationsCount() {
         String url = "${MESSAGE_SERVICE_URL}/api/conversations"
         RestResponse restResponse = restCaller.doHead(url, MESSAGE_SECURITY_TOKEN)
-        Integer count = restResponse.headers?.getFirst(COUNT_HEADER) as Integer
-        render(status: restResponse.statusCode.value(), text: [count: count] as JSON)
+        Integer count = restResponse?.headers?.getFirst(COUNT_HEADER) as Integer
+        render(status: restResponse?.statusCode?.value(), text: [count: count] as JSON)
     }
 
     def loadConversations(Integer page, Integer size) {
@@ -88,19 +88,16 @@ class MessageController {
         buildResponse(restResponse)
     }
 
-    def removeParticipant(Long id) {
-        JSONObject json = request.JSON as JSONObject
-        String subjectId = json.get('subject')
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/participants/${subjectId}"
+    def removeParticipant(Long id, Long subject) {
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/participants/${subject}"
         RestResponse restResponse = restCaller.doDelete(url, MESSAGE_SECURITY_TOKEN)
         buildResponse(restResponse)
     }
 
     def updateConversationName(Long id) {
-        String conversationName = params.conversationName as String
-        Profile initiator = profileService.currentProfile
-        Conversation conversation = messageProxy.updateConversationName(id, initiator, conversationName)
-        render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/name"
+        RestResponse restResponse = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
+        buildResponse(restResponse)
     }
 
     def readMessages(Long id) {

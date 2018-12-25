@@ -17,6 +17,7 @@ import spock.lang.Specification
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
     private static final String POST_METHOD = 'POST'
+    private static final String DELETE_METHOD = 'DELETE'
     private static final String PROFILE_HEADER = 'Profile'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_THREE = 3L
@@ -25,23 +26,17 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def json = Mock JSON
     def user = Mock User
     def profile = Mock Profile
-    def conversation = Mock Conversation
     def profileService = Mock ProfileService
-    def messageProxy = Mock MessageProxy
     def restCaller = Mock RestCaller
     def restResponse = Mock RestResponse
     def httpHeaders = Mock HttpHeaders
     def ajaxResponseHelper = Mock AjaxResponseHelper
-    def initiator = Mock Profile
-    def subject = Mock Profile
     def profileDto = Mock ProfileDto
     def objectFactory = Mock ObjectFactory
-    def conversationWrapper = Mock ConversationWrapper
     def readMessagesPayload = Mock ReadMessagesPayload
 
     def setup() {
         controller.profileService = profileService
-        controller.messageProxy = messageProxy
         controller.ajaxResponseHelper = ajaxResponseHelper
         controller.objectFactory = objectFactory
         controller.restCaller = restCaller
@@ -196,11 +191,11 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     void "test removeParticipant()"() {
         given:
-        request.method = POST_METHOD
+        request.method = DELETE_METHOD
         params.subject = LONG_THREE
 
         when:
-        controller.removeParticipant(LONG_ONE)
+        controller.removeParticipant(LONG_ONE, LONG_THREE)
 
         then:
         1 * restCaller.doDelete(_ as String, _) >> restResponse
@@ -217,19 +212,20 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     void "test updateConversationName() for remove"() {
         given:
         request.method = POST_METHOD
-        String conversationName = 'new name'
-        params.conversationName = conversationName
 
         when:
         controller.updateConversationName(LONG_ONE)
 
         then:
-        1 * profileService.currentProfile >> initiator
-        1 * messageProxy.updateConversationName(LONG_ONE, initiator, conversationName) >> conversation
-        1 * objectFactory.getInstance(ConversationWrapper, conversation, initiator) >> conversationWrapper
-        1 * conversationWrapper.conversation
-        1 * conversationWrapper.currentProfile
+        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody
         0 * _
+
+        and:
+        response.status == 200
     }
 
     void "test readMessages()"() {

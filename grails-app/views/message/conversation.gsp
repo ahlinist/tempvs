@@ -147,7 +147,7 @@
                   <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions);" class="fa fa-pencil"></span>
                 </span>
                 <span class="hidden input-wrapper">
-                  <input style="margin: 4px 0px 3px 0px;" type="text" name="conversationName" value="" autocomplete="off">
+                  <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
                 </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/assets/spinner-sm.gif">
               </form>
             </div>
