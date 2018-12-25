@@ -203,13 +203,15 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.removeParticipant(LONG_ONE)
 
         then:
-        1 * profileService.currentProfile >> initiator
-        1 * profileService.getProfileById(LONG_THREE) >> subject
-        1 * messageProxy.removeParticipant(LONG_ONE, initiator, subject) >> conversation
-        1 * objectFactory.getInstance(ConversationWrapper, conversation, initiator) >> conversationWrapper
-        1 * conversationWrapper.conversation
-        1 * conversationWrapper.currentProfile
+        1 * restCaller.doDelete(_ as String, _) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
+        1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody
         0 * _
+
+        and:
+        response.status == 200
     }
 
     void "test updateConversationName() for remove"() {

@@ -464,8 +464,12 @@ var messaging = {
   },
   removeParticipant: function(form) {
     var payload = {
+      subject: new FormData(form).get('subject')
+    };
+
+    var payload = {
       method: 'POST',
-      body: new FormData(form)
+      body: JSON.stringify(payload)
     };
 
     ajaxHandler.blockUI();

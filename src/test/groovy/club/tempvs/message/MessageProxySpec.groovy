@@ -37,27 +37,6 @@ class MessageProxySpec extends Specification {
     def cleanup() {
     }
 
-    void "test removeParticipant()"() {
-        given:
-        String jsonResponse = "{response}"
-        Long conversationId = 1L
-
-        when:
-        Conversation result = messageProxy.removeParticipant(conversationId, initiator, subject)
-
-        then:
-        1 * initiator.id >> LONG_ONE
-        1 * subject.id >> LONG_TWO
-        1 * restCaller.doDelete(_ as String, _) >> restResponse
-        1 * restResponse.statusCode >> HttpStatus.OK
-        1 * restResponse.responseBody >> jsonResponse
-        1 * jsonConverter.convert(Conversation, jsonResponse) >> conversation
-        0 * _
-
-        and:
-        result == conversation
-    }
-
     void "test updateConversationName()"() {
         given:
         String jsonResponse = "{response}"

@@ -89,10 +89,11 @@ class MessageController {
     }
 
     def removeParticipant(Long id) {
-        Profile initiator = profileService.currentProfile
-        Profile subject = profileService.getProfileById(params.subject as Long)
-        Conversation conversation = messageProxy.removeParticipant(id, initiator, subject)
-        render(objectFactory.getInstance(ConversationWrapper, conversation, initiator) as JSON)
+        JSONObject json = request.JSON as JSONObject
+        String subjectId = json.get('subject')
+        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/participants/${subjectId}"
+        RestResponse restResponse = restCaller.doDelete(url, MESSAGE_SECURITY_TOKEN)
+        buildResponse(restResponse)
     }
 
     def updateConversationName(Long id) {
