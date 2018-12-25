@@ -1,13 +1,7 @@
 package club.tempvs.message
 
-import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.object.ObjectFactory
-import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
-import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
-import club.tempvs.user.User
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
 import org.springframework.http.HttpHeaders
@@ -17,28 +11,16 @@ import spock.lang.Specification
 class MessageControllerSpec extends Specification implements ControllerUnitTest<MessageController> {
 
     private static final String POST_METHOD = 'POST'
-    private static final String DELETE_METHOD = 'DELETE'
     private static final String PROFILE_HEADER = 'Profile'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_THREE = 3L
     private static final String COUNT_HEADER = 'X-Total-Count'
 
-    def json = Mock JSON
-    def user = Mock User
-    def profile = Mock Profile
-    def profileService = Mock ProfileService
     def restCaller = Mock RestCaller
     def restResponse = Mock RestResponse
     def httpHeaders = Mock HttpHeaders
-    def ajaxResponseHelper = Mock AjaxResponseHelper
-    def profileDto = Mock ProfileDto
-    def objectFactory = Mock ObjectFactory
-    def readMessagesPayload = Mock ReadMessagesPayload
 
     def setup() {
-        controller.profileService = profileService
-        controller.ajaxResponseHelper = ajaxResponseHelper
-        controller.objectFactory = objectFactory
         controller.restCaller = restCaller
     }
 
@@ -191,7 +173,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     void "test removeParticipant()"() {
         given:
-        request.method = DELETE_METHOD
+        request.method = POST_METHOD
         params.subject = LONG_THREE
 
         when:
@@ -230,19 +212,17 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
 
     void "test readMessages()"() {
         given:
-        List messageIds = [2, 3, 4]
         request.method = POST_METHOD
-        request.json = [messageIds: messageIds]
 
         when:
         controller.readMessages(LONG_ONE)
 
         then:
-        1 * profileService.currentProfile >> profile
-        1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
-        1 * objectFactory.getInstance(ReadMessagesPayload, [participant: profileDto, messageIds: messageIds]) >> readMessagesPayload
         1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restResponse.headers >> httpHeaders
+        1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
+        1 * restResponse.responseBody
         0 * _
 
         and:

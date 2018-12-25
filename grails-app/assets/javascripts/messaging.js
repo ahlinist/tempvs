@@ -460,7 +460,7 @@ var messaging = {
   },
   removeParticipant: function(form) {
     var payload = {
-      method: 'DELETE',
+      method: 'POST',
       body: new FormData(form)
     };
 
@@ -539,7 +539,7 @@ var messaging = {
       }
 
       var url = '/message/readMessages/' + conversationId;
-      var data = {'messageIds': messagesToMarkAsRead.map(getMessageId)};
+      var data = {'messages': messagesToMarkAsRead.map(getMessageId)};
 
       var payload = {
         method: 'POST',

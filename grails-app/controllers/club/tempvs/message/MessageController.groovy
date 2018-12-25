@@ -1,17 +1,10 @@
 package club.tempvs.message
 
-import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.object.ObjectFactory
-import club.tempvs.profile.ProfileDto
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
-import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
-import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
-import org.grails.web.json.JSONObject
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.access.annotation.Secured
 
@@ -34,15 +27,11 @@ class MessageController {
             updateParticipants: 'POST',
             conversationName: 'POST',
             readMessages: 'POST',
-            removeParticipant: 'DELETE',
+            removeParticipant: 'POST',
     ]
 
     static defaultAction = 'conversation'
 
-    ProfileService profileService
-    AjaxResponseHelper ajaxResponseHelper
-    LinkGenerator grailsLinkGenerator
-    ObjectFactory objectFactory
     RestCaller restCaller
 
     def conversation(Long id) {
@@ -101,14 +90,9 @@ class MessageController {
     }
 
     def readMessages(Long id) {
-        Profile currentProfile = profileService.currentProfile
-        JSONObject json = request.JSON as JSONObject
         String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/read"
-        ProfileDto initiatorDto = objectFactory.getInstance(ProfileDto, currentProfile)
-        ReadMessagesPayload readMessagesPayload =
-                objectFactory.getInstance(ReadMessagesPayload, [participant: initiatorDto, messageIds: json.messageIds as List])
-        RestResponse response = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, readMessagesPayload as JSON)
-        render(status: response.statusCode.value())
+        RestResponse restResponse = restCaller.doPost(url, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
+        buildResponse(restResponse)
     }
 
     private def buildResponse(RestResponse restResponse) {
