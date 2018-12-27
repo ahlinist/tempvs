@@ -5,6 +5,7 @@ import club.tempvs.rest.RestResponse
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import spock.lang.Specification
 
@@ -63,7 +64,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.loadMessages(id, page, size)
 
         then:
-        1 * restCaller.doGet(_ as String, _) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.GET, _) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -82,7 +83,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.getNewConversationsCount()
 
         then:
-        1 * restCaller.doHead(_ as String, _) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.HEAD, _) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(COUNT_HEADER) >> count
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -101,7 +102,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.createConversation()
 
         then:
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -121,7 +122,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.loadConversations(page, size)
 
         then:
-        1 * restCaller.doGet(_ as String, _) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.GET, _) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -141,7 +142,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.send(conversationId)
 
         then:
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -160,7 +161,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.addParticipants(LONG_ONE)
 
         then:
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -180,7 +181,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.removeParticipant(LONG_ONE, LONG_THREE)
 
         then:
-        1 * restCaller.doDelete(_ as String, _) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.DELETE, _) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -199,7 +200,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.updateConversationName(LONG_ONE)
 
         then:
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK
@@ -218,7 +219,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.readMessages(LONG_ONE)
 
         then:
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"
         1 * restResponse.statusCode >> HttpStatus.OK

@@ -8,6 +8,7 @@ import grails.gorm.transactions.Transactional
 import club.tempvs.rest.RestCaller
 import grails.web.mapping.LinkGenerator
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
 /**
@@ -62,7 +63,7 @@ class VerifyService {
         JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
         String emailServiceUrl = EMAIL_SERVICE_URL + SEND_EMAIL_API_URI
         String token = EMAIL_SECURITY_TOKEN?.encodeAsMD5() as String
-        RestResponse response = restCaller.doPost(emailServiceUrl, token, payload)
+        RestResponse response = restCaller.call(emailServiceUrl, HttpMethod.POST, token, payload)
         HttpStatus statusCode = response?.statusCode
 
         if (!response) {

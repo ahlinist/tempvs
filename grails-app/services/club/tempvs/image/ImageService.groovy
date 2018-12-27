@@ -7,6 +7,7 @@ import grails.converters.JSON
 import groovy.json.JsonSlurper
 import groovy.transform.TypeCheckingMode
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.web.multipart.MultipartFile
 
@@ -32,7 +33,7 @@ class ImageService {
         }
 
         String url = "${IMAGE_SERVICE_URL}/api/delete/${image.collection}/${image.objectId}"
-        RestResponse response = restCaller.doDelete(url, IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String)
+        RestResponse response = restCaller.call(url, HttpMethod.DELETE, IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
 
@@ -56,7 +57,7 @@ class ImageService {
         String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         JSON payload = [images: images] as JSON
 
-        RestResponse response = restCaller.doPost(url, token, payload)
+        RestResponse response = restCaller.call(url, HttpMethod.POST, token, payload)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
 
@@ -99,7 +100,7 @@ class ImageService {
 
         JSON payload = [images: entries] as JSON
 
-        RestResponse response = restCaller.doPost(url, token, payload)
+        RestResponse response = restCaller.call(url, HttpMethod.POST, token, payload)
         HttpStatus statusCode = response?.statusCode
 
         if (statusCode == HttpStatus.OK) {

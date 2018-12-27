@@ -8,6 +8,7 @@ import club.tempvs.user.User
 import club.tempvs.user.UserRole
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 
 @Slf4j
@@ -94,7 +95,7 @@ class BootStrap {
             void run(){
                 if (serviceUrl) {
                     String pingUrl = "${serviceUrl}/api/ping"
-                    RestResponse response = restCaller.doGet(pingUrl)
+                    RestResponse response = restCaller.call(pingUrl, HttpMethod.GET)
 
                     if (!response) {
                         log.error "${serviceName} service is down"

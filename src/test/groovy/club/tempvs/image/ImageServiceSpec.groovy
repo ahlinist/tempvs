@@ -6,6 +6,7 @@ import grails.converters.JSON
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
 import org.grails.datastore.gorm.GormStaticApi
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.mock.web.MockMultipartFile
 import spock.lang.Specification
@@ -53,7 +54,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         1 * image.collection >> COLLECTION
         1 * image.objectId >> OBJECT_ID
-        1 * restCaller.doDelete(_ as String, _) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.DELETE, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 
@@ -66,7 +67,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         def result = service.deleteImages([image, image])
 
         then:
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 
@@ -81,7 +82,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> "{}"
         0 * _
@@ -94,7 +95,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * restCaller.doPost(_ as String, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> "{}"
         0 * _
