@@ -6,7 +6,7 @@ buildscript {
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.14.8"
+        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.15.1"
         //database-migration plugin
         classpath 'org.grails.plugins:database-migration:3.0.3'
     }
@@ -39,11 +39,11 @@ dependencies {
     compile "org.grails:grails-plugin-interceptors"
     compile "org.grails.plugins:async"
     compile "org.grails.plugins:hibernate5"
-    compile "org.hibernate:hibernate-core:5.1.5.Final"
+    compile "org.hibernate:hibernate-core:5.1.16.Final"
     compile "org.grails.plugins:gsp"
     console "org.grails:grails-console"
     compile 'org.grails.plugins:converters:3.3.1'
-    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.14.8"
+    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.15.1"
     testCompile "org.grails:grails-test-mixins:3.3.0.RC1"
     testCompile "org.grails:grails-gorm-testing-support"
     testCompile "org.grails:grails-web-testing-support"
