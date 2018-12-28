@@ -8,8 +8,8 @@ var messaging = {
   didScroll: false,
   actions: {
     200: function(response) {
-
       var currentProfileId = response.headers.get("Profile");
+
       response.json().then(function(conversation) {
         if (!window.location.href.includes('/message')) {
           window.location.href = "/message/conversation/" + conversation.id;
@@ -38,7 +38,7 @@ var messaging = {
           conversationNameContainer.classList.remove('hidden');
           conversationNameForm.querySelector('.text-holder').innerHTML = conversation.name;
           conversationNameForm.querySelector('input[name=name]').value = conversation.name;
-          conversationNameForm.action = '/message/updateConversationName/' + conversation.id;
+          conversationNameForm.action = '/message/api/conversations/' + conversation.id + '/name';
         }
 
         //participants section
@@ -61,9 +61,7 @@ var messaging = {
 
           if ((conversation.type == 'CONFERENCE') && (conversation.admin.id == currentProfileId) && (participants.length > 2)) {
             var removeForm = participantNode.querySelector('form.participant-deletion-form');
-            removeForm.action = '/message/removeParticipant/' + conversation.id;
-            var subjectField = removeForm.querySelector('input[name=subject]');
-            subjectField.value = participant.id;
+            removeForm.action = '/message/api/conversations/' + conversation.id + '/participants/' + participant.id;
             var removeButton = participantNode.querySelector('.remove-participant-button');
             removeButton.classList.remove('hidden');
             removeButton.querySelector('[data-toggle=modal]').setAttribute('data-target', '#removeParticipantModal-' + participant.id);
@@ -121,7 +119,7 @@ var messaging = {
       var resultList = resultContainer.querySelector('ul');
       var addParticipantForm = resultContainer.querySelector('form.add-participant-to-conversation-form');
       var addParticipantButton = addParticipantForm.querySelector('button');
-      addParticipantForm.action = '/message/addParticipants/' + messaging.conversationId;
+      addParticipantForm.action = '/message/api/conversations/' + messaging.conversationId + '/participants';
 
       response.json().then(function(data) {
         profileSearcher.recoverUI();
@@ -199,7 +197,6 @@ var messaging = {
     }
 
     ajaxHandler.blockUI();
-    var url = form.action;
     var formData = new FormData(form);
 
     var object = {
@@ -216,7 +213,7 @@ var messaging = {
       body: JSON.stringify(object)
     }
 
-    ajaxHandler.fetch(form, url, payload, messaging.actions);
+    ajaxHandler.fetch(form, form.action, payload, messaging.actions);
   },
   createConversationActions: {
     200: function(response) {
@@ -286,7 +283,7 @@ var messaging = {
     }
 
     form.querySelector('input[name=message]').value = '';
-    var url = '/message/send/' + messaging.conversationId;
+    var url = '/message/api/conversations/' + messaging.conversationId + '/messages';
 
     var payload = {
       method: 'POST',
@@ -300,7 +297,7 @@ var messaging = {
   },
   conversation: function(conversationId, page, size) {
     if (conversationId) {
-      var url = '/message/loadMessages/' + conversationId + '?page=' + page + '&size=' + size;
+      var url = '/message/api/conversations/' + conversationId + '?page=' + page + '&size=' + size;
       window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversationId);
       ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.actions);
     }
@@ -451,7 +448,7 @@ var messaging = {
       }
     }
 
-    var url = '/message/loadConversations?page=' + messaging.currentConversationsPage + '&size=' + messaging.defaultConversationsSize;
+    var url = '/message/api/conversations?page=' + messaging.currentConversationsPage + '&size=' + messaging.defaultConversationsSize;
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   },
   scrollMessagesDown: function() {
@@ -460,8 +457,7 @@ var messaging = {
   },
   removeParticipant: function(form) {
     var payload = {
-      method: 'POST',
-      body: new FormData(form)
+      method: 'DELETE',
     };
 
     ajaxHandler.blockUI();
@@ -487,25 +483,23 @@ var messaging = {
   },
   displayNewMessagesCounter: function() {
     var counter = document.querySelector('span#new-conversations');
-    var url = '/message/getNewConversationsCount';
+    var url = '/message/api/conversations';
 
     var actions = {
       200: function(response) {
-        response.json().then(function(data) {
-          var count = data.count;
+        var count = response.headers.get("X-Total-Count");
 
-          if (count > 0) {
-            counter.classList.remove('hidden');
-            counter.innerHTML = count;
-          } else {
-            counter.classList.add('hidden');
-            counter.innerHTML = '';
-          }
-        });
+        if (count > 0) {
+          counter.classList.remove('hidden');
+          counter.innerHTML = count;
+        } else {
+          counter.classList.add('hidden');
+          counter.innerHTML = '';
+        }
       }
     };
 
-    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+    ajaxHandler.fetch(null, url, {method: 'HEAD'}, actions);
   },
   markAsRead: function() {
     if (messaging.didScroll) {
@@ -538,7 +532,7 @@ var messaging = {
         return;
       }
 
-      var url = '/message/readMessages/' + conversationId;
+      var url = '/message/api/conversations/' + conversationId + '/read';
       var data = {'messages': messagesToMarkAsRead.map(getMessageId)};
 
       var payload = {

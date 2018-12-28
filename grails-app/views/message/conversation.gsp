@@ -53,7 +53,7 @@
                           </button>
                         </div>
                       </span>
-                      <g:form controller="message" action="createConversation" onsubmit="messaging.createConversation(this); return false;">
+                      <form action="/message/api/conversations" onsubmit="messaging.createConversation(this); return false;">
                         <template class="profile-search-template">
                           <li>
                             <a class="btn btn-default col-sm-12 search-result"></a>
@@ -71,7 +71,7 @@
                         <button class="btn btn-default submit-button">
                           <g:message code="message.send.message.button"/>
                         </button>
-                      </g:form>
+                      </form>
                     </div>
                   </template>
                   <div id="conversation-popup-wrapper"></div>
@@ -165,7 +165,6 @@
                             <g:message code='message.remove.participant.text'/>
                             <br/>
                             <form class="participant-deletion-form" onsubmit="messaging.removeParticipant(this); return false;">
-                              <input type="hidden" name="subject">
                               <button class="btn btn-default submit-button">
                                 <g:message code="yes"/>
                               </button>

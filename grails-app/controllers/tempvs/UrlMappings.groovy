@@ -12,5 +12,7 @@ class UrlMappings {
         "/"(controller:'user')
         "500"(view:'/error')
         "404"(view:'/notFound')
+
+        "/message/api/${uri}**"(controller: 'message', action: 'api')
     }
 }

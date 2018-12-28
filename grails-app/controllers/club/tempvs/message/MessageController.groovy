@@ -5,6 +5,7 @@ import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.security.access.annotation.Secured
 
@@ -18,18 +19,6 @@ class MessageController {
     private static final String COUNT_HEADER = 'X-Total-Count'
     private static final String PROFILE_HEADER = 'Profile'
 
-    static allowedMethods = [
-            getNewConversationsCount: 'GET',
-            loadConversations: 'GET',
-            conversation: 'GET',
-            createConversation: 'POST',
-            add: 'POST',
-            updateParticipants: 'POST',
-            conversationName: 'POST',
-            readMessages: 'POST',
-            removeParticipant: 'POST',
-    ]
-
     static defaultAction = 'conversation'
 
     RestCaller restCaller
@@ -40,63 +29,19 @@ class MessageController {
         }
     }
 
-    def getNewConversationsCount() {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.HEAD, MESSAGE_SECURITY_TOKEN)
-        Integer count = restResponse?.headers?.getFirst(COUNT_HEADER) as Integer
-        render(status: restResponse?.statusCode?.value(), text: [count: count] as JSON)
-    }
+    def api(String uri) {
+        HttpMethod httpMethod = HttpMethod.valueOf(request.method)
+        String url = "${MESSAGE_SERVICE_URL}/api/" + uri
+        RestResponse restResponse = restCaller.call(url, httpMethod, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
+        HttpHeaders httpHeaders = restResponse?.headers
+        response.setHeader(PROFILE_HEADER, httpHeaders?.getFirst(PROFILE_HEADER))
+        response.setHeader(COUNT_HEADER, httpHeaders?.getFirst(COUNT_HEADER))
+        Integer status = restResponse?.statusCode?.value()
 
-    def loadConversations(Integer page, Integer size) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations?page=${page}&size=${size}"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.GET, MESSAGE_SECURITY_TOKEN)
-        buildResponse(restResponse)
-    }
-
-    def loadMessages(Long id, Integer page, Integer size) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/?page=${page}&size=${size}"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.GET, MESSAGE_SECURITY_TOKEN)
-        buildResponse(restResponse)
-    }
-
-    def createConversation() {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.POST, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
-        buildResponse(restResponse)
-    }
-
-    def send(Long id) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/messages"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.POST, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
-        buildResponse(restResponse)
-    }
-
-    def addParticipants(Long id) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/participants"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.POST, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
-        buildResponse(restResponse)
-    }
-
-    def removeParticipant(Long id, Long subject) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/participants/${subject}"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.DELETE, MESSAGE_SECURITY_TOKEN)
-        buildResponse(restResponse)
-    }
-
-    def updateConversationName(Long id) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/name"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.POST, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
-        buildResponse(restResponse)
-    }
-
-    def readMessages(Long id) {
-        String url = "${MESSAGE_SERVICE_URL}/api/conversations/${id}/read"
-        RestResponse restResponse = restCaller.call(url, HttpMethod.POST, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
-        buildResponse(restResponse)
-    }
-
-    private def buildResponse(RestResponse restResponse) {
-        response.setHeader(PROFILE_HEADER, restResponse?.headers?.getFirst(PROFILE_HEADER))
-        render(status: restResponse?.statusCode?.value(), text: restResponse?.responseBody)
+        if (status in [200, 400]) {
+            render(status: status, text: restResponse?.responseBody)
+        } else {
+            response.sendError(500)
+        }
     }
 }
