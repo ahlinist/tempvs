@@ -361,7 +361,6 @@ var messaging = {
     var page = ++messaging.currentMessagesPage;
     var size = messaging.defaultMessagesSize;
     var url = '/message/api/conversations/' + messaging.conversationId + '?page=' + page + '&size=' + size;
-    var append = true;
     var conversationDetails = document.querySelector('div#conversation-details');
     var messagesContainer = conversationDetails.querySelector('div#messages-container');
     var loadMoreButton = messagesContainer.querySelector('div#load-more-messages');
@@ -371,8 +370,8 @@ var messaging = {
 
     var actions = {
       200: function(response) {
-        response.json().then(function(data) {
-          var conversation = data.conversation;
+        response.json().then(function(conversation) {
+          var append = true;
           messaging.appendMessages(conversation.messages, conversationDetails, append);
         });
       }
