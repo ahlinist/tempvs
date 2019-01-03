@@ -360,7 +360,7 @@ var messaging = {
   loadMessages: function() {
     var page = ++messaging.currentMessagesPage;
     var size = messaging.defaultMessagesSize;
-    var url = '/message/loadMessages/' + messaging.conversationId + '?page=' + page + '&size=' + size;
+    var url = '/message/api/conversation/' + messaging.conversationId + '?page=' + page + '&size=' + size;
     var append = true;
     var conversationDetails = document.querySelector('div#conversation-details');
     var messagesContainer = conversationDetails.querySelector('div#messages-container');
