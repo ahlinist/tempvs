@@ -373,6 +373,7 @@ var messaging = {
         response.json().then(function(conversation) {
           var append = true;
           messaging.appendMessages(conversation.messages, conversationDetails, append);
+          messaging.markAsRead();
         });
       }
     }

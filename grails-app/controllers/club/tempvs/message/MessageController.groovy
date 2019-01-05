@@ -31,7 +31,9 @@ class MessageController {
 
     def api(String uri) {
         HttpMethod httpMethod = HttpMethod.valueOf(request.method)
-        String url = "${MESSAGE_SERVICE_URL}/api/" + uri
+        String getParameters = (httpMethod == HttpMethod.GET && params.page && params.size)
+                ? "?page=${params.page}&size=${params.size}" : ""
+        String url = "${MESSAGE_SERVICE_URL}/api/" + uri + getParameters
         RestResponse restResponse = restCaller.call(url, httpMethod, MESSAGE_SECURITY_TOKEN, request.JSON as JSON)
         HttpHeaders httpHeaders = restResponse?.headers
         response.setHeader(PROFILE_HEADER, httpHeaders?.getFirst(PROFILE_HEADER))
