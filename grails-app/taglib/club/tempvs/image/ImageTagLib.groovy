@@ -9,7 +9,7 @@ class ImageTagLib {
 
     String image = { Map attrs ->
         Image image = attrs.image as Image
-        String link = IMAGE_SERVICE_URL + "/api/get?id=${image?.objectId}&collection=${image?.collection}"
+        String link = IMAGE_SERVICE_URL + "/api/image?id=${image?.objectId}"
         Map model = [template: '/image/templates/image', model: [src: link, alt: image?.imageInfo, styles: attrs.styles]]
         out << render(model)
     }

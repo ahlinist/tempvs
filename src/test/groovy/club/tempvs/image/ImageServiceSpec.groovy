@@ -52,7 +52,6 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         def result = service.deleteImage(image)
 
         then:
-        1 * image.collection >> COLLECTION
         1 * image.objectId >> OBJECT_ID
         1 * restCaller.call(_ as String, HttpMethod.DELETE, _) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK

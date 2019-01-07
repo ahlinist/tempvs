@@ -32,7 +32,7 @@ class ImageService {
             return Boolean.TRUE
         }
 
-        String url = "${IMAGE_SERVICE_URL}/api/delete/${image.collection}/${image.objectId}"
+        String url = "${IMAGE_SERVICE_URL}/api/image/${image.objectId}"
         RestResponse response = restCaller.call(url, HttpMethod.DELETE, IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
@@ -53,7 +53,7 @@ class ImageService {
     }
 
     Boolean deleteImages(List<Image> images) {
-        String url = IMAGE_SERVICE_URL + '/api/delete'
+        String url = IMAGE_SERVICE_URL + '/api/image/delete'
         String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         JSON payload = [images: images] as JSON
 
@@ -85,7 +85,7 @@ class ImageService {
         }
 
         List<Image> images = []
-        String url = IMAGE_SERVICE_URL + '/api/store'
+        String url = IMAGE_SERVICE_URL + '/api/image'
         String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         List<Map<String, String>> entries = []
 
@@ -94,7 +94,7 @@ class ImageService {
 
             if (!multipartFile.empty) {
                 String content = multipartFile.bytes.encodeBase64().toString()
-                entries << [collection: collection, imageInfo: imageUploadBean.imageInfo, content: content]
+                entries << [fileName: multipartFile.originalFilename, imageInfo: imageUploadBean.imageInfo, content: content]
             }
         }
 
@@ -108,7 +108,7 @@ class ImageService {
             def json = slurper.parseText(response.responseBody)
 
             for (imageNode in json.images) {
-                images << new Image(objectId: imageNode.objectId, collection: imageNode.collection, imageInfo: imageNode.imageInfo)
+                images << new Image(objectId: imageNode.objectId, collection: "none", imageInfo: imageNode.imageInfo)
             }
         } else if (statusCode) {
             log.error "Image upload failed. Image service returns status code '${statusCode}'."
