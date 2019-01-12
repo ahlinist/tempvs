@@ -2,6 +2,7 @@ package club.tempvs.image
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
+import com.netflix.discovery.EurekaClient
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import groovy.json.JsonSlurper
@@ -18,10 +19,11 @@ import org.springframework.web.multipart.MultipartFile
 @GrailsCompileStatic
 class ImageService {
 
-    private static final String IMAGE_SERVICE_URL = System.getenv 'IMAGE_SERVICE_URL'
+    private static final String IMAGE_SERVICE_NAME = 'image'
     private static final String IMAGE_SECURITY_TOKEN = System.getenv 'IMAGE_SECURITY_TOKEN'
 
     RestCaller restCaller
+    EurekaClient eurekaClient
 
     Image getImage(Long id) {
         Image.get id
@@ -32,7 +34,8 @@ class ImageService {
             return Boolean.TRUE
         }
 
-        String url = "${IMAGE_SERVICE_URL}/api/image/${image.objectId}"
+        String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
+        String url = "${serviceUrl}/api/image/${image.objectId}"
         RestResponse response = restCaller.call(url, HttpMethod.DELETE, IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
@@ -53,7 +56,8 @@ class ImageService {
     }
 
     Boolean deleteImages(List<Image> images) {
-        String url = IMAGE_SERVICE_URL + '/api/image/delete'
+        String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
+        String url = serviceUrl + '/api/image/delete'
         String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         JSON payload = [images: images] as JSON
 
@@ -85,7 +89,8 @@ class ImageService {
         }
 
         List<Image> images = []
-        String url = IMAGE_SERVICE_URL + '/api/image'
+        String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
+        String url = serviceUrl + '/api/image'
         String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         List<Map<String, String>> entries = []
 

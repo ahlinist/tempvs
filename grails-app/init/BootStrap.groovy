@@ -6,6 +6,7 @@ import club.tempvs.user.ProfileType
 import club.tempvs.user.Role
 import club.tempvs.user.User
 import club.tempvs.user.UserRole
+import com.netflix.discovery.EurekaClient
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.springframework.http.HttpMethod
@@ -21,19 +22,17 @@ class BootStrap {
     private static final String ADMIN_EMAIL = 'admin@tempvs.club'
     private static final String ADMIN_FIRST_NAME = 'Tempvs'
     private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'adminPassword'
-    private static final String EMAIL_SERVICE_URL = System.getenv("EMAIL_SERVICE_URL")
-    private static final String IMAGE_SERVICE_URL = System.getenv("IMAGE_SERVICE_URL")
-    private static final String MESSAGE_SERVICE_URL = System.getenv("MESSAGE_SERVICE_URL")
 
     RestCaller restCaller
+    EurekaClient eurekaClient
 
     def init = { servletContext ->
         log.info 'Starting tempvs: ...'
         createRoles()
         createAdminUser()
-        pingMicroService(EMAIL_SERVICE_URL, 'Email', 'EMAIL_SERVICE_URL')
-        pingMicroService(IMAGE_SERVICE_URL, 'Image', 'IMAGE_SERVICE_URL')
-        pingMicroService(MESSAGE_SERVICE_URL, 'Message', 'MESSAGE_SERVICE_URL')
+        pingMicroService 'email'
+        pingMicroService 'image'
+        pingMicroService 'message'
         registerCustomJSONMarshallers()
     }
 
@@ -90,22 +89,19 @@ class BootStrap {
         }
     }
 
-    private pingMicroService(String serviceUrl, String serviceName, String urlVariable) {
+    private pingMicroService(String serviceName) {
         new Thread(serviceName){
             void run(){
-                if (serviceUrl) {
-                    String pingUrl = "${serviceUrl}/api/ping"
-                    RestResponse response = restCaller.call(pingUrl, HttpMethod.GET)
+                String serviceUrl = eurekaClient.getApplication(serviceName)?.instances?.find()?.homePageUrl
+                String pingUrl = "${serviceUrl}/api/ping"
+                RestResponse response = restCaller.call(pingUrl, HttpMethod.GET)
 
-                    if (!response) {
-                        log.error "${serviceName} service is down"
-                    } else if (response.statusCode == HttpStatus.OK) {
-                        log.info "${serviceName} service is up and running at '${serviceUrl}'"
-                    } else {
-                        log.error "${serviceName} service returns status code '${response.statusCode}' for URL: '${pingUrl}'"
-                    }
+                if (!response) {
+                    log.error "${serviceName} service is down"
+                } else if (response.statusCode == HttpStatus.OK) {
+                    log.info "${serviceName} service is up and running at '${serviceUrl}'"
                 } else {
-                    log.error "'${urlVariable}' environment variable has not been set up"
+                    log.error "${serviceName} service returns status code '${response.statusCode}' for URL: '${pingUrl}'"
                 }
             }
         }.start()

@@ -2,6 +2,7 @@ package club.tempvs.user
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
+import com.netflix.discovery.EurekaClient
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.gorm.DomainUnitTest
@@ -26,6 +27,8 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
     def groovyPageRenderer = Mock PageRenderer
     def grailsLinkGenerator = Mock LinkGenerator
     def emailVerification = Mock EmailVerification
+    def eurekaClient = Mock EurekaClient
+
 
     def setup() {
         service.restCaller = restCallService
@@ -33,6 +36,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         service.profileService = profileService
         service.groovyPageRenderer = groovyPageRenderer
         service.grailsLinkGenerator = grailsLinkGenerator
+        service.eurekaClient = eurekaClient
     }
 
     def cleanup() {
@@ -65,6 +69,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         1 * emailVerification.verificationCode
         1 * emailVerification.action
         1 * emailVerification.email
+        1 * eurekaClient.getApplication('email')
         1 * restCallService.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _

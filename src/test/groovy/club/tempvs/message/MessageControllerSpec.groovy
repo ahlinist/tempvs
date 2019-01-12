@@ -2,6 +2,7 @@ package club.tempvs.message
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
+import com.netflix.discovery.EurekaClient
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
 import org.springframework.http.HttpHeaders
@@ -20,9 +21,11 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
     def restCaller = Mock RestCaller
     def restResponse = Mock RestResponse
     def httpHeaders = Mock HttpHeaders
+    def eurekaClient = Mock EurekaClient
 
     def setup() {
         controller.restCaller = restCaller
+        controller.eurekaClient = eurekaClient
     }
 
     def cleanup() {
@@ -62,6 +65,7 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         controller.api(URI)
 
         then:
+        1 * eurekaClient.getApplication('message')
         1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
         1 * restResponse.headers >> httpHeaders
         1 * httpHeaders.getFirst(PROFILE_HEADER) >> "1"

@@ -1,8 +1,12 @@
 buildscript {
     repositories {
         mavenLocal()
-        maven { url "https://repo.grails.org/grails/core" }
+
+        maven {
+            url "https://repo.grails.org/grails/core"
+        }
     }
+
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
         classpath "org.grails.plugins:hibernate5:${gormVersion-".RELEASE"}"
@@ -15,21 +19,32 @@ buildscript {
 version "0.1"
 group "tempvs"
 
-apply plugin:"eclipse"
 apply plugin:"idea"
 apply plugin:"war"
 apply plugin:"org.grails.grails-web"
 apply plugin:"asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 repositories {
     mavenLocal()
-    maven { url "https://repo.grails.org/grails/core" }
+
+    maven {
+        url "https://repo.grails.org/grails/core"
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom 'org.springframework.cloud:spring-cloud-dependencies:Edgware.SR5'
+    }
 }
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-starter-logging"
     compile "org.springframework.boot:spring-boot-autoconfigure"
+    compile "org.springframework.boot:spring-boot-starter-logging"
+    compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     compile "org.grails:grails-core"
     compile "org.grails:grails-web-boot"
     compile "org.grails:grails-plugin-rest"

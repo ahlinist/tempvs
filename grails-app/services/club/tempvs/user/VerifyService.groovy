@@ -1,6 +1,7 @@
 package club.tempvs.user
 
 import club.tempvs.rest.RestResponse
+import com.netflix.discovery.EurekaClient
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -24,7 +25,7 @@ class VerifyService {
     private static final String REGISTRATION_ACTION = 'registration'
     private static final String PROFILE_EMAIL_ACTION = 'profileEmail'
     private static final String EMAIL_USED_CODE = 'emailVerification.email.used.error'
-    private static final String EMAIL_SERVICE_URL = System.getenv('EMAIL_SERVICE_URL')
+    private static final String EMAIL_SERVICE_NAME = 'email'
     private static final String SEND_EMAIL_API_URI = '/api/send'
     private static final String EMAIL_SECURITY_TOKEN = System.getenv('EMAIL_SECURITY_TOKEN')
 
@@ -33,6 +34,7 @@ class VerifyService {
     RestCaller restCaller
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
+    EurekaClient eurekaClient
 
     EmailVerification getVerification(String id) {
         EmailVerification.findByVerificationCode(id)
@@ -61,7 +63,8 @@ class VerifyService {
         String body = groovyPageRenderer.render(view: "/verify/emailTemplates/${emailVerification.action}",
                 model: [serverUrl: serverUrl, verificationCode: verificationCode])
         JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
-        String emailServiceUrl = EMAIL_SERVICE_URL + SEND_EMAIL_API_URI
+        String serviceUrl = eurekaClient.getApplication(EMAIL_SERVICE_NAME)?.instances?.find()?.homePageUrl
+        String emailServiceUrl = serviceUrl + SEND_EMAIL_API_URI
         String token = EMAIL_SECURITY_TOKEN?.encodeAsMD5() as String
         RestResponse response = restCaller.call(emailServiceUrl, HttpMethod.POST, token, payload)
         HttpStatus statusCode = response?.statusCode
