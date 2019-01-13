@@ -13,7 +13,7 @@ beans = {
     }
 
     restCaller(RestCaller) {
-        profileService = ref "profileService"
+        userService = ref "userService"
         restTemplate = ref "restTemplate"
         objectFactory = ref "objectFactory"
     }
