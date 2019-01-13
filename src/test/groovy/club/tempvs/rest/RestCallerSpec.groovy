@@ -5,6 +5,8 @@ import club.tempvs.user.Profile
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.converters.JSON
+import grails.test.mixin.TestMixin
+import grails.test.mixin.web.ControllerUnitTestMixin
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -14,16 +16,17 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
+@TestMixin(ControllerUnitTestMixin)
 class RestCallerSpec extends Specification {
 
     private static final Long LONG_ONE = 1L
-    private static final String STRING_ONE = "1"
+    private static final Long LONG_TWO = 2L
     private static final String URL = 'url'
     private static final String TOKEN = 'token'
     private static final String TIMEZONE = 'Europe/Minsk'
     private static final String MOZILLA_USER_AGENT_VALUE = 'Mozilla/5.0'
     private static final String USER_AGENT_HEADER = 'User-Agent'
-    private static final String PROFILE_HEADER = 'Profile'
+    private static final String USER_INFO_HEADER = 'User-Info'
     private static final String AUTHORIZATION_HEADER = 'Authorization'
     private static final String ACCEPT_LANGUAGE = 'Accept-Language'
     private static final String ACCEPT_TIMEZONE = 'Accept-Timezone'
@@ -56,18 +59,23 @@ class RestCallerSpec extends Specification {
     void "Test call() for POST"() {
         given:
         String body = "body"
+        String role = "role"
+        List<String> roles = [role, role]
+        String userInfoString = '{"userId":"2","profileId":"1","roles":["role","role"]}'
 
         when:
         def result = restCaller.call(URL, HttpMethod.POST, TOKEN, json)
 
         then:
         1 * userService.currentProfile >> profile
+        1 * userService.roles >> roles
         1 * profile.user >> user
         1 * profile.id >> LONG_ONE
+        1 * user.id >> LONG_TWO
         1 * user.timeZone >> TIMEZONE
         1 * objectFactory.getInstance(HttpHeaders) >> httpHeaders
         1 * httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
-        1 * httpHeaders.set(PROFILE_HEADER, STRING_ONE)
+        1 * httpHeaders.set(USER_INFO_HEADER, userInfoString)
         1 * httpHeaders.set(AUTHORIZATION_HEADER, TOKEN)
         1 * httpHeaders.set(ACCEPT_LANGUAGE, LocaleContextHolder.locale.language)
         1 * httpHeaders.set(ACCEPT_TIMEZONE, TIMEZONE)
@@ -87,18 +95,23 @@ class RestCallerSpec extends Specification {
     void "Test call() for GET"() {
         given:
         String body = "body"
+        String role = "role"
+        List<String> roles = [role, role]
+        String userInfoString = '{"userId":"2","profileId":"1","roles":["role","role"]}'
 
         when:
         def result = restCaller.call(URL, HttpMethod.GET, TOKEN, json)
 
         then:
         1 * userService.currentProfile >> profile
+        1 * userService.roles >> roles
         1 * profile.user >> user
         1 * profile.id >> LONG_ONE
+        1 * user.id >> LONG_TWO
         1 * user.timeZone >> TIMEZONE
         1 * objectFactory.getInstance(HttpHeaders) >> httpHeaders
         1 * httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
-        1 * httpHeaders.set(PROFILE_HEADER, STRING_ONE)
+        1 * httpHeaders.set(USER_INFO_HEADER, userInfoString)
         1 * httpHeaders.set(AUTHORIZATION_HEADER, TOKEN)
         1 * httpHeaders.set(ACCEPT_LANGUAGE, LocaleContextHolder.locale.language)
         1 * httpHeaders.set(ACCEPT_TIMEZONE, TIMEZONE)

@@ -22,7 +22,7 @@ class RestCaller {
 
     private static final String MOZILLA_USER_AGENT_VALUE = 'Mozilla/5.0'
     private static final String USER_AGENT_HEADER = 'User-Agent'
-    private static final String PROFILE_HEADER = 'Profile'
+    private static final String USER_INFO_HEADER = 'User-Info'
     private static final String AUTHORIZATION_HEADER = 'Authorization'
     private static final String ACCEPT_LANGUAGE = 'Accept-Language'
     private static final String ACCEPT_TIMEZONE = 'Accept-Timezone'
@@ -36,9 +36,17 @@ class RestCaller {
     RestResponse call(String url, HttpMethod httpMethod, String token = null, JSON payload = null) {
         Profile currentProfile = userService.currentProfile
         User user = currentProfile?.user
+        List<String> roles = userService.roles
+
+        JSON userInfoJson = [
+                userId: user.id as String,
+                profileId: currentProfile.id as String,
+                roles: roles
+        ] as JSON
+
         HttpHeaders httpHeaders = objectFactory.getInstance(HttpHeaders)
         httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
-        httpHeaders.set(PROFILE_HEADER, currentProfile?.id?.toString())
+        httpHeaders.set(USER_INFO_HEADER, userInfoJson.toString())
         httpHeaders.set(AUTHORIZATION_HEADER, token)
         httpHeaders.set(ACCEPT_LANGUAGE, LocaleContextHolder.locale.language)
         httpHeaders.set(ACCEPT_TIMEZONE, user?.timeZone)
