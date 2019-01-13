@@ -9,7 +9,6 @@ import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.converters.JSON
@@ -55,7 +54,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def userService = Mock UserService
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
-    def profileService = Mock ProfileService
     def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadCommand = Mock ImageUploadCommand
@@ -66,7 +64,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.itemService = itemService
         controller.imageService = imageService
         controller.sourceService = sourceService
-        controller.profileService = profileService
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -502,7 +499,7 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
 
         then:
         1 * itemService.getItem(LONG_ONE) >> item
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * commentService.createComment(TEXT, profile) >> comment
         1 * item.hasErrors() >> Boolean.FALSE
         1 * itemService.addComment(item, comment) >> item

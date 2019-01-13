@@ -3,6 +3,7 @@ package club.tempvs.communication
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
@@ -29,13 +30,14 @@ class FollowingController {
             getNewFollowingsCount: 'GET',
     ]
 
+    UserService userService
     ProfileService profileService
     PageRenderer groovyPageRenderer
     FollowingService followingService
     AjaxResponseHelper ajaxResponseHelper
 
     def show(Long id) {
-        Profile profile = id ? profileService.getProfile(id) : profileService.currentProfile
+        Profile profile = id ? profileService.getProfile(id) : userService.currentProfile
         List<Following> followerList = followingService.getFollowers(profile)
         List<Following> followedList = followingService.getFollowings(profile)
         List<Following> newFollowerList = followerList.findAll {it.isNew}
@@ -52,7 +54,7 @@ class FollowingController {
     }
 
     def follow(Long profileId) {
-        Profile followerProfile = profileService.currentProfile
+        Profile followerProfile = userService.currentProfile
         Profile followingProfile = profileService.getProfile(profileId)
 
         if (!followingProfile) {
@@ -72,7 +74,7 @@ class FollowingController {
     }
 
     def unfollow(Long profileId) {
-        Profile followerProfile = profileService.currentProfile
+        Profile followerProfile = userService.currentProfile
         Profile followingProfile = profileService.getProfile(profileId)
 
         if (!followingProfile) {
@@ -87,7 +89,7 @@ class FollowingController {
     }
 
     def getNewFollowersCount() {
-        Profile currentProfile = profileService.currentProfile
+        Profile currentProfile = userService.currentProfile
         Integer count = followingService.getNewFollowersCount(currentProfile)
         render([action: DISPLAY_COUNTER, count: count] as JSON)
     }

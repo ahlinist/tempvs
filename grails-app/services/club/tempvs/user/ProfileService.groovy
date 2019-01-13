@@ -54,10 +54,6 @@ class ProfileService {
         Profile.findAllByProfileEmail(email)
     }
 
-    Profile getCurrentProfile() {
-        userService.currentUser?.currentProfile
-    }
-
     @PreAuthorize('(#profile == null) or (#user.email == authentication.name)')
     void setCurrentProfile(User user, Profile profile) {
         if (user) {

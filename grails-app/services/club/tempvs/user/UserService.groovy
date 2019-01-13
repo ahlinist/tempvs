@@ -5,8 +5,12 @@ import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.userdetails.GrailsUser
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.security.core.GrantedAuthority
+
+import java.util.stream.Collectors
 
 /**
  * Service that manages operations with {@link User} entitites.
@@ -38,6 +42,16 @@ class UserService {
 
     User getUserByEmail(String email) {
         User.findByEmail(email)
+    }
+
+    Profile getCurrentProfile() {
+        getCurrentUser()?.currentProfile
+    }
+
+    List<String> getRoles() {
+        GrailsUser grailsUser = springSecurityService.principal as GrailsUser
+        Collection<GrantedAuthority> grantedAuthorities = grailsUser.authorities
+        grantedAuthorities.collect { GrantedAuthority grantedAuthority -> grantedAuthority.authority }
     }
 
     User register(User user) {

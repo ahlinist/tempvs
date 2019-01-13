@@ -93,7 +93,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.search()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profileService.searchProfiles(profile, QUERY, OFFSET) >> [profile]
         1 * profile.id >> LONG_ID
         1 * profile.toString() >> name
@@ -114,7 +114,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         def result = controller.show()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profileService.getProfile(ONE) >> profile
         1 * profile.user >> user
         1 * profile.isOfUserType() >> true
@@ -149,7 +149,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.show()
 
         then:
-        1 * profileService.currentProfile
+        1 * userService.currentProfile
         0 * _
 
         and:
@@ -164,7 +164,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.show()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profile.identifier >> IDENTIFIER
         0 * _
 
@@ -181,7 +181,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         def result = controller.show()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profileService.getProfile(ONE) >> null
         0 * _
 
@@ -282,7 +282,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.editProfileField()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profileService.editProfileField(profile, FIELD_NAME, FIELD_VALUE) >> profile
         1 * profile.hasErrors() >> false
         0 * _
@@ -300,7 +300,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         controller.editProfileEmail()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profile.id >> LONG_ID
         1 * verifyService.createEmailVerification(_ as EmailVerification) >> emailVerification
         1 * emailVerification.hasErrors() >> false
@@ -321,7 +321,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
 
         then:
         1 * profileService.getProfile(ONE) >> profile
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * userService.currentUser >> user
         1 * profileService.setCurrentProfile(user, null)
         1 * profileService.deactivateProfile(profile) >> profile
@@ -379,7 +379,7 @@ class ProfileControllerSpec extends Specification implements ControllerUnitTest<
         then:
         1 * imageUploadBean.validate() >> true
         1 * imageService.uploadImage(imageUploadBean, AVATAR_COLLECTION) >> image
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profileService.uploadAvatar(profile, image) >> profile
         1 * profile.hasErrors() >> false
         1 * groovyPageRenderer.render(_ as Map)

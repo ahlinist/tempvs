@@ -9,7 +9,6 @@ import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.converters.JSON
@@ -54,7 +53,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def userService = Mock UserService
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
-    def profileService = Mock ProfileService
     def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -63,7 +61,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
         controller.userService = userService
         controller.imageService = imageService
         controller.sourceService = sourceService
-        controller.profileService = profileService
         controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
@@ -263,7 +260,7 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         then:
         1 * sourceService.getSource(LONG_ONE) >> source
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * commentService.createComment(TEXT, profile) >> comment
         1 * comment.hasErrors() >> Boolean.FALSE
         1 * sourceService.addComment(source, comment) >> source

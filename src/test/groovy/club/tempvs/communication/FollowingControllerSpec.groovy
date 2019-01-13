@@ -2,6 +2,7 @@ package club.tempvs.communication
 
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
+import club.tempvs.user.UserService
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
@@ -20,11 +21,13 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
     def followerProfile = Mock Profile
     def followedProfile = Mock Profile
 
+    def userService = Mock UserService
     def profileService = Mock ProfileService
     def groovyPageRenderer = Mock PageRenderer
     def followingService = Mock FollowingService
 
     def setup() {
+        controller.userService = userService
         controller.profileService = profileService
         controller.followingService = followingService
         controller.groovyPageRenderer = groovyPageRenderer
@@ -63,7 +66,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         controller.follow()
 
         then:
-        1 * profileService.currentProfile >> followerProfile
+        1 * userService.currentProfile >> followerProfile
         1 * profileService.getProfile(LONG_ONE) >> followedProfile
         1 * followingService.createFollowing(followerProfile, followedProfile) >> following
         1 * following.hasErrors() >> Boolean.FALSE
@@ -85,7 +88,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         controller.unfollow()
 
         then:
-        1 * profileService.currentProfile >> followerProfile
+        1 * userService.currentProfile >> followerProfile
         1 * profileService.getProfile(LONG_ONE) >> followedProfile
         1 * followingService.deleteFollowing(followerProfile, followedProfile)
         1 * followingService.mayBeFollowed(followerProfile, followedProfile) >> Boolean.TRUE
@@ -104,7 +107,7 @@ class FollowingControllerSpec extends Specification implements ControllerUnitTes
         controller.getNewFollowersCount()
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * followingService.getNewFollowersCount(profile) >> 2
         0 * _
 

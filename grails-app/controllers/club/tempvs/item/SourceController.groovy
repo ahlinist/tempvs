@@ -9,7 +9,6 @@ import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
@@ -50,7 +49,6 @@ class SourceController {
     UserService userService
     ImageService imageService
     SourceService sourceService
-    ProfileService profileService
     CommentService commentService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
@@ -204,7 +202,7 @@ class SourceController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Profile profile = profileService.currentProfile
+        Profile profile = userService.currentProfile
         Comment comment = commentService.createComment(text, profile)
         source = sourceService.addComment(source, comment)
 

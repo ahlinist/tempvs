@@ -9,8 +9,6 @@ import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
-import club.tempvs.user.ProfileType
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -60,7 +58,6 @@ class ItemController {
     ImageService imageService
     SourceService sourceService
     CommentService commentService
-    ProfileService profileService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
@@ -330,7 +327,7 @@ class ItemController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        Profile profile = profileService.currentProfile
+        Profile profile = userService.currentProfile
         Comment comment = commentService.createComment(text, profile)
         item = itemService.addComment(item, comment)
 

@@ -2,8 +2,8 @@ package club.tempvs.rest
 
 import club.tempvs.object.ObjectFactory
 import club.tempvs.user.Profile
-import club.tempvs.user.ProfileService
 import club.tempvs.user.User
+import club.tempvs.user.UserService
 import grails.converters.JSON
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpEntity
@@ -32,12 +32,12 @@ class RestCallerSpec extends Specification {
 
     def json = Mock JSON
     def user = Mock User
+    def userService = Mock UserService
     def profile = Mock Profile
     def httpEntity = Mock HttpEntity
     def restTemplate = Mock RestTemplate
     def restResponse = Mock RestResponse
     def responseEntity = Mock ResponseEntity
-    def profileService = Mock ProfileService
     def objectFactory = Mock ObjectFactory
     def httpHeaders = Mock HttpHeaders
 
@@ -45,7 +45,7 @@ class RestCallerSpec extends Specification {
 
     def setup() {
         restCaller = new RestCaller()
-        restCaller.profileService = profileService
+        restCaller.userService = userService
         restCaller.objectFactory = objectFactory
         restCaller.restTemplate = restTemplate
     }
@@ -61,7 +61,7 @@ class RestCallerSpec extends Specification {
         def result = restCaller.call(URL, HttpMethod.POST, TOKEN, json)
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profile.user >> user
         1 * profile.id >> LONG_ONE
         1 * user.timeZone >> TIMEZONE
@@ -92,7 +92,7 @@ class RestCallerSpec extends Specification {
         def result = restCaller.call(URL, HttpMethod.GET, TOKEN, json)
 
         then:
-        1 * profileService.currentProfile >> profile
+        1 * userService.currentProfile >> profile
         1 * profile.user >> user
         1 * profile.id >> LONG_ONE
         1 * user.timeZone >> TIMEZONE

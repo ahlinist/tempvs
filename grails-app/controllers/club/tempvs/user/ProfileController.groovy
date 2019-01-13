@@ -68,13 +68,13 @@ class ProfileController {
     }
 
     def search(String query, Integer offset) {
-        List<Profile> profiles = profileService.searchProfiles(profileService.currentProfile, query, offset)
+        List<Profile> profiles = profileService.searchProfiles(userService.currentProfile, query, offset)
         render(profiles.collect { Profile profile -> [id: profile.id, name: profile.toString()]} as JSON)
     }
 
     @Secured('permitAll')
     def show(String id) {
-        Profile currentProfile = profileService.currentProfile
+        Profile currentProfile = userService.currentProfile
 
         if (!id) {
             return redirect(currentProfile ? [action: 'show', id: currentProfile.identifier] : [controller: 'auth', action: 'index'])
@@ -178,7 +178,7 @@ class ProfileController {
         Profile profile
 
         try {
-            profile = profileService.editProfileField(profileService.currentProfile, params.fieldName as String, params.fieldValue as String)
+            profile = profileService.editProfileField(userService.currentProfile, params.fieldName as String, params.fieldValue as String)
 
             if (profile.hasErrors()) {
                 throw new ValidationException("Profile has errors", profile.errors)
@@ -192,7 +192,7 @@ class ProfileController {
 
     def editProfileEmail() {
         String email = params.fieldValue
-        Profile profile = profileService.currentProfile
+        Profile profile = userService.currentProfile
 
         if (!email) {
             Profile persistedProfile = profileService.editProfileField(profile, PROFILE_EMAIL_FIELD, null)
@@ -229,7 +229,7 @@ class ProfileController {
             return render([action: NO_ACTION] as JSON)
         }
 
-        if (profileService.currentProfile == profile) {
+        if (userService.currentProfile == profile) {
             User user = userService.currentUser
             profileService.setCurrentProfile(user, null)
         }
@@ -279,7 +279,7 @@ class ProfileController {
         Profile updatedProfile
 
         try {
-            updatedProfile = profileService.uploadAvatar(profileService.currentProfile, avatar)
+            updatedProfile = profileService.uploadAvatar(userService.currentProfile, avatar)
 
             if (updatedProfile.hasErrors()) {
                 throw new ValidationException("Profile has errors", updatedProfile.errors)
