@@ -24,8 +24,6 @@ class RestCaller {
     private static final String USER_AGENT_HEADER = 'User-Agent'
     private static final String USER_INFO_HEADER = 'User-Info'
     private static final String AUTHORIZATION_HEADER = 'Authorization'
-    private static final String ACCEPT_LANGUAGE = 'Accept-Language'
-    private static final String ACCEPT_TIMEZONE = 'Accept-Timezone'
     private static final String CONTENT_TYPE_HEADER = 'Content-Type'
     private static final String JSON_CONTENT_TYPE_VALUE = 'application/json; charset=UTF-8'
 
@@ -41,6 +39,8 @@ class RestCaller {
         JSON userInfoJson = [
                 userId: user.id as String,
                 profileId: currentProfile.id as String,
+                timezone: user.timeZone,
+                lang: LocaleContextHolder.locale.language,
                 roles: roles
         ] as JSON
 
@@ -48,8 +48,6 @@ class RestCaller {
         httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
         httpHeaders.set(USER_INFO_HEADER, userInfoJson.toString())
         httpHeaders.set(AUTHORIZATION_HEADER, token)
-        httpHeaders.set(ACCEPT_LANGUAGE, LocaleContextHolder.locale.language)
-        httpHeaders.set(ACCEPT_TIMEZONE, user?.timeZone)
 
         if (httpMethod == HttpMethod.POST) {
             httpHeaders.set(CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE_VALUE)

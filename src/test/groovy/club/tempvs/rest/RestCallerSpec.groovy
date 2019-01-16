@@ -28,8 +28,6 @@ class RestCallerSpec extends Specification {
     private static final String USER_AGENT_HEADER = 'User-Agent'
     private static final String USER_INFO_HEADER = 'User-Info'
     private static final String AUTHORIZATION_HEADER = 'Authorization'
-    private static final String ACCEPT_LANGUAGE = 'Accept-Language'
-    private static final String ACCEPT_TIMEZONE = 'Accept-Timezone'
     private static final String CONTENT_TYPE_HEADER = 'Content-Type'
     private static final String JSON_CONTENT_TYPE_VALUE = 'application/json; charset=UTF-8'
 
@@ -61,7 +59,7 @@ class RestCallerSpec extends Specification {
         String body = "body"
         String role = "role"
         List<String> roles = [role, role]
-        String userInfoString = '{"userId":"2","profileId":"1","roles":["role","role"]}'
+        String userInfoString = '{"userId":"2","profileId":"1","timezone":"Europe/Minsk","lang":"en","roles":["role","role"]}'
 
         when:
         def result = restCaller.call(URL, HttpMethod.POST, TOKEN, json)
@@ -77,8 +75,6 @@ class RestCallerSpec extends Specification {
         1 * httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
         1 * httpHeaders.set(USER_INFO_HEADER, userInfoString)
         1 * httpHeaders.set(AUTHORIZATION_HEADER, TOKEN)
-        1 * httpHeaders.set(ACCEPT_LANGUAGE, LocaleContextHolder.locale.language)
-        1 * httpHeaders.set(ACCEPT_TIMEZONE, TIMEZONE)
         1 * httpHeaders.set(CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE_VALUE)
         1 * objectFactory.getInstance(HttpEntity, _, httpHeaders) >> httpEntity
         1 * restTemplate.exchange(URL, HttpMethod.POST, httpEntity, String.class) >> responseEntity
@@ -97,7 +93,7 @@ class RestCallerSpec extends Specification {
         String body = "body"
         String role = "role"
         List<String> roles = [role, role]
-        String userInfoString = '{"userId":"2","profileId":"1","roles":["role","role"]}'
+        String userInfoString = '{"userId":"2","profileId":"1","timezone":"Europe/Minsk","lang":"en","roles":["role","role"]}'
 
         when:
         def result = restCaller.call(URL, HttpMethod.GET, TOKEN, json)
@@ -113,8 +109,6 @@ class RestCallerSpec extends Specification {
         1 * httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
         1 * httpHeaders.set(USER_INFO_HEADER, userInfoString)
         1 * httpHeaders.set(AUTHORIZATION_HEADER, TOKEN)
-        1 * httpHeaders.set(ACCEPT_LANGUAGE, LocaleContextHolder.locale.language)
-        1 * httpHeaders.set(ACCEPT_TIMEZONE, TIMEZONE)
         1 * objectFactory.getInstance(HttpEntity, _, httpHeaders) >> httpEntity
         1 * restTemplate.exchange(URL, HttpMethod.GET, httpEntity, String.class) >> responseEntity
         1 * responseEntity.statusCode >> HttpStatus.OK
