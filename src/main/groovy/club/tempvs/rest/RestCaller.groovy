@@ -34,11 +34,14 @@ class RestCaller {
     RestResponse call(String url, HttpMethod httpMethod, String token = null, JSON payload = null) {
         Profile currentProfile = userService.currentProfile
         User user = currentProfile?.user
+        Profile userProfile = user.userProfile
         List<String> roles = userService.roles
 
         JSON userInfoJson = [
                 userId: user.id as String,
                 profileId: currentProfile.id as String,
+                userProfileId: userProfile.id,
+                userName: userProfile.toString(),
                 timezone: user.timeZone,
                 lang: LocaleContextHolder.locale.language,
                 roles: roles

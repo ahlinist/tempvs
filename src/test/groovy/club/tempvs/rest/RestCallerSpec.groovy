@@ -7,7 +7,6 @@ import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.test.mixin.TestMixin
 import grails.test.mixin.web.ControllerUnitTestMixin
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -59,7 +58,6 @@ class RestCallerSpec extends Specification {
         String body = "body"
         String role = "role"
         List<String> roles = [role, role]
-        String userInfoString = '{"userId":"2","profileId":"1","timezone":"Europe/Minsk","lang":"en","roles":["role","role"]}'
 
         when:
         def result = restCaller.call(URL, HttpMethod.POST, TOKEN, json)
@@ -68,12 +66,14 @@ class RestCallerSpec extends Specification {
         1 * userService.currentProfile >> profile
         1 * userService.roles >> roles
         1 * profile.user >> user
-        1 * profile.id >> LONG_ONE
+        2 * profile.id >> LONG_ONE
         1 * user.id >> LONG_TWO
+        1 * user.userProfile >> profile
+        1 * profile.toString()
         1 * user.timeZone >> TIMEZONE
         1 * objectFactory.getInstance(HttpHeaders) >> httpHeaders
         1 * httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
-        1 * httpHeaders.set(USER_INFO_HEADER, userInfoString)
+        1 * httpHeaders.set(USER_INFO_HEADER, _ as String)
         1 * httpHeaders.set(AUTHORIZATION_HEADER, TOKEN)
         1 * httpHeaders.set(CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE_VALUE)
         1 * objectFactory.getInstance(HttpEntity, _, httpHeaders) >> httpEntity
@@ -93,7 +93,6 @@ class RestCallerSpec extends Specification {
         String body = "body"
         String role = "role"
         List<String> roles = [role, role]
-        String userInfoString = '{"userId":"2","profileId":"1","timezone":"Europe/Minsk","lang":"en","roles":["role","role"]}'
 
         when:
         def result = restCaller.call(URL, HttpMethod.GET, TOKEN, json)
@@ -102,12 +101,14 @@ class RestCallerSpec extends Specification {
         1 * userService.currentProfile >> profile
         1 * userService.roles >> roles
         1 * profile.user >> user
-        1 * profile.id >> LONG_ONE
+        2 * profile.id >> LONG_ONE
         1 * user.id >> LONG_TWO
+        1 * user.userProfile >> profile
+        1 * profile.toString()
         1 * user.timeZone >> TIMEZONE
         1 * objectFactory.getInstance(HttpHeaders) >> httpHeaders
         1 * httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
-        1 * httpHeaders.set(USER_INFO_HEADER, userInfoString)
+        1 * httpHeaders.set(USER_INFO_HEADER, _ as String)
         1 * httpHeaders.set(AUTHORIZATION_HEADER, TOKEN)
         1 * objectFactory.getInstance(HttpEntity, _, httpHeaders) >> httpEntity
         1 * restTemplate.exchange(URL, HttpMethod.GET, httpEntity, String.class) >> responseEntity
