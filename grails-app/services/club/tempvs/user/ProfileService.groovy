@@ -25,6 +25,7 @@ class ProfileService {
     private static final String PROFILE_EMAIL_FIELD = 'profileEmail'
     private static final String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
     private static final String MESSAGE_PARTICIPANT_AMPQ_QUEUE = 'message.participant'
+    private static final String LIBRARY_USER_AMPQ_QUEUE = 'library.user'
 
     UserService userService
     ImageService imageService
@@ -120,9 +121,7 @@ class ProfileService {
         }
 
         if (profile.save()) {
-            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, profile)
-            JSON jsonPayload = profileDto as JSON
-            amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+            publishDataToAMQPQueue(profile)
         }
 
         return profile
@@ -155,9 +154,7 @@ class ProfileService {
         }
 
         if (profile.save()) {
-            ProfileDto profileDto = objectFactory.getInstance(ProfileDto, profile)
-            JSON jsonPayload = profileDto as JSON
-            amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+            publishDataToAMQPQueue(profile)
         }
 
         return profile
@@ -199,5 +196,17 @@ class ProfileService {
         List<Profile> persistentProfiles = Profile.findAllByProfileEmail(email) as List<Profile>
 
         return !persistentProfiles.any { it.user != profileUser }
+    }
+
+    private void publishDataToAMQPQueue(Profile profile) {
+        ProfileDto profileDto = objectFactory.getInstance(ProfileDto, profile)
+        JSON jsonPayload = profileDto as JSON
+        amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+
+        if (profile.ofUserType) {
+            UserDto userDto = new UserDto(profile.user)
+            JSON userPayload = userDto as JSON
+            amqpSender.send(LIBRARY_USER_AMPQ_QUEUE, userPayload.toString())
+        }
     }
 }

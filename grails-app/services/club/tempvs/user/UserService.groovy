@@ -50,8 +50,8 @@ class UserService {
 
     List<String> getRoles() {
         GrailsUser grailsUser = springSecurityService.principal as GrailsUser
-        Collection<GrantedAuthority> grantedAuthorities = grailsUser.authorities
-        grantedAuthorities.collect { GrantedAuthority grantedAuthority -> grantedAuthority.authority }
+        Collection<GrantedAuthority> grantedAuthorities = grailsUser?.authorities
+        grantedAuthorities?.collect { GrantedAuthority grantedAuthority -> grantedAuthority.authority }
     }
 
     User register(User user) {

@@ -88,6 +88,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
+        1 * profile.isOfUserType() >> false
         1 * amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
         0 * _
 
@@ -134,6 +135,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
+        1 * profile.isOfUserType() >> false
         1 * amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, profileDtoAsJsonString)
         0 * _
 
