@@ -7,13 +7,13 @@ class UserDto {
 
     Long id
     Long userProfileId
-    String name
+    String userName
 
     UserDto(User user) {
         Profile userProfile = user.userProfile
 
         this.id = user.id
         this.userProfileId = userProfile.id
-        this.name = userProfile.toString()
+        this.userName = userProfile.toString()
     }
 }
