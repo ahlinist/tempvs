@@ -1,16 +1,12 @@
 import club.tempvs.image.Image
 import club.tempvs.rest.RestCaller
-import club.tempvs.rest.RestResponse
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileType
 import club.tempvs.user.Role
 import club.tempvs.user.User
 import club.tempvs.user.UserRole
-import com.netflix.discovery.EurekaClient
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
-import org.springframework.http.HttpMethod
-import org.springframework.http.HttpStatus
 
 @Slf4j
 class BootStrap {
@@ -24,15 +20,11 @@ class BootStrap {
     private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'adminPassword'
 
     RestCaller restCaller
-    EurekaClient eurekaClient
 
     def init = { servletContext ->
         log.info 'Starting tempvs: ...'
         createRoles()
         createAdminUser()
-        pingMicroService 'email'
-        pingMicroService 'image'
-        pingMicroService 'message'
         registerCustomJSONMarshallers()
     }
 
@@ -87,23 +79,5 @@ class BootStrap {
                     imageInfo:  image.imageInfo,
             ]
         }
-    }
-
-    private pingMicroService(String serviceName) {
-        new Thread(serviceName){
-            void run(){
-                String serviceUrl = eurekaClient.getApplication(serviceName)?.instances?.find()?.homePageUrl
-                String pingUrl = "${serviceUrl}/api/ping"
-                RestResponse response = restCaller.call(pingUrl, HttpMethod.GET)
-
-                if (!response) {
-                    log.error "${serviceName} service is down"
-                } else if (response.statusCode == HttpStatus.OK) {
-                    log.info "${serviceName} service is up and running at '${serviceUrl}'"
-                } else {
-                    log.error "${serviceName} service returns status code '${response.statusCode}' for URL: '${pingUrl}'"
-                }
-            }
-        }.start()
     }
 }
