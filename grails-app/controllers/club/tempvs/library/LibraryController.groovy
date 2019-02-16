@@ -6,23 +6,25 @@ import club.tempvs.item.Source
 import club.tempvs.item.SourceService
 import club.tempvs.item.SourceType
 import club.tempvs.periodization.Period
-import club.tempvs.user.Role
-import club.tempvs.user.User
-import club.tempvs.user.UserRole
+import club.tempvs.rest.RestCaller
+import club.tempvs.rest.RestResponse
 import club.tempvs.user.UserService
+import com.netflix.discovery.EurekaClient
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gsp.PageRenderer
-import groovy.transform.TypeCheckingMode
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpMethod
 import org.springframework.security.access.annotation.Secured
 
 @GrailsCompileStatic
 @Secured('isAuthenticated()')
 class LibraryController {
 
-    private static final String NO_ACTION = 'none'
-    private static final String REPLACE_ACTION = 'replaceElement'
-    private static final String OPERATION_NOT_SUPPORTED = 'library.wrong.role.message'
+    private static final String LIBRARY_SERVICE_NAME = 'library'
+
+    @Value('${library.security-token}')
+    private final String librarySecurityToken
 
     static allowedMethods = [
             index: 'GET',
@@ -36,40 +38,29 @@ class LibraryController {
 
     UserService userService
     SourceService sourceService
-    LibraryService libraryService
     PageRenderer groovyPageRenderer
     AjaxResponseHelper ajaxResponseHelper
+    RestCaller restCaller
+    EurekaClient eurekaClient
+
+    def api(String uri) {
+        String encodedToken = librarySecurityToken.encodeAsMD5() as String
+        HttpMethod httpMethod = HttpMethod.valueOf(request.method)
+        String serviceUrl = eurekaClient.getApplication(LIBRARY_SERVICE_NAME)?.instances?.find()?.homePageUrl
+        String url = "${serviceUrl}/api/" + uri
+        RestResponse restResponse = restCaller.call(url, httpMethod, encodedToken, request.JSON as JSON)
+        Integer status = restResponse?.statusCode?.value()
+
+        if (status in [200, 400]) {
+            render(status: status, text: restResponse?.responseBody)
+        } else {
+            response.sendError(500)
+        }
+    }
 
     @Secured('permitAll')
     Map index() {
-        String contributor = LibraryRole.ROLE_CONTRIBUTOR.toString()
-        String scribe = LibraryRole.ROLE_SCRIBE.toString()
-        List<String> requestedAuthorities = []
-        List<String> obtainedAuthorities = []
-
-        if (userService.loggedIn) {
-            Long currentUserId = userService.currentUserId
-
-            List<RoleRequest> roleRequests = RoleRequest.withCriteria {
-                eq("user.id", currentUserId)
-            } as List<RoleRequest>
-
-            requestedAuthorities = roleRequests.role.authority
-
-            List<UserRole> obtainedUserRoles = UserRole.withCriteria {
-                eq("user.id", currentUserId)
-            } as List<UserRole>
-
-            obtainedAuthorities = obtainedUserRoles.role.authority
-        }
-
-        [
-                periods: Period.values(),
-                contributorRequested: requestedAuthorities.contains(contributor),
-                contributorObtained: obtainedAuthorities.contains(contributor),
-                scribeRequested: requestedAuthorities.contains(scribe),
-                scribeObtained: obtainedAuthorities.contains(scribe),
-        ]
+        [periods: Period.values()]
     }
 
     @Secured('permitAll')
@@ -88,74 +79,7 @@ class LibraryController {
     }
 
     @Secured('ROLE_ARCHIVARIUS')
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    Map admin() {
-        List<RoleRequest> roleRequests = RoleRequest.createCriteria().list {
-            role {
-                'in'("authority", LibraryRole.values()*.toString())
-            }
-        } as List<RoleRequest>
+    def admin() {
 
-        [roleRequests: roleRequests]
-    }
-
-    def requestRole(String id) {
-        if (!LibraryRole.values().toString().contains(id)) {
-            RoleRequest failedRoleRequest = new RoleRequest()
-            failedRoleRequest.errors.rejectValue('role', OPERATION_NOT_SUPPORTED, null, OPERATION_NOT_SUPPORTED)
-            return render(ajaxResponseHelper.renderValidationResponse(failedRoleRequest))
-        }
-
-        User user = userService.currentUser
-        Role role = Role.findByAuthority(id)
-        RoleRequest roleRequest = libraryService.createRoleRequest(user, role)
-
-        if (roleRequest.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(roleRequest))
-        }
-
-        Map model = [contributorRequested: Boolean.TRUE, scribeRequested: Boolean.TRUE]
-        String template = groovyPageRenderer.render(template: '/library/templates/welcome', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    def cancelRoleRequest(String id) {
-        if (!LibraryRole.values().toString().contains(id)) {
-            RoleRequest failedRoleRequest = new RoleRequest()
-            failedRoleRequest.errors.rejectValue('role', OPERATION_NOT_SUPPORTED, null, OPERATION_NOT_SUPPORTED)
-            return render(ajaxResponseHelper.renderValidationResponse(failedRoleRequest))
-        }
-
-        User user = userService.currentUser
-        Role role = Role.findByAuthority(id)
-        libraryService.deleteRoleRequest(user, role)
-
-        Map model = [contributorRequested: Boolean.FALSE, scribeRequested: Boolean.FALSE]
-        String template = groovyPageRenderer.render(template: '/library/templates/welcome', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    @Secured('ROLE_ARCHIVARIUS')
-    def approveRoleRequest(Long id) {
-        RoleRequest roleRequest = libraryService.getRoleRequest id
-
-        if (!roleRequest) {
-            return render([action: NO_ACTION] as JSON)
-        }
-
-        UserRole userRole = libraryService.approveRoleRequest(roleRequest)
-
-        if (userRole.hasErrors()) {
-            return render([action: NO_ACTION] as JSON)
-        }
-
-        return render([action: REPLACE_ACTION, template: ''] as JSON)
-    }
-
-    @Secured('ROLE_ARCHIVARIUS')
-    def rejectRoleRequest(Long id) {
-        RoleRequest roleRequest = libraryService.loadRoleRequest id
-        libraryService.rejectRoleRequest(roleRequest)
-        return render([action: REPLACE_ACTION, template: ''] as JSON)
     }
 }

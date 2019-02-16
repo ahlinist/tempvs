@@ -1,6 +1,6 @@
 package club.tempvs.user
 
-import club.tempvs.ampq.AmqpSender
+import club.tempvs.ampq.AmqpProcessor
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.object.ObjectFactory
@@ -29,7 +29,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def profile = Mock Profile
     def imageService = Mock ImageService
     def objectFactory = Mock ObjectFactory
-    def amqpSender = Mock AmqpSender
+    def amqpSender = Mock AmqpProcessor
 
     def setup() {
         GroovySpy(Profile, global: true)

@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-      <meta name="layout" content="main"/>
-      <title>Tempvs - <g:message code="library.title"/></title>
-    </head>
-    <body>
-      <div class="row">
-        <div class="col-sm-8">
-          <g:render template="/library/templates/navBar"/>
-        </div>
+  <head>
+    <meta name="layout" content="main"/>
+    <title>Tempvs - <g:message code="library.title"/></title>
+    <script>
+      window.onload = function() {
+        library.welcomePage();
+      };
+    </script>
+  </head>
+  <body>
+    <div class="row">
+      <div class="col-sm-8">
+        <g:render template="/library/templates/navBar"/>
       </div>
-      <g:render template="/library/templates/welcome"/>
-      <h1><g:message code="periodization.list.title"/></h1>
-      <div class="row">
-        <div class="col-sm-2"></div>
-        <ul class="col-sm-8">
+    </div>
+    <div class="row">
+      <div class="col-sm-2"></div>
+      <div class="col-sm-8">
+        <div id="welcome-section">
+        </div>
+        <template class="welcome-block">
+          <div class="row">
+            <div class="well text-center">
+              <span class="greeting-block"></span>
+              <span class="role-button btn btn-default"></span>
+            </div>
+          </div>
+        </template>
+        <ul>
+          <h1><g:message code="periodization.list.title"/></h1>
           <g:each in="${periods}" var="period">
             <li class="row">
               <g:link controller="library" action="period" id="${period.id}" class="btn btn-default col-sm-12" style="white-space: normal;">
@@ -32,7 +47,8 @@
             </li>
           </g:each>
         </ul>
-        <div class="col-sm-2"></div>
       </div>
-    </body>
+      <div class="col-sm-2"></div>
+    </div>
+  </body>
 </html>

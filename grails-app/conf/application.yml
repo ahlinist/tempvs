@@ -203,6 +203,12 @@ eureka:
 security:
     user:
         password: ${eureka.password}
+library:
+    security-token: ${LIBRARY_SECURITY_TOKEN:security_token}
+amqp:
+    enabled: true
+    url: ${CLOUDAMQP_URL}
+    timeout: 30000
 ---
 spring:
     profiles: local

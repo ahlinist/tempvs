@@ -1,5 +1,5 @@
 import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.ampq.AmqpSender
+import club.tempvs.ampq.AmqpProcessor
 import club.tempvs.json.JsonConverter
 import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
@@ -18,10 +18,13 @@ beans = {
         objectFactory = ref "objectFactory"
     }
 
+    amqpProcessor(AmqpProcessor) {
+        amqpConnectionFactory = ref "amqpConnectionFactory"
+    }
+
     objectFactory(ObjectFactory)
     validationTagLib(ValidationTagLib)
     passwordEncoder(BCryptPasswordEncoder)
     userPasswordEncoderListener(UserPasswordEncoderListener)
     jsonConverter(JsonConverter)
-    amqpSender(AmqpSender)
 }

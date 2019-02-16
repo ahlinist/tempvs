@@ -1,6 +1,6 @@
 package club.tempvs.user
 
-import club.tempvs.ampq.AmqpSender
+import club.tempvs.ampq.AmqpProcessor
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.object.ObjectFactory
@@ -30,7 +30,7 @@ class ProfileService {
     UserService userService
     ImageService imageService
     LinkGenerator grailsLinkGenerator
-    AmqpSender amqpSender
+    AmqpProcessor amqpSender
     ObjectFactory objectFactory
 
     Profile getProfile(id) {
