@@ -9,8 +9,7 @@ class RoleRefresherJob {
     private static final String USER_ROLES_AMQP_QUEUE = "user.roles"
 
     static triggers = {
-        //simple repeatInterval: 3600000l //run hourly
-        simple repeatInterval: 60000l
+        simple repeatInterval: 3600000l //run hourly
     }
 
     @Value('${amqp.enabled}')
