@@ -11,9 +11,6 @@ class MessageController {
 
     static defaultAction = 'conversation'
 
-    def conversation(Long id) {
-        if (id != null) {
-            [conversationId: id]
-        }
+    def conversation() {
     }
 }

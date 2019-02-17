@@ -71,7 +71,6 @@ var messaging = {
           participantsList.appendChild(participantNode);
         });
 
-        window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
         messaging.markAsRead();
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
@@ -298,7 +297,6 @@ var messaging = {
   conversation: function(conversationId, page, size) {
     if (conversationId) {
       var url = '/api/message/conversations/' + conversationId + '?page=' + page + '&size=' + size;
-      window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversationId);
       ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.actions);
     }
   },

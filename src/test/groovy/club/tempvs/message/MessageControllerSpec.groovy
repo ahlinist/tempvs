@@ -23,18 +23,4 @@ class MessageControllerSpec extends Specification implements ControllerUnitTest<
         !controller.modelAndView
         !response.redirectedUrl
     }
-
-    void "test conversation() with id"() {
-        given:
-        long conversationId = 1L
-
-        when:
-        def result = controller.conversation(conversationId)
-
-        then:
-        0 * _
-
-        and:
-        result == [conversationId: conversationId]
-    }
 }

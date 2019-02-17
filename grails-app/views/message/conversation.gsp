@@ -8,7 +8,7 @@
         var appendConversations = true;
         messaging.clearForms();
         messaging.loadConversations(appendConversations);
-        messaging.conversation('${conversationId}', messaging.defaultPageNumber, messaging.defaultMessagesSize);
+        messaging.conversation(null, messaging.defaultPageNumber, messaging.defaultMessagesSize);
       };
     </script>
   </head>
