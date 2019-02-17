@@ -13,7 +13,6 @@ class UrlMappings {
         "500"(view:'/error')
         "404"(view:'/notFound')
 
-        "/message/api/${uri}**"(controller: 'message', action: 'api')
-        "/library/api/${uri}**"(controller: 'library', action: 'api')
+        "/api/${service}/${uri}**"(controller: 'api', action: 'call')
     }
 }

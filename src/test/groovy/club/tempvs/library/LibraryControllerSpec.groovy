@@ -8,7 +8,6 @@ import club.tempvs.periodization.Period
 import club.tempvs.user.Role
 import club.tempvs.user.User
 import club.tempvs.user.UserService
-import grails.gsp.PageRenderer
 import grails.testing.gorm.DataTest
 import grails.testing.web.controllers.ControllerUnitTest
 import spock.lang.Specification
@@ -23,12 +22,10 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
 
     def userService = Mock UserService
     def sourceService = Mock SourceService
-    def groovyPageRenderer = Mock PageRenderer
 
     def setup() {
         controller.userService = userService
         controller.sourceService = sourceService
-        controller.groovyPageRenderer = groovyPageRenderer
 
         GroovySpy(Role, global:true)
     }

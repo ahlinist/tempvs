@@ -15,7 +15,6 @@ beans = {
     restCaller(RestCaller) {
         userService = ref "userService"
         restTemplate = ref "restTemplate"
-        objectFactory = ref "objectFactory"
     }
 
     amqpProcessor(AmqpProcessor) {

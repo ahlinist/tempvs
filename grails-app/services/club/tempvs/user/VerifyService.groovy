@@ -27,7 +27,6 @@ class VerifyService {
     private static final String EMAIL_USED_CODE = 'emailVerification.email.used.error'
     private static final String EMAIL_SERVICE_NAME = 'email'
     private static final String SEND_EMAIL_API_URI = '/api/send'
-    private static final String EMAIL_SECURITY_TOKEN = System.getenv('EMAIL_SECURITY_TOKEN')
 
     UserService userService
     ProfileService profileService
@@ -65,8 +64,7 @@ class VerifyService {
         JSON payload = [email: emailVerification.email, subject: 'Tempvs', body: body] as JSON
         String serviceUrl = eurekaClient.getApplication(EMAIL_SERVICE_NAME)?.instances?.find()?.homePageUrl
         String emailServiceUrl = serviceUrl + SEND_EMAIL_API_URI
-        String token = EMAIL_SECURITY_TOKEN?.encodeAsMD5() as String
-        RestResponse response = restCaller.call(emailServiceUrl, HttpMethod.POST, token, payload)
+        RestResponse response = restCaller.call(emailServiceUrl, HttpMethod.POST, payload)
         HttpStatus statusCode = response?.statusCode
 
         if (!response) {

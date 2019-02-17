@@ -57,7 +57,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         1 * image.objectId >> OBJECT_ID
         1 * eurekaClient.getApplication('image')
-        1 * restCaller.call(_ as String, HttpMethod.DELETE, _) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.DELETE) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 
@@ -71,7 +71,7 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
 
         then:
         1 * eurekaClient.getApplication('image')
-        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 
@@ -87,9 +87,9 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
         1 * eurekaClient.getApplication('image')
-        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
-        1 * restResponse.responseBody >> "{}"
+        1 * restResponse.responseBody >> "{}".bytes
         0 * _
     }
 
@@ -101,9 +101,9 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
         1 * eurekaClient.getApplication('image')
-        1 * restCaller.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
+        1 * restCaller.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
-        1 * restResponse.responseBody >> "{}"
+        1 * restResponse.responseBody >> "{}".bytes
         0 * _
     }
 }

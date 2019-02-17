@@ -1,6 +1,6 @@
 var library = {
   welcomePage: function() {
-    var url = '/library/api/library';
+    var url = '/api/library/library';
     var actions = {200: renderWelcomePage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
@@ -19,13 +19,13 @@ var library = {
 
         if (data.adminPanelAvailable) {
           button.onclick = function() {
-            window.location.href = '/library/admin';
+            window.location.href = 'library/admin';
           };
         } else {
           var method = data.roleRequestAvailable ? 'POST' : 'DELETE';
 
           button.onclick = function() {
-            var url = '/library/api/library/role/' + role;
+            var url = '/api/library/library/role/' + role;
             ajaxHandler.fetch(null, url, {method: method}, library.actions);
           };
         }
@@ -37,7 +37,7 @@ var library = {
     }
   },
   adminPage: function() {
-    var url = '/library/api/library/admin';
+    var url = '/api/library/library/admin';
     var actions = {200: renderAdminPage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
@@ -63,12 +63,12 @@ var library = {
           authorityCell.innerHTML = roleRequest.roleLabel;
 
           acceptButton.onclick = function() {
-            var url = '/library/api/library/' + roleRequest.role + '/' + roleRequest.userId;
+            var url = '/api/library/library/' + roleRequest.role + '/' + roleRequest.userId;
             ajaxHandler.fetch(null, url, {method: 'POST'}, actions);
           };
 
           rejectButton.onclick = function() {
-            var url = '/library/api/library/' + roleRequest.role + '/' + roleRequest.userId;
+            var url = '/api/library/library/' + roleRequest.role + '/' + roleRequest.userId;
             ajaxHandler.fetch(null, url, {method: 'DELETE'}, actions);
           };
 

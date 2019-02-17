@@ -53,7 +53,7 @@
                           </button>
                         </div>
                       </span>
-                      <form action="/message/api/conversations" onsubmit="messaging.createConversation(this); return false;">
+                      <form action="/api/message/conversations" onsubmit="messaging.createConversation(this); return false;">
                         <template class="profile-search-template">
                           <li>
                             <a class="btn btn-default col-sm-12 search-result"></a>

@@ -38,7 +38,7 @@ var messaging = {
           conversationNameContainer.classList.remove('hidden');
           conversationNameForm.querySelector('.text-holder').innerHTML = conversation.name;
           conversationNameForm.querySelector('input[name=name]').value = conversation.name;
-          conversationNameForm.action = '/message/api/conversations/' + conversation.id + '/name';
+          conversationNameForm.action = '/api/message/conversations/' + conversation.id + '/name';
         }
 
         //participants section
@@ -61,7 +61,7 @@ var messaging = {
 
           if ((conversation.type == 'CONFERENCE') && (conversation.admin.id == currentProfileId) && (participants.length > 2)) {
             var removeForm = participantNode.querySelector('form.participant-deletion-form');
-            removeForm.action = '/message/api/conversations/' + conversation.id + '/participants/' + participant.id;
+            removeForm.action = '/api/message/conversations/' + conversation.id + '/participants/' + participant.id;
             var removeButton = participantNode.querySelector('.remove-participant-button');
             removeButton.classList.remove('hidden');
             removeButton.querySelector('[data-toggle=modal]').setAttribute('data-target', '#removeParticipantModal-' + participant.id);
@@ -119,7 +119,7 @@ var messaging = {
       var resultList = resultContainer.querySelector('ul');
       var addParticipantForm = resultContainer.querySelector('form.add-participant-to-conversation-form');
       var addParticipantButton = addParticipantForm.querySelector('button');
-      addParticipantForm.action = '/message/api/conversations/' + messaging.conversationId + '/participants';
+      addParticipantForm.action = '/api/message/conversations/' + messaging.conversationId + '/participants';
 
       response.json().then(function(data) {
         profileSearcher.recoverUI();
@@ -283,7 +283,7 @@ var messaging = {
     }
 
     form.querySelector('input[name=message]').value = '';
-    var url = '/message/api/conversations/' + messaging.conversationId + '/messages';
+    var url = '/api/message/conversations/' + messaging.conversationId + '/messages';
 
     var payload = {
       method: 'POST',
@@ -297,7 +297,7 @@ var messaging = {
   },
   conversation: function(conversationId, page, size) {
     if (conversationId) {
-      var url = '/message/api/conversations/' + conversationId + '?page=' + page + '&size=' + size;
+      var url = '/api/message/conversations/' + conversationId + '?page=' + page + '&size=' + size;
       window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversationId);
       ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.actions);
     }
@@ -360,7 +360,7 @@ var messaging = {
   loadMessages: function() {
     var page = ++messaging.currentMessagesPage;
     var size = messaging.defaultMessagesSize;
-    var url = '/message/api/conversations/' + messaging.conversationId + '?page=' + page + '&size=' + size;
+    var url = '/api/message/conversations/' + messaging.conversationId + '?page=' + page + '&size=' + size;
     var conversationDetails = document.querySelector('div#conversation-details');
     var messagesContainer = conversationDetails.querySelector('div#messages-container');
     var loadMoreButton = messagesContainer.querySelector('div#load-more-messages');
@@ -448,7 +448,7 @@ var messaging = {
       }
     }
 
-    var url = '/message/api/conversations?page=' + messaging.currentConversationsPage + '&size=' + messaging.defaultConversationsSize;
+    var url = '/api/message/conversations?page=' + messaging.currentConversationsPage + '&size=' + messaging.defaultConversationsSize;
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   },
   scrollMessagesDown: function() {
@@ -483,7 +483,7 @@ var messaging = {
   },
   displayNewMessagesCounter: function() {
     var counter = document.querySelector('span#new-conversations');
-    var url = '/message/api/conversations';
+    var url = '/api/message/conversations';
 
     var actions = {
       200: function(response) {
@@ -532,7 +532,7 @@ var messaging = {
         return;
       }
 
-      var url = '/message/api/conversations/' + conversationId + '/read';
+      var url = '/api/message/conversations/' + conversationId + '/read';
       var data = {'messages': messagesToMarkAsRead.map(getMessageId)};
 
       var payload = {

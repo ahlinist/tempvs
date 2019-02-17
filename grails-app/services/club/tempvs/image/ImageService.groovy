@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile
 class ImageService {
 
     private static final String IMAGE_SERVICE_NAME = 'image'
-    private static final String IMAGE_SECURITY_TOKEN = System.getenv 'IMAGE_SECURITY_TOKEN'
 
     RestCaller restCaller
     EurekaClient eurekaClient
@@ -36,7 +35,7 @@ class ImageService {
 
         String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
         String url = "${serviceUrl}/api/image/${image.objectId}"
-        RestResponse response = restCaller.call(url, HttpMethod.DELETE, IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String)
+        RestResponse response = restCaller.call(url, HttpMethod.DELETE)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
 
@@ -58,10 +57,9 @@ class ImageService {
     Boolean deleteImages(List<Image> images) {
         String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
         String url = serviceUrl + '/api/image/delete'
-        String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         JSON payload = [images: images] as JSON
 
-        RestResponse response = restCaller.call(url, HttpMethod.POST, token, payload)
+        RestResponse response = restCaller.call(url, HttpMethod.POST, payload)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
 
@@ -91,7 +89,6 @@ class ImageService {
         List<Image> images = []
         String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
         String url = serviceUrl + '/api/image'
-        String token = IMAGE_SECURITY_TOKEN?.encodeAsMD5() as String
         List<Map<String, String>> entries = []
 
         for (ImageUploadBean imageUploadBean in imageUploadBeans) {
@@ -105,12 +102,12 @@ class ImageService {
 
         JSON payload = [images: entries] as JSON
 
-        RestResponse response = restCaller.call(url, HttpMethod.POST, token, payload)
+        RestResponse response = restCaller.call(url, HttpMethod.POST, payload)
         HttpStatus statusCode = response?.statusCode
 
         if (statusCode == HttpStatus.OK) {
             JsonSlurper slurper = new JsonSlurper()
-            def json = slurper.parseText(response.responseBody)
+            def json = slurper.parseText(new String(response.responseBody))
 
             for (imageNode in json.images) {
                 images << new Image(objectId: imageNode.objectId, collection: "none", imageInfo: imageNode.imageInfo)

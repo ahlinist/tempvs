@@ -70,7 +70,7 @@ class VerifyServiceSpec extends Specification implements ServiceUnitTest<VerifyS
         1 * emailVerification.action
         1 * emailVerification.email
         1 * eurekaClient.getApplication('email')
-        1 * restCallService.call(_ as String, HttpMethod.POST, _, _ as JSON) >> restResponse
+        1 * restCallService.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
 

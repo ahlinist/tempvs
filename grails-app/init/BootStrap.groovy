@@ -1,5 +1,4 @@
 import club.tempvs.image.Image
-import club.tempvs.rest.RestCaller
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileType
 import club.tempvs.user.Role
@@ -18,8 +17,6 @@ class BootStrap {
     private static final String ADMIN_EMAIL = 'admin@tempvs.club'
     private static final String ADMIN_FIRST_NAME = 'Tempvs'
     private static final String ADMIN_PASSWORD = System.getenv('ADMIN_PASSWORD') ?: 'adminPassword'
-
-    RestCaller restCaller
 
     def init = { servletContext ->
         log.info 'Starting tempvs: ...'

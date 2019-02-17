@@ -1,12 +1,12 @@
 package club.tempvs.rest
 
-import club.tempvs.object.ObjectFactory
 import club.tempvs.user.Profile
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.converters.JSON
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -29,43 +29,55 @@ class RestCaller {
 
     UserService userService
     RestTemplate restTemplate
-    ObjectFactory objectFactory
 
-    RestResponse call(String url, HttpMethod httpMethod, String token = null, JSON payload = null) {
-        Profile currentProfile = userService.currentProfile
-        User user = currentProfile?.user
-        Profile userProfile = user.userProfile
-        List<String> roles = userService.roles
+    @Value('${security.token}')
+    private final String securityToken
 
-        JSON userInfoJson = [
-                userId: user.id as String,
-                profileId: currentProfile.id as String,
-                userProfileId: userProfile.id,
-                userName: userProfile.toString(),
-                timezone: user.timeZone,
-                lang: LocaleContextHolder.locale.language,
-                roles: roles
-        ] as JSON
+    RestResponse call(String url, HttpMethod httpMethod, JSON payload = null) {
+        String encodedToken = securityToken.encodeAsMD5() as String
 
-        HttpHeaders httpHeaders = objectFactory.getInstance(HttpHeaders)
+        HttpHeaders httpHeaders = new HttpHeaders()
         httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
-        httpHeaders.set(USER_INFO_HEADER, userInfoJson.toString())
-        httpHeaders.set(AUTHORIZATION_HEADER, token)
+        httpHeaders.set(USER_INFO_HEADER, userInfoJson)
+        httpHeaders.set(AUTHORIZATION_HEADER, encodedToken)
 
         if (httpMethod == HttpMethod.POST) {
             httpHeaders.set(CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE_VALUE)
         }
 
-        HttpEntity<String> httpEntity = objectFactory.getInstance(HttpEntity, payload?.toString(), httpHeaders)
+        HttpEntity<String> httpEntity = new HttpEntity(payload?.toString(), httpHeaders)
 
         try {
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, httpMethod, httpEntity, String.class)
-            objectFactory.getInstance(RestResponse, responseEntity.statusCode, responseEntity.body, responseEntity.headers)
+            ResponseEntity<byte[]> responseEntity = restTemplate.exchange(url, httpMethod, httpEntity, byte[].class)
+            return new RestResponse(responseEntity.statusCode, responseEntity.body, responseEntity.headers)
         } catch(ResourceAccessException e) {
             log.error e.message
             return null
         } catch (HttpStatusCodeException e) {
-            objectFactory.getInstance(RestResponse, e.statusCode, e.responseBodyAsString)
+            return new RestResponse(e.statusCode, e.responseBodyAsByteArray)
         }
+    }
+
+    private String getUserInfoJson() {
+        Profile currentProfile = userService.currentProfile
+
+        JSON userInfoJson
+
+        if (currentProfile) {
+            User user = currentProfile.user
+            Profile userProfile = user.userProfile
+
+            userInfoJson = [
+                    userId: user.id as String,
+                    profileId: currentProfile?.id as String,
+                    userProfileId: userProfile?.id,
+                    userName: userProfile.toString(),
+                    timezone: user.timeZone,
+                    lang: LocaleContextHolder.locale.language,
+                    roles: userService.roles
+            ] as JSON
+        }
+
+        return userInfoJson?.toString()
     }
 }
