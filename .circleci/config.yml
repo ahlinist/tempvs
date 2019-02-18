@@ -41,8 +41,7 @@ jobs:
       - run: ./gradlew test
       #- run: gradle integrationTest
       #create a deployable artifact
-      - run: ./gradlew war
-
+      - run: ./gradlew stage
       #store the build war
       - store_artifacts:
           path: ~/repo/build/libs
