@@ -1,1 +1,1 @@
-web: chmod a+x build/libs/tempvs-*.jar; java $JAVA_OPTS -Dserver.port=$PORT -Dgrails.env=prod -jar build/libs/tempvs-*.jar
+web: ls; ls build; ls build/libs; chmod a+x build/libs/tempvs-*.jar; java $JAVA_OPTS -Dserver.port=$PORT -Dgrails.env=prod -jar build/libs/tempvs-*.jar
