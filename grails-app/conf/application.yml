@@ -205,7 +205,6 @@ security:
         password: ${eureka.password}
     token: ${SECURITY_TOKEN:security_token}
 amqp:
-    enabled: true
     url: ${CLOUDAMQP_URL}
     timeout: 30000
 ---
