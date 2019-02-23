@@ -4,12 +4,17 @@
     <meta name="layout" content="main"/>
     <title></title>
     <script src="/static/js/library.js"></script>
+    <script>
+      window.onload = function() {
+        library.renderWelcomePage();
+      };
+    </script>
   </head>
   <body>
     <div class="row">
       <div class="col-sm-8">
         <a href="/library">
-          <u id="library-welcome-breadcrumb"></u>
+          <u id="breadcrumb-library"></u>
         </a>
       </div>
     </div>
@@ -36,7 +41,7 @@
                 </div>
                 <div class="col-sm-10">
                   <b>
-                    <p class="pull-left period-heading"></p>
+                    <p class="pull-left period-name"></p>
                   </b>
                   <br/>
                   <p style="text-align: justify;" class="period-short-description"></p>

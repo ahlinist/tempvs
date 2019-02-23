@@ -1,8 +1,3 @@
-window.onload = function() {
-  library.welcomePage();
-  library.renderWelcomeStatic();
-};
-
 var library = {
   periods: [
     "ancient",
@@ -95,17 +90,17 @@ var library = {
       });
     }
   },
-  renderWelcomeStatic: function() {
+  renderWelcomePage: function() {
     var periodsSection = document.querySelector('ul#periods-section');
     var periodTemplate = document.querySelector('template.period-template');
     var periodItem = periodTemplate.content.querySelector('li.period-list-item');
     var title = document.querySelector('title');
     var periodListHeading = document.querySelector('h1.period-list-heading');
-    var welcomeBreadcrumb = document.querySelector('u#library-welcome-breadcrumb');
+    var breadcrumbLibrary = document.querySelector('u#breadcrumb-library');
 
-    title.innerHTML = library.i18n.en.libraryTitle;
-    periodListHeading.innerHTML = library.i18n.en.periodListHeading;
-    welcomeBreadcrumb.innerHTML = library.i18n.en.welcomeBreadcrumb;
+    title.innerHTML = library.i18n.en.welcome.title;
+    periodListHeading.innerHTML = library.i18n.en.welcome.heading;
+    breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
 
     library.periods.forEach(renderPeriodList);
 
@@ -113,48 +108,101 @@ var library = {
       var periodNode = document.importNode(periodItem, true);
       var detailsLink = periodNode.querySelector('a.period-details-link');
       var thumbnailImg = periodNode.querySelector('img.period-thumbnail-image');
-      var periodHeading = periodNode.querySelector('p.period-heading');
+      var periodName = periodNode.querySelector('p.period-name');
       var periodShortDescription = periodNode.querySelector('p.period-short-description');
 
       detailsLink.href = '/library/period/' + periodKey;
       thumbnailImg.src = '/assets/library/thumbnails/' + periodKey + '.jpg';
-      periodHeading.innerHTML = library.i18n.en.periodHeading[periodKey];
-      periodShortDescription.innerHTML = library.i18n.en.periodShortDescription[periodKey];
+      periodName.innerHTML = library.i18n.en.period[periodKey].name;
+      periodShortDescription.innerHTML = library.i18n.en.period[periodKey].shortDescription;
 
       periodsSection.appendChild(periodNode);
     }
+
+    library.welcomePage();
+  },
+  renderAdminPage: function() {
+    var title = document.querySelector('title');
+    var adminPanelHeading = document.querySelector('h1#admin-panel-heading');
+    var userHeader = document.querySelector('table th#user-header');
+    var authorityHeader = document.querySelector('table th#authority-header');
+    var actionsHeader = document.querySelector('table th#actions-header');
+    var breadcrumbLibrary = document.querySelector('u#breadcrumb-library');
+    var breadcrumbAdmin = document.querySelector('u#breadcrumb-admin');
+
+    title.innerHTML = library.i18n.en.admin.title;
+    adminPanelHeading.innerHTML = library.i18n.en.admin.heading;
+    breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
+    breadcrumbAdmin.innerHTML = library.i18n.en.breadcrumb.admin;
+    userHeader.innerHTML = library.i18n.en.admin.user;
+    authorityHeader.innerHTML = library.i18n.en.admin.authority;
+    actionsHeader.innerHTML = library.i18n.en.admin.actions;
+
+    library.adminPage();
   },
   i18n: {
     en: {
-      libraryTitle: "Tempvs - Library",
-      periodListHeading: "Historical periods",
-      welcomeBreadcrumb: "Library",
-      periodHeading: {
-        "ancient": "Ancient times",
-        "antiquity": "Antiquity",
-        "early_middle_ages": "Early Middle Ages",
-        "high_middle_ages": "High Middle Ages",
-        "late_middle_ages": "Late Middle Ages",
-        "renaissance": "Renaissance",
-        "modern": "Modern period",
-        "wwi": "World War I",
-        "wwii": "World War II",
-        "contemporary": "Contemporary times",
-        "other": "Other"
+      admin: {
+        title: "Tempvs - Admin panel",
+        heading:  "Requested Authorities",
+        user: "User",
+        authority: "Authority",
+        actions: "Actions"
       },
-      periodShortDescription: {
-        "ancient": "Ancient history is the aggregate of past events from the beginning of recorded human history and extending as far as the Early Middle Ages or the Post-classical Era that begins in 5th century",
-        "antiquity": "Antiquity is a broad term for a long period of cultural history centered around the Mediterranean Sea, which begins roughly with the earliest-recorded Greek poetry of Homer (9th century BC),  and continues through the rise of Christianity and the fall of the Western Roman Empire (5th century AD)",
-        "early_middle_ages": "The Early Middle Ages or Early Medieval Period, typically regarded as lasting from the 6th century to the 10th century CE, marked the start of the Middle Ages of European history. The Early Middle Ages followed the decline of the Western Roman Empire and preceded the High Middle Ages (c. 10th to 13th centuries)",
-        "high_middle_ages": "The High Middle Ages or High Medieval Period was the period of European history lasting from AD 1000 to 1250. The High Middle Ages are preceded by the Early Middle Ages and followed by the Late Middle Ages, which by convention end around 1500",
-        "late_middle_ages": "The Late Middle Ages or Late Medieval Period was the period of European history lasting from 1250-1500 AD. The Late Middle Ages followed the High Middle Ages and preceded the onset of the early modern era (and, in much of Europe, the Renaissance)",
-        "renaissance": "The Renaissance is a period in European history, marking the transition from the Middle Ages to the Modern Era and covering the span between the 14th and 17th centuries. Renaissance is known for extensive overseas exploration and spreading of humanistic ideas across Europe",
-        "modern": "Modern era began approximately in the early 16th century; notable historical milestones included the European Renaissance, the Age of Discovery, and the Protestant Reformation. Modern period ends together with World War II and beginning of contemporary history.",
-        "wwi": "World War I was a global war originating in Europe that lasted from 28 July 1914 to 11 November 1918. More than 70 million military personnel, including 60 million Europeans, were mobilised in one of the largest wars in history",
-        "wwii": "World War II, also known as the Second World War, was a global war that lasted from 1939 to 1945, although related conflicts began earlier. World War II was the deadliest conflict in human history, marked by 50 to 85 million fatalities",
-        "contemporary": "Contemporary history is a subset of modern history which describes the historical period from approximately 1945 to the present. Science began transforming after 1945: spaceflight, nuclear technology, laser and semiconductor technology were developed alongside molecular biology and genetics, particle physics, and the Standard Model of quantum field theory",
-        "other": "Hardly related to any of the given periods"
+      welcome: {
+        title: "Tempvs - Library",
+        heading: "Historical periods",
       },
+      breadcrumb: {
+        library: "Library",
+        admin: "Admin"
+      },
+      period: {
+        ancient: {
+          name: "Ancient times",
+          shortDescription: "Ancient history is the aggregate of past events from the beginning of recorded human history and extending as far as the Early Middle Ages or the Post-classical Era that begins in 5th century"
+        },
+        antiquity: {
+          name: "Antiquity",
+          shortDescription: "Antiquity is a broad term for a long period of cultural history centered around the Mediterranean Sea, which begins roughly with the earliest-recorded Greek poetry of Homer (9th century BC),  and continues through the rise of Christianity and the fall of the Western Roman Empire (5th century AD)"
+        },
+        early_middle_ages: {
+          name: "Early Middle Ages",
+          shortDescription: "The Early Middle Ages or Early Medieval Period, typically regarded as lasting from the 6th century to the 10th century CE, marked the start of the Middle Ages of European history. The Early Middle Ages followed the decline of the Western Roman Empire and preceded the High Middle Ages (c. 10th to 13th centuries)"
+        },
+        high_middle_ages: {
+          name: "High Middle Ages",
+          shortDescription: "The High Middle Ages or High Medieval Period was the period of European history lasting from AD 1000 to 1250. The High Middle Ages are preceded by the Early Middle Ages and followed by the Late Middle Ages, which by convention end around 1500"
+        },
+        late_middle_ages: {
+          name: "Late Middle Ages",
+          shortDescription: "The Late Middle Ages or Late Medieval Period was the period of European history lasting from 1250-1500 AD. The Late Middle Ages followed the High Middle Ages and preceded the onset of the early modern era (and, in much of Europe, the Renaissance)"
+        },
+        renaissance: {
+          name: "Renaissance",
+          shortDescription: "The Renaissance is a period in European history, marking the transition from the Middle Ages to the Modern Era and covering the span between the 14th and 17th centuries. Renaissance is known for extensive overseas exploration and spreading of humanistic ideas across Europe"
+        },
+        modern: {
+          name: "Modern period",
+          shortDescription: "Modern era began approximately in the early 16th century; notable historical milestones included the European Renaissance, the Age of Discovery, and the Protestant Reformation. Modern period ends together with World War II and beginning of contemporary history."
+        },
+        wwi: {
+          name: "World War I",
+          shortDescription: "World War I was a global war originating in Europe that lasted from 28 July 1914 to 11 November 1918. More than 70 million military personnel, including 60 million Europeans, were mobilised in one of the largest wars in history"
+        },
+        wwii: {
+          name: "World War II",
+          shortDescription: "World War II, also known as the Second World War, was a global war that lasted from 1939 to 1945, although related conflicts began earlier. World War II was the deadliest conflict in human history, marked by 50 to 85 million fatalities"
+        },
+        contemporary: {
+          name: "Contemporary times",
+          shortDescription: "Contemporary history is a subset of modern history which describes the historical period from approximately 1945 to the present. Science began transforming after 1945: spaceflight, nuclear technology, laser and semiconductor technology were developed alongside molecular biology and genetics, particle physics, and the Standard Model of quantum field theory"
+        },
+        other: {
+          name: "Other",
+          shortDescription: "Hardly related to any of the given periods"
+        }
+      }
     }
   }
 };

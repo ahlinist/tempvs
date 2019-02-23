@@ -2,28 +2,38 @@
 <html>
   <head>
     <meta name="layout" content="main"/>
-    <title>Tempvs - <g:message code="library.admin.title"/></title>
-      <script>
-        window.onload = function() {
-          library.adminPage();
-        };
-      </script>
+    <title></title>
+    <script src="/static/js/library.js"></script>
+    <script>
+      window.onload = function() {
+        library.renderAdminPage();
+      };
+    </script>
   </head>
   <body>
     <div class="row">
-      <g:render template="/library/templates/navBar"/>
+      <span class="pull-left">
+        <a href="/library">
+          <u id="breadcrumb-library"></u>
+        </a>
+      </span>
+      <span class="pull-left">&nbsp;&gt;&nbsp;</span>
+      <span class="pull-left">
+        <a href="/library/admin">
+          <u id="breadcrumb-admin"></u>
+        </a>
+      </span>
     </div>
-    <h1><g:message code="library.admin.header"/></h1>
+    <h1 id="admin-panel-heading"></h1>
     <div class="row">
       <div class="col-sm-2"></div>
       <div class="col-sm-8">
-        <h2><g:message code="library.admin.request.list"/></h2>
         <table class="table table-condensed">
           <thead>
             <tr>
-              <th><g:message code="library.admin.request.user.label"/></th>
-              <th><g:message code="library.admin.request.authority.label"/></th>
-              <th><g:message code="library.admin.request.actions.label"/></th>
+              <th id="user-header"></th>
+              <th id="authority-header"></th>
+              <th id="actions-header"></th>
             </tr>
           </thead>
           <tbody id="requests-section">
