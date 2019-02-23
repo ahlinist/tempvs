@@ -28,9 +28,7 @@
         <div class="col-sm-3">
           <img id="period-image">
         </div>
-        <div style="text-align: justify; text-justify: inter-word;" id="period-long-description">
-          <g:message code="periodization.${period.id}.long.description"/>
-        </div>
+        <div style="text-align: justify; text-justify: inter-word;" id="period-long-description"></div>
       </div>
       <div class="row">
         <h1 id="source-list"></h1>
