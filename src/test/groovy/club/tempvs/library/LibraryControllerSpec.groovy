@@ -5,7 +5,6 @@ import club.tempvs.item.Source
 import club.tempvs.item.SourceService
 import club.tempvs.item.SourceType
 import club.tempvs.periodization.Period
-import club.tempvs.user.Role
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.testing.gorm.DataTest
@@ -26,8 +25,6 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
     def setup() {
         controller.userService = userService
         controller.sourceService = sourceService
-
-        GroovySpy(Role, global:true)
     }
 
     def cleanup() {

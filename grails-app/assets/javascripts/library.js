@@ -96,9 +96,11 @@ var library = {
     var periodItem = periodTemplate.content.querySelector('li.period-list-item');
     var title = document.querySelector('title');
     var periodListHeading = document.querySelector('h1.period-list-heading');
+    var welcomeBreadcrumb = document.querySelector('u#library-welcome-breadcrumb');
 
     title.innerHTML = library.i18n.en.libraryTitle;
     periodListHeading.innerHTML = library.i18n.en.periodListHeading;
+    welcomeBreadcrumb.innerHTML = library.i18n.en.welcomeBreadcrumb;
 
     library.periods.forEach(renderPeriodList);
 
@@ -121,6 +123,7 @@ var library = {
     en: {
       libraryTitle: "Tempvs - Library",
       periodListHeading: "Historical periods",
+      welcomeBreadcrumb: "Library",
       periodHeading: {
         "ancient": "Ancient times",
         "antiquity": "Antiquity",

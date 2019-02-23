@@ -13,7 +13,9 @@
   <body>
     <div class="row">
       <div class="col-sm-8">
-        <g:render template="/library/templates/navBar"/>
+        <a href="/library">
+          <u id="library-welcome-breadcrumb"></u>
+        </a>
       </div>
     </div>
     <div class="row">
