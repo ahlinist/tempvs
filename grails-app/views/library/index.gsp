@@ -3,12 +3,7 @@
   <head>
     <meta name="layout" content="main"/>
     <title></title>
-    <script>
-      window.onload = function() {
-        library.welcomePage();
-        library.renderWelcomeStatic();
-      };
-    </script>
+    <script src="/static/js/library.js"></script>
   </head>
   <body>
     <div class="row">

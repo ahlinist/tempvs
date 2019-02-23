@@ -1,3 +1,8 @@
+window.onload = function() {
+  library.welcomePage();
+  library.renderWelcomeStatic();
+};
+
 var library = {
   periods: [
     "ancient",
