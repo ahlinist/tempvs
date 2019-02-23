@@ -13,15 +13,11 @@
   <body>
     <div class="row">
       <span class="pull-left">
-        <a href="/library">
-          <u id="breadcrumb-library"></u>
-        </a>
+        <u><a href="/library" id="breadcrumb-library"></a></u>
       </span>
       <span class="pull-left">&nbsp;&gt;&nbsp;</span>
       <span class="pull-left">
-        <a href="/library/admin">
-          <u id="breadcrumb-admin"></u>
-        </a>
+        <u><a href="/library/admin" id="breadcrumb-admin"></a></u>
       </span>
     </div>
     <h1 id="admin-panel-heading"></h1>

@@ -95,11 +95,11 @@ var library = {
     var periodTemplate = document.querySelector('template.period-template');
     var periodItem = periodTemplate.content.querySelector('li.period-list-item');
     var title = document.querySelector('title');
-    var periodListHeading = document.querySelector('h1.period-list-heading');
-    var breadcrumbLibrary = document.querySelector('u#breadcrumb-library');
+    var heading = document.querySelector('h1.period-list-heading');
+    var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
 
-    title.innerHTML = library.i18n.en.welcome.title;
-    periodListHeading.innerHTML = library.i18n.en.welcome.heading;
+    title.innerHTML = library.i18n.en.welcomePage.title;
+    heading.innerHTML = library.i18n.en.welcomePage.heading;
     breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
 
     library.periods.forEach(renderPeriodList);
@@ -123,35 +123,54 @@ var library = {
   },
   renderAdminPage: function() {
     var title = document.querySelector('title');
-    var adminPanelHeading = document.querySelector('h1#admin-panel-heading');
+    var heading = document.querySelector('h1#admin-panel-heading');
     var userHeader = document.querySelector('table th#user-header');
     var authorityHeader = document.querySelector('table th#authority-header');
     var actionsHeader = document.querySelector('table th#actions-header');
-    var breadcrumbLibrary = document.querySelector('u#breadcrumb-library');
-    var breadcrumbAdmin = document.querySelector('u#breadcrumb-admin');
+    var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
+    var breadcrumbAdmin = document.querySelector('a#breadcrumb-admin');
 
-    title.innerHTML = library.i18n.en.admin.title;
-    adminPanelHeading.innerHTML = library.i18n.en.admin.heading;
+    title.innerHTML = library.i18n.en.adminPage.title;
+    heading.innerHTML = library.i18n.en.adminPage.heading;
     breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
     breadcrumbAdmin.innerHTML = library.i18n.en.breadcrumb.admin;
-    userHeader.innerHTML = library.i18n.en.admin.user;
-    authorityHeader.innerHTML = library.i18n.en.admin.authority;
-    actionsHeader.innerHTML = library.i18n.en.admin.actions;
+    userHeader.innerHTML = library.i18n.en.adminPage.user;
+    authorityHeader.innerHTML = library.i18n.en.adminPage.authority;
+    actionsHeader.innerHTML = library.i18n.en.adminPage.actions;
 
     library.adminPage();
   },
+  renderPeriodPage: function(periodKey) {
+    var title = document.querySelector('title');
+    var periodHeading = document.querySelector('h1#period-heading');
+    var sourceListHeading = document.querySelector('h1#source-list');
+    var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
+    var breadcrumbPeriod = document.querySelector('a#breadcrumb-period');
+    var periodImage = document.querySelector('img#period-image');
+
+    title.innerHTML = library.i18n.en.period[periodKey].name;
+    periodHeading.innerHTML = library.i18n.en.period[periodKey].name;
+    sourceListHeading.innerHTML = library.i18n.en.periodPage.sourceListHeading;
+    breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
+    breadcrumbPeriod.innerHTML = library.i18n.en.period[periodKey].name;
+    breadcrumbPeriod.href = '/library/period/' + periodKey;
+    periodImage.src = '/assets/library/' + periodKey + '.jpg';
+  },
   i18n: {
     en: {
-      admin: {
-        title: "Tempvs - Admin panel",
+      adminPage: {
+        title: "Admin panel",
         heading:  "Requested Authorities",
         user: "User",
         authority: "Authority",
         actions: "Actions"
       },
-      welcome: {
-        title: "Tempvs - Library",
+      welcomePage: {
+        title: "Library",
         heading: "Historical periods",
+      },
+      periodPage: {
+        sourceListHeading: "Sources"
       },
       breadcrumb: {
         library: "Library",

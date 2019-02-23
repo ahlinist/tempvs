@@ -12,11 +12,7 @@
   </head>
   <body>
     <div class="row">
-      <div class="col-sm-8">
-        <a href="/library">
-          <u id="breadcrumb-library"></u>
-        </a>
-      </div>
+      <u><a href="/library" id="breadcrumb-library"></a></u>
     </div>
     <div class="row">
       <div class="col-sm-2"></div>

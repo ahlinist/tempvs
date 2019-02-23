@@ -18,7 +18,7 @@
       <g:if test="${source}">
         <g:set var="sourceId" value="${source.id}"/>
         <div class="row">
-          <g:render template="/library/templates/navBar" model="${[period, source]}"/>
+          <g:render template="/source/templates/navBar" model="${[period, source]}"/>
         </div>
         <div class="row">
           <div class="col-sm-4">
