@@ -38,7 +38,7 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
         request.method = GET_METHOD
 
         when:
-        def result = controller.index()
+        controller.index()
 
         then:
         0 * _
@@ -46,10 +46,6 @@ class LibraryControllerSpec extends Specification implements ControllerUnitTest<
         and:
         !response.redirectedUrl
         !controller.modelAndView
-
-        result == [
-                periods: Period.values()
-        ]
     }
 
     void "Test period()"() {

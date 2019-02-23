@@ -2,10 +2,11 @@
 <html>
   <head>
     <meta name="layout" content="main"/>
-    <title>Tempvs - <g:message code="library.title"/></title>
+    <title></title>
     <script>
       window.onload = function() {
         library.welcomePage();
+        library.renderWelcomeStatic();
       };
     </script>
   </head>
@@ -28,24 +29,24 @@
             </div>
           </div>
         </template>
-        <ul>
-          <h1><g:message code="periodization.list.title"/></h1>
-          <g:each in="${periods}" var="period">
-            <li class="row">
-              <g:link controller="library" action="period" id="${period.id}" class="btn btn-default col-sm-12" style="white-space: normal;">
+        <h1 class="period-list-heading"></h1>
+        <ul id="periods-section">
+          <template class="period-template">
+            <li class="row period-list-item">
+              <a class="btn btn-default col-sm-12 period-details-link" style="white-space: normal;">
                 <div class="col-sm-2">
-                  <asset:image src="periodization/thumbnails/${period.id}.jpg"/>
+                  <img class="period-thumbnail-image">
                 </div>
                 <div class="col-sm-10">
                   <b>
-                    <p class="pull-left">${period.value}</p>
+                    <p class="pull-left period-heading"></p>
                   </b>
                   <br/>
-                  <p style="text-align: justify;"><g:message code="periodization.${period.id}.short.description"/></p>
+                  <p style="text-align: justify;" class="period-short-description"></p>
                 </div>
-              </g:link>
+              </a>
             </li>
-          </g:each>
+          </template>
         </ul>
       </div>
       <div class="col-sm-2"></div>

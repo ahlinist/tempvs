@@ -5,7 +5,6 @@ import club.tempvs.item.Source
 import club.tempvs.item.SourceService
 import club.tempvs.item.SourceType
 import club.tempvs.periodization.Period
-import club.tempvs.rest.RestCaller
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
 import org.springframework.security.access.annotation.Secured
@@ -22,11 +21,10 @@ class LibraryController {
 
     UserService userService
     SourceService sourceService
-    RestCaller restCaller
 
     @Secured('permitAll')
     Map index() {
-        [periods: Period.values()]
+
     }
 
     @Secured('permitAll')
