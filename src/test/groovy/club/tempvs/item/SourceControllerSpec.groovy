@@ -20,20 +20,17 @@ import spock.lang.Specification
 
 class SourceControllerSpec extends Specification implements ControllerUnitTest<SourceController> {
 
-    private static final String ONE = '1'
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
     private static final String NAME = 'name'
     private static final String TEXT = 'text'
     private static final String GET_METHOD = 'GET'
-    private static final String REFERER = 'referer'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
-    private static final String PERIOD_URI = '/source/period'
     private static final String LIBRARY_URI = '/library'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
@@ -93,65 +90,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         and:
         result == [source: source, period: period, images: [image], editAllowed: Boolean.TRUE]
-    }
-
-    void "Test createSource()"() {
-        given:
-        request.method = POST_METHOD
-        controller.request.addHeader(REFERER, "${PERIOD_URI}/${period.id}")
-
-        when:
-        controller.createSource(source, imageUploadCommand)
-
-        then:
-        1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * source.validate() >> Boolean.TRUE
-        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
-        1 * source.setImages([image])
-        1 * sourceService.saveSource(source) >> source
-        1 * source.hasErrors() >> Boolean.FALSE
-        1 * source.id >> LONG_ONE
-        1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test createSource() against invalid source"() {
-        given:
-        params.sourceId = ONE
-        request.method = POST_METHOD
-
-        when:
-        controller.createSource(source, imageUploadCommand)
-
-        then:
-        1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * source.validate() >> Boolean.TRUE
-        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
-        1 * source.setImages([image])
-        1 * sourceService.saveSource(source) >> source
-        1 * source.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseHelper.renderValidationResponse(source) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test createSource() against invalid command"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.createSource(source, imageUploadCommand)
-
-        then:
-        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * source.validate() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderValidationResponse(source) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
     }
 
     void "Test getSourcesByPeriod()"() {

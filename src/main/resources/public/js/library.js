@@ -148,15 +148,78 @@ var library = {
     var breadcrumbPeriod = document.querySelector('a#breadcrumb-period');
     var periodImage = document.querySelector('img#period-image');
     var longDescription = document.querySelector('div#period-long-description');
+    var createSourceSection = document.querySelector('div#create-source-section');
+    var popupButton = createSourceSection.querySelector('#popup-button > span.fa-plus');
+    var createSourceForm = createSourceSection.querySelector('form');
+    var labels = Object.keys(library.i18n.en.periodPage.createSource.labels);
+    var classificationOptions = createSourceForm.querySelectorAll('select[name=classification] > option');
+    var typeOptions = createSourceForm.querySelectorAll('select[name=type] > option');
+    var classifications = Object.keys(library.i18n.en.periodPage.createSource.classifications);
+    var types = Object.keys(library.i18n.en.periodPage.createSource.types);
+    var submitButton = createSourceSection.querySelector('.submit-button');
 
     title.innerHTML = library.i18n.en.period[periodKey].name;
     periodHeading.innerHTML = library.i18n.en.period[periodKey].name;
+    longDescription.innerHTML = library.i18n.en.period[periodKey].longDescription;
     sourceListHeading.innerHTML = library.i18n.en.periodPage.sourceListHeading;
     breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
     breadcrumbPeriod.innerHTML = library.i18n.en.period[periodKey].name;
     breadcrumbPeriod.href = '/library/period/' + periodKey;
     periodImage.src = '/assets/library/' + periodKey + '.jpg';
-    longDescription.innerHTML = library.i18n.en.period[periodKey].longDescription;
+    popupButton.innerHTML = library.i18n.en.periodPage.createSource.popupButton;
+
+    labels.forEach(function(label) {
+      createSourceForm.querySelector('label[for=' + label + ']').innerHTML = library.i18n.en.periodPage.createSource.labels[label];
+    });
+
+    createSourceForm.querySelector('input[name=period]').value = periodKey.toUpperCase();
+    createSourceForm.querySelector('input[name=fake-period]').value = library.i18n.en.period[periodKey].name;
+
+    classificationOptions.forEach(function(option) {
+      option.innerHTML = library.i18n.en.periodPage.createSource.classifications[option.value];
+    });
+
+    typeOptions.forEach(function(option) {
+      option.innerHTML = library.i18n.en.periodPage.createSource.types[option.value];
+    });
+
+    submitButton.innerHTML = library.i18n.en.periodPage.createSource.submitButton;
+  },
+  createSource: function(form) {
+    var formData = new FormData(form);
+
+    var object = {
+      name: formData.get('name'),
+      description: formData.get('description'),
+      classification: formData.get('classification'),
+      type: formData.get('type'),
+      period: formData.get('period')
+    };
+
+    var payload = {
+      method: 'POST',
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(object)
+    };
+
+    var actions = {200: renderPeriodDetails, 500: displayFail, 400: function(response) {alert("bad request!");}};
+
+    function renderPeriodDetails(response) {
+      response.json().then(function(data) {
+        alert('ok!');
+      });
+    }
+
+    function displayFail(response) {
+      response.json().then(function(data) {
+        alert('internal error!');
+      });
+    }
+
+    ajaxHandler.blockUI();
+    ajaxHandler.fetch(form, form.action, payload, actions);
   },
   i18n: {
     en: {
@@ -172,7 +235,34 @@ var library = {
         heading: "Historical periods",
       },
       periodPage: {
-        sourceListHeading: "Sources"
+        sourceListHeading: "Sources",
+        createSource: {
+          popupButton: " New source",
+          submitButton: "Create source",
+          labels: {
+            period: 'Period',
+            classification: 'Classification',
+            type: 'Type',
+            name: 'Name',
+            description: 'Description'
+          },
+          classifications: {
+            "": "-",
+            CLOTHING: "Clothing",
+            FOOTWEAR: "Footwear",
+            HOUSEHOLD: "Household",
+            WEAPON: "Weapon",
+            ARMOR: "Armor",
+            OTHER: "Other"
+          },
+          types: {
+            "": "-",
+            WRITTEN: "Written",
+            GRAPHIC: "Graphic",
+            ARCHAEOLOGICAL: "Archaeological",
+            OTHER: "Other"
+          }
+        }
       },
       breadcrumb: {
         library: "Library",

@@ -36,7 +36,6 @@ class SourceController {
             index: 'GET',
             getSourcesByPeriod: 'GET',
             show: 'GET',
-            createSource: 'POST',
             editSourceField: 'POST',
             deleteImage: 'DELETE',
             deleteSource: 'DELETE',
@@ -77,28 +76,6 @@ class SourceController {
                     editAllowed: userService.currentUserId != null,
             ]
         }
-    }
-
-    @Secured("hasRole('ROLE_CONTRIBUTOR')")
-    def createSource(Source source, ImageUploadCommand command) {
-        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
-
-        if (imageUploadBeans && !imageUploadBeans.every { it.validate() }) {
-            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
-        }
-
-        if (!source.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(source))
-        }
-
-        source.images = imageService.uploadImages(imageUploadBeans, SOURCE_COLLECTION)
-        source = sourceService.saveSource(source)
-
-        if (source.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(source))
-        }
-
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(action: 'show', id: source.id))
     }
 
     @Secured("hasRole('ROLE_SCRIBE')")

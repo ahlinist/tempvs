@@ -59,29 +59,84 @@
           </div>
         </g:each>
       </div>
-      <sec:ifAnyGranted roles="ROLE_ARCHIVARIUS,ROLE_SCRIBE,ROLE_CONTRIBUTOR">
+      <sec:ifAnyGranted roles="ROLE_CONTRIBUTOR">
         <div class="row">
           <br/>
           <hr/>
-          <div class="pull-right">
-            <span data-toggle="tooltip" data-placement="right" title="${g.message(code: 'source.create.tooltip')}">
-              <g:render template="/common/templates/modalButton"
-                  model="${[elementId: 'sourceForm', message: 'source.add.button']}">
-                <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'source', action: 'createSource']}">
-                  <g:render template="/image/templates/imageUploader"/>
-                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'fake-period', label: 'periodization.period.form.label', disabled: true, value: period.value]}"/>
-                  <g:render template="/common/templates/formField" model="${[type: 'select', name: 'itemType', label: 'item.itemType.dropdown.label', mandatory: true, from: itemTypes, optionKey: 'key', optionValue: 'value']}"/>
-                  <g:render template="/common/templates/formField" model="${[type: 'select', name: 'sourceType', label: 'source.sourceType.dropdown.label', mandatory: true, from: sourceTypes, optionKey: 'key', optionValue: 'value']}"/>
-                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'name', label: 'source.name.label', mandatory: true]}"/>
-                  <g:render template="/common/templates/formField" model="${[type: 'text', name: 'description', label: 'source.description.label']}"/>
-                  <input type="hidden" name="period" value="${period?.key}"/>
-                  <input type="hidden" name="sourceId" value="${source?.id}"/>
-                  <g:render template="/ajax/templates/submitButton">
-                    <g:message code="source.create.button"/>
-                  </g:render>
-                </g:render>
-              </g:render>
-            </span>
+          <div id="create-source-section">
+            <button id="popup-button" class="btn btn-default pull-right" data-toggle="modal" data-target="#create-source-popup">
+              <span class="fa fa-plus"></span>
+            </button>
+            <div id="create-source-popup" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <div class="row ajax-form">
+                      <form action="/api/library/source" onsubmit="library.createSource(this); return false;">
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="period"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="hidden" name="period">
+                            <input class="col-sm-12 tempvs-form-field" type="text" name="fake-period" readonly>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="classification"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <select class="col-sm-12" name="classification">
+                              <option value=""></option>
+                              <option value="CLOTHING"></option>
+                              <option value="FOOTWEAR"></option>
+                              <option value="HOUSEHOLD"></option>
+                              <option value="WEAPON"></option>
+                              <option value="ARMOR"></option>
+                              <option value="OTHER"></option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="type"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <select class="col-sm-12" name="type">
+                              <option value=""></option>
+                              <option value="WRITTEN"></option>
+                              <option value="GRAPHIC"></option>
+                              <option value="ARCHAEOLOGICAL"></option>
+                              <option value="OTHER"></option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="name"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="text" name="name">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="description"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="text" name="description">
+                          </div>
+                        </div>
+                        <button class="btn btn-default submit-button">
+                          <g:message code="message.send.message.button"/>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </sec:ifAnyGranted>
