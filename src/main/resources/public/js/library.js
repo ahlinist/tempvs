@@ -149,14 +149,26 @@ var library = {
     var periodImage = document.querySelector('img#period-image');
     var longDescription = document.querySelector('div#period-long-description');
     var createSourceSection = document.querySelector('div#create-source-section');
-    var popupButton = createSourceSection.querySelector('#popup-button > span.fa-plus');
-    var createSourceForm = createSourceSection.querySelector('form');
     var labels = Object.keys(library.i18n.en.periodPage.createSource.labels);
-    var classificationOptions = createSourceForm.querySelectorAll('select[name=classification] > option');
-    var typeOptions = createSourceForm.querySelectorAll('select[name=type] > option');
     var classifications = Object.keys(library.i18n.en.periodPage.createSource.classifications);
     var types = Object.keys(library.i18n.en.periodPage.createSource.types);
-    var submitButton = createSourceSection.querySelector('.submit-button');
+
+    if (createSourceSection) {
+      var popupButton = createSourceSection.querySelector('#popup-button > span.fa-plus');
+      var createSourceForm = createSourceSection.querySelector('form');
+      var classificationOptions = createSourceForm.querySelectorAll('select[name=classification] > option');
+      var typeOptions = createSourceForm.querySelectorAll('select[name=type] > option');
+      var submitButton = createSourceSection.querySelector('.submit-button');
+      popupButton.innerHTML = library.i18n.en.periodPage.createSource.popupButton;
+
+      labels.forEach(function(label) {
+        createSourceForm.querySelector('label[for=' + label + ']').innerHTML = library.i18n.en.periodPage.createSource.labels[label];
+      });
+
+      createSourceForm.querySelector('input[name=period]').value = periodKey.toUpperCase();
+      createSourceForm.querySelector('input[name=fake-period]').value = library.i18n.en.period[periodKey].name;
+      submitButton.innerHTML = library.i18n.en.periodPage.createSource.submitButton;
+    }
 
     title.innerHTML = library.i18n.en.period[periodKey].name;
     periodHeading.innerHTML = library.i18n.en.period[periodKey].name;
@@ -166,14 +178,6 @@ var library = {
     breadcrumbPeriod.innerHTML = library.i18n.en.period[periodKey].name;
     breadcrumbPeriod.href = '/library/period/' + periodKey;
     periodImage.src = '/assets/library/' + periodKey + '.jpg';
-    popupButton.innerHTML = library.i18n.en.periodPage.createSource.popupButton;
-
-    labels.forEach(function(label) {
-      createSourceForm.querySelector('label[for=' + label + ']').innerHTML = library.i18n.en.periodPage.createSource.labels[label];
-    });
-
-    createSourceForm.querySelector('input[name=period]').value = periodKey.toUpperCase();
-    createSourceForm.querySelector('input[name=fake-period]').value = library.i18n.en.period[periodKey].name;
 
     classificationOptions.forEach(function(option) {
       option.innerHTML = library.i18n.en.periodPage.createSource.classifications[option.value];
@@ -182,8 +186,6 @@ var library = {
     typeOptions.forEach(function(option) {
       option.innerHTML = library.i18n.en.periodPage.createSource.types[option.value];
     });
-
-    submitButton.innerHTML = library.i18n.en.periodPage.createSource.submitButton;
   },
   createSource: function(form) {
     var formData = new FormData(form);
@@ -195,6 +197,33 @@ var library = {
       type: formData.get('type'),
       period: formData.get('period')
     };
+
+    var validator = {
+      name: library.i18n.en.periodPage.createSource.validation.nameBlank,
+      classification: library.i18n.en.periodPage.createSource.validation.classificationBlank,
+      type: library.i18n.en.periodPage.createSource.validation.typeBlank
+    };
+
+    var inputIsValid = true;
+    Object.entries(validator).forEach(validate);
+
+    function validate(entry) {
+      var fieldName = entry[0];
+      var validationMessage = entry[1];
+
+      if (!object[fieldName] || !/\S/.test(object[fieldName])) {
+        var field = form.querySelector('[name=' + fieldName + ']');
+        field.setAttribute('data-toggle', 'tooltip');
+        field.setAttribute('data-placement', 'top');
+        field.setAttribute('title', validationMessage);
+        $(field).tooltip('show');
+        inputIsValid = false;
+      }
+    }
+
+    if (!inputIsValid) {
+      return;
+    }
 
     var payload = {
       method: 'POST',
@@ -267,6 +296,11 @@ var library = {
             GRAPHIC: "Graphic",
             ARCHAEOLOGICAL: "Archaeological",
             OTHER: "Other"
+          },
+          validation: {
+            nameBlank: 'Please choose a name',
+            classificationBlank: 'Please choose a classification',
+            typeBlank: 'Please choose a type'
           }
         }
       },
