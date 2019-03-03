@@ -78,31 +78,13 @@ var messaging = {
       });
     },
     400: function(response, form) {
-      response.json().then(function (data) {
-        var errors = data.errors;
-
-        for (fieldName in errors) {
-          var validationMessage = errors[fieldName];
-          var field = form.querySelector('[name="' + fieldName + '"]')
-
-          if (!field) {
-              field = form.querySelector('.submit-button');
-          }
-
-          field.classList.add('popped-over');
-
-          $(field).popover({
-              placement: 'bottom',
-              content: validationMessage,
-              html: true,
-              container: 'body'
-          }).popover('show');
-        }
-
+      var specificAction = function() {
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
         messaging.displayNewMessagesCounter();
-      });
+      }
+
+      ajaxHandler.handleBadRequest(response, form, specificAction);
     },
     404: function(response) {
       console.log('Status code 404 returned.');

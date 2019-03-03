@@ -237,5 +237,30 @@ var ajaxHandler = {
 
       window.addEventListener("click", clickOutEventListener);
       window.addEventListener("keydown", keyPressEventListener);
+    },
+    handleBadRequest: function(response, form, specificAction) {
+      response.json().then(function (data) {
+        var errors = data.errors;
+
+        for (fieldName in errors) {
+          var validationMessage = errors[fieldName];
+          var field = form.querySelector('[name="' + fieldName + '"]')
+
+          if (!field) {
+              field = form.querySelector('.submit-button');
+          }
+
+          field.classList.add('popped-over');
+
+          $(field).popover({
+              placement: 'bottom',
+              content: validationMessage,
+              html: true,
+              container: 'body'
+          }).popover('show');
+        }
+
+        specificAction();
+      });
     }
 };

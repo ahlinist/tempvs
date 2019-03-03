@@ -204,7 +204,13 @@ var library = {
       body: JSON.stringify(object)
     };
 
-    var actions = {200: renderPeriodDetails, 500: displayFail, 400: function(response) {alert("bad request!");}};
+    var actions = {
+      200: renderPeriodDetails,
+      500: displayFail,
+      400: function(response, form) {
+        ajaxHandler.handleBadRequest(response, form);
+      }
+    };
 
     function renderPeriodDetails(response) {
       response.json().then(function(data) {
