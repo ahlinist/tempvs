@@ -2,7 +2,6 @@ package club.tempvs.api
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
-import club.tempvs.user.UserService
 import com.netflix.discovery.EurekaClient
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
@@ -12,13 +11,11 @@ import spock.lang.Specification
 
 class ApiControllerSpec extends Specification implements ControllerUnitTest<ApiController> {
 
-    UserService userService = Mock UserService
     RestCaller restCaller = Mock RestCaller
     EurekaClient eurekaClient = Mock EurekaClient
     RestResponse restResponse = Mock RestResponse
 
     def setup() {
-        controller.userService = userService
         controller.restCaller = restCaller
         controller.eurekaClient = eurekaClient
     }

@@ -141,17 +141,16 @@ var library = {
     library.adminPage();
   },
   renderPeriodPage: function(periodKey) {
-    var title = document.querySelector('title');
-    var periodHeading = document.querySelector('h1#period-heading');
-    var sourceListHeading = document.querySelector('h1#source-list');
-    var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
+    var msgSource = library.i18n.en.periodPage;
+    var classifications = library.i18n.en.source.classifications;
+    var types = library.i18n.en.source.types;
     var breadcrumbPeriod = document.querySelector('a#breadcrumb-period');
-    var periodImage = document.querySelector('img#period-image');
-    var longDescription = document.querySelector('div#period-long-description');
     var createSourceSection = document.querySelector('div#create-source-section');
-    var labels = Object.keys(library.i18n.en.periodPage.createSource.labels);
-    var classifications = Object.keys(library.i18n.en.periodPage.createSource.classifications);
-    var types = Object.keys(library.i18n.en.periodPage.createSource.types);
+    var labels = Object.keys(msgSource.labels);
+    var searchSection = document.querySelector('div#search-section');
+    var searchTemplate = searchSection.querySelector('template#search-template');
+    var searchCriterion = searchTemplate.content.querySelector('div');
+    var sourceTable = document.querySelector('table#source-table');
 
     if (createSourceSection) {
       var popupButton = createSourceSection.querySelector('#popup-button > span.fa-plus');
@@ -159,33 +158,62 @@ var library = {
       var classificationOptions = createSourceForm.querySelectorAll('select[name=classification] > option');
       var typeOptions = createSourceForm.querySelectorAll('select[name=type] > option');
       var submitButton = createSourceSection.querySelector('.submit-button');
-      popupButton.innerHTML = library.i18n.en.periodPage.createSource.popupButton;
+      popupButton.innerHTML = msgSource.createSource.popupButton;
 
       labels.forEach(function(label) {
-        createSourceForm.querySelector('label[for=' + label + ']').innerHTML = library.i18n.en.periodPage.createSource.labels[label];
+        createSourceForm.querySelector('label[for=' + label + ']').innerHTML = msgSource.labels[label];
       });
 
       createSourceForm.querySelector('input[name=period]').value = periodKey.toUpperCase();
       createSourceForm.querySelector('input[name=fake-period]').value = library.i18n.en.period[periodKey].name;
-      submitButton.innerHTML = library.i18n.en.periodPage.createSource.submitButton;
+      submitButton.innerHTML = msgSource.createSource.submitButton;
+
+      classificationOptions.forEach(function(option) {
+        option.innerHTML = classifications[option.value];
+      });
+
+      typeOptions.forEach(function(option) {
+        option.innerHTML = types[option.value];
+      });
     }
 
-    title.innerHTML = library.i18n.en.period[periodKey].name;
-    periodHeading.innerHTML = library.i18n.en.period[periodKey].name;
-    longDescription.innerHTML = library.i18n.en.period[periodKey].longDescription;
-    sourceListHeading.innerHTML = library.i18n.en.periodPage.sourceListHeading;
-    breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
+    library.search(searchSection.querySelector('form'));
+
+    document.querySelector('title').innerHTML = library.i18n.en.period[periodKey].name;
+    document.querySelector('h1#period-heading').innerHTML = library.i18n.en.period[periodKey].name;
+    document.querySelector('div#period-long-description').innerHTML = library.i18n.en.period[periodKey].longDescription;
+    document.querySelector('h1#sources').innerHTML = msgSource.sourceListHeading;
+    document.querySelector('a#breadcrumb-library').innerHTML = library.i18n.en.breadcrumb.library;
     breadcrumbPeriod.innerHTML = library.i18n.en.period[periodKey].name;
     breadcrumbPeriod.href = '/library/period/' + periodKey;
-    periodImage.src = '/assets/library/' + periodKey + '.jpg';
+    document.querySelector('img#period-image').src = '/assets/library/' + periodKey + '.jpg';
+    searchSection.querySelector('div#classification-search h4').innerHTML = msgSource.labels.classification + ":";
+    searchSection.querySelector('div#type-search h4').innerHTML = msgSource.labels.type + ":";
+    searchSection.querySelector('input[name=query]').placeholder = msgSource.searchSourcePlaceholder;
 
-    classificationOptions.forEach(function(option) {
-      option.innerHTML = library.i18n.en.periodPage.createSource.classifications[option.value];
-    });
+    sourceTable.querySelector('th#table-name').innerHTML = msgSource.labels.name;
+    sourceTable.querySelector('th#table-description').innerHTML = msgSource.labels.description;
+    sourceTable.querySelector('th#table-classification').innerHTML = msgSource.labels.classification;
+    sourceTable.querySelector('th#table-type').innerHTML = msgSource.labels.type;
 
-    typeOptions.forEach(function(option) {
-      option.innerHTML = library.i18n.en.periodPage.createSource.types[option.value];
-    });
+    buildcheckboxSearch(classifications, 'classification');
+    buildcheckboxSearch(types, 'type');
+
+    function buildcheckboxSearch(checkboxGroup, checkboxType) {
+      Object.keys(checkboxGroup).forEach(function(checkboxGroupItem) {
+        if (checkboxGroupItem) {
+          var searchItem = document.importNode(searchCriterion, true);
+          var label = searchItem.querySelector('label');
+          var checkbox = searchItem.querySelector('input[type=checkbox]');
+
+          label.innerHTML = checkboxGroup[checkboxGroupItem];
+          checkbox.name = checkboxType;
+          checkbox.value = checkboxGroupItem;
+
+          searchSection.querySelector('div#' + checkboxType + '-search').appendChild(searchItem);
+        }
+      });
+    }
   },
   createSource: function(form) {
     var formData = new FormData(form);
@@ -234,30 +262,87 @@ var library = {
     };
 
     var actions = {
-      200: renderPeriodDetails,
-      500: displayFail,
+      200: renderSourceDetails,
       400: function(response, form) {
         ajaxHandler.handleBadRequest(response, form);
       }
     };
 
-    function renderPeriodDetails(response) {
+    function renderSourceDetails(response) {
       response.json().then(function(data) {
-        alert('ok!');
-      });
-    }
-
-    function displayFail(response) {
-      response.json().then(function(data) {
-        alert('internal error!');
+        window.location.href = '/library/source/' + data.id;
       });
     }
 
     ajaxHandler.blockUI();
     ajaxHandler.fetch(form, form.action, payload, actions);
   },
+  search: function(form) {
+    var spinner = document.querySelector('img.load-sources-spinner');
+    var sourceTable = document.querySelector('table#source-table');
+    var formData = new FormData(form);
+    var tableBody = sourceTable.querySelector('tbody');
+
+    var object = {
+      query: formData.get('query'),
+      period: formData.get('period').toUpperCase(),
+      classifications: formData.getAll('classification'),
+      types: formData.getAll('type')
+    };
+
+    var q = window.btoa(JSON.stringify(object));
+    var url = '/api/library/source?page=0&size=40&q=' + q;
+
+    var actions = {
+      200: displaySearchResult
+    };
+
+    spinner.classList.remove('hidden');
+    tableBody.innerHTML = '';
+
+    ajaxHandler.fetch(form, url, {method: 'GET'}, actions);
+
+    function displaySearchResult(response) {
+      response.json().then(function(data) {
+        var sourceTemplate = document.querySelector('template#source-template');
+        var sourceItem = sourceTemplate.content.querySelector('tr');
+
+        spinner.classList.add('hidden');
+
+        data.forEach(function(source) {
+          var sourceNode = document.importNode(sourceItem, true);
+
+          sourceNode.querySelector('td.source-name').innerHTML = source.name;
+          sourceNode.onclick = function() {window.location.href = '/library/source/' + source.id};
+          sourceNode.querySelector('td.source-description').innerHTML = source.description;
+          sourceNode.querySelector('td.source-classification').innerHTML = source.classification;
+          sourceNode.querySelector('td.source-type').innerHTML = source.type;
+          tableBody.appendChild(sourceNode);
+        });
+
+      });
+    }
+  },
   i18n: {
     en: {
+      source: {
+        classifications: {
+          "": "-",
+          CLOTHING: "Clothing",
+          FOOTWEAR: "Footwear",
+          HOUSEHOLD: "Household",
+          WEAPON: "Weapon",
+          ARMOR: "Armor",
+          OTHER: "Other"
+        },
+        types: {
+          "": "-",
+          WRITTEN: "Written",
+          GRAPHIC: "Graphic",
+          ARCHAEOLOGICAL: "Archaeological",
+          OTHER: "Other"
+        }
+      },
       adminPage: {
         title: "Admin panel",
         heading:  "Requested Authorities",
@@ -271,32 +356,17 @@ var library = {
       },
       periodPage: {
         sourceListHeading: "Sources",
+        searchSourcePlaceholder: "Find source...",
+        labels: {
+          period: 'Period',
+          classification: 'Classification',
+          type: 'Type',
+          name: 'Name',
+          description: 'Description'
+        },
         createSource: {
           popupButton: " New source",
           submitButton: "Create source",
-          labels: {
-            period: 'Period',
-            classification: 'Classification',
-            type: 'Type',
-            name: 'Name',
-            description: 'Description'
-          },
-          classifications: {
-            "": "-",
-            CLOTHING: "Clothing",
-            FOOTWEAR: "Footwear",
-            HOUSEHOLD: "Household",
-            WEAPON: "Weapon",
-            ARMOR: "Armor",
-            OTHER: "Other"
-          },
-          types: {
-            "": "-",
-            WRITTEN: "Written",
-            GRAPHIC: "Graphic",
-            ARCHAEOLOGICAL: "Archaeological",
-            OTHER: "Other"
-          },
           validation: {
             nameBlank: 'Please choose a name',
             classificationBlank: 'Please choose a classification',

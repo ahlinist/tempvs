@@ -2,25 +2,24 @@ package club.tempvs.api
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
-import club.tempvs.user.UserService
 import com.netflix.discovery.EurekaClient
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import org.springframework.http.HttpMethod
 import org.springframework.security.access.annotation.Secured
 
+@Secured('permitAll')
 @GrailsCompileStatic
 class ApiController {
 
-    UserService userService
     RestCaller restCaller
     EurekaClient eurekaClient
 
-    @Secured('permitAll')
     def call(String service, String uri) {
         HttpMethod httpMethod = HttpMethod.valueOf(request.method)
         String serviceUrl = eurekaClient.getApplication(service)?.instances?.find()?.homePageUrl
-        String url = "${serviceUrl}/api/" + uri
+        String getParameters = (httpMethod == HttpMethod.GET) ? "?page=${params.page}&size=${params.size}&q=${params.q}" : ""
+        String url = "${serviceUrl}/api/" + uri + getParameters
         RestResponse restResponse = restCaller.call(url, httpMethod, request.JSON as JSON)
         Integer status = restResponse?.statusCode?.value()
 
