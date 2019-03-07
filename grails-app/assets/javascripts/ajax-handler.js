@@ -173,7 +173,7 @@ var ajaxHandler = {
           document.body.removeChild(overlay);
       }
     },
-    activateSmartForm: function(editButton, actions) {
+    activateSmartForm: function(editButton, actions, method) {
       var smartForm = editButton.closest('form');
       var textWrapper = smartForm.querySelector('.text-wrapper');
       var textHolder = textWrapper.querySelector('.text-holder');
@@ -222,7 +222,7 @@ var ajaxHandler = {
           });
 
           var payload = {
-            method: 'POST',
+            method: method,
             headers:{
               'Content-Type': 'application/json'
             },

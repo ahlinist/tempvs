@@ -103,7 +103,7 @@
             </button>
           </div>
           <div class="row">
-            <img class="spinner load-more hidden center-block" src="/assets/spinner.gif">
+            <img class="spinner load-more hidden center-block" src="/static/images/spinner.gif">
           </div>
         </div>
       </div>
@@ -112,7 +112,7 @@
           <div id="messages-container" class="col-sm-8" onscroll="messaging.markAsRead();"
               style="position: relative; height: calc(100vh - 75px); overflow: auto;">
             <div class="row">
-              <img class="load-more-messages-spinner hidden center-block" src="/assets/spinner.gif">
+              <img class="load-more-messages-spinner hidden center-block" src="/static/images/spinner.gif">
             </div>
             <template id="message-template">
               <li>
@@ -144,11 +144,11 @@
               <form class="conversation-name-form" style="display: inline;">
                 <span class="hovering text-wrapper">
                   <span class="text-holder" style="line-height: 40px; padding-left: 15px;"></span>
-                  <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions);" class="fa fa-pencil"></span>
+                  <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions, 'POST');" class="fa fa-pencil"></span>
                 </span>
                 <span class="hidden input-wrapper">
                   <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
-                </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/assets/spinner-sm.gif">
+                </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
               </form>
             </div>
             <div class="row participants-container">

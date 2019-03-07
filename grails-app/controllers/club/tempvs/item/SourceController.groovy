@@ -7,7 +7,6 @@ import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
-import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -33,9 +32,6 @@ class SourceController {
     private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
 
     static allowedMethods = [
-            index: 'GET',
-            getSourcesByPeriod: 'GET',
-            show: 'GET',
             editSourceField: 'POST',
             deleteImage: 'DELETE',
             deleteSource: 'DELETE',
@@ -52,31 +48,6 @@ class SourceController {
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
-
-    @Secured('permitAll')
-    def index() {
-        redirect controller: 'library'
-    }
-
-    def getSourcesByPeriod(String id) {
-        Period period = id ? Period.valueOf(id.toUpperCase()) : null
-        List<Source> sources = sourceService.getSourcesByPeriod(period)
-        render(sources.collect { Source source -> [id: source.id, name: source.name]} as JSON)
-    }
-
-    @Secured('permitAll')
-    def show(Long id) {
-        if (id) {
-            Source source = sourceService.getSource id
-
-            [
-                    source: source,
-                    period: source?.period,
-                    images: source?.images,
-                    editAllowed: userService.currentUserId != null,
-            ]
-        }
-    }
 
     @Secured("hasRole('ROLE_SCRIBE')")
     def editSourceField(Long objectId, String fieldName, String fieldValue) {

@@ -89,7 +89,7 @@ select:disabled {
 }
 
 #overlay {
-    background-image: url('/assets/spinner.gif');
+    background-image: url('/static/images/spinner.gif');
     background-size: 100px 100px;
     background-repeat: no-repeat;
     background-position: center center;

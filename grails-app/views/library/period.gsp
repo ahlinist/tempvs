@@ -156,7 +156,7 @@
             </tr>
           </template>
         </table>
-        <img class="load-sources-spinner center-block hidden" src="/assets/spinner.gif" style="margin-top:50px;">
+        <img class="load-sources-spinner center-block hidden" src="/static/images/spinner.gif" style="margin-top:50px;">
       </div>
     </div>
   </body>

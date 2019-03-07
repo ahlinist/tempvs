@@ -12,6 +12,7 @@ class LibraryController {
             index: 'GET',
             admin: 'GET',
             period: 'GET',
+            source: 'GET',
     ]
 
     Map index() {
@@ -27,5 +28,9 @@ class LibraryController {
     @Secured('ROLE_ARCHIVARIUS')
     def admin() {
 
+    }
+
+    def source(Long id) {
+        [sourceId: id]
     }
 }

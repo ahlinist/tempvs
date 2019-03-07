@@ -22,16 +22,13 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
     private static final Long LONG_ONE = 1L
     private static final Long LONG_TWO = 2L
-    private static final String NAME = 'name'
     private static final String TEXT = 'text'
-    private static final String GET_METHOD = 'GET'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
     private static final String FIELD_NAME = 'fieldName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
-    private static final String LIBRARY_URI = '/library'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
     private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
@@ -64,46 +61,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     }
 
     def cleanup() {
-    }
-
-    void "Test index()"() {
-        given:
-        request.method = GET_METHOD
-
-        when:
-        controller.index()
-
-        then:
-        response.redirectedUrl.contains LIBRARY_URI
-    }
-
-    void "Test show()"() {
-        when:
-        def result = controller.show(LONG_ONE)
-
-        then:
-        1 * sourceService.getSource(LONG_ONE) >> source
-        1 * source.period >> period
-        1 * source.images >> [image]
-        1 * userService.currentUserId >> LONG_TWO
-        0 * _
-
-        and:
-        result == [source: source, period: period, images: [image], editAllowed: Boolean.TRUE]
-    }
-
-    void "Test getSourcesByPeriod()"() {
-        given:
-        params.id = period.id
-
-        when:
-        controller.getSourcesByPeriod()
-
-        then:
-        1 * sourceService.getSourcesByPeriod(period) >> {[source, source]}
-        2 * source.id >> SourceControllerSpec.LONG_ONE
-        2 * source.name >> NAME
-        0 * _
     }
 
     void "Test editSourceField()"() {
