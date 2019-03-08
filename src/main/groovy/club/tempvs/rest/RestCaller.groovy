@@ -1,5 +1,9 @@
 package club.tempvs.rest
 
+import static org.springframework.http.HttpMethod.POST
+import static org.springframework.http.HttpMethod.PATCH
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE
+
 import club.tempvs.user.Profile
 import club.tempvs.user.User
 import club.tempvs.user.UserService
@@ -25,7 +29,6 @@ class RestCaller {
     private static final String USER_INFO_HEADER = 'User-Info'
     private static final String AUTHORIZATION_HEADER = 'Authorization'
     private static final String CONTENT_TYPE_HEADER = 'Content-Type'
-    private static final String JSON_CONTENT_TYPE_VALUE = 'application/json; charset=UTF-8'
 
     UserService userService
     RestTemplate restTemplate
@@ -41,8 +44,8 @@ class RestCaller {
         httpHeaders.set(USER_INFO_HEADER, userInfoJson)
         httpHeaders.set(AUTHORIZATION_HEADER, encodedToken)
 
-        if (httpMethod == HttpMethod.POST) {
-            httpHeaders.set(CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE_VALUE)
+        if (httpMethod in [POST, PATCH]) {
+            httpHeaders.set(CONTENT_TYPE_HEADER, APPLICATION_JSON_VALUE)
         }
 
         HttpEntity<String> httpEntity = new HttpEntity(payload?.toString(), httpHeaders)

@@ -35,7 +35,13 @@ var library = {
     "OTHER"
   ],
   actions: {
-    200: function() {alert('ok!');}
+    200: function() {
+      var elementsToHide = document.querySelectorAll('.hide-me');
+      elementsToHide.forEach(function(element) {
+        element.classList.add('hidden');
+        element.classList.remove('hide-me');
+      });
+    }
   },
   adminPage: function() {
     var url = '/api/library/library/admin';
@@ -276,7 +282,9 @@ var library = {
 
         if (library.isEditAllowed(roles)) {
           sourceForm.querySelector('#source-name input').value = data.name;
+          sourceForm.querySelector('#source-name form').action = '/api/library/source/' + data.id + '/name';
           sourceForm.querySelector('#source-description input').value = data.description;
+          sourceForm.querySelector('#source-description form').action = '/api/library/source/' + data.id + '/description';
           sourceForm.querySelector('#source-name .smart-form-activator').classList.remove('hidden');
           sourceForm.querySelector('#source-description .smart-form-activator').classList.remove('hidden');
 
