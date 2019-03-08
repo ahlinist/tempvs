@@ -1,4 +1,26 @@
 var library = {
+  isContributionAllowed: function(roles) {
+    if (roles) {
+      return roles.includes("ROLE_CONTRIBUTOR") || roles.includes("ROLE_SCRIBE")
+        || roles.includes("ROLE_ARCHIVARIUS") || roles.includes("ROLE_ADMIN");
+    } else {
+      return false;
+    }
+  },
+  isEditAllowed: function(roles) {
+    if (roles) {
+      return roles.includes("ROLE_SCRIBE") || roles.includes("ROLE_ARCHIVARIUS") || roles.includes("ROLE_ADMIN");
+    } else {
+      return false;
+    }
+  },
+  isAdmin: function(roles) {
+    if (roles) {
+      return roles.includes("ROLE_ARCHIVARIUS") || roles.includes("ROLE_ADMIN");
+    } else {
+      return false;
+    }
+  },
   periods: [
     "ANCIENT",
     "ANTIQUITY",
@@ -237,6 +259,12 @@ var library = {
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
     function renderSourcePage(response) {
+      var userInfo = response.headers.get("User-Info");
+
+      if (userInfo) {
+        var roles = JSON.parse(userInfo).roles;
+      }
+
       response.json().then(function(data) {
         var periodName = msgSource.period[data.period].name;
         document.querySelector('a#breadcrumb-period').innerHTML = periodName;
@@ -244,9 +272,23 @@ var library = {
         document.querySelector('a#breadcrumb-source-name').innerHTML = data.name;
         document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + data.id;
         sourceForm.querySelector('#source-name .text-holder').innerHTML = data.name;
-        sourceForm.querySelector('#source-name input').value = data.name;
         sourceForm.querySelector('#source-description .text-holder').innerHTML = data.description;
-        sourceForm.querySelector('#source-description input').value = data.description;
+
+        if (library.isEditAllowed(roles)) {
+          sourceForm.querySelector('#source-name input').value = data.name;
+          sourceForm.querySelector('#source-description input').value = data.description;
+          sourceForm.querySelector('#source-name .smart-form-activator').classList.remove('hidden');
+          sourceForm.querySelector('#source-description .smart-form-activator').classList.remove('hidden');
+
+          sourceForm.querySelector('#source-name .smart-form-activator').onclick = function() {
+            ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
+          };
+
+          sourceForm.querySelector('#source-description .smart-form-activator').onclick = function() {
+            ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
+          };
+        }
+
         sourceForm.querySelector('#source-classification .text-holder').innerHTML = msgSource.source.classifications[data.classification];
         sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[data.type];
         sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
