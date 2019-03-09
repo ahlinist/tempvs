@@ -1,4 +1,25 @@
+window.onload = function() {
+  library.init();
+};
+
 var library = {
+  init: function() {
+    var location = window.location.href;
+
+    if (location.endsWith("/library")) {
+      library.renderWelcomePage();
+    } else if (location.endsWith("/admin")) {
+      library.renderAdminPage();
+    } else if (location.includes('period')) {
+      var n = location.lastIndexOf('/');
+      var period = location.substring(n + 1);
+      library.renderPeriodPage(period)
+    } else if (location.includes('source')) {
+      var n = location.lastIndexOf('/');
+      var sourceId = location.substring(n + 1);
+      library.renderSourcePage(sourceId);
+    }
+  },
   isContributionAllowed: function(roles) {
     if (roles) {
       return roles.includes("ROLE_CONTRIBUTOR") || roles.includes("ROLE_SCRIBE")
@@ -40,47 +61,6 @@ var library = {
       elementsToHide.forEach(function(element) {
         element.classList.add('hidden');
         element.classList.remove('hide-me');
-      });
-    }
-  },
-  adminPage: function() {
-    var url = '/api/library/library/admin';
-    var actions = {200: renderAdminPage};
-    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
-
-    function renderAdminPage(response) {
-      response.json().then(function(data) {
-        var requestsSection = document.querySelector('tbody#requests-section');
-        var requestTemplate = document.querySelector('template.request-template');
-        var requestBlock = requestTemplate.content.querySelector('tr');
-
-        requestsSection.innerHTML = '';
-
-        data.roleRequests.forEach(renderRoleRequest);
-
-        function renderRoleRequest(roleRequest) {
-          var requestBlockNode = document.importNode(requestBlock, true);
-          var profileButton = requestBlockNode.querySelector('a.user');
-          var authorityCell = requestBlockNode.querySelector('span.authority');
-          var acceptButton = requestBlockNode.querySelector('span.accept-request');
-          var rejectButton = requestBlockNode.querySelector('span.reject-request');
-
-          profileButton.innerHTML = roleRequest.userName;
-          profileButton.href = '/profile/show/' + roleRequest.userProfileId;
-          authorityCell.innerHTML = roleRequest.roleLabel;
-
-          acceptButton.onclick = function() {
-            var url = '/api/library/library/' + roleRequest.role + '/' + roleRequest.userId;
-            ajaxHandler.fetch(null, url, {method: 'POST'}, actions);
-          };
-
-          rejectButton.onclick = function() {
-            var url = '/api/library/library/' + roleRequest.role + '/' + roleRequest.userId;
-            ajaxHandler.fetch(null, url, {method: 'DELETE'}, actions);
-          };
-
-          requestsSection.appendChild(requestBlockNode);
-        }
       });
     }
   },
@@ -150,23 +130,63 @@ var library = {
       }
   },
   renderAdminPage: function() {
-    var title = document.querySelector('title');
-    var heading = document.querySelector('h1#admin-panel-heading');
-    var userHeader = document.querySelector('table th#user-header');
-    var authorityHeader = document.querySelector('table th#authority-header');
-    var actionsHeader = document.querySelector('table th#actions-header');
-    var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
-    var breadcrumbAdmin = document.querySelector('a#breadcrumb-admin');
+    ajaxHandler.blockUI();
 
-    title.innerHTML = library.i18n.en.adminPage.title;
-    heading.innerHTML = library.i18n.en.adminPage.heading;
-    breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
-    breadcrumbAdmin.innerHTML = library.i18n.en.breadcrumb.admin;
-    userHeader.innerHTML = library.i18n.en.adminPage.user;
-    authorityHeader.innerHTML = library.i18n.en.adminPage.authority;
-    actionsHeader.innerHTML = library.i18n.en.adminPage.actions;
+    var url = '/api/library/library/admin?page=0&size=40';
+    var actions = {200: renderPage};
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
-    library.adminPage();
+    function renderPage(response) {
+      var title = document.querySelector('title');
+      var heading = document.querySelector('h1#admin-panel-heading');
+      var userHeader = document.querySelector('table th#user-header');
+      var authorityHeader = document.querySelector('table th#authority-header');
+      var actionsHeader = document.querySelector('table th#actions-header');
+      var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
+      var breadcrumbAdmin = document.querySelector('a#breadcrumb-admin');
+
+      title.innerHTML = library.i18n.en.adminPage.title;
+      heading.innerHTML = library.i18n.en.adminPage.heading;
+      breadcrumbLibrary.innerHTML = library.i18n.en.breadcrumb.library;
+      breadcrumbAdmin.innerHTML = library.i18n.en.breadcrumb.admin;
+      userHeader.innerHTML = library.i18n.en.adminPage.user;
+      authorityHeader.innerHTML = library.i18n.en.adminPage.authority;
+      actionsHeader.innerHTML = library.i18n.en.adminPage.actions;
+
+      response.json().then(function(data) {
+        var requestsSection = document.querySelector('tbody#requests-section');
+        var requestTemplate = document.querySelector('template.request-template');
+        var requestBlock = requestTemplate.content.querySelector('tr');
+
+        requestsSection.innerHTML = '';
+
+        data.roleRequests.forEach(renderRoleRequest);
+
+        function renderRoleRequest(roleRequest) {
+          var requestBlockNode = document.importNode(requestBlock, true);
+          var profileButton = requestBlockNode.querySelector('a.user');
+          var authorityCell = requestBlockNode.querySelector('span.authority');
+          var acceptButton = requestBlockNode.querySelector('span.accept-request');
+          var rejectButton = requestBlockNode.querySelector('span.reject-request');
+
+          profileButton.innerHTML = roleRequest.userName;
+          profileButton.href = '/profile/show/' + roleRequest.userProfileId;
+          authorityCell.innerHTML = roleRequest.roleLabel;
+
+          acceptButton.onclick = function() {
+            var url = '/api/library/library/' + roleRequest.role + '/' + roleRequest.userId;
+            ajaxHandler.fetch(null, url, {method: 'POST'}, actions);
+          };
+
+          rejectButton.onclick = function() {
+            var url = '/api/library/library/' + roleRequest.role + '/' + roleRequest.userId;
+            ajaxHandler.fetch(null, url, {method: 'DELETE'}, actions);
+          };
+
+          requestsSection.appendChild(requestBlockNode);
+        }
+      });
+    }
   },
   renderPeriodPage: function(periodKey) {
     var period = periodKey.toUpperCase()
@@ -206,8 +226,6 @@ var library = {
       });
     }
 
-    library.search(searchSection.querySelector('form'));
-
     document.querySelector('title').innerHTML = library.i18n.en.period[period].name;
     document.querySelector('h1#period-heading').innerHTML = library.i18n.en.period[period].name;
     document.querySelector('div#period-long-description').innerHTML = library.i18n.en.period[period].longDescription;
@@ -227,6 +245,10 @@ var library = {
 
     buildcheckboxSearch(classifications, 'classification');
     buildcheckboxSearch(types, 'type');
+
+    var searchForm = searchSection.querySelector('form');
+    searchForm.querySelector('input[name=period]').value = period;
+    library.search(searchForm);
 
     function buildcheckboxSearch(checkboxGroup, checkboxType) {
       Object.keys(checkboxGroup).forEach(function(checkboxGroupItem) {

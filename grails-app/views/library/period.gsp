@@ -1,16 +1,9 @@
-<g:set var="periodKey" value="${period.id}"/>
-
 <!DOCTYPE html>
 <html>
   <head>
     <meta name="layout" content="main"/>
     <title></title>
     <script src="/static/js/library.js"></script>
-    <script>
-      window.onload = function() {
-        library.renderPeriodPage('${periodKey}');
-      };
-    </script>
   </head>
   <body>
     <div class="row">
@@ -133,7 +126,7 @@
               <input class="pull-right" type="checkbox">
             </div>
           </template>
-          <input type="hidden" name="period" value="${periodKey}" >
+          <input type="hidden" name="period">
         </form>
       </div>
       <div class="col-sm-10">

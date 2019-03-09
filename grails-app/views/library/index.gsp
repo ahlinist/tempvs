@@ -4,11 +4,6 @@
     <meta name="layout" content="main"/>
     <title></title>
     <script src="/static/js/library.js"></script>
-    <script>
-      window.onload = function() {
-        library.renderWelcomePage();
-      };
-    </script>
   </head>
   <body>
     <div class="row">
