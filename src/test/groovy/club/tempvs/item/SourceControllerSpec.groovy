@@ -14,7 +14,6 @@ import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockHttpServletResponse
 import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
@@ -25,9 +24,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String TEXT = 'text'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
-    private static final String FIELD_NAME = 'fieldName'
-    private static final String FIELD_VALUE = 'fieldValue'
-    private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
@@ -63,23 +59,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def cleanup() {
     }
 
-    void "Test editSourceField()"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.editSourceField(LONG_ONE, FIELD_NAME, FIELD_VALUE)
-
-        then:
-        1 * sourceService.getSource(LONG_ONE) >> source
-        1 * sourceService.editSourceField(source, FIELD_NAME, FIELD_VALUE) >> source
-        1 * source.hasErrors() >> Boolean.FALSE
-        0 * _
-
-        and:
-        response.json.action == SUCCESS_ACTION
-    }
-
     void "Test addImages()"() {
         given:
         params.objectId = LONG_ONE
@@ -106,22 +85,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
 
         and:
         response.json.action == REPLACE_ACTION
-    }
-
-    void "Test deleteSource()"() {
-        given:
-        request.method = DELETE_METHOD
-
-        when:
-        controller.deleteSource(LONG_ONE)
-
-        then: 'Successfully deleted'
-        1 * sourceService.getSource(LONG_ONE) >> source
-        1 * source.period >> period
-        1 * sourceService.deleteSource(source)
-        1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
     }
 
     void "Test deleteImage()"() {

@@ -24,17 +24,13 @@ import org.springframework.security.access.annotation.Secured
 class SourceController {
 
     private static final String NO_ACTION = 'none'
-    private static final String SUCCESS_ACTION = 'success'
     private static final String SOURCE_COLLECTION = 'source'
     private static final String REPLACE_ACTION = 'replaceElement'
-    private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
     private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
 
     static allowedMethods = [
-            editSourceField: 'POST',
             deleteImage: 'DELETE',
-            deleteSource: 'DELETE',
             addComment: 'POST',
             addImages: 'POST',
             deleteComment: 'DELETE',
@@ -48,23 +44,6 @@ class SourceController {
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
-
-    @Secured("hasRole('ROLE_SCRIBE')")
-    def editSourceField(Long objectId, String fieldName, String fieldValue) {
-        Source source = sourceService.getSource objectId
-
-        if (!source) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
-        }
-
-        source = sourceService.editSourceField(source, fieldName, fieldValue)
-
-        if (source.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(source))
-        }
-
-        render([action: SUCCESS_ACTION] as JSON)
-    }
 
     @Secured("hasRole('ROLE_SCRIBE')")
     def deleteImage(Long objectId, Long imageId) {
@@ -91,18 +70,6 @@ class SourceController {
 
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    @Secured("hasRole('ROLE_ARCHIVARIUS')")
-    def deleteSource(Long id) {
-        Source source = sourceService.getSource id
-
-        if (!source) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
-        }
-
-        sourceService.deleteSource source
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'library', action: 'period', id: source.period.id))
     }
 
     @Secured("hasRole('ROLE_CONTRIBUTOR')")

@@ -1,10 +1,3 @@
-<sec:ifAnyGranted roles="ROLE_CONTRIBUTOR">
-  <g:set var="isContributor" value="${true}"/>
-</sec:ifAnyGranted>
-<sec:ifAnyGranted roles="ROLE_SCRIBE">
-  <g:set var="isScribe" value="${true}"/>
-</sec:ifAnyGranted>
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -18,7 +11,7 @@
     </script>
   </head>
   <body>
-    <div class="row">
+    <div class="row" style="height:40px; padding: 0 15px;">
       <span class="pull-left">
         <u><a href="/library" id="breadcrumb-library"></a></u>
       </span>
@@ -29,6 +22,27 @@
       <span class="pull-left">&nbsp;&gt;&nbsp;</span>
       <span class="pull-left">
         <u><a id="breadcrumb-source-name"></a></u>
+      </span>
+      <span id="delete-source-section" class="hidden pull-right">
+        <button class="btn btn-default fa fa-trash" data-toggle="modal" data-target="#delete-source-button"></button>
+        <div id="delete-source-button" class="modal fade" role="dialog">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-body">
+                <span id="source-deletion-confirmation"></span>
+                <br/>
+                <form>
+                  <button class="btn btn-default submit-button">
+                    <span class="yes"></span>
+                  </button>
+                  <span class="btn btn-default" data-dismiss="modal">
+                    <span class="no"></span>
+                  </span>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </span>
     </div>
     <div class="row">
@@ -90,23 +104,6 @@
               <span class="text-holder" style="padding-left: 15px;"></span>
             </span>
           </div>
-        </div>
-
-        <div class="row">
-          <sec:ifAnyGranted roles="ROLE_ARCHIVARIUS">
-            <div class="pull-left">
-              <g:render template="/common/templates/modalButton"
-                  model="${[elementId: 'deleteSource' + sourceId, size: 'modal-sm', message: 'source.delete.button']}">
-                <g:message code='source.deleteConfirmation.text' args="${[source]}"/>
-                <br/>
-                <g:render template="/ajax/templates/ajaxLink"
-                    model="${[controller: 'source', action: 'deleteSource', id: sourceId, method: 'DELETE', classes: 'btn btn-default']}">
-                  <g:message code="yes"/>
-                </g:render>
-                <button type="button" class="btn btn-default" data-dismiss="modal"><g:message code="no"/></button>
-              </g:render>
-            </div>
-          </sec:ifAnyGranted>
         </div>
       </div>
       <div class="col-sm-4">

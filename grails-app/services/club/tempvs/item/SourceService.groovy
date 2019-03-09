@@ -17,10 +17,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 @GrailsCompileStatic
 class SourceService {
 
-    private static final String ITEM_TYPE_FIELD = 'itemType'
-    private static final String SOURCE_TYPE_FIELD = 'sourceType'
-    private static final String PERIOD_FIELD = 'period'
-
     ImageService imageService
 
     Source getSource(Long id) {
@@ -51,28 +47,9 @@ class SourceService {
         }
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    Source editSourceField(Source source, String fieldName, String fieldValue) {
-        if (fieldName in [PERIOD_FIELD, ITEM_TYPE_FIELD, SOURCE_TYPE_FIELD]) {
-            throw new AccessDeniedException('Operation not supported.')
-        } else {
-            source."${fieldName}" = fieldValue
-        }
-
-        source.save()
-        source
-    }
-
     Source saveSource(Source source) {
         source.save()
         source
-    }
-
-    void deleteSource(Source source) {
-        List<Item2Source> item2Sources = Item2Source.findAllBySource(source)
-        item2Sources*.delete()
-        imageService.deleteImages source.images
-        source.delete()
     }
 
     Source deleteImage(Source source, Image image) {

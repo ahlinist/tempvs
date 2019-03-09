@@ -297,6 +297,20 @@ var library = {
           };
         }
 
+        if (library.isAdmin(roles)) {
+          var deleteSrcMessages = library.i18n.en.sourcePage.deleteSource;
+          var deleteSrcSection = document.querySelector('span#delete-source-section');
+          deleteSrcSection.classList.remove('hidden');
+          deleteSrcSection.querySelector('span#source-deletion-confirmation').innerHTML = deleteSrcMessages.confirmation;
+          deleteSrcSection.querySelector('form span.yes').innerHTML = deleteSrcMessages.yes;
+          deleteSrcSection.querySelector('form span.no').innerHTML = deleteSrcMessages.no;
+          deleteSrcSection.querySelector('form').action = '/api/library/source/' + data.id;
+          deleteSrcSection.querySelector('form').onsubmit = function() {
+            library.deleteSource(this, data.period.toLowerCase());
+            return false;
+          };
+        }
+
         sourceForm.querySelector('#source-classification .text-holder').innerHTML = msgSource.source.classifications[data.classification];
         sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[data.type];
         sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
@@ -411,6 +425,18 @@ var library = {
       });
     }
   },
+  deleteSource: function(form, period) {
+    var actions = {
+      200: redirectToPeriodPage
+    };
+
+    function redirectToPeriodPage() {
+      window.location.href = '/library/period/' + period;
+    }
+
+    ajaxHandler.blockUI();
+    ajaxHandler.fetch(form, form.action, {method: 'DELETE'}, actions);
+  },
   i18n: {
     en: {
       source: {
@@ -463,7 +489,12 @@ var library = {
         }
       },
       sourcePage: {
-        title: 'Source'
+        title: 'Source',
+        deleteSource: {
+          confirmation: 'Are you sure you want to delete this source?',
+          yes: 'Yes',
+          no: 'No'
+        }
       },
       breadcrumb: {
         library: "Library",

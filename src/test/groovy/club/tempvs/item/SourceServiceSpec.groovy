@@ -10,15 +10,11 @@ import spock.lang.Specification
 
 class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceService>, DomainUnitTest<Source> {
 
-    private static final String NAME = 'name'
-    private static final String FIELD_VALUE = 'fieldValue'
-
     def image = Mock Image
     def source = Mock Source
     def itemType = GroovyMock ItemType
     def comment = Mock Comment
     def period = GroovyMock Period
-    def item2Source = Mock Item2Source
 
     def imageService = Mock ImageService
 
@@ -56,19 +52,6 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
         result == [source]
     }
 
-    void "Test editSourceField()"() {
-        when:
-        def result = service.editSourceField(source, NAME, FIELD_VALUE)
-
-        then:
-        1 * source.setName(FIELD_VALUE)
-        1 * source.save() >> source
-        0 * _
-
-        and:
-        result == source
-    }
-
     void "Test saveSource()"() {
         when:
         def result = service.saveSource(source)
@@ -79,19 +62,6 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
 
         and:
         result == source
-    }
-
-    void "Test deleteSource()"() {
-        when:
-        service.deleteSource(source)
-
-        then:
-        1 * Item2Source.findAllBySource(source) >> [item2Source, item2Source]
-        2 * item2Source.delete()
-        1 * source.images >> [image]
-        1 * imageService.deleteImages([image])
-        1 * source.delete()
-        0 * _
     }
 
     void "Test deleteImage()"() {
