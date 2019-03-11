@@ -5,8 +5,6 @@ import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.image.ImageUploadBean
-import club.tempvs.image.ImageUploadCommand
 import club.tempvs.user.Profile
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -24,7 +22,6 @@ import org.springframework.security.access.annotation.Secured
 class SourceController {
 
     private static final String NO_ACTION = 'none'
-    private static final String SOURCE_COLLECTION = 'source'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
     private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
@@ -63,44 +60,6 @@ class SourceController {
         Map model = [
                 images: source.images,
                 objectId: objectId,
-                controllerName: 'source',
-                addingAllowed: userService.ifAnyRoleGranted(ROLE_CONTRIBUTOR),
-                deletingAllowed: userService.ifAnyRoleGranted(ROLE_SCRIBE),
-        ]
-
-        String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    @Secured("hasRole('ROLE_CONTRIBUTOR')")
-    def addImages(ImageUploadCommand command) {
-        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
-
-        if (!imageUploadBeans || imageUploadBeans.every { it.image.empty }) {
-            return render([action: NO_ACTION] as JSON)
-        }
-
-        if (!imageUploadBeans.every { it.validate() }) {
-            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
-        }
-
-        Source source = sourceService.getSource params.objectId as Long
-        List<Image> images = imageService.uploadImages(imageUploadBeans, SOURCE_COLLECTION)
-
-        if (!source || !images) {
-            return render([action: NO_ACTION] as JSON)
-        }
-
-        images.each { Image image -> source.addToImages(image)}
-        source = sourceService.saveSource(source)
-
-        if (source.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(source))
-        }
-
-        Map model = [
-                images: source.images,
-                objectId: params.objectId,
                 controllerName: 'source',
                 addingAllowed: userService.ifAnyRoleGranted(ROLE_CONTRIBUTOR),
                 deletingAllowed: userService.ifAnyRoleGranted(ROLE_SCRIBE),

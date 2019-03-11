@@ -27,10 +27,6 @@ class SourceService {
         Source.load id
     }
 
-    List<Source> getSourcesByPeriod(Period period) {
-        Source.findAllByPeriod period
-    }
-
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
     List<Source> getSourcesByPeriodAndItemType(Period period, ItemType itemType, List<Source> excludedSources = []) {
         Source.withCriteria {
@@ -45,11 +41,6 @@ class SourceService {
                 }
             }
         }
-    }
-
-    Source saveSource(Source source) {
-        source.save()
-        source
     }
 
     Source deleteImage(Source source, Image image) {

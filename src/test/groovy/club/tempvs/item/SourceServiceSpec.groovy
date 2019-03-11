@@ -28,18 +28,6 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
     def cleanup() {
     }
 
-    void "Test getSourcesByPeriod()"() {
-        when:
-        def result = service.getSourcesByPeriod(period)
-
-        then:
-        1 * Source.findAllByPeriod(period) >> [source]
-        0 * _
-
-        and:
-        result == [source]
-    }
-
     void "Test getSourcesByPeriodAndItemType()"() {
         when:
         def result = service.getSourcesByPeriodAndItemType(period, itemType)
@@ -50,18 +38,6 @@ class SourceServiceSpec extends Specification implements ServiceUnitTest<SourceS
 
         and:
         result == [source]
-    }
-
-    void "Test saveSource()"() {
-        when:
-        def result = service.saveSource(source)
-
-        then:
-        1 * source.save() >> source
-        0 * _
-
-        and:
-        result == source
     }
 
     void "Test deleteImage()"() {

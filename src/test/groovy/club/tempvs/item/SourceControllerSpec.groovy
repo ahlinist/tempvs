@@ -5,8 +5,6 @@ import club.tempvs.communication.Comment
 import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.image.ImageUploadBean
-import club.tempvs.image.ImageUploadCommand
 import club.tempvs.periodization.Period
 import club.tempvs.user.Profile
 import club.tempvs.user.User
@@ -14,7 +12,6 @@ import club.tempvs.user.UserService
 import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.testing.web.controllers.ControllerUnitTest
-import org.grails.plugins.testing.GrailsMockMultipartFile
 import spock.lang.Specification
 
 class SourceControllerSpec extends Specification implements ControllerUnitTest<SourceController> {
@@ -24,7 +21,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     private static final String TEXT = 'text'
     private static final String POST_METHOD = 'POST'
     private static final String DELETE_METHOD = 'DELETE'
-    private static final String SOURCE_COLLECTION = 'source'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String ROLE_SCRIBE = 'ROLE_SCRIBE'
     private static final String ROLE_CONTRIBUTOR = 'ROLE_CONTRIBUTOR'
@@ -36,9 +32,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     def comment = Mock Comment
     def period = Period.OTHER
     def profile = Mock Profile
-    def imageUploadBean = Mock ImageUploadBean
-    def imageUploadCommand = Mock ImageUploadCommand
-    def multipartFile = Mock GrailsMockMultipartFile
 
     def userService = Mock UserService
     def imageService = Mock ImageService
@@ -57,34 +50,6 @@ class SourceControllerSpec extends Specification implements ControllerUnitTest<S
     }
 
     def cleanup() {
-    }
-
-    void "Test addImages()"() {
-        given:
-        params.objectId = LONG_ONE
-        request.method = POST_METHOD
-
-        when:
-        controller.addImages(imageUploadCommand)
-
-        then:
-        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageUploadBean.image >> multipartFile
-        1 * multipartFile.empty >> Boolean.FALSE
-        1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * imageService.uploadImages([imageUploadBean], SOURCE_COLLECTION) >> [image]
-        1 * sourceService.getSource(LONG_ONE) >> source
-        1 * source.addToImages(image)
-        1 * sourceService.saveSource(source) >> source
-        1 * source.hasErrors() >> Boolean.FALSE
-        1 * source.images >> [image]
-        1 * userService.ifAnyRoleGranted(ROLE_SCRIBE)
-        1 * userService.ifAnyRoleGranted(ROLE_CONTRIBUTOR)
-        1 * groovyPageRenderer.render(_ as Map)
-        0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
     }
 
     void "Test deleteImage()"() {

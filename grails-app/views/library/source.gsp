@@ -4,6 +4,7 @@
     <meta name="layout" content="main"/>
     <title></title>
     <script src="/static/js/library.js"></script>
+    <script src="/static/js/image.js"></script>
   </head>
   <body>
     <div class="row" style="height:40px; padding: 0 15px;">
@@ -104,6 +105,38 @@
       <div class="col-sm-4">
       </div>
       <div class="col-sm-4">
+        <div id="image-container">
+          <div id="image-holder">
+
+          </div>
+          <div class="row">
+            <div>
+              <form class="ajax-form" id="image-upload-form" onsubmit="library.uploadImage(this); return false;">
+                <div class="row">
+                  <div class="col-sm-5">
+                    <label for="image"></label>
+                  </div>
+                  <div class="col-sm-7">
+                    <label class="btn btn-default col-sm-12">
+                      <span id="select-file-button" class="placeholder"><i></i></span>
+                      <input type="file" name="image" onchange="img.setFileUploadPlaceholder(this);" hidden>
+                    </label>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-5">
+                    <label for="imageInfo"></label>
+                  </div>
+                  <div class="col-sm-7">
+                    <input class="col-sm-12 tempvs-form-field" type="text" name="imageInfo">
+                  </div>
+                </div>
+                <br/>
+                <button class="btn btn-default submit-button"></button>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>

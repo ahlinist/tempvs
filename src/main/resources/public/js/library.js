@@ -271,6 +271,7 @@ var library = {
 
     var msgSource = library.i18n.en;
     var sourceForm = document.querySelector('div#source-form');
+    var imageUploadForm = document.querySelector('form#image-upload-form');
 
     document.querySelector('title').innerHTML = library.i18n.en.sourcePage.title;
     document.querySelector('a#breadcrumb-library').innerHTML = library.i18n.en.breadcrumb.library;
@@ -281,6 +282,11 @@ var library = {
     sourceForm.querySelector('div#source-period b').innerHTML = msgSource.source.properties.period;
     sourceForm.querySelector('div#source-name form').action = '/api/library/source/' + sourceId + '/name';
     sourceForm.querySelector('div#source-description form').action = '/api/library/source/' + sourceId + '/description';
+    imageUploadForm.action = '/api/library/source/' + sourceId + '/images';
+    imageUploadForm.querySelector('label[for=image]').innerHTML = library.i18n.en.sourcePage.uploadImage.imageLabel;
+    imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = library.i18n.en.sourcePage.uploadImage.imageInfoLabel;
+    imageUploadForm.querySelector('span#select-file-button i').innerHTML = library.i18n.en.sourcePage.uploadImage.selectFileButton;
+    imageUploadForm.querySelector('button.submit-button').innerHTML = library.i18n.en.sourcePage.uploadImage.submitButton;
 
     var url = '/api/library/source/' + sourceId;
     var actions = {200: renderSourcePage};
@@ -459,6 +465,52 @@ var library = {
     ajaxHandler.blockUI();
     ajaxHandler.fetch(form, form.action, {method: 'DELETE'}, actions);
   },
+  uploadImage: function(form) {
+    var formData = new FormData(form);
+    var image = formData.get('image');
+    var imageInfo = formData.get('imageInfo');
+
+    var actions = {
+      200: function(response) {
+        response.json().then(function(data) {
+          //TODO: append to carousel
+        });
+      }
+    };
+
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(image);
+      reader.onload = () => {
+        let encoded = reader.result.replace(/^data:(.*;base64,)?/, '');
+        if ((encoded.length % 4) > 0) {
+          encoded += '='.repeat(4 - (encoded.length % 4));
+        }
+
+        var object = {
+          imageInfo: imageInfo,
+          content: encoded,
+          fileName: image.name
+        };
+
+        resolve(object);
+      };
+      reader.onerror = error => reject(error);
+    })
+    .then(
+      data => {
+        var payload = {
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        };
+
+        ajaxHandler.fetch(form, form.action, payload, actions);
+      }
+    );
+  },
   i18n: {
     en: {
       source: {
@@ -512,6 +564,12 @@ var library = {
       },
       sourcePage: {
         title: 'Source',
+        uploadImage: {
+          imageLabel: 'Image',
+          imageInfoLabel: 'Image Info',
+          selectFileButton: 'Select file',
+          submitButton: 'Submit'
+        },
         deleteSource: {
           confirmation: 'Are you sure you want to delete this source?',
           yes: 'Yes',
