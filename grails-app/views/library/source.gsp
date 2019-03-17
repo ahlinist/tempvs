@@ -106,8 +106,42 @@
       </div>
       <div class="col-sm-4">
         <div id="image-container">
-          <div id="image-holder">
-
+          <div id="image-carousel">
+            <div class="btn" id="modal-activate-button" type="button" data-toggle="modal" data-target="#modal-source-images" data-local="#carousel-source-images">
+              <span class="badge badge-notify" style="position: absolute; right:15px; top:0px;"></span>
+            </div>
+            <div class="modal fade" id="modal-source-images" tabindex="-1" role="dialog">
+              <div class="modal-dialog" style="max-width: 90vw;">
+                <div class="modal-content">
+                  <div class="modal-header" style="z-index:90;  position:absolute; right:0px; padding: 0px; display: table-row;"></div>
+                  <div class="modal-body">
+                    <div id="carousel-source-images" class="carousel slide">
+                      <!-- Indicators -->
+                      <ol class="carousel-indicators"></ol>
+                      <template id="image-indicator">
+                        <li data-target="#carousel"></li>
+                      </template>
+                      <!-- Wrapper for slides -->
+                      <div class="carousel-inner"></div>
+                      <template id="carousel-inner">
+                        <div class="item">
+                          <p class="text-center image-info"></p>
+                        </div>
+                      </template>
+                      <!-- Left and right controls -->
+                      <a class="left carousel-control" href="#carousel-source-images" data-slide="prev" style="background:none">
+                        <span class="glyphicon glyphicon-chevron-left"></span>
+                        <span class="sr-only">Previous</span>
+                      </a>
+                      <a class="right carousel-control" href="#carousel-source-images" data-slide="next" style="background:none">
+                        <span class="glyphicon glyphicon-chevron-right"></span>
+                        <span class="sr-only">Next</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="row">
             <div>

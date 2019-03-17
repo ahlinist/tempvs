@@ -301,12 +301,49 @@ var library = {
 
       response.json().then(function(data) {
         var periodName = msgSource.period[data.period].name;
+        var imageContainer = document.querySelector('div#image-container');
+        var carouselInner = imageContainer.querySelector('div.carousel-inner');
+        var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
+        var carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
+        var imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
+        var imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
+        var carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
+        var carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
+
+        carouselIndicatorList.innerHTML = '';
         document.querySelector('a#breadcrumb-period').innerHTML = periodName;
         document.querySelector('a#breadcrumb-period').href = '/library/period/' +  data.period.toLowerCase();
         document.querySelector('a#breadcrumb-source-name').innerHTML = data.name;
         document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + data.id;
         sourceForm.querySelector('#source-name .text-holder').innerHTML = data.name;
         sourceForm.querySelector('#source-description .text-holder').innerHTML = data.description;
+
+        modalActivateButton.querySelector('.badge-notify').innerHTML = data.images.length;
+
+        data.images.forEach(function(image, index) {
+          var indicatorNode = document.importNode(imageIndicatorItem, true);
+          var carouselInnerNode = document.importNode(carouselInnerItem, true);
+
+          indicatorNode.setAttribute('data-slide-to', index);
+          carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
+          var htmlImage = new Image();
+          htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
+          htmlImage.src = "/api/image/image/" + image.objectId;
+
+          if (index === 0) {
+            indicatorNode.classList.add('active');
+            carouselInnerNode.classList.add('active');
+
+            var htmlFirstImage = new Image();
+            htmlFirstImage.setAttribute("style", "width: 30vw;");
+            htmlFirstImage.src = "/api/image/image/" + image.objectId;
+            modalActivateButton.appendChild(htmlFirstImage);
+          }
+
+          carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
+          carouselIndicatorList.appendChild(indicatorNode);
+          carouselInner.appendChild(carouselInnerNode);
+        });
 
         if (library.isEditAllowed(roles)) {
           sourceForm.querySelector('#source-name input').value = data.name;
