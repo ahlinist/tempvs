@@ -17,7 +17,7 @@ var library = {
     } else if (location.includes('source')) {
       var n = location.lastIndexOf('/');
       var sourceId = location.substring(n + 1);
-      library.renderSourcePage(sourceId);
+      library.sourcePage(sourceId);
     }
   },
   isContributionAllowed: function(roles) {
@@ -266,7 +266,7 @@ var library = {
       });
     }
   },
-  renderSourcePage: function(sourceId) {
+  sourcePage: function(sourceId) {
     ajaxHandler.blockUI();
 
     var msgSource = library.i18n.en;
@@ -289,98 +289,102 @@ var library = {
     imageUploadForm.querySelector('button.submit-button').innerHTML = library.i18n.en.sourcePage.uploadImage.submitButton;
 
     var url = '/api/library/source/' + sourceId;
-    var actions = {200: renderSourcePage};
+    var actions = {200: library.renderSourcePage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+  },
+  renderSourcePage: function(response) {
+    var sourceForm = document.querySelector('div#source-form');
+    var msgSource = library.i18n.en;
+    var userInfo = response.headers.get("User-Info");
 
-    function renderSourcePage(response) {
-      var userInfo = response.headers.get("User-Info");
+    if (userInfo) {
+      var roles = JSON.parse(userInfo).roles;
+    }
 
-      if (userInfo) {
-        var roles = JSON.parse(userInfo).roles;
+    response.json().then(function(data) {
+      var periodName = msgSource.period[data.period].name;
+      var imageContainer = document.querySelector('div#image-container');
+      var carouselInner = imageContainer.querySelector('div.carousel-inner');
+      var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
+      var carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
+      var imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
+      var imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
+      var carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
+      var carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
+
+      carouselInner.innerHTML = '';
+      carouselIndicatorList.innerHTML = '';
+      document.querySelector('a#breadcrumb-period').innerHTML = periodName;
+      document.querySelector('a#breadcrumb-period').href = '/library/period/' +  data.period.toLowerCase();
+      document.querySelector('a#breadcrumb-source-name').innerHTML = data.name;
+      document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + data.id;
+      sourceForm.querySelector('#source-name .text-holder').innerHTML = data.name;
+      sourceForm.querySelector('#source-description .text-holder').innerHTML = data.description;
+
+      modalActivateButton.querySelector('.badge-notify').innerHTML = data.images.length;
+
+      data.images.forEach(function(image, index) {
+        var indicatorNode = document.importNode(imageIndicatorItem, true);
+        var carouselInnerNode = document.importNode(carouselInnerItem, true);
+        var firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
+
+        indicatorNode.setAttribute('data-slide-to', index);
+        carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
+        var htmlImage = new Image();
+        htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
+        htmlImage.src = "/api/image/image/" + image.objectId;
+
+        if (index === 0) {
+          indicatorNode.classList.add('active');
+          carouselInnerNode.classList.add('active');
+
+          var htmlFirstImage = new Image();
+          htmlFirstImage.setAttribute("style", "width: 30vw;");
+          htmlFirstImage.src = "/api/image/image/" + image.objectId;
+          firstImageHolder.innerHTML = '';
+          firstImageHolder.appendChild(htmlFirstImage);
+        }
+
+        carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
+        carouselIndicatorList.appendChild(indicatorNode);
+        carouselInner.appendChild(carouselInnerNode);
+      });
+
+      if (library.isEditAllowed(roles)) {
+        sourceForm.querySelector('#source-name input').value = data.name;
+        sourceForm.querySelector('#source-name form').action = '/api/library/source/' + data.id + '/name';
+        sourceForm.querySelector('#source-description input').value = data.description;
+        sourceForm.querySelector('#source-description form').action = '/api/library/source/' + data.id + '/description';
+        sourceForm.querySelector('#source-name .smart-form-activator').classList.remove('hidden');
+        sourceForm.querySelector('#source-description .smart-form-activator').classList.remove('hidden');
+
+        sourceForm.querySelector('#source-name .smart-form-activator').onclick = function() {
+          ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
+        };
+
+        sourceForm.querySelector('#source-description .smart-form-activator').onclick = function() {
+          ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
+        };
       }
 
-      response.json().then(function(data) {
-        var periodName = msgSource.period[data.period].name;
-        var imageContainer = document.querySelector('div#image-container');
-        var carouselInner = imageContainer.querySelector('div.carousel-inner');
-        var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
-        var carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
-        var imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
-        var imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
-        var carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
-        var carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
+      if (library.isAdmin(roles)) {
+        var deleteSrcMessages = library.i18n.en.sourcePage.deleteSource;
+        var deleteSrcSection = document.querySelector('span#delete-source-section');
+        deleteSrcSection.classList.remove('hidden');
+        deleteSrcSection.querySelector('span#source-deletion-confirmation').innerHTML = deleteSrcMessages.confirmation;
+        deleteSrcSection.querySelector('form span.yes').innerHTML = deleteSrcMessages.yes;
+        deleteSrcSection.querySelector('form span.no').innerHTML = deleteSrcMessages.no;
+        deleteSrcSection.querySelector('form').action = '/api/library/source/' + data.id;
+        deleteSrcSection.querySelector('form').onsubmit = function() {
+          library.deleteSource(this, data.period.toLowerCase());
+          return false;
+        };
+      }
 
-        carouselIndicatorList.innerHTML = '';
-        document.querySelector('a#breadcrumb-period').innerHTML = periodName;
-        document.querySelector('a#breadcrumb-period').href = '/library/period/' +  data.period.toLowerCase();
-        document.querySelector('a#breadcrumb-source-name').innerHTML = data.name;
-        document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + data.id;
-        sourceForm.querySelector('#source-name .text-holder').innerHTML = data.name;
-        sourceForm.querySelector('#source-description .text-holder').innerHTML = data.description;
-
-        modalActivateButton.querySelector('.badge-notify').innerHTML = data.images.length;
-
-        data.images.forEach(function(image, index) {
-          var indicatorNode = document.importNode(imageIndicatorItem, true);
-          var carouselInnerNode = document.importNode(carouselInnerItem, true);
-
-          indicatorNode.setAttribute('data-slide-to', index);
-          carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
-          var htmlImage = new Image();
-          htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
-          htmlImage.src = "/api/image/image/" + image.objectId;
-
-          if (index === 0) {
-            indicatorNode.classList.add('active');
-            carouselInnerNode.classList.add('active');
-
-            var htmlFirstImage = new Image();
-            htmlFirstImage.setAttribute("style", "width: 30vw;");
-            htmlFirstImage.src = "/api/image/image/" + image.objectId;
-            modalActivateButton.appendChild(htmlFirstImage);
-          }
-
-          carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
-          carouselIndicatorList.appendChild(indicatorNode);
-          carouselInner.appendChild(carouselInnerNode);
-        });
-
-        if (library.isEditAllowed(roles)) {
-          sourceForm.querySelector('#source-name input').value = data.name;
-          sourceForm.querySelector('#source-name form').action = '/api/library/source/' + data.id + '/name';
-          sourceForm.querySelector('#source-description input').value = data.description;
-          sourceForm.querySelector('#source-description form').action = '/api/library/source/' + data.id + '/description';
-          sourceForm.querySelector('#source-name .smart-form-activator').classList.remove('hidden');
-          sourceForm.querySelector('#source-description .smart-form-activator').classList.remove('hidden');
-
-          sourceForm.querySelector('#source-name .smart-form-activator').onclick = function() {
-            ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
-          };
-
-          sourceForm.querySelector('#source-description .smart-form-activator').onclick = function() {
-            ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
-          };
-        }
-
-        if (library.isAdmin(roles)) {
-          var deleteSrcMessages = library.i18n.en.sourcePage.deleteSource;
-          var deleteSrcSection = document.querySelector('span#delete-source-section');
-          deleteSrcSection.classList.remove('hidden');
-          deleteSrcSection.querySelector('span#source-deletion-confirmation').innerHTML = deleteSrcMessages.confirmation;
-          deleteSrcSection.querySelector('form span.yes').innerHTML = deleteSrcMessages.yes;
-          deleteSrcSection.querySelector('form span.no').innerHTML = deleteSrcMessages.no;
-          deleteSrcSection.querySelector('form').action = '/api/library/source/' + data.id;
-          deleteSrcSection.querySelector('form').onsubmit = function() {
-            library.deleteSource(this, data.period.toLowerCase());
-            return false;
-          };
-        }
-
-        sourceForm.querySelector('#source-classification .text-holder').innerHTML = msgSource.source.classifications[data.classification];
-        sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[data.type];
-        sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
-      });
-    }
+      sourceForm.querySelector('#source-classification .text-holder').innerHTML = msgSource.source.classifications[data.classification];
+      sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[data.type];
+      sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
+    });
   },
   createSource: function(form) {
     var formData = new FormData(form);
@@ -507,13 +511,7 @@ var library = {
     var image = formData.get('image');
     var imageInfo = formData.get('imageInfo');
 
-    var actions = {
-      200: function(response) {
-        response.json().then(function(data) {
-          //TODO: append to carousel
-        });
-      }
-    };
+    var actions = {200: library.renderSourcePage};
 
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -544,6 +542,7 @@ var library = {
           body: JSON.stringify(data)
         };
 
+        ajaxHandler.blockUI();
         ajaxHandler.fetch(form, form.action, payload, actions);
       }
     );

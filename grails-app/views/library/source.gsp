@@ -109,6 +109,7 @@
           <div id="image-carousel">
             <div class="btn" id="modal-activate-button" type="button" data-toggle="modal" data-target="#modal-source-images" data-local="#carousel-source-images">
               <span class="badge badge-notify" style="position: absolute; right:15px; top:0px;"></span>
+              <div id="first-image-holder"></div>
             </div>
             <div class="modal fade" id="modal-source-images" tabindex="-1" role="dialog">
               <div class="modal-dialog" style="max-width: 90vw;">
