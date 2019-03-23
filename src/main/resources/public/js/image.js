@@ -1,7 +1,6 @@
 var img = {
   setFileUploadPlaceholder: function(element) {
-    //cutting off "fakepath"
-    var fileName = element.value.split(/(\\|\/)/g).pop();
+    var fileName = element.value.split(/(\\|\/)/g).pop(); //cutting off "fakepath"
     var placeholder = element.parentNode.querySelector(".placeholder");
     placeholder.innerHTML = "<b>" + fileName + "</b>";
   }

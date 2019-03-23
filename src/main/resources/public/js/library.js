@@ -307,6 +307,7 @@ var library = {
       var carouselInner = imageContainer.querySelector('div.carousel-inner');
       var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
       var carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
+      var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
       var imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
       var imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
       var carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
@@ -320,6 +321,17 @@ var library = {
       document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + data.id;
       sourceForm.querySelector('#source-name .text-holder').innerHTML = data.name;
       sourceForm.querySelector('#source-description .text-holder').innerHTML = data.description;
+      carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = library.i18n.en.sourcePage.deleteImage.confirmation;
+      carouselHeader.querySelector('span.yes').innerHTML = library.i18n.en.sourcePage.deleteImage.yes;
+      carouselHeader.querySelector('span.no').innerHTML = library.i18n.en.sourcePage.deleteImage.no;
+      carouselHeader.querySelector('form').action = '/api/library/source/' + data.id + '/images';
+      carouselHeader.querySelector('form').onsubmit = function() {
+        var actions = {
+          200: library.renderSourcePage
+        };
+        modalCarousel.deleteImage(this, actions);
+        return false;
+      };
 
       modalActivateButton.querySelector('.badge-notify').innerHTML = data.images.length;
 
@@ -349,6 +361,14 @@ var library = {
         carouselIndicatorList.appendChild(indicatorNode);
         carouselInner.appendChild(carouselInnerNode);
       });
+
+      var slideMapping = {};
+
+      data.images.forEach(function(entry, index) {
+        slideMapping[index] = entry.objectId;
+      });
+
+      modalCarousel.init(slideMapping);
 
       if (library.isEditAllowed(roles)) {
         sourceForm.querySelector('#source-name input').value = data.name;
@@ -608,6 +628,11 @@ var library = {
         },
         deleteSource: {
           confirmation: 'Are you sure you want to delete this source?',
+          yes: 'Yes',
+          no: 'No'
+        },
+        deleteImage: {
+          confirmation: 'Are you sure you want to delete this image?',
           yes: 'Yes',
           no: 'No'
         }

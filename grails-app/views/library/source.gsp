@@ -5,6 +5,7 @@
     <title></title>
     <script src="/static/js/library.js"></script>
     <script src="/static/js/image.js"></script>
+    <script src="/static/js/modal-carousel.js"></script>
   </head>
   <body>
     <div class="row" style="height:40px; padding: 0 15px;">
@@ -114,7 +115,29 @@
             <div class="modal fade" id="modal-source-images" tabindex="-1" role="dialog">
               <div class="modal-dialog" style="max-width: 90vw;">
                 <div class="modal-content">
-                  <div class="modal-header" style="z-index:90;  position:absolute; right:0px; padding: 0px; display: table-row;"></div>
+                  <div id="carousel-modal-header" class="modal-header" style="z-index:90;  position:absolute; right:0px; padding: 0px; display: table-row;">
+                    <span id="delete-image-wrapper" class="pull-right" style="z-index:2147483647;  position:absolute; top: 0px; right:0px; padding: 0px; display: table-row;">
+                      <button class="btn btn-default fa fa-trash" data-toggle="modal" data-target="#delete-image-button"></button>
+                      <div id="delete-image-button" class="modal fade" role="dialog">
+                        <div class="modal-dialog modal-sm">
+                          <div class="modal-content">
+                            <div class="modal-body">
+                              <span id="image-deletion-confirmation"></span>
+                              <br/>
+                              <form>
+                                <button class="btn btn-default submit-button">
+                                  <span class="yes"></span>
+                                </button>
+                                <span class="btn btn-default" data-dismiss="modal">
+                                  <span class="no"></span>
+                                </span>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </span>
+                  </div>
                   <div class="modal-body">
                     <div id="carousel-source-images" class="carousel slide">
                       <!-- Indicators -->

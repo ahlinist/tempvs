@@ -91,9 +91,7 @@
                           <input class="col-sm-12 tempvs-form-field" type="text" name="description">
                         </div>
                       </div>
-                      <button class="btn btn-default submit-button">
-                        <g:message code="message.send.message.button"/>
-                      </button>
+                      <button class="btn btn-default submit-button"></button>
                     </form>
                   </div>
                 </div>
