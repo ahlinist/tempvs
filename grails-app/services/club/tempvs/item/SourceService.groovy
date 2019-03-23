@@ -37,17 +37,4 @@ class SourceService {
             }
         }
     }
-
-    Source addComment(Source source, Comment comment) {
-        source.addToComments(comment)
-        source.save()
-        source
-    }
-
-    @PreAuthorize('(#comment.userProfile != null and #comment.userProfile.user.email == authentication.name) or (#comment.clubProfile != null and #comment.clubProfile.user.email == authentication.name)')
-    Source deleteComment(Source source, Comment comment) {
-        source.removeFromComments(comment)
-        source.save()
-        source
-    }
 }
