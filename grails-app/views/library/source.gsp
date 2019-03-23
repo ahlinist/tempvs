@@ -117,7 +117,7 @@
               <div class="modal-dialog" style="max-width: 90vw;">
                 <div class="modal-content">
                   <div id="carousel-modal-header" class="modal-header" style="z-index:90;  position:absolute; right:0px; padding: 0px; display: table-row;">
-                    <span id="delete-image-wrapper" class="pull-right" style="z-index:2147483647;  position:absolute; top: 0px; right:0px; padding: 0px; display: table-row;">
+                    <span id="delete-image-wrapper" class="pull-right hidden">
                       <button class="btn btn-default fa fa-trash" data-toggle="modal" data-target="#delete-image-button"></button>
                       <div id="delete-image-button" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-sm">
