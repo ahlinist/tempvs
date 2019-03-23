@@ -86,7 +86,7 @@ var library = {
       var periodShortDescription = periodNode.querySelector('p.period-short-description');
 
       detailsLink.href = '/library/period/' + periodKey.toLowerCase();
-      thumbnailImg.src = '/assets/library/thumbnails/' + periodKey.toLowerCase() + '.jpg';
+      thumbnailImg.src = '/static/images/library/thumbnails/' + periodKey.toLowerCase() + '.jpg';
       periodName.innerHTML = library.i18n.en.period[periodKey].name;
       periodShortDescription.innerHTML = library.i18n.en.period[periodKey].shortDescription;
 
@@ -233,7 +233,7 @@ var library = {
     document.querySelector('a#breadcrumb-library').innerHTML = library.i18n.en.breadcrumb.library;
     breadcrumbPeriod.innerHTML = library.i18n.en.period[period].name;
     breadcrumbPeriod.href = '/library/period/' + periodKey;
-    document.querySelector('img#period-image').src = '/assets/library/' + periodKey + '.jpg';
+    document.querySelector('img#period-image').src = '/static/images/library/' + periodKey + '.jpg';
     searchSection.querySelector('div#classification-search h4').innerHTML = srcProperties.classification + ":";
     searchSection.querySelector('div#type-search h4').innerHTML = srcProperties.type + ":";
     searchSection.querySelector('input[name=query]').placeholder = library.i18n.en.periodPage.searchSourcePlaceholder;
@@ -333,42 +333,47 @@ var library = {
         return false;
       };
 
-      modalActivateButton.querySelector('.badge-notify').innerHTML = data.images.length;
+      var firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
 
-      data.images.forEach(function(image, index) {
-        var indicatorNode = document.importNode(imageIndicatorItem, true);
-        var carouselInnerNode = document.importNode(carouselInnerItem, true);
-        var firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
+      if (data.images.length) {
+        imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
+        imageContainer.querySelector('img#default-image').classList.add('hidden');
+        modalActivateButton.querySelector('.badge-notify').innerHTML = data.images.length;
 
-        indicatorNode.setAttribute('data-slide-to', index);
-        carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
-        var htmlImage = new Image();
-        htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
-        htmlImage.src = "/api/image/image/" + image.objectId;
+        data.images.forEach(function(image, index) {
+          var indicatorNode = document.importNode(imageIndicatorItem, true);
+          var carouselInnerNode = document.importNode(carouselInnerItem, true);
 
-        if (index === 0) {
-          indicatorNode.classList.add('active');
-          carouselInnerNode.classList.add('active');
+          indicatorNode.setAttribute('data-slide-to', index);
+          carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
+          var htmlImage = new Image();
+          htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
+          htmlImage.src = "/api/image/image/" + image.objectId;
 
-          var htmlFirstImage = new Image();
-          htmlFirstImage.setAttribute("style", "width: 30vw;");
-          htmlFirstImage.src = "/api/image/image/" + image.objectId;
-          firstImageHolder.innerHTML = '';
-          firstImageHolder.appendChild(htmlFirstImage);
-        }
+          if (index === 0) {
+            indicatorNode.classList.add('active');
+            carouselInnerNode.classList.add('active');
 
-        carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
-        carouselIndicatorList.appendChild(indicatorNode);
-        carouselInner.appendChild(carouselInnerNode);
-      });
+            var htmlFirstImage = new Image();
+            htmlFirstImage.setAttribute("style", "width: 30vw;");
+            htmlFirstImage.src = "/api/image/image/" + image.objectId;
+            firstImageHolder.innerHTML = '';
+            firstImageHolder.appendChild(htmlFirstImage);
+          }
 
-      var slideMapping = {};
+          carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
+          carouselIndicatorList.appendChild(indicatorNode);
+          carouselInner.appendChild(carouselInnerNode);
+        });
 
-      data.images.forEach(function(entry, index) {
-        slideMapping[index] = entry.objectId;
-      });
+        var slideMapping = {};
 
-      modalCarousel.init(slideMapping);
+        data.images.forEach(function(entry, index) {
+          slideMapping[index] = entry.objectId;
+        });
+
+        modalCarousel.init(slideMapping);
+      }
 
       if (library.isEditAllowed(roles)) {
         sourceForm.querySelector('#source-name input').value = data.name;

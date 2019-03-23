@@ -107,7 +107,8 @@
       </div>
       <div class="col-sm-4">
         <div id="image-container">
-          <div id="image-carousel">
+          <img id="default-image" src="/static/images/default_image.gif" style="width: 30vw;">
+          <div id="image-carousel" class="hidden">
             <div class="btn" id="modal-activate-button" type="button" data-toggle="modal" data-target="#modal-source-images" data-local="#carousel-source-images">
               <span class="badge badge-notify" style="position: absolute; right:15px; top:0px;"></span>
               <div id="first-image-holder"></div>
