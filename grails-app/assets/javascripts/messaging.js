@@ -8,7 +8,7 @@ var messaging = {
   didScroll: false,
   actions: {
     200: function(response) {
-      var currentProfileId = response.headers.get("Profile");
+      var currentProfileId = JSON.parse(response.headers.get("User-Info")).profileId;
 
       response.json().then(function(conversation) {
         if (!window.location.href.includes('/message')) {
