@@ -47,7 +47,7 @@
             </g:link>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'message.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="message" action=" ">
+            <g:link class="btn btn-secondary disableable" controller="conversations" action=" ">
               <span class="fa fa-envelope">
                 <span id="new-conversations" class="badge badge-notify hidden counter" style="position: absolute;"></span>
               </span>

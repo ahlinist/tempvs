@@ -15,7 +15,7 @@ var messaging = {
     const location = window.location.href;
     const appendConversations = true;
 
-    if (location.includes("/message/conversation")) {
+    if (!location.endsWith("/conversations") && !location.endsWith("/conversations/")) {
       const n = location.lastIndexOf('/');
       const conversationId = location.substring(n + 1);
       messaging.conversation(conversationId, messaging.defaultPageNumber, messaging.defaultMessagesSize);
@@ -28,8 +28,8 @@ var messaging = {
       var currentProfileId = JSON.parse(response.headers.get("User-Info")).profileId;
 
       response.json().then(function(conversation) {
-        if (!window.location.href.includes('/message')) {
-          window.location.href = "/message/conversation/" + conversation.id;
+        if (!window.location.href.includes('/conversations')) {
+          window.location.href = "/conversations/" + conversation.id;
           return;
         }
 
@@ -88,7 +88,7 @@ var messaging = {
           participantsList.appendChild(participantNode);
         });
 
-        window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
+        window.history.pushState("", "Tempvs - Message", '/conversations/' + conversation.id);
         messaging.markAsRead();
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
@@ -329,7 +329,12 @@ var messaging = {
       var authorLink = messageNode.querySelector('a.message-author');
       authorLink.setAttribute('href', '/profile/show/' + message.author.id);
       authorLink.querySelector('b').innerHTML = message.author.name;
-      messageNode.querySelector('span.message-text').innerHTML = message.text;
+
+      var encodedStr = message.text.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+         return '&#'+i.charCodeAt(0)+';';
+      });
+
+      messageNode.querySelector('span.message-text').innerHTML = encodedStr;
 
       if (message.subject) {
         var subjectLink = messageNode.querySelector('a.message-subject');
