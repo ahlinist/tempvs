@@ -1,6 +1,5 @@
 package club.tempvs.user
 
-import club.tempvs.object.ObjectFactory
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.userdetails.GrailsUser
@@ -23,13 +22,11 @@ class UserServiceSpec extends Specification implements ServiceUnitTest<UserServi
     def profileService = Mock ProfileService
     def emailVerification = Mock EmailVerification
     def springSecurityService = Mock SpringSecurityService
-    def objectFactory = Mock ObjectFactory
 
     def setup() {
         service.verifyService = verifyService
         service.profileService = profileService
         service.springSecurityService = springSecurityService
-        service.objectFactory = objectFactory
     }
 
     def cleanup() {

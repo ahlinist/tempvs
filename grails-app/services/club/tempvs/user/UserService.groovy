@@ -1,6 +1,5 @@
 package club.tempvs.user
 
-import club.tempvs.object.ObjectFactory
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
@@ -9,8 +8,6 @@ import grails.plugin.springsecurity.userdetails.GrailsUser
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.GrantedAuthority
-
-import java.util.stream.Collectors
 
 /**
  * Service that manages operations with {@link User} entitites.
@@ -22,14 +19,9 @@ class UserService {
     ProfileService profileService
     VerifyService verifyService
     SpringSecurityService springSecurityService
-    ObjectFactory objectFactory
 
     User getUser(Long id) {
         User.get id
-    }
-
-    boolean isLoggedIn() {
-        springSecurityService.loggedIn
     }
 
     User getCurrentUser() {
@@ -84,9 +76,5 @@ class UserService {
         } else {
             return !profiles
         }
-    }
-
-    boolean ifAnyRoleGranted(String roles) {
-        SpringSecurityUtils.ifAnyGranted(roles)
     }
 }
