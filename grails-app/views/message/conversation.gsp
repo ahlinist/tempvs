@@ -131,7 +131,7 @@
             </div>
             <ul id="messages-list"></ul>
             <form id="message-form">
-              <input type="text" style="width: calc(100% - 45px);" name="message"
+              <input type="text" style="width: calc(100% - 45px);" name="message" autocomplete="off"
               data-toggle="tooltip" data-placement="top" title="${g.message(code: 'conversation.new.message.blank.tooltip')}">
               <button class="btn btn-default">
                 <span class="fa fa-paper-plane" aria-hidden="true"></span>
