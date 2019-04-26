@@ -157,6 +157,7 @@ class ProfileController {
             return render(ajaxResponseHelper.renderValidationResponse(e.errors))
         } catch (Exception e) {
             imageService.deleteImage(avatar)
+            throw e
         }
 
         if (profileEmail) {

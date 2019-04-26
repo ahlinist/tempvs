@@ -9,7 +9,6 @@ import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.validation.ValidationException
-import grails.web.mapping.LinkGenerator
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
 
@@ -29,8 +28,7 @@ class ProfileService {
 
     UserService userService
     ImageService imageService
-    LinkGenerator grailsLinkGenerator
-    AmqpProcessor amqpSender
+    AmqpProcessor amqpProcessor
     ObjectFactory objectFactory
 
     Profile getProfile(id) {
@@ -201,12 +199,12 @@ class ProfileService {
     private void publishDataToAMQPQueue(Profile profile) {
         ProfileDto profileDto = objectFactory.getInstance(ProfileDto, profile)
         JSON jsonPayload = profileDto as JSON
-        amqpSender.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+        amqpProcessor.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
 
         if (profile.ofUserType) {
             UserDto userDto = new UserDto(profile.user)
             JSON userPayload = userDto as JSON
-            amqpSender.send(LIBRARY_USER_AMPQ_QUEUE, userPayload.toString())
+            amqpProcessor.send(LIBRARY_USER_AMPQ_QUEUE, userPayload.toString())
         }
     }
 }

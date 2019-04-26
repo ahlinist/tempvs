@@ -37,7 +37,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         service.userService = userService
         service.imageService = imageService
         service.objectFactory = objectFactory
-        service.amqpSender = amqpSender
+        service.amqpProcessor = amqpSender
     }
 
     def cleanup() {
