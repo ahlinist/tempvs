@@ -1,3 +1,7 @@
+window.onload = function() {
+  messaging.init();
+};
+
 var messaging = {
   conversationId: null,
   defaultPageNumber: 0,
@@ -6,6 +10,19 @@ var messaging = {
   currentConversationsPage: 0,
   currentMessagesPage: 0,
   didScroll: false,
+  init: function() {
+    messaging.clearForms();
+    const location = window.location.href;
+    const appendConversations = true;
+
+    if (location.includes("/message/conversation")) {
+      const n = location.lastIndexOf('/');
+      const conversationId = location.substring(n + 1);
+      messaging.conversation(conversationId, messaging.defaultPageNumber, messaging.defaultMessagesSize);
+    }
+
+    messaging.loadConversations(appendConversations);
+  },
   actions: {
     200: function(response) {
       var currentProfileId = JSON.parse(response.headers.get("User-Info")).profileId;
@@ -71,6 +88,7 @@ var messaging = {
           participantsList.appendChild(participantNode);
         });
 
+        window.history.pushState("", "Tempvs - Message", '/message/conversation/' + conversation.id);
         messaging.markAsRead();
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);

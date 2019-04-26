@@ -3,14 +3,7 @@
   <head>
     <meta name="layout" content="main"/>
     <title>Tempvs - <g:message code="message.title"/></title>
-    <script>
-      window.onload = function() {
-        var appendConversations = true;
-        messaging.clearForms();
-        messaging.loadConversations(appendConversations);
-        messaging.conversation(null, messaging.defaultPageNumber, messaging.defaultMessagesSize);
-      };
-    </script>
+    <script src="/static/js/messaging.js"></script>
   </head>
   <body>
     <template id="profile-search-result-template">
