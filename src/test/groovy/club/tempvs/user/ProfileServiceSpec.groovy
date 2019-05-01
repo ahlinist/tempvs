@@ -3,7 +3,6 @@ package club.tempvs.user
 import club.tempvs.ampq.AmqpProcessor
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.object.ObjectFactory
 import club.tempvs.profile.ProfileDto
 import grails.converters.JSON
 import grails.orm.HibernateCriteriaBuilder
@@ -28,7 +27,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
     def userService = Mock UserService
     def profile = Mock Profile
     def imageService = Mock ImageService
-    def objectFactory = Mock ObjectFactory
     def amqpSender = Mock AmqpProcessor
 
     def setup() {
@@ -36,7 +34,6 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
 
         service.userService = userService
         service.imageService = imageService
-        service.objectFactory = objectFactory
         service.amqpProcessor = amqpSender
     }
 
@@ -85,7 +82,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         1 * user.addToProfiles(profile)
         1 * profile.profileEmail
         1 * profile.save() >> profile
-        1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
+        1 * profile.toProfileDto() >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
         1 * profile.isOfUserType() >> false
@@ -132,7 +129,7 @@ class ProfileServiceSpec extends Specification implements ServiceUnitTest<Profil
         then:
         1 * profile.setFirstName(FIELD_VALUE)
         1 * profile.save() >> profile
-        1 * objectFactory.getInstance(ProfileDto, profile) >> profileDto
+        1 * profile.toProfileDto() >> profileDto
         1 * profileDto.asType(JSON) >> json
         1 * json.toString() >> profileDtoAsJsonString
         1 * profile.isOfUserType() >> false

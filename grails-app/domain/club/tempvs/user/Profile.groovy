@@ -4,6 +4,7 @@ import club.tempvs.domain.BasePersistent
 import club.tempvs.image.Image
 import club.tempvs.item.Passport
 import club.tempvs.periodization.Period
+import club.tempvs.profile.ProfileDto
 import grails.compiler.GrailsCompileStatic
 
 /**
@@ -85,5 +86,9 @@ class Profile implements BasePersistent {
     boolean equals(Object obj) {
         Profile profile = obj as Profile
         return this.id == profile.id
+    }
+
+    ProfileDto toProfileDto() {
+        new ProfileDto(this)
     }
 }

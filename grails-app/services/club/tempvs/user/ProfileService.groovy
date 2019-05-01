@@ -3,7 +3,6 @@ package club.tempvs.user
 import club.tempvs.ampq.AmqpProcessor
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
-import club.tempvs.object.ObjectFactory
 import club.tempvs.profile.ProfileDto
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
@@ -25,11 +24,11 @@ class ProfileService {
     private static final String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
     private static final String MESSAGE_PARTICIPANT_AMPQ_QUEUE = 'message.participant'
     private static final String LIBRARY_USER_AMPQ_QUEUE = 'library.user'
+    private static final String ITEM_USER_AMPQ_QUEUE = 'item.user'
 
     UserService userService
     ImageService imageService
     AmqpProcessor amqpProcessor
-    ObjectFactory objectFactory
 
     Profile getProfile(id) {
         Profile profile = Profile.findByProfileId(id as String)
@@ -197,14 +196,16 @@ class ProfileService {
     }
 
     private void publishDataToAMQPQueue(Profile profile) {
-        ProfileDto profileDto = objectFactory.getInstance(ProfileDto, profile)
+        ProfileDto profileDto = profile.toProfileDto()
         JSON jsonPayload = profileDto as JSON
-        amqpProcessor.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonPayload.toString())
+        String jsonString = jsonPayload.toString()
+        amqpProcessor.send(MESSAGE_PARTICIPANT_AMPQ_QUEUE, jsonString)
 
         if (profile.ofUserType) {
             UserDto userDto = new UserDto(profile.user)
             JSON userPayload = userDto as JSON
             amqpProcessor.send(LIBRARY_USER_AMPQ_QUEUE, userPayload.toString())
+            amqpProcessor.send(ITEM_USER_AMPQ_QUEUE, jsonString)
         }
     }
 }
