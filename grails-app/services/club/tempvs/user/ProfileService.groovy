@@ -204,8 +204,9 @@ class ProfileService {
         if (profile.ofUserType) {
             UserDto userDto = new UserDto(profile.user)
             JSON userPayload = userDto as JSON
-            amqpProcessor.send(LIBRARY_USER_AMPQ_QUEUE, userPayload.toString())
-            amqpProcessor.send(STASH_USER_AMPQ_QUEUE, jsonString)
+            String userJsonString = userPayload.toString()
+            amqpProcessor.send(LIBRARY_USER_AMPQ_QUEUE, userJsonString)
+            amqpProcessor.send(STASH_USER_AMPQ_QUEUE, userJsonString)
         }
     }
 }
