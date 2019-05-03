@@ -24,7 +24,7 @@ class ProfileService {
     private static final String EMAIL_USED_CODE = 'userProfile.profileEmail.used.error'
     private static final String MESSAGE_PARTICIPANT_AMPQ_QUEUE = 'message.participant'
     private static final String LIBRARY_USER_AMPQ_QUEUE = 'library.user'
-    private static final String ITEM_USER_AMPQ_QUEUE = 'item.user'
+    private static final String STASH_USER_AMPQ_QUEUE = 'stash.user'
 
     UserService userService
     ImageService imageService
@@ -205,7 +205,7 @@ class ProfileService {
             UserDto userDto = new UserDto(profile.user)
             JSON userPayload = userDto as JSON
             amqpProcessor.send(LIBRARY_USER_AMPQ_QUEUE, userPayload.toString())
-            amqpProcessor.send(ITEM_USER_AMPQ_QUEUE, jsonString)
+            amqpProcessor.send(STASH_USER_AMPQ_QUEUE, jsonString)
         }
     }
 }
