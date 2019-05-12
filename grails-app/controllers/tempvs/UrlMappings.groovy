@@ -18,7 +18,9 @@ class UrlMappings {
         "/library/period/*"(view: "/library/period")
         "/library/source/*"(view: "/library/source")
 
-        "/conversations**"(view: "/message/conversation")
+        "/message**"(view: "/message")
+
+        "/stash**"(view: "/stash")
 
         "/api/${service}/${uri}**"(controller: 'api', action: 'call')
     }

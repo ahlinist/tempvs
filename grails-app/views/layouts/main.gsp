@@ -4,6 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="location" content="/${controllerName}/${actionName}" />
+    <script src="/static/js/messaging.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <asset:link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
@@ -42,12 +43,12 @@
             </g:link>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="item" action="stash">
+            <g:link class="btn btn-secondary disableable" controller="stash" action=" ">
               <span class="glyphicon glyphicon-tent"></span>
             </g:link>
           </span>
           <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'message.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="conversations" action=" ">
+            <g:link class="btn btn-secondary disableable" controller="message" action=" ">
               <span class="fa fa-envelope">
                 <span id="new-conversations" class="badge badge-notify hidden counter" style="position: absolute;"></span>
               </span>

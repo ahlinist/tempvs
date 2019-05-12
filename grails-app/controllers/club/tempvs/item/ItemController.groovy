@@ -31,19 +31,16 @@ class ItemController {
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String OPERATION_FAILED_MESSAGE = 'operation.failed.message'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
-    private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
     static defaultAction = 'stash'
 
     static allowedMethods = [
-            stash: 'GET',
             createGroup: 'POST',
             editItemGroupField: 'POST',
             group: 'GET',
             createItem: 'POST',
             show: 'GET',
             deleteItem: 'DELETE',
-            deleteGroup: 'DELETE',
             editItemField: 'POST',
             addImages: 'POST',
             deleteImage: 'DELETE',
@@ -61,31 +58,6 @@ class ItemController {
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
-
-    @Secured('permitAll')
-    def stash(Long id) {
-        User user = id ? userService.getUser(id) : userService.currentUser
-
-        if (user) {
-            [
-                    user: user,
-                    itemGroups: user.itemGroups,
-                    profile: user.userProfile,
-                    editAllowed: id ? user.id == userService.currentUserId : Boolean.TRUE
-            ]
-        }
-    }
-
-    def createGroup(ItemGroup itemGroup) {
-        User user = userService.currentUser
-        itemGroup = itemService.createGroup(itemGroup, user)
-
-        if (itemGroup.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(itemGroup))
-        }
-
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: itemGroup.id))
-    }
 
     @Secured('permitAll')
     def group(Long id) {
@@ -189,17 +161,6 @@ class ItemController {
 
         itemService.deleteItem item
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'group', id: item.itemGroup.id))
-    }
-
-    def deleteGroup(Long id) {
-        ItemGroup itemGroup = itemService.getGroup id
-
-        if (!itemGroup) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE))
-        }
-
-        itemService.deleteGroup itemGroup
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'stash'))
     }
 
     def addImages(ImageUploadCommand command) {

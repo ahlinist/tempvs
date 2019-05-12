@@ -30,10 +30,8 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     private static final String FIELD_NAME = 'fieldName'
     private static final String FIELD_VALUE = 'fieldValue'
     private static final String SUCCESS_ACTION = 'success'
-    private static final String ITEM_GROUP_URI = '/item/group'
     private static final String REPLACE_ACTION = 'replaceElement'
     private static final String DELETE_ITEM_FAILED_MESSAGE = 'item.delete.failed.message'
-    private static final String DELETE_GROUP_FAILED_MESSAGE = 'item.group.delete.failed.message'
 
     def user = Mock User
     def json = Mock JSON
@@ -70,83 +68,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     }
 
     def cleanup() {
-    }
-
-    void "Test stash() without id being logged in"() {
-        when:
-        def result = controller.stash()
-
-        then:
-        1 * userService.currentUser >> user
-        1 * user.itemGroups >> [itemGroup]
-        1 * user.userProfile >> profile
-        0 * _
-
-        and:
-        result == [itemGroups: [itemGroup], user: user, profile: profile, editAllowed: Boolean.TRUE]
-    }
-
-    void "Test stash() with id being not logged in"() {
-        when:
-        def result = controller.stash(LONG_ONE)
-
-        then:
-        1 * userService.getUser(LONG_ONE) >> null
-        0 * _
-
-        and:
-        !controller.modelAndView
-        !response.redirectedUrl
-        !result
-    }
-
-    void "Test stash() for success"() {
-        when:
-        def result = controller.stash(LONG_ONE)
-
-        then:
-        1 * userService.getUser(LONG_ONE) >> user
-        1 * user.userProfile >> profile
-        1 * user.id >> LONG_ONE
-        1 * userService.currentUserId >> LONG_ONE
-        1 * user.itemGroups >> [itemGroup]
-        0 * _
-
-        and:
-        result == [itemGroups: [itemGroup], user: user, profile: profile, editAllowed: true]
-    }
-
-    void "Test createGroup() against invalid group"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.createGroup(itemGroup)
-
-        then:
-        1 * userService.currentUser >> user
-        1 * itemService.createGroup(itemGroup, user) >> itemGroup
-        1 * itemGroup.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseHelper.renderValidationResponse(_ as ItemGroup) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test createGroup()"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.createGroup(itemGroup)
-
-        then:
-        1 * userService.currentUser >> user
-        1 * itemService.createGroup(itemGroup, user) >> itemGroup
-        1 * itemGroup.hasErrors() >> Boolean.FALSE
-        1 * itemGroup.id >> LONG_ONE
-        1 * ajaxResponseHelper.renderRedirect("${ITEM_GROUP_URI}/${LONG_ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
     }
 
     void "Test group() without id"() {
@@ -349,35 +270,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * itemService.deleteItem(item)
         1 * item.itemGroup >> itemGroup
         1 * itemGroup.id >> LONG_ONE
-        1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test deleteGroup() against unexisting one"() {
-        given:
-        request.method = DELETE_METHOD
-
-        when:
-        controller.deleteGroup(LONG_ONE)
-
-        then:
-        1 * itemService.getGroup(LONG_ONE) >> null
-        1 * ajaxResponseHelper.renderFormMessage(Boolean.FALSE, DELETE_GROUP_FAILED_MESSAGE) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test deleteGroup()"() {
-        given:
-        request.method = DELETE_METHOD
-
-        when:
-        controller.deleteGroup(LONG_ONE)
-
-        then:
-        1 * itemService.getGroup(LONG_ONE) >> itemGroup
-        1 * itemService.deleteGroup(itemGroup)
         1 * ajaxResponseHelper.renderRedirect(_ as String) >> json
         1 * json.render(_ as GrailsMockHttpServletResponse)
         0 * _

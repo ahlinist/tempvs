@@ -51,20 +51,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         result == [item]
     }
 
-    void "Test createGroup()"() {
-        when:
-        def result = service.createGroup(itemGroup, user)
-
-        then:
-        1 * itemGroup.setUser(user)
-        1 * user.addToItemGroups(itemGroup)
-        1 * itemGroup.save() >> itemGroup
-        0 * _
-
-        and:
-        result == itemGroup
-    }
-
     void "Test editItemGroupField()"() {
         when:
         def result = service.editItemGroupField(itemGroup, NAME, FIELD_VALUE)
@@ -76,22 +62,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
 
         and:
         result == itemGroup
-    }
-
-    void "Test deleteGroup()"() {
-        when:
-        service.deleteGroup(itemGroup)
-
-        then:
-        1 * itemGroup.items >> [item]
-        1 * Item2Passport.findAllByItemInList([item]) >> [item2Passport, item2Passport]
-        2 * item2Passport.delete()
-        1 * Item2Source.findAllByItemInList([item]) >> [item2Source, item2Source]
-        2 * item2Source.delete()
-        1 * item.getProperty(IMAGES) >> [image]
-        1 * imageService.deleteImages([image])
-        1 * itemGroup.delete()
-        0 * _
     }
 
     void "Test updateItem()"() {

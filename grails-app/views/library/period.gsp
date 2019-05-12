@@ -22,85 +22,83 @@
       </div>
       <div style="text-align: justify; text-justify: inter-word;" id="period-long-description"></div>
     </div>
-    <sec:ifAnyGranted roles="ROLE_CONTRIBUTOR">
-      <div class="row">
-        <br/>
-        <hr/>
-        <div id="create-source-section">
-          <button id="popup-button" class="btn btn-default pull-right" data-toggle="modal" data-target="#create-source-popup">
-            <span class="fa fa-plus"></span>
-          </button>
-          <div id="create-source-popup" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-body">
-                  <div class="row ajax-form">
-                    <form action="/api/library/source" onsubmit="library.createSource(this); return false;">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <label for="period"></label>
-                        </div>
-                        <div class="col-sm-6">
-                          <input class="col-sm-12 tempvs-form-field" type="hidden" name="period">
-                          <input class="col-sm-12 tempvs-form-field" type="text" name="fake-period" readonly>
-                        </div>
+    <div class="row">
+      <br/>
+      <hr/>
+      <div id="create-source-section">
+        <button id="popup-button" class="btn btn-default pull-right" data-toggle="modal" data-target="#create-source-popup">
+          <span class="fa fa-plus"></span>
+        </button>
+        <div id="create-source-popup" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                <div class="row ajax-form">
+                  <form action="/api/library/source" onsubmit="library.createSource(this); return false;">
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <label for="period"></label>
                       </div>
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <label for="classification"></label>
-                        </div>
-                        <div class="col-sm-6">
-                          <select class="col-sm-12" name="classification">
-                            <option value=""></option>
-                            <option value="CLOTHING"></option>
-                            <option value="FOOTWEAR"></option>
-                            <option value="HOUSEHOLD"></option>
-                            <option value="WEAPON"></option>
-                            <option value="ARMOR"></option>
-                            <option value="OTHER"></option>
-                          </select>
-                        </div>
+                      <div class="col-sm-6">
+                        <input class="col-sm-12 tempvs-form-field" type="hidden" name="period">
+                        <input class="col-sm-12 tempvs-form-field" type="text" name="fake-period" readonly>
                       </div>
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <label for="type"></label>
-                        </div>
-                        <div class="col-sm-6">
-                          <select class="col-sm-12" name="type">
-                            <option value=""></option>
-                            <option value="WRITTEN"></option>
-                            <option value="GRAPHIC"></option>
-                            <option value="ARCHAEOLOGICAL"></option>
-                            <option value="OTHER"></option>
-                          </select>
-                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <label for="classification"></label>
                       </div>
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <label for="name"></label>
-                        </div>
-                        <div class="col-sm-6">
-                          <input class="col-sm-12 tempvs-form-field" type="text" name="name">
-                        </div>
+                      <div class="col-sm-6">
+                        <select class="col-sm-12" name="classification">
+                          <option value=""></option>
+                          <option value="CLOTHING"></option>
+                          <option value="FOOTWEAR"></option>
+                          <option value="HOUSEHOLD"></option>
+                          <option value="WEAPON"></option>
+                          <option value="ARMOR"></option>
+                          <option value="OTHER"></option>
+                        </select>
                       </div>
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <label for="description"></label>
-                        </div>
-                        <div class="col-sm-6">
-                          <input class="col-sm-12 tempvs-form-field" type="text" name="description">
-                        </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <label for="type"></label>
                       </div>
-                      <button class="btn btn-default submit-button"></button>
-                    </form>
-                  </div>
+                      <div class="col-sm-6">
+                        <select class="col-sm-12" name="type">
+                          <option value=""></option>
+                          <option value="WRITTEN"></option>
+                          <option value="GRAPHIC"></option>
+                          <option value="ARCHAEOLOGICAL"></option>
+                          <option value="OTHER"></option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <label for="name"></label>
+                      </div>
+                      <div class="col-sm-6">
+                        <input class="col-sm-12 tempvs-form-field" type="text" name="name">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <label for="description"></label>
+                      </div>
+                      <div class="col-sm-6">
+                        <input class="col-sm-12 tempvs-form-field" type="text" name="description">
+                      </div>
+                    </div>
+                    <button class="btn btn-default submit-button"></button>
+                  </form>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </sec:ifAnyGranted>
+    </div>
     <h1 id="sources"></h1>
     <br/>
     <div class="row" style="border-top: 1px solid #CCC;">
