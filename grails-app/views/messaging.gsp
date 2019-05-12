@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="main"/>
-    <title>Tempvs - <g:message code="message.title"/></title>
+    <script type="module" src="/static/js/messaging.js"></script>
   </head>
   <body>
     <template id="profile-search-result-template">
@@ -18,9 +18,7 @@
       <div class="col-sm-3" style="border-right: 1px solid #AAA; height: calc(100vh - 75px); overflow: auto;">
         <div class="row" style="margin:10px 0px;">
           <button class="btn btn-default col-sm-12" data-toggle="modal" data-target="#create-conversation-popup">
-            <span class="pull-left">
-              <g:message code="conversation.create.button"/>&nbsp;
-            </span>
+            <span class="pull-left create-conversation-button"></span>
             <span class="pull-right">
               <span class="fa fa-plus"></span>
             </span>
@@ -32,20 +30,18 @@
                   <template id="conversation-popup-template">
                     <div>
                       <span class="dropdown" style="margin:10px 0px;">
-                        <input style="width: 524px;" type="text" class="profile-search-box" name="query"
-                            placeholder="${g.message(code: 'conversation.search.participants.placeholder')}" data-toggle="tooltip"
-                            data-placement="bottom" title="${g.message(code: 'conversation.new.participants.missing.tooltip')}">
-                        <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.createConversationActions); return false;">
+                        <input style="width: 524px;" type="text" class="profile-search-box" name="query">
+                        <button class="btn btn-default dropdown-toggle profile-search-button">
                           <span class="fa fa-search"></span>
                         </button>
                         <div class="dropdown-menu" style="width: 300px;">
                           <ul class="profile-search-result"></ul>
-                          <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.createConversationActions); return false;">
-                            <i><g:message code="profile.search.loadMore.link"/></i>
+                          <button class="btn btn-secondary col-sm-12 load-more-button">
+                            <i></i>
                           </button>
                         </div>
                       </span>
-                      <form action="/api/message/conversations" onsubmit="messaging.createConversation(this); return false;">
+                      <form class="create-conversation-form">
                         <template class="profile-search-template">
                           <li>
                             <a class="btn btn-default col-sm-12 search-result"></a>
@@ -54,15 +50,11 @@
                         <ul class="create-conversation-participants-container" class="row"></ul>
                         <div class="new-conversation-name-container" class="row" style="display: none;">
                           <hr style="margin: 10px 0px;"/>
-                          <input class="col-sm-12" placeholder="${g.message(code: 'conversation.name.placeholder')}" type="text" name="name">
+                          <input class="col-sm-12" type="text" name="name">
                         </div>
                         <hr style="margin: 10px 0px;"/>
-                        <textarea placeholder="${g.message(code: 'message.create.text')}" data-toggle="tooltip"
-                            data-placement="bottom"  title="${g.message(code: 'conversation.new.message.blank.tooltip')}"
-                            name="text" style="width: 100%; height: 100px;"></textarea>
-                        <button class="btn btn-default submit-button">
-                          <g:message code="message.send.message.button"/>
-                        </button>
+                        <textarea name="text" style="width: 100%; height: 100px;"></textarea>
+                        <button class="btn btn-default submit-button"></button>
                       </form>
                     </div>
                   </template>
@@ -90,9 +82,7 @@
           </template>
           <ul style="margin:10px 0px;" id="conversations-list" class="row"></ul>
           <div id="load-more-conversations" class="row hidden">
-            <button class="btn btn-default center-block" onclick="messaging.loadConversations(true)">
-              <g:message code="conversations.load.more.button"/>
-            </button>
+            <button class="btn btn-default center-block"></button>
           </div>
           <div class="row">
             <img class="spinner load-more hidden center-block" src="/static/images/spinner.gif">
@@ -101,8 +91,7 @@
       </div>
       <div class="col-sm-9">
         <div class="row hidden" id="conversation-details">
-          <div id="messages-container" class="col-sm-8" onscroll="messaging.markAsRead();"
-              style="position: relative; height: calc(100vh - 75px); overflow: auto;">
+          <div id="messages-container" class="col-sm-8" style="position: relative; height: calc(100vh - 75px); overflow: auto;">
             <div class="row">
               <img class="load-more-messages-spinner hidden center-block" src="/static/images/spinner.gif">
             </div>
@@ -117,14 +106,11 @@
               </li>
             </template>
             <div id="load-more-messages" class="row hidden" style="margin: 10px 0 11px 0;">
-              <button class="btn btn-default center-block" onclick="messaging.loadMessages();">
-                <g:message code="messages.load.more.button"/>
-              </button>
+              <button class="btn btn-default center-block" id="load-more-messages-button"></button>
             </div>
             <ul id="messages-list"></ul>
             <form id="message-form">
-              <input type="text" style="width: calc(100% - 45px);" name="message" autocomplete="off"
-              data-toggle="tooltip" data-placement="top" title="${g.message(code: 'conversation.new.message.blank.tooltip')}">
+              <input type="text" style="width: calc(100% - 45px);" name="message" autocomplete="off">
               <button class="btn btn-default">
                 <span class="fa fa-paper-plane" aria-hidden="true"></span>
               </button>
@@ -132,7 +118,7 @@
           </div>
           <div class="col-sm-4">
             <div class="row hidden conversation-name-container">
-              <b><g:message code="conversation.name.label"/></b>:
+              <b></b>
               <form class="conversation-name-form" style="display: inline;">
                 <span class="hovering text-wrapper">
                   <span class="text-holder" style="line-height: 40px; padding-left: 15px;"></span>
@@ -144,7 +130,7 @@
               </form>
             </div>
             <div class="row participants-container">
-              <b><g:message code="message.participants.label"/>:</b>
+              <b></b>
               <template class="participant-template">
                 <li class="row">
                   <a class="btn btn-default col-sm-10 active-conversation-participant"></a>
@@ -153,15 +139,12 @@
                     <div class="modal fade" role="dialog">
                       <div class="modal-dialog modal-sm">
                         <div class="modal-content">
-                          <div class="modal-body">
-                            <g:message code='message.remove.participant.text'/>
+                          <div class="modal-body remove-participant-confirmation">
+                            <span class="confirmation-text"></span>
                             <br/>
-                            <form class="participant-deletion-form" onsubmit="messaging.removeParticipant(this); return false;">
-                              <button class="btn btn-default submit-button">
-                                <g:message code="yes"/>
-                              </button>
+                            <form class="participant-deletion-form">
+                              <button class="btn btn-default submit-button"></button>
                               <span class="btn btn-default" data-dismiss="modal">
-                                <g:message code="no"/>
                               </span>
                             </form>
                           </div>
@@ -181,8 +164,8 @@
                     <template id="add-participant-template">
                       <div>
                         <span class="dropdown" style="margin:10px 0px;">
-                          <input style="width: 524px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
-                          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, messaging.addParticipantsActions);">
+                          <input style="width: 524px;" type="text" class="profile-search-box" name="query"/>
+                          <button class="btn btn-default dropdown-toggle profile-search-button">
                             <span class="fa fa-search"></span>
                           </button>
                           <div class="dropdown-menu" style="width: 300px;">
@@ -192,18 +175,16 @@
                               </li>
                             </template>
                             <ul class="profile-search-result"></ul>
-                            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, messaging.addParticipantsActions);">
-                              <i><g:message code="profile.search.loadMore.link"/></i>
+                            <button class="btn btn-secondary col-sm-12 load-more-button">
+                              <i></i>
                             </button>
                           </div>
                         </span>
                         <div id="add-participant-to-conversation-container">
-                          <form class="add-participant-to-conversation-form" onsubmit="messaging.addParticipants(this); return false;">
+                          <form class="add-participant-to-conversation-form">
                             <ul></ul>
                             <div style="height: 35px;">
-                              <button type="submit" class="btn btn-default hidden submit-button">
-                                <g:message code="conversation.participant.add.button"/>
-                              </button>
+                              <button type="submit" class="btn btn-default hidden submit-button add-participant-button"></button>
                             </div>
                           </form>
                         </div>

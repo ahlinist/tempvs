@@ -1,3 +1,6 @@
+import {i18n} from './i18n/messaging-translations.js';
+import {profileSearcher} from './profile-searcher.js';
+
 window.onload = function() {
   messaging.init();
 };
@@ -11,11 +14,12 @@ var messaging = {
   currentMessagesPage: 0,
   didScroll: false,
   init: function() {
+    messaging.displayNewMessagesCounter();
     messaging.clearForms();
     const location = window.location.href;
     const appendConversations = true;
 
-    if (!location.endsWith("/conversations") && !location.endsWith("/conversations/")) {
+    if (!location.endsWith("/messaging") && !location.endsWith("/messaging/")) {
       const n = location.lastIndexOf('/');
       const conversationId = location.substring(n + 1);
       messaging.conversation(conversationId, messaging.defaultPageNumber, messaging.defaultMessagesSize);
@@ -25,7 +29,11 @@ var messaging = {
   },
   actions: {
     200: function(response) {
-      var currentProfileId = JSON.parse(response.headers.get("User-Info")).profileId;
+      const userInfo = JSON.parse(response.headers.get("User-Info"));
+      const currentProfileId = userInfo.profileId;
+      const lang = userInfo.lang;
+      const conversationsContainer = document.querySelector("div#conversations-container");
+      const conversationDetails = document.querySelector('div#conversation-details');
 
       response.json().then(function(conversation) {
         if (!window.location.href.includes('/messaging')) {
@@ -33,7 +41,6 @@ var messaging = {
           return;
         }
 
-        var conversationDetails = document.querySelector('div#conversation-details');
         messaging.clearForms();
         ajaxHandler.hideModals();
         messaging.currentMessagesPage = messaging.defaultPageNumber;
@@ -43,12 +50,24 @@ var messaging = {
         //messages section
         var append = false;
         messaging.appendMessages(conversation.messages, conversationDetails, append);
+        const loadMoreMessagesButton = conversationDetails.querySelector("button#load-more-messages-button");
+        loadMoreMessagesButton.innerHTML = i18n[lang].messaging.loadMoreMessages;
+
+        loadMoreMessagesButton.onclick = function() {
+          messaging.loadMessages();
+        };
+
+        const messagesContainer = conversationDetails.querySelector("div#messages-container");
+        messagesContainer.onscroll = function() {
+          messaging.markAsRead();
+        };
 
         //conversation name section
         var conversationNameContainer = document.querySelector('div.conversation-name-container');
         conversationNameContainer.classList.add('hidden');
 
         if (conversation.type == 'CONFERENCE') {
+          conversationNameContainer.querySelector("b").innerHTML = i18n[lang].messaging.conversation;
           var conversationNameForm = conversationNameContainer.querySelector('form');
           var conversationNameSpinner = conversationNameContainer.querySelector('.spinner');
           conversationNameSpinner.classList.add('hidden');
@@ -63,6 +82,7 @@ var messaging = {
         var participantsContainer = conversationDetails.querySelector('.participants-container');
         var participantTemplate = conversationDetails.querySelector('template.participant-template');
         var participantsList = conversationDetails.querySelector('ul#participants-list');
+        participantsContainer.querySelector("b").innerHTML = i18n[lang].messaging.participants;
         participantsList.innerHTML = '';
 
         participants.forEach(function(participant) {
@@ -79,14 +99,42 @@ var messaging = {
           if ((conversation.type == 'CONFERENCE') && (conversation.admin.id == currentProfileId) && (participants.length > 2)) {
             var removeForm = participantNode.querySelector('form.participant-deletion-form');
             removeForm.action = '/api/message/conversations/' + conversation.id + '/participants/' + participant.id;
+
+            removeForm.onsubmit = function() {
+              messaging.removeParticipant(this);
+              return false;
+            };
+
             var removeButton = participantNode.querySelector('.remove-participant-button');
             removeButton.classList.remove('hidden');
             removeButton.querySelector('[data-toggle=modal]').setAttribute('data-target', '#removeParticipantModal-' + participant.id);
             removeButton.querySelector('[role=dialog]').setAttribute('id', 'removeParticipantModal-' + participant.id);
+
+            const removalConfirmation = participantNode.querySelector("div.remove-participant-confirmation");
+            removalConfirmation.querySelector("span.confirmation-text").innerHTML = i18n[lang].messaging.removeParticipant.confirmation;
+            removalConfirmation.querySelector("form button.submit-button").innerHTML = i18n[lang].messaging.removeParticipant.yes;
+            removalConfirmation.querySelector("form span[data-dismiss=modal]").innerHTML = i18n[lang].messaging.removeParticipant.no;
           }
 
           participantsList.appendChild(participantNode);
         });
+
+        const addParticipantSearch = document.querySelector('div#add-participant-profile-search');
+        const addParticipantSearchButton = addParticipantSearch.querySelector("button.profile-search-button");
+        const loadMoreParticipantsButton = addParticipantSearch.querySelector("button.load-more-button");
+        addParticipantSearch.querySelector("input.profile-search-box").placeholder = i18n[lang].messaging.participantSearchPlaceholder;
+        loadMoreParticipantsButton.querySelector("i").innerHTML = i18n[lang].messaging.loadMoreParticipants;
+
+        addParticipantSearchButton.onclick = function() {
+          profileSearcher.search(this, 0, messaging.addParticipantsActions);
+        };
+
+        loadMoreParticipantsButton.onclick = function() {
+          profileSearcher.search(this, 10, messaging.addParticipantsActions);
+        };
+
+        const addParticipantButton = addParticipantSearch.querySelector("form button.add-participant-button");
+        addParticipantButton.innerHTML = i18n[lang].messaging.addParticipantButton;
 
         window.history.pushState("", "", '/messaging/' + conversation.id);
         messaging.markAsRead();
@@ -119,6 +167,11 @@ var messaging = {
       var addParticipantForm = resultContainer.querySelector('form.add-participant-to-conversation-form');
       var addParticipantButton = addParticipantForm.querySelector('button');
       addParticipantForm.action = '/api/message/conversations/' + messaging.conversationId + '/participants';
+
+      addParticipantForm.onsubmit = function() {
+        messaging.addParticipants(this);
+        return false;
+      }
 
       response.json().then(function(data) {
         profileSearcher.recoverUI();
@@ -184,10 +237,16 @@ var messaging = {
     var noParticipantsError = !form.querySelector('input[name=participants]');
 
     if (blankMessageError) {
+      textarea.setAttribute('data-toggle', 'tooltip');
+      textarea.setAttribute('data-placement', 'top');
+      textarea.setAttribute('title', i18n.en.messaging.blankMessage);
       $(textarea).tooltip('show');
     }
 
     if (noParticipantsError) {
+      profileSearchField.setAttribute('data-toggle', 'tooltip');
+      profileSearchField.setAttribute('data-placement', 'top');
+      profileSearchField.setAttribute('title', i18n.en.messaging.noParticipantsChosen);
       $(profileSearchField).tooltip('show');
     }
 
@@ -295,6 +354,8 @@ var messaging = {
     ajaxHandler.fetch(form, url, payload, messaging.actions);
   },
   conversation: function(conversationId, page, size) {
+    document.title = i18n.en.messaging.title;
+
     if (conversationId) {
       var url = '/api/message/conversations/' + conversationId + '?page=' + page + '&size=' + size;
       ajaxHandler.fetch(null, url, {method: 'GET'}, messaging.actions);
@@ -374,7 +435,7 @@ var messaging = {
     var actions = {
       200: function(response) {
         response.json().then(function(conversation) {
-          var append = true;
+          const append = true;
           messaging.appendMessages(conversation.messages, conversationDetails, append);
           messaging.markAsRead();
         });
@@ -384,6 +445,7 @@ var messaging = {
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   },
   loadConversations: function(append) {
+    document.title = i18n.en.messaging.title;
     var conversationsContainer = document.querySelector('#conversations-container');
     var conversationsList = conversationsContainer.querySelector('ul#conversations-list');
     var spinner = conversationsContainer.querySelector('img.spinner');
@@ -396,6 +458,51 @@ var messaging = {
 
     var actions = {
       200: function(response) {
+        const userInfo = JSON.parse(response.headers.get("User-Info"));
+        const lang = userInfo.lang;
+        document.querySelector("span.create-conversation-button").innerHTML = i18n[lang].messaging.createConversationButton;
+
+        const createConversationPopup = document.querySelector("#create-conversation-popup");
+        const profileSearchBox = createConversationPopup.querySelector("input.profile-search-box");
+        const profileSearchButton = createConversationPopup.querySelector("button.profile-search-button");
+        const loadMoreButton = createConversationPopup.querySelector("button.load-more-button");
+        profileSearchBox.placeholder = i18n[lang].messaging.participantSearchPlaceholder;
+
+        profileSearchButton.onclick = function() {
+          profileSearcher.search(this, 0, messaging.createConversationActions);
+          return false;
+        };
+
+        loadMoreButton.onclick = function() {
+          profileSearcher.search(this, 10, messaging.createConversationActions);
+          return false;
+        };
+
+        loadMoreButton.querySelector("i").innerHTML = i18n[lang].messaging.loadMoreParticipants;
+
+        const loadMoreConversationsSection = conversationsContainer.querySelector("div#load-more-conversations");
+        const loadMoreConversationsButton = loadMoreConversationsSection.querySelector("button");
+        loadMoreConversationsButton.innerHTML = i18n[lang].messaging.loadMoreConversations;
+
+        loadMoreConversationsButton.onclick = function() {
+          messaging.loadConversations(true);
+        };
+
+        const createConversationForm = createConversationPopup.querySelector("form.create-conversation-form");
+        createConversationForm.action = "/api/message/conversations";
+
+        createConversationForm.onsubmit = function() {
+          messaging.createConversation(this);
+          return false;
+        };
+
+        const nameInput = createConversationForm.querySelector("input[name=name]");
+        const textInput = createConversationForm.querySelector("textarea[name=text]");
+        const submitButton = createConversationForm.querySelector("button.submit-button");
+        nameInput.placeholder = i18n[lang].messaging.conversationName;
+        textInput.placeholder = i18n[lang].messaging.message;
+        submitButton.innerHTML = i18n[lang].messaging.sendMessage;
+
         response.json().then(function(data) {
           var conversations = data.conversations
           var conversationTemplate = document.querySelector('template#conversation-template');
@@ -430,11 +537,17 @@ var messaging = {
               conversationNameContainer.innerHTML = conversation.conversant;
             }
 
-            lastMessageContainer.innerHTML = lastMessage.author.name + ': ' + lastMessage.text;
+            let rawMessage = lastMessage.author.name + ': ' + lastMessage.text;
 
             if (lastMessage.subject) {
-              lastMessageContainer.innerHTML += ' ' + lastMessage.subject.name;
+              rawMessage += ' ' + lastMessage.subject.name;
             }
+
+            const encodedStr = rawMessage.replace(/[\u00A0-\u9999<>\&]/gim, function(i) {
+               return '&#'+i.charCodeAt(0)+';';
+            });
+
+            lastMessageContainer.innerHTML = encodedStr;
 
             conversationsList.appendChild(conversationNode);
           });

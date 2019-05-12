@@ -38,7 +38,6 @@ $(function (){
     profileDropdown.displayDropdown();
 
     //display horizontal menu counters
-    messaging.displayNewMessagesCounter();
     horizontalMenuCounter.displayCounter('span#new-followings', '/following/getNewFollowersCount');
 });
 
