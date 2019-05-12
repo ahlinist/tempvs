@@ -11,6 +11,12 @@ let stash = {
     }
   },
   renderStash: function(userId) {
+    const content = document.querySelector("content");
+    content.innerHTML = "";
+    const stashTemplate = document.querySelector("template#stash");
+    const stashPage = stashTemplate.content.querySelector('div');
+    const stashPageNode = document.importNode(stashPage, true);
+    content.appendChild(stashPageNode);
     const stashSection = document.querySelector("#stash-section");
     const messageSource = stash.i18n.en.stash;
     document.querySelector('title').innerHTML = messageSource.title;
