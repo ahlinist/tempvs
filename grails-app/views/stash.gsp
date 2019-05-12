@@ -7,7 +7,7 @@
   <body>
     <content></content>
     <template id="stash">
-      <div id="stash-section">
+      <div>
         <div class="row">
           <u><a href="/stash" id="breadcrumb-stash"></a></u>
           <div id="create-group-section" class="pull-right hidden">
