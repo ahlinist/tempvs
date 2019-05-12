@@ -28,8 +28,8 @@ var messaging = {
       var currentProfileId = JSON.parse(response.headers.get("User-Info")).profileId;
 
       response.json().then(function(conversation) {
-        if (!window.location.href.includes('/conversations')) {
-          window.location.href = "/conversations/" + conversation.id;
+        if (!window.location.href.includes('/messaging')) {
+          window.location.href = "/messaging/" + conversation.id;
           return;
         }
 
@@ -88,7 +88,7 @@ var messaging = {
           participantsList.appendChild(participantNode);
         });
 
-        window.history.pushState("", "Tempvs - Message", '/conversations/' + conversation.id);
+        window.history.pushState("", "", '/messaging/' + conversation.id);
         messaging.markAsRead();
         messaging.scrollMessagesDown();
         messaging.loadConversations(false);
