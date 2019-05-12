@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="/static/js/stash.js"></script>
+    <script type="module" src="/static/js/stash.js"></script>
     <meta name="layout" content="main"/>
   </head>
   <body>
     <content></content>
     <template id="stash">
-      <div>
+      <div id="stash-section">
         <div class="row">
           <u><a href="/stash" id="breadcrumb-stash"></a></u>
           <div id="create-group-section" class="pull-right hidden">

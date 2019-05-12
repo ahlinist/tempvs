@@ -3,7 +3,7 @@
   <head>
     <meta name="layout" content="main"/>
     <title></title>
-    <script src="/static/js/library.js"></script>
+    <script type="module" src="/static/js/library.js"></script>
     <script src="/static/js/image.js"></script>
     <script src="/static/js/modal-carousel.js"></script>
   </head>

@@ -1,3 +1,5 @@
+import {i18n} from './i18n/stash-translations.js';
+
 window.onload = function() {
   stash.init();
 };
@@ -19,7 +21,7 @@ let stash = {
     content.appendChild(stashPageNode);
 
     const stashSection = document.querySelector("#stash-section");
-    const messageSource = stash.i18n.en.stash;
+    const messageSource = i18n.en.stash;
     document.querySelector('title').innerHTML = messageSource.title;
     stashSection.querySelector('h1#group-list-heading').innerHTML = messageSource.groups.heading;
     const url = '/api/stash/group';
@@ -74,7 +76,7 @@ let stash = {
       const field = form.querySelector('[name=name]');
       field.setAttribute('data-toggle', 'tooltip');
       field.setAttribute('data-placement', 'top');
-      field.setAttribute('title', stash.i18n.en.stash.groups.create.validation.nameBlank);
+      field.setAttribute('title', i18n.en.stash.groups.create.validation.nameBlank);
       $(field).tooltip('show');
       return;
     }
@@ -102,24 +104,5 @@ let stash = {
 
     ajaxHandler.blockUI();
     ajaxHandler.fetch(form, form.action, payload, actions);
-  },
-  i18n: {
-    en: {
-      stash: {
-        breadCrumb: "Stash",
-        title: "Stash",
-        groups: {
-          heading: "Item groups",
-          create: {
-            name: "Name",
-            description: "Description",
-            createButton: "Create group",
-            validation: {
-              nameBlank: "Name can not be blank"
-            }
-          }
-        }
-      }
-    }
   }
 }
