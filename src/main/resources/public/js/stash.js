@@ -8,11 +8,22 @@ let stash = {
   init: function() {
     const location = window.location.href;
 
-    if (location.includes("/stash")) {
+    if (location.includes("/group/")) {
+      const n = location.lastIndexOf('/');
+      const groupId = location.substring(n + 1);
+      stash.loadGroup(groupId)
+    } else if (location.includes("/stash/") && !location.endsWith("/stash")) {
+      const n = location.lastIndexOf('/');
+      const userId = location.substring(n + 1);
+      stash.renderStash(userId)
+    } else if (location.endsWith("/stash")) {
       stash.renderStash();
     }
   },
   renderStash: function(userId) {
+    if (userId === undefined) {
+      userId = '';
+    }
     const content = document.querySelector("content");
     content.innerHTML = "";
     const stashTemplate = document.querySelector("template#stash");
@@ -24,12 +35,13 @@ let stash = {
     const messageSource = i18n.en.stash;
     document.querySelector('title').innerHTML = messageSource.title;
     stashSection.querySelector('h1#group-list-heading').innerHTML = messageSource.groups.heading;
-    const url = '/api/stash/group';
+    const url = '/api/stash/group/' + userId;
     const actions = {200: renderPage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
     function renderPage(response) {
-      const currentUserId = JSON.parse(response.headers.get("User-Info")).userId;
+      const userInfo = JSON.parse(response.headers.get("User-Info"));
+      const currentUserId = userInfo.userId;
 
       response.json().then(function(data) {
         const groupList = stashSection.querySelector('ul#group-list');
@@ -57,11 +69,66 @@ let stash = {
           const groupListItemNode = document.importNode(groupListItem, true);
           const groupLink = groupListItemNode.querySelector("a");
           groupLink.href = "/stash/" + group.id;
+          groupLink.onclick = function() {
+            stash.renderGroup(group, userInfo);
+            return false;
+          }
           groupLink.querySelector("b.group-name").innerHTML = group.name;
           groupLink.querySelector("p.group-description").innerHTML = group.description;
           groupList.appendChild(groupLink);
         }
       });
+    }
+  },
+  loadGroup: function(groupId) {
+    const url = '/api/stash/group/' + groupId;
+    const actions = {200: renderPage};
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+
+    function renderPage(response) {
+      const userInfo = JSON.parse(response.headers.get("User-Info"));
+
+      response.json().then(function(data) {
+        stash.renderGroup(data, userInfo);
+      });
+    }
+  },
+  renderGroup: function(group, userInfo) {
+    const groupId = group.id;
+    const groupName = group.name;
+    const groupDescription = group.description;
+    const userId = userInfo.userId;
+    const userName = userInfo.userName;
+    const content = document.querySelector("content");
+    content.innerHTML = "";
+    const stashTemplate = document.querySelector("template#item-group");
+    const stashPage = stashTemplate.content.querySelector('div');
+    const stashPageNode = document.importNode(stashPage, true);
+    content.appendChild(stashPageNode);
+
+    window.history.pushState("", "", '/stash/group/' + groupId);
+    const groupSection = document.querySelector("#group-section");
+    const messageSource = i18n.en.stash;
+    document.querySelector('title').innerHTML = messageSource.title;
+    const breadCrumbStash = groupSection.querySelector("a#breadcrumb-stash");
+    breadCrumbStash.href = "/stash/" + userId;
+    breadCrumbStash.innerHTML = messageSource.breadCrumb + " (" + userName + ")";
+    const breadCrumbGroup = groupSection.querySelector("a#breadcrumb-item-group");
+    breadCrumbGroup.href = "/stash/group/" + groupId;
+    breadCrumbGroup.innerHTML = groupName;
+    const groupForm = groupSection.querySelector(".group-form");
+    groupForm.querySelector("label[for=name]").innerHTML = i18n.en.stash.group.nameLabel;
+    groupForm.querySelector("label[for=description]").innerHTML = i18n.en.stash.group.descriptionLabel;
+    groupForm.querySelector("input[name=name]").value = groupName;
+    groupForm.querySelector("input[name=description]").value = groupDescription;
+    groupSection.querySelector('h1#item-list-heading').innerHTML = messageSource.group.heading;
+
+    const url = '/api/stash/items';
+    const actions = {200: renderPage};
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+
+    function renderPage() {
+      alert("items found!");
     }
   },
   createGroup: function(form) {

@@ -3,6 +3,11 @@ export const i18n = {
     stash: {
       breadCrumb: "Stash",
       title: "Stash",
+      group: {
+        heading: "Items",
+        nameLabel: "Name",
+        descriptionLabel: "Description"
+      },
       groups: {
         heading: "Item groups",
         create: {
