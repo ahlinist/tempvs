@@ -21,9 +21,6 @@ let stash = {
     }
   },
   renderStash: function(userId) {
-    if (userId === undefined) {
-      userId = '';
-    }
     const content = document.querySelector("content");
     content.innerHTML = "";
     const stashTemplate = document.querySelector("template#stash");
@@ -35,7 +32,12 @@ let stash = {
     const messageSource = i18n.en.stash;
     document.querySelector('title').innerHTML = messageSource.title;
     stashSection.querySelector('h1#group-list-heading').innerHTML = messageSource.groups.heading;
-    const url = '/api/stash/group/' + userId;
+    let url = '/api/stash/group';
+
+     if (userId !== undefined) {
+       url += '?userId=' + userId;
+     }
+
     const actions = {200: renderPage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
