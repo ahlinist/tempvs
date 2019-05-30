@@ -64,13 +64,13 @@ var messaging = {
         };
 
         //conversation name section
-        const conversationNameContainer = document.querySelector('div.conversation-name-container');
+        const conversationNameContainer = document.querySelector('div.conversation-name');
         conversationNameContainer.classList.add('hidden');
 
         if (conversation.type == 'CONFERENCE') {
-          conversationNameContainer.querySelector("b").innerHTML = i18n[lang].messaging.conversation;
+          const conversationNameLabel = i18n[lang].messaging.conversation;
           const updateNameAction = '/api/message/conversations/' + conversation.id + '/name';
-          smartFormBuilder.build(conversationNameContainer, '.conversation-name-container', conversation.name, updateNameAction, messaging.actions);
+          smartFormBuilder.build(conversationNameContainer, '.conversation-name', conversationNameLabel, conversation.name, updateNameAction, messaging.actions);
           const conversationNameSpinner = conversationNameContainer.querySelector('.spinner');
           conversationNameSpinner.classList.add('hidden');
           conversationNameContainer.classList.remove('hidden');

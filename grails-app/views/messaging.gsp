@@ -117,8 +117,8 @@
             </form>
           </div>
           <div class="col-sm-4">
-            <div class="row hidden conversation-name-container">
-              <b></b>
+            <div class="row hidden conversation-name">
+              <b class="conversation-name-label"></b>
               <form class="conversation-name-form" style="display: inline;">
                 <span class="hovering text-wrapper">
                   <span class="text-holder" style="line-height: 40px; padding-left: 15px;"></span>
