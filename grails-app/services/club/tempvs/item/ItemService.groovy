@@ -35,14 +35,6 @@ class ItemService {
         Item.findAllByPeriod(period)
     }
 
-    @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    @PreAuthorize('#itemGroup.user.email == authentication.name')
-    ItemGroup editItemGroupField(ItemGroup itemGroup, String fieldName, String fieldValue) {
-        itemGroup."${fieldName}" = fieldValue
-        itemGroup.save()
-        itemGroup
-    }
-
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     Item saveItem(Item item) {
         item.save()

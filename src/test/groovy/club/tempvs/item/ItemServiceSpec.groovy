@@ -12,7 +12,6 @@ import spock.lang.Specification
 class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemService>, DataTest {
 
     private static final String NAME = 'name'
-    private static final String IMAGES = 'images'
     private static final String FIELD_VALUE = 'fieldValue'
 
     def user = Mock User
@@ -21,7 +20,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     def source = Mock Source
     def comment = Mock Comment
     def period = GroovyMock Period
-    def itemGroup = Mock ItemGroup
     def item2Source = Mock Item2Source
     def item2Passport = Mock Item2Passport
 
@@ -49,19 +47,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
 
         and:
         result == [item]
-    }
-
-    void "Test editItemGroupField()"() {
-        when:
-        def result = service.editItemGroupField(itemGroup, NAME, FIELD_VALUE)
-
-        then:
-        1 * itemGroup.setName(FIELD_VALUE)
-        1 * itemGroup.save() >> itemGroup
-        0 * _
-
-        and:
-        result == itemGroup
     }
 
     void "Test updateItem()"() {

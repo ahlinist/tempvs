@@ -318,23 +318,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         response.json.action == SUCCESS_ACTION
     }
 
-    void "Test editItemGroupField()"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.editItemGroupField(LONG_ONE, FIELD_NAME, FIELD_VALUE)
-
-        then:
-        1 * itemService.getGroup(LONG_ONE) >> itemGroup
-        1 * itemService.editItemGroupField(itemGroup, FIELD_NAME, FIELD_VALUE) >> itemGroup
-        1 * itemGroup.hasErrors() >> Boolean.FALSE
-        0 * _
-
-        and:
-        response.json.action == SUCCESS_ACTION
-    }
-
     void "Test linkSource()"() {
         given:
         request.method = POST_METHOD

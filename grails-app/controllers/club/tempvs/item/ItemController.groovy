@@ -36,7 +36,6 @@ class ItemController {
 
     static allowedMethods = [
             createGroup: 'POST',
-            editItemGroupField: 'POST',
             group: 'GET',
             createItem: 'POST',
             show: 'GET',
@@ -211,22 +210,6 @@ class ItemController {
 
         if (item.hasErrors()) {
             return render(ajaxResponseHelper.renderValidationResponse(item))
-        }
-
-        render([action: SUCCESS_ACTION] as JSON)
-    }
-
-    def editItemGroupField(Long objectId, String fieldName, String fieldValue) {
-        ItemGroup itemGroup = itemService.getGroup objectId
-
-        if (!itemGroup) {
-            return render(ajaxResponseHelper.renderFormMessage(Boolean.FALSE, OPERATION_FAILED_MESSAGE))
-        }
-
-        itemGroup = itemService.editItemGroupField(itemGroup, fieldName, fieldValue)
-
-        if (itemGroup.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(itemGroup))
         }
 
         render([action: SUCCESS_ACTION] as JSON)
