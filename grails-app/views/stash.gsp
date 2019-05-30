@@ -85,26 +85,9 @@
         </div>
         <div class="row">
           <div class="ajax-form group-form col-sm-6">
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="name"></label>
-              </div>
-              <div class="col-sm-6">
-                <input name="name">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="description"></label>
-              </div>
-              <div class="col-sm-6">
-                <input name="description">
-              </div>
-            </div>
-
-            <div class="row" id="source-name">
+            <div class="row group-name">
               <span class="col-sm-5">
-                <b></b> *
+                <b class="group-name-label"></b> *
               </span>
               <span class="col-sm-7">
                 <form style="display: inline;">
@@ -114,6 +97,22 @@
                   </span>
                   <span class="hidden input-wrapper">
                     <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
+                  </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
+                </form>
+              </span>
+            </div>
+            <div class="row group-description">
+              <span class="col-sm-5">
+                <b class="group-description-label"></b>
+              </span>
+              <span class="col-sm-7">
+                <form style="display: inline;">
+                  <span class="hovering text-wrapper">
+                    <span class="text-holder" style="line-height: 39px; padding-left: 15px;"></span>
+                    <span class="fa fa-pencil smart-form-activator hidden"></span>
+                  </span>
+                  <span class="hidden input-wrapper">
+                    <input style="margin: 4px 0px 3px 0px;" type="text" name="description" value="" autocomplete="off">
                   </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
                 </form>
               </span>

@@ -1,4 +1,5 @@
 import {i18n} from './i18n/stash-translations.js';
+import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 
 window.onload = function() {
   stash.init();
@@ -118,12 +119,15 @@ let stash = {
     const breadCrumbGroup = groupSection.querySelector("a#breadcrumb-item-group");
     breadCrumbGroup.href = "/stash/group/" + groupId;
     breadCrumbGroup.innerHTML = groupName;
-    const groupForm = groupSection.querySelector(".group-form");
-    groupForm.querySelector("label[for=name]").innerHTML = i18n.en.stash.group.nameLabel;
-    groupForm.querySelector("label[for=description]").innerHTML = i18n.en.stash.group.descriptionLabel;
-    groupForm.querySelector("input[name=name]").value = groupName;
-    groupForm.querySelector("input[name=description]").value = groupDescription;
     groupSection.querySelector('h1#item-list-heading').innerHTML = messageSource.group.heading;
+
+    const groupNameLabel = i18n.en.stash.group.nameLabel;
+    const groupDescriptionLabel = i18n.en.stash.group.descriptionLabel;
+    const updateNameAction = '/api/stash/group/' + groupId + '/name';
+    const updateDescriptionAction = '/api/stash/group/' + groupId + '/description';
+    const groupForm = groupSection.querySelector(".group-form");
+    smartFormBuilder.build(groupForm, '.group-name', groupNameLabel, groupName, updateNameAction);
+    smartFormBuilder.build(groupForm, '.group-description', groupDescriptionLabel, groupDescription, updateDescriptionAction);
 
     const url = '/api/stash/items';
     const actions = {200: renderPage};

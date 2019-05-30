@@ -6,7 +6,7 @@ export const smartFormBuilder = {
     container.querySelector(selector + ' form').action = formAction;
     container.querySelector(selector + ' .smart-form-activator').classList.remove('hidden');
 
-    container.querySelector(selector + ' .smart-form-activator').onclick = function() {
+    container.querySelector(selector + ' .text-holder').onclick = function() {
       ajaxHandler.activateSmartForm(this, smartFormBuilder.hideSpinners, 'PATCH');
     };
   },
