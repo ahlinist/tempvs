@@ -1,5 +1,6 @@
 import {i18n} from './i18n/messaging-translations.js';
 import {profileSearcher} from './profile-searcher.js';
+import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 
 window.onload = function() {
   messaging.init();
@@ -63,18 +64,16 @@ var messaging = {
         };
 
         //conversation name section
-        var conversationNameContainer = document.querySelector('div.conversation-name-container');
+        const conversationNameContainer = document.querySelector('div.conversation-name-container');
         conversationNameContainer.classList.add('hidden');
 
         if (conversation.type == 'CONFERENCE') {
           conversationNameContainer.querySelector("b").innerHTML = i18n[lang].messaging.conversation;
-          var conversationNameForm = conversationNameContainer.querySelector('form');
-          var conversationNameSpinner = conversationNameContainer.querySelector('.spinner');
+          const updateNameAction = '/api/message/conversations/' + conversation.id + '/name';
+          smartFormBuilder.build(conversationNameContainer, '.conversation-name-container', conversation.name, updateNameAction, messaging.actions);
+          const conversationNameSpinner = conversationNameContainer.querySelector('.spinner');
           conversationNameSpinner.classList.add('hidden');
           conversationNameContainer.classList.remove('hidden');
-          conversationNameForm.querySelector('.text-holder').innerHTML = conversation.name;
-          conversationNameForm.querySelector('input[name=name]').value = conversation.name;
-          conversationNameForm.action = '/api/message/conversations/' + conversation.id + '/name';
         }
 
         //participants section

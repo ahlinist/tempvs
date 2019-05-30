@@ -1,11 +1,11 @@
 export const smartFormBuilder = {
-  build: function(form, selector, value, formAction, executionActions) {
-    form.querySelector(selector + ' .text-holder').innerHTML = value;
-    form.querySelector(selector + ' input').value = value;
-    form.querySelector(selector + ' form').action = formAction;
-    form.querySelector(selector + ' .smart-form-activator').classList.remove('hidden');
+  build: function(container, selector, value, formAction, executionActions) {
+    container.querySelector(selector + ' .text-holder').innerHTML = value;
+    container.querySelector(selector + ' input').value = value;
+    container.querySelector(selector + ' form').action = formAction;
+    container.querySelector(selector + ' .smart-form-activator').classList.remove('hidden');
 
-    form.querySelector(selector + ' .smart-form-activator').onclick = function() {
+    container.querySelector(selector + ' .smart-form-activator').onclick = function() {
       ajaxHandler.activateSmartForm(this, executionActions, 'PATCH');
     };
   }

@@ -122,7 +122,7 @@
               <form class="conversation-name-form" style="display: inline;">
                 <span class="hovering text-wrapper">
                   <span class="text-holder" style="line-height: 40px; padding-left: 15px;"></span>
-                  <span onclick="ajaxHandler.activateSmartForm(this, messaging.actions, 'POST');" class="fa fa-pencil"></span>
+                  <span class="fa fa-pencil smart-form-activator hidden"></span>
                 </span>
                 <span class="hidden input-wrapper">
                   <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
