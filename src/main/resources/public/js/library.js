@@ -58,15 +58,6 @@ var library = {
     "CONTEMPORARY",
     "OTHER"
   ],
-  actions: {
-    200: function() {
-      var elementsToHide = document.querySelectorAll('.hide-me');
-      elementsToHide.forEach(function(element) {
-        element.classList.add('hidden');
-        element.classList.remove('hide-me');
-      });
-    }
-  },
   renderLibraryPage: function() {
     const content = document.querySelector("content");
     content.innerHTML = "";
@@ -134,7 +125,7 @@ var library = {
 
             button.onclick = function() {
               var url = '/api/library/library/role/' + role;
-              ajaxHandler.fetch(null, url, {method: method}, library.actions);
+              ajaxHandler.fetch(null, url, {method: method}, smartFormBuilder.hideSpinners);
             };
           }
 
@@ -310,14 +301,15 @@ var library = {
     const sourceForm = document.querySelector('div#source-form');
     const imageUploadForm = document.querySelector('form#image-upload-form');
 
+    const sourceNameLabel = msgSource.source.properties.name;
+    const sourceDescriptionLabel = msgSource.source.properties.description;
+
     document.querySelector('a#breadcrumb-library').innerHTML = i18n.en.breadcrumb.library;
-    sourceForm.querySelector('div#source-name b').innerHTML = msgSource.source.properties.name;
-    sourceForm.querySelector('div#source-description b').innerHTML = msgSource.source.properties.description;
+    sourceForm.querySelector('div.source-name b').innerHTML = sourceNameLabel;
+    sourceForm.querySelector('div.source-description b').innerHTML = sourceDescriptionLabel;
     sourceForm.querySelector('div#source-classification b').innerHTML = msgSource.source.properties.classification;
     sourceForm.querySelector('div#source-type b').innerHTML = msgSource.source.properties.type;
     sourceForm.querySelector('div#source-period b').innerHTML = msgSource.source.properties.period;
-    sourceForm.querySelector('div#source-name form').action = '/api/library/source/' + sourceId + '/name';
-    sourceForm.querySelector('div#source-description form').action = '/api/library/source/' + sourceId + '/description';
     imageUploadForm.action = '/api/library/source/' + sourceId + '/images';
     imageUploadForm.querySelector('label[for=image]').innerHTML = i18n.en.sourcePage.uploadImage.imageLabel;
     imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = i18n.en.sourcePage.uploadImage.imageInfoLabel;
@@ -396,8 +388,8 @@ var library = {
           const sourceForm = document.querySelector('div#source-form');
           const updateNameAction = '/api/library/source/' + data.id + '/name';
           const updateDescriptionAction = '/api/library/source/' + data.id + '/description';
-          smartFormBuilder.build(sourceForm, '#source-name', data.name, updateNameAction, library.actions);
-          smartFormBuilder.build(sourceForm, '#source-description', data.description, updateDescriptionAction, library.actions);
+          smartFormBuilder.build(sourceForm, '.source-name', sourceNameLabel, data.name, updateNameAction);
+          smartFormBuilder.build(sourceForm, '.source-description', sourceDescriptionLabel, data.description, updateDescriptionAction);
 
           var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
           carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');

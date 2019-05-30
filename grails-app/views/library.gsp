@@ -284,9 +284,9 @@
         <div class="row">
           <div class="col-sm-4">
             <div id="source-form" class="ajax-form">
-              <div class="row" id="source-name">
+              <div class="row source-name">
                 <span class="col-sm-5">
-                  <b></b> *
+                  <b class="source-name-label"></b> *
                 </span>
                 <span class="col-sm-7">
                   <form style="display: inline;">
@@ -300,9 +300,9 @@
                   </form>
                 </span>
               </div>
-              <div class="row" id="source-description">
+              <div class="row source-description">
                 <span class="col-sm-5">
-                  <b></b>
+                  <b class="source-description-label"></b>
                 </span>
                 <span class="col-sm-7">
                   <form style="display: inline;">
