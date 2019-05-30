@@ -84,6 +84,7 @@ let stash = {
     }
   },
   loadGroup: function(groupId) {
+    ajaxHandler.blockUI();
     const url = '/api/stash/group/' + groupId;
     const actions = {200: renderPage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
@@ -97,13 +98,13 @@ let stash = {
     }
   },
   renderGroup: function(group, userInfo) {
+    const content = document.querySelector("content");
+    content.innerHTML = "";
     const groupId = group.id;
     const groupName = group.name;
     const groupDescription = group.description;
     const userId = userInfo.userId;
     const userName = userInfo.userName;
-    const content = document.querySelector("content");
-    content.innerHTML = "";
     const stashTemplate = document.querySelector("template#item-group");
     const stashPage = stashTemplate.content.querySelector('div');
     const stashPageNode = document.importNode(stashPage, true);
