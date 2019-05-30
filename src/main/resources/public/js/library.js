@@ -1,4 +1,5 @@
 import {i18n} from './i18n/library-translations.js';
+import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 
 window.onload = function() {
   library.init();
@@ -392,23 +393,11 @@ var library = {
         }
 
         if (library.isEditAllowed(roles)) {
-          var sourceForm = document.querySelector('div#source-form');
-          sourceForm.querySelector('#source-name .text-holder').innerHTML = data.name;
-          sourceForm.querySelector('#source-description .text-holder').innerHTML = data.description;
-          sourceForm.querySelector('#source-name input').value = data.name;
-          sourceForm.querySelector('#source-name form').action = '/api/library/source/' + data.id + '/name';
-          sourceForm.querySelector('#source-description input').value = data.description;
-          sourceForm.querySelector('#source-description form').action = '/api/library/source/' + data.id + '/description';
-          sourceForm.querySelector('#source-name .smart-form-activator').classList.remove('hidden');
-          sourceForm.querySelector('#source-description .smart-form-activator').classList.remove('hidden');
-
-          sourceForm.querySelector('#source-name .smart-form-activator').onclick = function() {
-            ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
-          };
-
-          sourceForm.querySelector('#source-description .smart-form-activator').onclick = function() {
-            ajaxHandler.activateSmartForm(this, library.actions, 'PATCH');
-          };
+          const sourceForm = document.querySelector('div#source-form');
+          const updateNameAction = '/api/library/source/' + data.id + '/name';
+          const updateDescriptionAction = '/api/library/source/' + data.id + '/description';
+          smartFormBuilder.build(sourceForm, '#source-name', data.name, updateNameAction, library.actions);
+          smartFormBuilder.build(sourceForm, '#source-description', data.description, updateDescriptionAction, library.actions);
 
           var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
           carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
