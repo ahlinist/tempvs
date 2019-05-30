@@ -20,7 +20,7 @@ var library = {
     } else if (location.includes('source')) {
       const n = location.lastIndexOf('/');
       const sourceId = location.substring(n + 1);
-      library.renderSourcePage(sourceId);
+      library.loadSource(sourceId);
     }
   },
   isContributionAllowed: function(roles) {
@@ -286,8 +286,22 @@ var library = {
       });
     }
   },
-  renderSourcePage: function(sourceId) {
+  loadSource: function(sourceId) {
     ajaxHandler.blockUI();
+    const url = '/api/library/source/' + sourceId;
+    ajaxHandler.fetch(null, url, {method: 'GET'}, {200: renderPage});
+
+    function renderPage(response) {
+      const userInfo = JSON.parse(response.headers.get("User-Info"));
+
+      response.json().then(function(data) {
+        library.renderSourcePage(data, userInfo);
+      });
+    }
+  },
+  renderSourcePage: function(source, userInfo) {
+    const sourceId = source.id;
+    const sourceName = source.name;
     const content = document.querySelector("content");
     content.innerHTML = "";
     const librarySourceTemplate = document.querySelector("template#library-source");
@@ -304,7 +318,13 @@ var library = {
     const sourceNameLabel = msgSource.source.properties.name;
     const sourceDescriptionLabel = msgSource.source.properties.description;
 
+    var periodName = msgSource.period[source.period].name;
     document.querySelector('a#breadcrumb-library').innerHTML = i18n.en.breadcrumb.library;
+    document.querySelector('a#breadcrumb-period').innerHTML = periodName;
+    document.querySelector('a#breadcrumb-period').href = '/library/period/' +  source.period.toLowerCase();
+    document.querySelector('a#breadcrumb-source-name').innerHTML = sourceName;
+    document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + sourceId;
+
     sourceForm.querySelector('div.source-name b').innerHTML = sourceNameLabel;
     sourceForm.querySelector('div.source-description b').innerHTML = sourceDescriptionLabel;
     sourceForm.querySelector('div#source-classification b').innerHTML = msgSource.source.properties.classification;
@@ -316,116 +336,99 @@ var library = {
     imageUploadForm.querySelector('span#select-file-button i').innerHTML = i18n.en.sourcePage.uploadImage.selectFileButton;
     imageUploadForm.querySelector('button.submit-button').innerHTML = i18n.en.sourcePage.uploadImage.submitButton;
 
-    const url = '/api/library/source/' + sourceId;
-    const actions = {200: renderPage};
-    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+    var periodName = msgSource.period[source.period].name;
+    var imageContainer = document.querySelector('div#image-container');
+    var carouselInner = imageContainer.querySelector('div.carousel-inner');
+    var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
+    var carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
+    var imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
+    var imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
+    var carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
+    var carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
 
-    function renderPage(response) {
-      const userInfo = response.headers.get("User-Info");
-      const roles = userInfo ? JSON.parse(userInfo).roles : null;
+    carouselInner.innerHTML = '';
+    carouselIndicatorList.innerHTML = '';
 
-      response.json().then(function(data) {
-        var periodName = msgSource.period[data.period].name;
-        var imageContainer = document.querySelector('div#image-container');
-        var carouselInner = imageContainer.querySelector('div.carousel-inner');
-        var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
-        var carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
-        var imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
-        var imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
-        var carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
-        var carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
+    var firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
 
-        carouselInner.innerHTML = '';
-        carouselIndicatorList.innerHTML = '';
-        document.querySelector('a#breadcrumb-period').innerHTML = periodName;
-        document.querySelector('a#breadcrumb-period').href = '/library/period/' +  data.period.toLowerCase();
-        document.querySelector('a#breadcrumb-source-name').innerHTML = data.name;
-        document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + data.id;
+    if (source.images.length) {
+      imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
+      imageContainer.querySelector('img#default-image').classList.add('hidden');
+      modalActivateButton.querySelector('.badge-notify').innerHTML = source.images.length;
 
-        var firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
+      source.images.forEach(function(image, index) {
+        var indicatorNode = document.importNode(imageIndicatorItem, true);
+        var carouselInnerNode = document.importNode(carouselInnerItem, true);
 
-        if (data.images.length) {
-          imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
-          imageContainer.querySelector('img#default-image').classList.add('hidden');
-          modalActivateButton.querySelector('.badge-notify').innerHTML = data.images.length;
+        indicatorNode.setAttribute('data-slide-to', index);
+        carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
+        var htmlImage = new Image();
+        htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
+        htmlImage.src = "/api/image/image/" + image.objectId;
 
-          data.images.forEach(function(image, index) {
-            var indicatorNode = document.importNode(imageIndicatorItem, true);
-            var carouselInnerNode = document.importNode(carouselInnerItem, true);
+        if (index === 0) {
+          indicatorNode.classList.add('active');
+          carouselInnerNode.classList.add('active');
 
-            indicatorNode.setAttribute('data-slide-to', index);
-            carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
-            var htmlImage = new Image();
-            htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
-            htmlImage.src = "/api/image/image/" + image.objectId;
-
-            if (index === 0) {
-              indicatorNode.classList.add('active');
-              carouselInnerNode.classList.add('active');
-
-              var htmlFirstImage = new Image();
-              htmlFirstImage.setAttribute("style", "width: 30vw;");
-              htmlFirstImage.src = "/api/image/image/" + image.objectId;
-              firstImageHolder.innerHTML = '';
-              firstImageHolder.appendChild(htmlFirstImage);
-            }
-
-            carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
-            carouselIndicatorList.appendChild(indicatorNode);
-            carouselInner.appendChild(carouselInnerNode);
-          });
-
-          var slideMapping = {};
-
-          data.images.forEach(function(entry, index) {
-            slideMapping[index] = entry.objectId;
-          });
-
-          modalCarousel.init(slideMapping);
+          var htmlFirstImage = new Image();
+          htmlFirstImage.setAttribute("style", "width: 30vw;");
+          htmlFirstImage.src = "/api/image/image/" + image.objectId;
+          firstImageHolder.innerHTML = '';
+          firstImageHolder.appendChild(htmlFirstImage);
         }
 
-        if (library.isEditAllowed(roles)) {
-          const sourceForm = document.querySelector('div#source-form');
-          const updateNameAction = '/api/library/source/' + data.id + '/name';
-          const updateDescriptionAction = '/api/library/source/' + data.id + '/description';
-          smartFormBuilder.build(sourceForm, '.source-name', sourceNameLabel, data.name, updateNameAction);
-          smartFormBuilder.build(sourceForm, '.source-description', sourceDescriptionLabel, data.description, updateDescriptionAction);
-
-          var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
-          carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
-          carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = i18n.en.sourcePage.deleteImage.confirmation;
-          carouselHeader.querySelector('span.yes').innerHTML = i18n.en.sourcePage.deleteImage.yes;
-          carouselHeader.querySelector('span.no').innerHTML = i18n.en.sourcePage.deleteImage.no;
-          carouselHeader.querySelector('form').action = '/api/library/source/' + data.id + '/images';
-          carouselHeader.querySelector('form').onsubmit = function() {
-            var actions = {
-              200: library.renderSourcePage
-            };
-
-            modalCarousel.deleteImage(this, actions);
-            return false;
-          };
-        }
-
-        if (library.isAdmin(roles)) {
-          var deleteSrcMessages = i18n.en.sourcePage.deleteSource;
-          var deleteSrcSection = document.querySelector('span#delete-source-section');
-          deleteSrcSection.classList.remove('hidden');
-          deleteSrcSection.querySelector('span#source-deletion-confirmation').innerHTML = deleteSrcMessages.confirmation;
-          deleteSrcSection.querySelector('form span.yes').innerHTML = deleteSrcMessages.yes;
-          deleteSrcSection.querySelector('form span.no').innerHTML = deleteSrcMessages.no;
-          deleteSrcSection.querySelector('form').action = '/api/library/source/' + data.id;
-          deleteSrcSection.querySelector('form').onsubmit = function() {
-            library.deleteSource(this, data.period.toLowerCase());
-            return false;
-          };
-        }
-
-        sourceForm.querySelector('#source-classification .text-holder').innerHTML = msgSource.source.classifications[data.classification];
-        sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[data.type];
-        sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
+        carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
+        carouselIndicatorList.appendChild(indicatorNode);
+        carouselInner.appendChild(carouselInnerNode);
       });
+
+      var slideMapping = {};
+
+      source.images.forEach(function(entry, index) {
+        slideMapping[index] = entry.objectId;
+      });
+
+      modalCarousel.init(slideMapping);
     }
+
+    const roles = userInfo ? userInfo.roles : null;
+
+    if (library.isEditAllowed(roles)) {
+      const sourceForm = document.querySelector('div#source-form');
+      const updateNameAction = '/api/library/source/' + sourceId + '/name';
+      const updateDescriptionAction = '/api/library/source/' + sourceId + '/description';
+      smartFormBuilder.build(sourceForm, '.source-name', sourceNameLabel, sourceName, updateNameAction);
+      smartFormBuilder.build(sourceForm, '.source-description', sourceDescriptionLabel, source.description, updateDescriptionAction);
+
+      var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
+      carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
+      carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = i18n.en.sourcePage.deleteImage.confirmation;
+      carouselHeader.querySelector('span.yes').innerHTML = i18n.en.sourcePage.deleteImage.yes;
+      carouselHeader.querySelector('span.no').innerHTML = i18n.en.sourcePage.deleteImage.no;
+      carouselHeader.querySelector('form').action = '/api/library/source/' + sourceId + '/images';
+      carouselHeader.querySelector('form').onsubmit = function() {
+        modalCarousel.deleteImage(this, {200: library.loadSource});
+        return false;
+      };
+    }
+
+    if (library.isAdmin(roles)) {
+      var deleteSrcMessages = i18n.en.sourcePage.deleteSource;
+      var deleteSrcSection = document.querySelector('span#delete-source-section');
+      deleteSrcSection.classList.remove('hidden');
+      deleteSrcSection.querySelector('span#source-deletion-confirmation').innerHTML = deleteSrcMessages.confirmation;
+      deleteSrcSection.querySelector('form span.yes').innerHTML = deleteSrcMessages.yes;
+      deleteSrcSection.querySelector('form span.no').innerHTML = deleteSrcMessages.no;
+      deleteSrcSection.querySelector('form').action = '/api/library/source/' + sourceId;
+      deleteSrcSection.querySelector('form').onsubmit = function() {
+        library.deleteSource(this, source.period.toLowerCase());
+        return false;
+      };
+    }
+
+    sourceForm.querySelector('#source-classification .text-holder').innerHTML = msgSource.source.classifications[source.classification];
+    sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[source.type];
+    sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
   },
   createSource: function(form) {
     var formData = new FormData(form);
@@ -515,6 +518,8 @@ var library = {
     ajaxHandler.fetch(form, url, {method: 'GET'}, actions);
 
     function displaySearchResult(response) {
+      const userInfo = JSON.parse(response.headers.get("User-Info"));
+
       response.json().then(function(data) {
         var sourceTemplate = document.querySelector('template#source-template');
         var sourceItem = sourceTemplate.content.querySelector('tr');
@@ -527,7 +532,7 @@ var library = {
 
           sourceNode.querySelector('td.source-name').innerHTML = source.name;
           sourceNode.onclick = function() {
-            window.location.href = '/library/source/' + source.id
+            library.renderSourcePage(source, userInfo);
           };
           sourceNode.querySelector('td.source-description').innerHTML = source.description;
           sourceNode.querySelector('td.source-classification').innerHTML = msgSource.classifications[source.classification];
@@ -554,7 +559,7 @@ var library = {
     var image = formData.get('image');
     var imageInfo = formData.get('imageInfo');
 
-    var actions = {200: library.renderSourcePage};
+    var actions = {200: library.loadSource};
 
     new Promise((resolve, reject) => {
       const reader = new FileReader();
