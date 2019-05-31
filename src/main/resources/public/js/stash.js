@@ -127,8 +127,10 @@ let stash = {
     const updateNameAction = '/api/stash/group/' + groupId + '/name';
     const updateDescriptionAction = '/api/stash/group/' + groupId + '/description';
     const groupForm = groupSection.querySelector(".group-form");
-    smartFormBuilder.build(groupForm, '.group-name', groupNameLabel, groupName, updateNameAction);
-    smartFormBuilder.build(groupForm, '.group-description', groupDescriptionLabel, groupDescription, updateDescriptionAction);
+
+    const editAllowed = group.owner.id == userId;
+    smartFormBuilder.build(groupForm, '.group-name', groupNameLabel, groupName, updateNameAction, editAllowed);
+    smartFormBuilder.build(groupForm, '.group-description', groupDescriptionLabel, groupDescription, updateDescriptionAction, editAllowed);
 
     const url = '/api/stash/items';
     const actions = {200: renderPage};

@@ -392,14 +392,15 @@ var library = {
     }
 
     const roles = userInfo ? userInfo.roles : null;
+    const isEditable = library.isEditAllowed(roles)
 
-    if (library.isEditAllowed(roles)) {
-      const sourceForm = document.querySelector('div#source-form');
-      const updateNameAction = '/api/library/source/' + sourceId + '/name';
-      const updateDescriptionAction = '/api/library/source/' + sourceId + '/description';
-      smartFormBuilder.build(sourceForm, '.source-name', sourceNameLabel, sourceName, updateNameAction);
-      smartFormBuilder.build(sourceForm, '.source-description', sourceDescriptionLabel, source.description, updateDescriptionAction);
+    const updateNameAction = '/api/library/source/' + sourceId + '/name';
+    const updateDescriptionAction = '/api/library/source/' + sourceId + '/description';
 
+    smartFormBuilder.build(sourceForm, '.source-name', sourceNameLabel, sourceName, updateNameAction, isEditable);
+    smartFormBuilder.build(sourceForm, '.source-description', sourceDescriptionLabel, source.description, updateDescriptionAction, isEditable);
+
+    if (isEditable) {
       var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
       carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
       carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = i18n.en.sourcePage.deleteImage.confirmation;

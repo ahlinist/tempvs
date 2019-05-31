@@ -70,7 +70,14 @@ var messaging = {
         if (conversation.type == 'CONFERENCE') {
           const conversationNameLabel = i18n[lang].messaging.conversation;
           const updateNameAction = '/api/message/conversations/' + conversation.id + '/name';
-          smartFormBuilder.build(conversationNameContainer, '.conversation-name', conversationNameLabel, conversation.name, updateNameAction, messaging.actions);
+          smartFormBuilder.build(
+              conversationNameContainer,
+              '.conversation-name',
+              conversationNameLabel,
+              conversation.name,
+              updateNameAction,
+              messaging.actions,
+              true);
           const conversationNameSpinner = conversationNameContainer.querySelector('.spinner');
           conversationNameSpinner.classList.add('hidden');
           conversationNameContainer.classList.remove('hidden');
