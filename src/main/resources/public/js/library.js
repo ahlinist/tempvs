@@ -1,5 +1,6 @@
 import {i18n} from './i18n/library-translations.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
+import {formValidator} from './validation/form-validator.js';
 
 window.onload = function() {
   library.init();
@@ -229,6 +230,11 @@ var library = {
       var typeOptions = createSourceForm.querySelectorAll('select[name=type] > option');
       var submitButton = createSourceSection.querySelector('.submit-button');
       popupButton.innerHTML = i18n.en.periodPage.createSource.popupButton;
+
+      createSourceForm.onsubmit = function() {
+        library.createSource(this);
+        return false;
+      }
 
       labels.forEach(function(label) {
         createSourceForm.querySelector('label[for=' + label + ']').innerHTML = srcProperties[label];
@@ -480,7 +486,7 @@ var library = {
     var actions = {
       200: renderSourceDetails,
       400: function(response, form) {
-        ajaxHandler.handleBadRequest(response, form);
+        formValidator.handleBadRequest(response, form);
       }
     };
 

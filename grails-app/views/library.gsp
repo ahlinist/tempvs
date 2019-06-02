@@ -129,7 +129,7 @@
                 <div class="modal-content">
                   <div class="modal-body">
                     <div class="row ajax-form">
-                      <form action="/api/library/source" onsubmit="library.createSource(this); return false;">
+                      <form action="/api/library/source">
                         <div class="row">
                           <div class="col-sm-6">
                             <label for="period"></label>

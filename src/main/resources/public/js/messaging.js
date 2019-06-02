@@ -1,6 +1,7 @@
 import {i18n} from './i18n/messaging-translations.js';
 import {profileSearcher} from './profile-searcher.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
+import {formValidator} from './validation/form-validator.js';
 
 window.onload = function() {
   messaging.init();
@@ -156,7 +157,7 @@ var messaging = {
         messaging.displayNewMessagesCounter();
       }
 
-      ajaxHandler.handleBadRequest(response, form, specificAction);
+      formValidator.handleBadRequest(response, form, specificAction);
     },
     404: function(response) {
       console.log('Status code 404 returned.');
@@ -334,6 +335,9 @@ var messaging = {
           }
         });
       });
+    },
+    400: function(response, form) {
+      formValidator.handleBadRequest(response, form);
     }
   },
   send: function(form) {
