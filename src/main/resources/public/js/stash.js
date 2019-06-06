@@ -1,4 +1,6 @@
 import {i18n} from './i18n/stash-translations.js';
+import {i18n as periodI18n} from './i18n/period-translations.js';
+import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 
 window.onload = function() {
@@ -35,9 +37,9 @@ let stash = {
     stashSection.querySelector('h1#group-list-heading').innerHTML = messageSource.groups.heading;
     let url = '/api/stash/group';
 
-     if (userId !== undefined) {
-       url += '?userId=' + userId;
-     }
+    if (userId !== undefined) {
+      url += '?userId=' + userId;
+    }
 
     const actions = {200: renderPage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
@@ -132,6 +134,45 @@ let stash = {
     smartFormBuilder.build(groupForm, '.group-name', groupNameLabel, groupName, updateNameAction, editAllowed);
     smartFormBuilder.build(groupForm, '.group-description', groupDescriptionLabel, groupDescription, updateDescriptionAction, editAllowed);
 
+    if (editAllowed) {
+      const createItemForm = document.querySelector('.create-item-form');
+      const itemProperties = i18n.en.stash.items.properties;
+      const classifications = classificationI18n.en.classifications;
+      const periods = periodI18n.en.period;
+      const labels = Object.keys(itemProperties);
+      const classificationOptions = createItemForm.querySelectorAll('select[name=classification] > option');
+      const periodOptions = createItemForm.querySelectorAll('select[name=period] > option');
+      const submitButton = createItemForm.querySelector('.submit-button');
+      createItemForm.action = '/api/stash/group/' + groupId + '/item';
+
+      createItemForm.onsubmit = function() {
+        stash.createItem(this);
+        return false;
+      }
+
+      labels.forEach(function(label) {
+        createItemForm.querySelector('label[for=' + label + ']').innerHTML = itemProperties[label];
+      });
+
+      classificationOptions.forEach(function(option) {
+        option.innerHTML = classifications[option.value];
+      });
+
+      periodOptions.forEach(function(option) {
+        option.innerHTML = periods[option.value].name;
+      });
+
+      submitButton.innerHTML = i18n.en.stash.items.submitButton;
+      createItemForm.onsubmit = function() {
+        stash.createItem(this);
+        return false;
+      }
+
+      const createItemButton = document.querySelector('button.create-item-button');
+      createItemButton.classList.remove('hidden');
+      createItemButton.querySelector('span.text-holder').innerHTML = messageSource.items.createButton;
+    }
+
     const url = '/api/stash/items';
     const actions = {200: renderPage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
@@ -139,6 +180,68 @@ let stash = {
     function renderPage() {
       alert("items found!");
     }
+  },
+  createItem: function(form) {
+    const messageSource = i18n.en.stash.items.create.validation;
+    const formData = new FormData(form);
+
+    const object = {
+      name: formData.get('name'),
+      description: formData.get('description'),
+      classification: formData.get('classification'),
+      period: formData.get('period'),
+    };
+
+    const validator = {
+      name: messageSource.nameBlank,
+      classification: messageSource.classificationMissing,
+      period: messageSource.periodMissing
+    };
+
+    let inputIsValid = true;
+    Object.entries(validator).forEach(validate);
+
+    function validate(entry) {
+      const fieldName = entry[0];
+      const validationMessage = entry[1];
+
+      if (!object[fieldName] || !/\S/.test(object[fieldName])) {
+        let field = form.querySelector('[name=' + fieldName + ']');
+        field.setAttribute('data-toggle', 'tooltip');
+        field.setAttribute('data-placement', 'top');
+        field.setAttribute('title', validationMessage);
+        $(field).tooltip('show');
+        inputIsValid = false;
+      }
+    }
+
+    if (!inputIsValid) {
+      return;
+    }
+
+    const payload = {
+      method: 'POST',
+      headers:{
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(object)
+    };
+
+    const actions = {
+      200: renderItem,
+      400: function(response, form) {
+        ajaxHandler.handleBadRequest(response, form);
+      }
+    };
+
+    function renderItem(response) {
+      response.json().then(function(data) {
+        alert("item created!");
+      });
+    }
+
+    ajaxHandler.blockUI();
+    ajaxHandler.fetch(form, form.action, payload, actions);
   },
   createGroup: function(form) {
     const formData = new FormData(form);

@@ -118,6 +118,78 @@
               </span>
             </div>
           </div>
+          <div class="col-sm-6">
+            <button style="position: absolute; right: 0;" class="create-item-button btn btn-default hidden" data-toggle="modal" data-target="#create-item-popup">
+              <span class="fa fa-plus"></span>
+              <span class="text-holder"></span>
+            </button>
+            <div id="create-item-popup" class="modal fade" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <div class="row ajax-form">
+                      <form class="create-item-form">
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="name"></label> *
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="text" name="name">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="description"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="text" name="description">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="period"></label> *
+                          </div>
+                          <div class="col-sm-6">
+                            <select class="col-sm-12" name="period">
+                              <option value=""></option>
+                              <option value="ANCIENT"></option>
+                              <option value="ANTIQUITY"></option>
+                              <option value="EARLY_MIDDLE_AGES"></option>
+                              <option value="HIGH_MIDDLE_AGES"></option>
+                              <option value="LATE_MIDDLE_AGES"></option>
+                              <option value="RENAISSANCE"></option>
+                              <option value="MODERN"></option>
+                              <option value="WWI"></option>
+                              <option value="WWII"></option>
+                              <option value="CONTEMPORARY"></option>
+                              <option value="OTHER"></option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="classification"></label> *
+                          </div>
+                          <div class="col-sm-6">
+                            <select class="col-sm-12" name="classification">
+                              <option value=""></option>
+                              <option value="CLOTHING"></option>
+                              <option value="FOOTWEAR"></option>
+                              <option value="HOUSEHOLD"></option>
+                              <option value="WEAPON"></option>
+                              <option value="ARMOR"></option>
+                              <option value="OTHER"></option>
+                            </select>
+                          </div>
+                        </div>
+                        <button class="btn btn-default submit-button"></button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div>
           <h1 id="item-list-heading"></h1>

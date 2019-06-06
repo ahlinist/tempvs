@@ -18,6 +18,23 @@ export const i18n = {
             nameBlank: "Name can not be blank"
           }
         }
+      },
+      items:  {
+        createButton: "New item",
+        submitButton: "Create item",
+        create: {
+          validation: {
+            nameBlank: "Please choose a name",
+            classificationMissing: "Please choose a classification",
+            periodMissing: "Please choose a period",
+          }
+        },
+        properties: {
+          name: "Name",
+          description: "Description",
+          classification: "Classification",
+          period: "Period"
+        }
       }
     }
   }

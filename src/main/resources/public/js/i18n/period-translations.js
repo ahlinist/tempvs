@@ -1,6 +1,9 @@
 export const i18n = {
   en: {
     period: {
+      "": {
+        name: "-"
+      },
       ANCIENT: {
         name: "Ancient times",
         shortDescription: "Ancient history is the aggregate of past events from the beginning of recorded human history and extending as far as the Early Middle Ages or the Post-classical Era that begins in 5th century",
