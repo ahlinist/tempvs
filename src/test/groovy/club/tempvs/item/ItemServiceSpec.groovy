@@ -18,7 +18,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     def item = Mock Item
     def image = Mock Image
     def source = Mock Source
-    def comment = Mock Comment
     def period = GroovyMock Period
     def item2Source = Mock Item2Source
     def item2Passport = Mock Item2Passport
@@ -90,9 +89,6 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
     }
 
     void "Test deleteImage()"() {
-        given:
-        List<Image> images = [image]
-
         when:
         def result = service.deleteImage(item, image)
 
@@ -127,32 +123,5 @@ class ItemServiceSpec extends Specification implements ServiceUnitTest<ItemServi
         1 * Item2Source.findByItemAndSource(item, source) >> item2Source
         1 * item2Source.delete()
         0 * _
-    }
-
-    void "Test addComment()"() {
-        when:
-        def result = service.addComment(item, comment)
-
-        then:
-        1 * item.addToComments(comment)
-        1 * item.save() >> item
-        0 * _
-
-        and:
-        result == item
-    }
-
-
-    void "Test deleteComment()"() {
-        when:
-        def result = service.deleteComment(item, comment)
-
-        then:
-        1 * item.removeFromComments(comment)
-        1 * item.save() >> item
-        0 * _
-
-        and:
-        result == item
     }
 }

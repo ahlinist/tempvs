@@ -1,6 +1,5 @@
 package club.tempvs.item
 
-import club.tempvs.communication.Comment
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.periodization.Period
@@ -22,10 +21,6 @@ class ItemService {
     private static final String ITEM_GROUP = 'itemGroup'
 
     ImageService imageService
-
-    ItemGroup getGroup(Long id) {
-        ItemGroup.get id
-    }
 
     Item getItem(Long id) {
         Item.get id
@@ -82,18 +77,5 @@ class ItemService {
     @PreAuthorize('#item.itemGroup.user.email == authentication.name')
     void unlinkSource(Item item, Source source) {
         Item2Source.findByItemAndSource(item, source)?.delete()
-    }
-
-    Item addComment(Item item, Comment comment) {
-        item.addToComments(comment)
-        item.save()
-        item
-    }
-
-    @PreAuthorize('#item.itemGroup.user.email == authentication.name or (#comment.userProfile != null and #comment.userProfile.user.email == authentication.name) or (#comment.clubProfile != null and #comment.clubProfile.user.email == authentication.name)')
-    Item deleteComment(Item item, Comment comment) {
-        item.removeFromComments(comment)
-        item.save()
-        item
     }
 }

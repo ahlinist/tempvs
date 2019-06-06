@@ -2,7 +2,6 @@ package club.tempvs.item
 
 import club.tempvs.ajax.AjaxResponseHelper
 import club.tempvs.communication.Comment
-import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
@@ -52,7 +51,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
     def userService = Mock UserService
     def imageService = Mock ImageService
     def sourceService = Mock SourceService
-    def commentService = Mock CommentService
     def groovyPageRenderer = Mock PageRenderer
     def imageUploadCommand = Mock ImageUploadCommand
     def ajaxResponseHelper = Mock AjaxResponseHelper
@@ -62,122 +60,11 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         controller.itemService = itemService
         controller.imageService = imageService
         controller.sourceService = sourceService
-        controller.commentService = commentService
         controller.groovyPageRenderer = groovyPageRenderer
         controller.ajaxResponseHelper = ajaxResponseHelper
     }
 
     def cleanup() {
-    }
-
-    void "Test group() without id"() {
-        when:
-        controller.group()
-
-        then:
-        0 * _
-
-        and:
-        controller.modelAndView == null
-        !response.redirectedUrl
-    }
-
-    void "Test group() for non-existing id"() {
-        when:
-        controller.group(LONG_ONE)
-
-        then:
-        1 * itemService.getGroup(LONG_ONE) >> null
-        0 * _
-
-        and:
-        controller.modelAndView == null
-        !response.redirectedUrl
-    }
-
-    void "Test group()"() {
-        given:
-        Collection items = [item]
-
-        when:
-        def result = controller.group(LONG_ONE)
-
-        then:
-        1 * itemService.getGroup(LONG_ONE) >> itemGroup
-        1 * itemGroup.user >> user
-        1 * itemGroup.items >> items
-        1 * user.userProfile >> profile
-        1 * user.id >> LONG_ONE
-        1 * userService.currentUserId >> LONG_ONE
-        0 * _
-
-        and:
-        result == [
-                itemGroup: itemGroup,
-                user: user,
-                items: items,
-                userProfile: profile,
-                itemTypes: ItemType.values(),
-                periods: Period.values(),
-                editAllowed: Boolean.TRUE,
-        ]
-    }
-
-    void "Test createItem() against invalid command"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.createItem(item, imageUploadCommand)
-
-        then:
-        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * item.validate() >> Boolean.FALSE
-        1 * ajaxResponseHelper.renderValidationResponse(item) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test createItem() against invalid item"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.createItem(item, imageUploadCommand)
-
-        then:
-        1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * item.validate() >> Boolean.TRUE
-        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
-        1 * item.setImages([image])
-        1 * itemService.saveItem(item) >> item
-        1 * item.hasErrors() >> Boolean.TRUE
-        1 * ajaxResponseHelper.renderValidationResponse(_ as Item) >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
-    }
-
-    void "Test createItem()"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.createItem(item, imageUploadCommand)
-
-        then:
-        1 * imageUploadBean.validate() >> Boolean.TRUE
-        1 * item.validate() >> Boolean.TRUE
-        1 * imageUploadCommand.imageUploadBeans >> [imageUploadBean]
-        1 * imageService.uploadImages([imageUploadBean], ITEM_COLLECTION) >> [image]
-        1 * item.setImages([image])
-        1 * itemService.saveItem(item) >> item
-        1 * item.hasErrors() >> Boolean.FALSE
-        1 * item.id >> LONG_ONE
-        1 * ajaxResponseHelper.renderRedirect("${ITEM_URI}/${LONG_ONE}") >> json
-        1 * json.render(_ as GrailsMockHttpServletResponse)
-        0 * _
     }
 
     void "Test deleteImage()"() {
@@ -358,53 +245,6 @@ class ItemControllerSpec extends Specification implements ControllerUnitTest<Ite
         1 * item.sources >> [source]
         1 * source.sourceType >> sourceType
         1 * sourceService.getSourcesByPeriodAndItemType(period, itemType, [source]) >> [source]
-        1 * groovyPageRenderer.render(_ as Map)
-        0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
-    }
-
-    void "Test addComment()"() {
-        given:
-        request.method = POST_METHOD
-
-        when:
-        controller.addComment(LONG_ONE, TEXT)
-
-        then:
-        1 * itemService.getItem(LONG_ONE) >> item
-        1 * userService.currentProfile >> profile
-        1 * commentService.createComment(TEXT, profile) >> comment
-        1 * item.hasErrors() >> Boolean.FALSE
-        1 * itemService.addComment(item, comment) >> item
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_TWO
-        1 * userService.currentUserId >> LONG_TWO
-        1 * groovyPageRenderer.render(_ as Map)
-        0 * _
-
-        and:
-        response.json.action == REPLACE_ACTION
-    }
-
-    void "Test deleteComment()"() {
-        given:
-        request.method = DELETE_METHOD
-
-        when:
-        controller.deleteComment(LONG_ONE, LONG_TWO)
-
-        then:
-        1 * itemService.getItem(LONG_ONE) >> item
-        1 * commentService.loadComment(LONG_TWO) >> comment
-        1 * itemService.deleteComment(item, comment) >> item
-        1 * item.hasErrors() >> Boolean.FALSE
-        1 * item.itemGroup >> itemGroup
-        1 * itemGroup.user >> user
-        1 * user.id >> LONG_TWO
-        1 * userService.currentUserId >> LONG_TWO
         1 * groovyPageRenderer.render(_ as Map)
         0 * _
 

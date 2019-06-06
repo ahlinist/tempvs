@@ -1,14 +1,10 @@
 package club.tempvs.item
 
 import club.tempvs.ajax.AjaxResponseHelper
-import club.tempvs.communication.Comment
-import club.tempvs.communication.CommentService
 import club.tempvs.image.Image
 import club.tempvs.image.ImageService
 import club.tempvs.image.ImageUploadBean
 import club.tempvs.image.ImageUploadCommand
-import club.tempvs.periodization.Period
-import club.tempvs.user.Profile
 import club.tempvs.user.User
 import club.tempvs.user.UserService
 import grails.compiler.GrailsCompileStatic
@@ -35,9 +31,6 @@ class ItemController {
     static defaultAction = 'stash'
 
     static allowedMethods = [
-            createGroup: 'POST',
-            group: 'GET',
-            createItem: 'POST',
             show: 'GET',
             deleteItem: 'DELETE',
             editItemField: 'POST',
@@ -53,52 +46,9 @@ class ItemController {
     UserService userService
     ImageService imageService
     SourceService sourceService
-    CommentService commentService
     PageRenderer groovyPageRenderer
     LinkGenerator grailsLinkGenerator
     AjaxResponseHelper ajaxResponseHelper
-
-    @Secured('permitAll')
-    def group(Long id) {
-        if (id) {
-            ItemGroup itemGroup = itemService.getGroup id
-
-            if (itemGroup) {
-                User user = itemGroup.user
-
-                [
-                        user: user,
-                        itemGroup: itemGroup,
-                        itemTypes: ItemType.values(),
-                        periods: Period.values(),
-                        items: itemGroup.items.sort { it.id },
-                        userProfile: user.userProfile,
-                        editAllowed: user.id == userService.currentUserId,
-                ]
-            }
-        }
-    }
-
-    def createItem(Item item, ImageUploadCommand command) {
-        List<ImageUploadBean> imageUploadBeans = command.imageUploadBeans
-
-        if (imageUploadBeans && !imageUploadBeans.every { it.validate() }) {
-            return render(ajaxResponseHelper.renderValidationResponse(imageUploadBeans.find { it.hasErrors() }))
-        }
-
-        if (!item.validate()) {
-            return render(ajaxResponseHelper.renderValidationResponse(item))
-        }
-
-        item.images = imageService.uploadImages(imageUploadBeans, ITEM_COLLECTION)
-        item = itemService.saveItem(item)
-
-        if (item.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(item))
-        }
-
-        render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'item', action: 'show', id: item.id))
-    }
 
     def deleteImage(Long objectId, Long imageId) {
         Item item = itemService.getItem objectId
@@ -261,57 +211,6 @@ class ItemController {
         ]
 
         String template = groovyPageRenderer.render(template: '/item/templates/linkedSources', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    def addComment(Long objectId, String text) {
-        Item item = itemService.getItem objectId
-
-        if (!item || !text) {
-            return render([action: NO_ACTION] as JSON)
-        }
-
-        Profile profile = userService.currentProfile
-        Comment comment = commentService.createComment(text, profile)
-        item = itemService.addComment(item, comment)
-
-        if (item.hasErrors()) {
-            return render(ajaxResponseHelper.renderValidationResponse(item))
-        }
-
-        Map model = [
-                object: item,
-                objectId: objectId,
-                controllerName: 'item',
-                editAllowed: item.itemGroup.user.id == userService.currentUserId,
-        ]
-
-        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
-        render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    def deleteComment(Long objectId, Long commentId) {
-        Item item = itemService.getItem objectId
-        Comment comment = commentService.loadComment commentId
-
-        if (!item) {
-            return render([action: NO_ACTION] as JSON)
-        }
-
-        item = itemService.deleteComment(item, comment)
-
-        if (item.hasErrors()) {
-            ajaxResponseHelper.renderValidationResponse(item)
-        }
-
-        Map model = [
-                object: item,
-                objectId: objectId,
-                controllerName: 'item',
-                editAllowed: item.itemGroup.user.id == userService.currentUserId,
-        ]
-
-        String template = groovyPageRenderer.render(template: '/communication/templates/comments', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
     }
 
