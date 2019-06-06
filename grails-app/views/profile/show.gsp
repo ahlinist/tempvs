@@ -28,7 +28,7 @@
             <g:render template="/profile/templates/avatar"/>
             <ul class="row">
               <li class="row">
-                <g:link class="btn btn-default disableable col-sm-12" controller="item" action="stash" id="${user.id}">
+                <g:link class="btn btn-default disableable col-sm-12" controller="stash" action="${user.id}">
                   <span class="pull-left">
                     <g:message code="item.stash.button"/>&nbsp;
                   </span>
