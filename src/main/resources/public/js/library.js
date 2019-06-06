@@ -1,4 +1,6 @@
 import {i18n} from './i18n/library-translations.js';
+import {i18n as periodI18n} from './i18n/period-translations.js';
+import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 import {formValidator} from './validation/form-validator.js';
 
@@ -92,8 +94,8 @@ var library = {
         library.renderPeriodPage(periodKey.toLowerCase());
       };
       thumbnailImg.src = '/static/images/library/thumbnails/' + periodKey.toLowerCase() + '.jpg';
-      periodName.innerHTML = i18n.en.period[periodKey].name;
-      periodShortDescription.innerHTML = i18n.en.period[periodKey].shortDescription;
+      periodName.innerHTML = periodI18n.en.period[periodKey].name;
+      periodShortDescription.innerHTML = periodI18n.en.period[periodKey].shortDescription;
 
       periodsSection.appendChild(periodNode);
     }
@@ -210,10 +212,11 @@ var library = {
     content.appendChild(libraryPeriodPageNode);
     window.history.pushState("", "", '/library/period/' + periodKey);
 
-    const period = periodKey.toUpperCase()
-    document.querySelector('title').innerHTML = i18n.en.period[period].name;
+    const period = periodKey.toUpperCase();
+    const periodMessageSource = periodI18n.en.period[period];
+    document.querySelector('title').innerHTML = periodMessageSource.name;
     var srcProperties = i18n.en.source.properties;
-    var classifications = i18n.en.source.classifications;
+    var classifications = classificationI18n.en.classifications;
     var types = i18n.en.source.types;
     var breadcrumbPeriod = document.querySelector('a#breadcrumb-period');
     var createSourceSection = document.querySelector('div#create-source-section');
@@ -241,7 +244,7 @@ var library = {
       });
 
       createSourceForm.querySelector('input[name=period]').value = period;
-      createSourceForm.querySelector('input[name=fake-period]').value = i18n.en.period[period].name;
+      createSourceForm.querySelector('input[name=fake-period]').value = periodMessageSource.name;
       submitButton.innerHTML = i18n.en.periodPage.createSource.submitButton;
 
       classificationOptions.forEach(function(option) {
@@ -253,11 +256,11 @@ var library = {
       });
     }
 
-    document.querySelector('h1#period-heading').innerHTML = i18n.en.period[period].name;
-    document.querySelector('div#period-long-description').innerHTML = i18n.en.period[period].longDescription;
+    document.querySelector('h1#period-heading').innerHTML = periodMessageSource.name;
+    document.querySelector('div#period-long-description').innerHTML = periodMessageSource.longDescription;
     document.querySelector('h1#sources').innerHTML = i18n.en.periodPage.sourceListHeading;
     document.querySelector('a#breadcrumb-library').innerHTML = i18n.en.breadcrumb.library;
-    breadcrumbPeriod.innerHTML = i18n.en.period[period].name;
+    breadcrumbPeriod.innerHTML = periodMessageSource.name;
     breadcrumbPeriod.href = '/library/period/' + periodKey;
     document.querySelector('img#period-image').src = '/static/images/library/' + periodKey + '.jpg';
     searchSection.querySelector('div#classification-search h4').innerHTML = srcProperties.classification + ":";
@@ -324,7 +327,7 @@ var library = {
     const sourceNameLabel = msgSource.source.properties.name;
     const sourceDescriptionLabel = msgSource.source.properties.description;
 
-    var periodName = msgSource.period[source.period].name;
+    var periodName = periodI18n['en'].period[source.period].name;
     document.querySelector('a#breadcrumb-library').innerHTML = i18n.en.breadcrumb.library;
     document.querySelector('a#breadcrumb-period').innerHTML = periodName;
     document.querySelector('a#breadcrumb-period').href = '/library/period/' +  source.period.toLowerCase();
@@ -342,7 +345,6 @@ var library = {
     imageUploadForm.querySelector('span#select-file-button i').innerHTML = i18n.en.sourcePage.uploadImage.selectFileButton;
     imageUploadForm.querySelector('button.submit-button').innerHTML = i18n.en.sourcePage.uploadImage.submitButton;
 
-    var periodName = msgSource.period[source.period].name;
     var imageContainer = document.querySelector('div#image-container');
     var carouselInner = imageContainer.querySelector('div.carousel-inner');
     var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
@@ -433,7 +435,7 @@ var library = {
       };
     }
 
-    sourceForm.querySelector('#source-classification .text-holder').innerHTML = msgSource.source.classifications[source.classification];
+    sourceForm.querySelector('#source-classification .text-holder').innerHTML = classificationI18n.en.classifications[source.classification];
     sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[source.type];
     sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
   },
@@ -535,15 +537,14 @@ var library = {
 
         data.forEach(function(source) {
           var sourceNode = document.importNode(sourceItem, true);
-          var msgSource = i18n.en.source;
 
           sourceNode.querySelector('td.source-name').innerHTML = source.name;
           sourceNode.onclick = function() {
             library.renderSourcePage(source, userInfo);
           };
           sourceNode.querySelector('td.source-description').innerHTML = source.description;
-          sourceNode.querySelector('td.source-classification').innerHTML = msgSource.classifications[source.classification];
-          sourceNode.querySelector('td.source-type').innerHTML = msgSource.types[source.type];
+          sourceNode.querySelector('td.source-classification').innerHTML = classificationI18n.en.classifications[source.classification];
+          sourceNode.querySelector('td.source-type').innerHTML = i18n.en.source.types[source.type];
           tableBody.appendChild(sourceNode);
         });
       });
