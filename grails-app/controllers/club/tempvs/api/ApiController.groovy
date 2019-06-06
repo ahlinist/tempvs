@@ -18,8 +18,8 @@ class ApiController {
     def call(String service, String uri) {
         HttpMethod httpMethod = HttpMethod.valueOf(request.method)
         String serviceUrl = eurekaClient.getApplication(service)?.instances?.find()?.homePageUrl
-        String getParameters = (httpMethod == HttpMethod.GET) ? "?page=${params.page}&size=${params.size}&q=${params.q}&userId=${params.userId}" : ""
-        String url = "${serviceUrl}/api/" + uri + getParameters
+        String getParams = (httpMethod == HttpMethod.GET) ? '?' + params.collect { "${it.key}=${it.value}" }.join('&') : ""
+        String url = "${serviceUrl}/api/" + uri + getParams
         RestResponse restResponse = restCaller.call(url, httpMethod, request.JSON as JSON)
         Integer status = restResponse?.statusCode?.value()
 
