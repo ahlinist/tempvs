@@ -173,11 +173,11 @@ let stash = {
       createItemButton.querySelector('span.text-holder').innerHTML = messageSource.items.createButton;
     }
 
-    const url = '/api/stash/items';
-    const actions = {200: renderPage};
+    const url = '/api/stash/group/' + groupId + '/item';
+    const actions = {200: renderItemList};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
-    function renderPage() {
+    function renderItemList(response) {
       alert("items found!");
     }
   },
