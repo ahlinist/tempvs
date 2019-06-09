@@ -49,7 +49,7 @@ let stash = {
       const currentUserId = userInfo.userId;
 
       response.json().then(function(data) {
-        const groupList = stashSection.querySelector('ul#group-list');
+        const groupList = stashSection.querySelector('div#group-list');
         const groupListItemTemplate = stashSection.querySelector('template#group-list-item-template');
         const userId = data.owner.id;
         const userName = data.owner.userName;
@@ -70,7 +70,7 @@ let stash = {
         }
 
         function renderGroupListItem(group) {
-          const groupListItem = groupListItemTemplate.content.querySelector('li');
+          const groupListItem = groupListItemTemplate.content.querySelector('div');
           const groupListItemNode = document.importNode(groupListItem, true);
           const groupLink = groupListItemNode.querySelector("a");
           groupLink.href = "/stash/" + group.id;
@@ -79,7 +79,7 @@ let stash = {
             return false;
           }
           groupLink.querySelector("b.group-name").innerHTML = group.name;
-          groupLink.querySelector("p.group-description").innerHTML = group.description;
+          groupLink.querySelector("p.group-description").innerHTML = group.description || '&nbsp;';
           groupList.appendChild(groupLink);
         }
       });
@@ -122,7 +122,7 @@ let stash = {
     const breadCrumbGroup = groupSection.querySelector("a#breadcrumb-item-group");
     breadCrumbGroup.href = "/stash/group/" + groupId;
     breadCrumbGroup.innerHTML = groupName;
-    groupSection.querySelector('h1#item-list-heading').innerHTML = messageSource.group.heading;
+    groupSection.querySelector('h1.item-list-heading').innerHTML = messageSource.group.heading;
 
     const groupNameLabel = i18n.en.stash.group.nameLabel;
     const groupDescriptionLabel = i18n.en.stash.group.descriptionLabel;
@@ -173,13 +173,37 @@ let stash = {
       createItemButton.querySelector('span.text-holder').innerHTML = messageSource.items.createButton;
     }
 
-    const url = '/api/stash/group/' + groupId + '/item';
+    const url = '/api/stash/group/' + groupId + '/item?page=0&size=40';
     const actions = {200: renderItemList};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
     function renderItemList(response) {
-      alert("items found!");
+      const itemListTemplate = document.querySelector('template.item-list-template');
+      const itemListBlock = document.querySelector('.item-list-block');
+
+      response.json().then(function(data) {
+        for (const item of data) {
+          renderItem(item);
+        }
+
+        function renderItem(item) {
+          const listItem = itemListTemplate.content.querySelector('div');
+          const listItemNode = document.importNode(listItem, true);
+          const itemLink = listItemNode.querySelector('a');
+          itemLink.href = '/stash/' + item.itemGroup.id + '/item/' + item.id;
+          itemLink.onclick = function() {
+            stash.renderItem(item, userInfo);
+            return false;
+          }
+          itemLink.querySelector("b.item-name").innerHTML = item.name;
+          itemLink.querySelector("p.item-description").innerHTML = item.description || "&nbsp;";
+          itemListBlock.appendChild(itemLink);
+        }
+      });
     }
+  },
+  renderItem: function(item, userInfo) {
+    alert('item details page!');
   },
   createItem: function(form) {
     const messageSource = i18n.en.stash.items.create.validation;

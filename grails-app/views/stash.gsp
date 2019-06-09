@@ -49,30 +49,16 @@
           <h1 id="group-list-heading"></h1>
           <div class="row">
             <div class="col-sm-2"></div>
-            <ul id="group-list" class="col-sm-8">
-              <g:each var="itemGroup" in="${itemGroups}">
-                <g:set var="itemGroupId" value="${itemGroup.id}"/>
-                <g:set var="itemGroupName" value="${itemGroup.name}"/>
-                <li id="itemGroup-${itemGroupId}">
-                  <div class="row">
-                    <g:link class="btn btn-default col-sm-3" controller="item" action="group" id="${itemGroupId}" data-toggle="tooltip" data-placement="bottom" title="${itemGroup.description}">
-                        ${itemGroupName}
-                    </g:link>
-                  </div>
-                </li>
-              </g:each>
-            </ul>
+            <div id="group-list" class="col-sm-8"></div>
             <div class="col-sm-2"></div>
           </div>
           <template id="group-list-item-template">
-            <li>
-              <div>
-                <a class="btn btn-default col-sm-4">
-                  <b class="group-name"></b>
-                  <p class="group-description"></p>
-                </a>
-              </div>
-            </li>
+            <div>
+              <a class="btn btn-default col-sm-4">
+                <b class="group-name"></b>
+                <p class="group-description"></p>
+              </a>
+            </div>
           </template>
         </div>
       </div>
@@ -191,8 +177,25 @@
             </div>
           </div>
         </div>
-        <div>
-          <h1 id="item-list-heading"></h1>
+        <div class="row">
+          <h1 class="item-list-heading"></h1>
+        </div>
+        <div class="row">
+          <div class="col-sm-3"></div>
+          <div class="col-sm-8">
+            <div class="item-list-block"></div>
+          </div>
+          <template class="item-list-template">
+            <li>
+              <div>
+                <a class="btn btn-default col-sm-4">
+                  <b class="item-name"></b>
+                  <p class="item-description"></p>
+                </a>
+              </div>
+            </li>
+          </template>
+          <div class="col-sm-3"></div>
         </div>
       </div>
     </template>
