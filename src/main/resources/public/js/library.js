@@ -3,6 +3,7 @@ import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 import {formValidator} from './validation/form-validator.js';
+import {breadcrumb} from './component/breadcrumb.js';
 
 window.onload = function() {
   library.init();
@@ -75,10 +76,13 @@ var library = {
     var periodTemplate = document.querySelector('template.period-template');
     var periodItem = periodTemplate.content.querySelector('li.period-list-item');
     var heading = document.querySelector('h1.period-list-heading');
-    var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
+
+    const breadcrumbContent = [
+        {url: '/library', text: i18n.en.breadcrumb.library}
+    ]
+    breadcrumb.build(breadcrumbContent);
 
     heading.innerHTML = i18n.en.welcomePage.heading;
-    breadcrumbLibrary.innerHTML = i18n.en.breadcrumb.library;
 
     library.periods.forEach(renderPeriodList);
 
@@ -158,12 +162,14 @@ var library = {
       var userHeader = document.querySelector('table th#user-header');
       var authorityHeader = document.querySelector('table th#authority-header');
       var actionsHeader = document.querySelector('table th#actions-header');
-      var breadcrumbLibrary = document.querySelector('a#breadcrumb-library');
-      var breadcrumbAdmin = document.querySelector('a#breadcrumb-admin');
+
+      const breadcrumbContent = [
+          {url: '/library', text: i18n.en.breadcrumb.library},
+          {url: '/library/admin', text: i18n.en.breadcrumb.admin}
+      ]
+      breadcrumb.build(breadcrumbContent);
 
       heading.innerHTML = i18n.en.adminPage.heading;
-      breadcrumbLibrary.innerHTML = i18n.en.breadcrumb.library;
-      breadcrumbAdmin.innerHTML = i18n.en.breadcrumb.admin;
       userHeader.innerHTML = i18n.en.adminPage.user;
       authorityHeader.innerHTML = i18n.en.adminPage.authority;
       actionsHeader.innerHTML = i18n.en.adminPage.actions;
@@ -214,11 +220,17 @@ var library = {
 
     const period = periodKey.toUpperCase();
     const periodMessageSource = periodI18n.en.period[period];
+
+    const breadcrumbContent = [
+        {url: '/library', text: i18n.en.breadcrumb.library},
+        {url: '/library/period/' + periodKey, text: periodMessageSource.name}
+    ]
+    breadcrumb.build(breadcrumbContent);
+
     document.querySelector('title').innerHTML = periodMessageSource.name;
     var srcProperties = i18n.en.source.properties;
     var classifications = classificationI18n.en.classifications;
     var types = i18n.en.source.types;
-    var breadcrumbPeriod = document.querySelector('a#breadcrumb-period');
     var createSourceSection = document.querySelector('div#create-source-section');
     var labels = Object.keys(srcProperties);
     var searchSection = document.querySelector('div#search-section');
@@ -259,9 +271,6 @@ var library = {
     document.querySelector('h1#period-heading').innerHTML = periodMessageSource.name;
     document.querySelector('div#period-long-description').innerHTML = periodMessageSource.longDescription;
     document.querySelector('h1#sources').innerHTML = i18n.en.periodPage.sourceListHeading;
-    document.querySelector('a#breadcrumb-library').innerHTML = i18n.en.breadcrumb.library;
-    breadcrumbPeriod.innerHTML = periodMessageSource.name;
-    breadcrumbPeriod.href = '/library/period/' + periodKey;
     document.querySelector('img#period-image').src = '/static/images/library/' + periodKey + '.jpg';
     searchSection.querySelector('div#classification-search h4').innerHTML = srcProperties.classification + ":";
     searchSection.querySelector('div#type-search h4').innerHTML = srcProperties.type + ":";
@@ -327,12 +336,14 @@ var library = {
     const sourceNameLabel = msgSource.source.properties.name;
     const sourceDescriptionLabel = msgSource.source.properties.description;
 
-    var periodName = periodI18n['en'].period[source.period].name;
-    document.querySelector('a#breadcrumb-library').innerHTML = i18n.en.breadcrumb.library;
-    document.querySelector('a#breadcrumb-period').innerHTML = periodName;
-    document.querySelector('a#breadcrumb-period').href = '/library/period/' +  source.period.toLowerCase();
-    document.querySelector('a#breadcrumb-source-name').innerHTML = sourceName;
-    document.querySelector('a#breadcrumb-source-name').href = '/library/source/' + sourceId;
+    const periodName = periodI18n['en'].period[source.period].name;
+
+    const breadcrumbContent = [
+        {url: '/library', text: i18n.en.breadcrumb.library},
+        {url: '/library/period/' + source.period.toLowerCase(), text: periodName},
+        {url: '/library/source/' + sourceId, text: sourceName}
+    ]
+    breadcrumb.build(breadcrumbContent);
 
     sourceForm.querySelector('div.source-name b').innerHTML = sourceNameLabel;
     sourceForm.querySelector('div.source-description b').innerHTML = sourceDescriptionLabel;

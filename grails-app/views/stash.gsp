@@ -9,7 +9,7 @@
     <template id="stash">
       <div id="stash-section">
         <div class="row">
-          <u><a href="/stash" id="breadcrumb-stash"></a></u>
+          <breadcrumb></breadcrumb>
           <div id="create-group-section" class="pull-right hidden">
             <button id="popup-button" class="btn btn-default pull-right" data-toggle="modal" data-target="#create-source-popup">
               <span class="fa fa-plus"></span>
@@ -66,8 +66,7 @@
     <template id="item-group">
       <div id="group-section">
         <div class="row">
-          <u><a id="breadcrumb-stash"></a></u>&nbsp;>&nbsp;
-          <u><a id="breadcrumb-item-group"></a></u>
+          <breadcrumb></breadcrumb>
         </div>
         <div class="row">
           <div class="ajax-form group-form col-sm-6">

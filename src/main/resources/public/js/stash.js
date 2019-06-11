@@ -2,6 +2,7 @@ import {i18n} from './i18n/stash-translations.js';
 import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
+import {breadcrumb} from './component/breadcrumb.js';
 
 window.onload = function() {
   stash.init();
@@ -53,9 +54,11 @@ let stash = {
         const groupListItemTemplate = stashSection.querySelector('template#group-list-item-template');
         const userId = data.owner.id;
         const userName = data.owner.userName;
-        const breadCrumb = stashSection.querySelector("a#breadcrumb-stash");
-        breadCrumb.href = "/stash/" + userId;
-        breadCrumb.innerHTML = messageSource.breadCrumb + " (" + userName + ")";
+
+        const breadcrumbContent = [
+            {url: '/stash/' + userId, text: messageSource.breadCrumb + " (" + userName + ")"}
+        ]
+        breadcrumb.build(breadcrumbContent);
 
         if (currentUserId == userId) {
           const createGroupSection = stashSection.querySelector("div#create-group-section");
@@ -116,12 +119,13 @@ let stash = {
     const groupSection = document.querySelector("#group-section");
     const messageSource = i18n.en.stash;
     document.querySelector('title').innerHTML = messageSource.title;
-    const breadCrumbStash = groupSection.querySelector("a#breadcrumb-stash");
-    breadCrumbStash.href = "/stash/" + userId;
-    breadCrumbStash.innerHTML = messageSource.breadCrumb + " (" + userName + ")";
-    const breadCrumbGroup = groupSection.querySelector("a#breadcrumb-item-group");
-    breadCrumbGroup.href = "/stash/group/" + groupId;
-    breadCrumbGroup.innerHTML = groupName;
+
+    const breadcrumbContent = [
+        {url: '/stash/' + userId, text: messageSource.breadCrumb + " (" + userName + ")"},
+        {url: '/stash/group/' + groupId, text: groupName}
+    ]
+    breadcrumb.build(breadcrumbContent);
+
     groupSection.querySelector('h1.item-list-heading').innerHTML = messageSource.group.heading;
 
     const groupNameLabel = i18n.en.stash.group.nameLabel;

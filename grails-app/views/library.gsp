@@ -11,7 +11,7 @@
     <template id="library">
       <div>
         <div class="row">
-          <u><a href="/library" id="breadcrumb-library"></a></u>
+          <breadcrumb></breadcrumb>
         </div>
         <div class="row">
           <div class="col-sm-2"></div>
@@ -53,13 +53,7 @@
     <template id="library-admin">
       <div>
         <div class="row">
-          <span class="pull-left">
-            <u><a href="/library" id="breadcrumb-library"></a></u>
-          </span>
-          <span class="pull-left">&nbsp;&gt;&nbsp;</span>
-          <span class="pull-left">
-            <u><a href="/library/admin" id="breadcrumb-admin"></a></u>
-          </span>
+          <breadcrumb><breadcrumb>
         </div>
         <h1 id="admin-panel-heading"></h1>
         <div class="row">
@@ -102,13 +96,7 @@
     <template id="library-period">
       <div>
         <div class="row">
-          <span class="pull-left">
-            <u><a href="/library" id="breadcrumb-library"></a></u>
-          </span>
-          <span class="pull-left">&nbsp;&gt;&nbsp;</span>
-          <span class="pull-left">
-            <u><a id="breadcrumb-period"></a></u>
-          </span>
+          <breadcrumb></breadcrumb>
         </div>
         <h1 id="period-heading"></h1>
         <div class="row">
@@ -248,17 +236,7 @@
     <template id="library-source">
       <div>
         <div class="row" style="height:40px; padding: 0 15px;">
-          <span class="pull-left">
-            <u><a href="/library" id="breadcrumb-library"></a></u>
-          </span>
-          <span class="pull-left">&nbsp;&gt;&nbsp;</span>
-          <span class="pull-left">
-            <u><a id="breadcrumb-period"></a></u>
-          </span>
-          <span class="pull-left">&nbsp;&gt;&nbsp;</span>
-          <span class="pull-left">
-            <u><a id="breadcrumb-source-name"></a></u>
-          </span>
+          <breadcrumb></breadcrumb>
           <span id="delete-source-section" class="hidden pull-right">
             <button class="btn btn-default fa fa-trash" data-toggle="modal" data-target="#delete-source-button"></button>
             <div id="delete-source-button" class="modal fade" role="dialog">
