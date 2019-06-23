@@ -1,5 +1,15 @@
-export const breadcrumb = {
-  build: function(content) {
+export const pageBuilder = {
+  initPage: function(selector, url, title) {
+    const content = document.querySelector('content');
+    content.innerHTML = '';
+    const template = document.querySelector(selector);
+    const page = template.content.querySelector('div');
+    const pageNode = document.importNode(page, true);
+    content.appendChild(pageNode);
+    window.history.pushState('', '', url);
+    document.querySelector('title').innerHTML = title;
+  },
+  breadcrumb: function(content) {
     const breadcrumb = document.querySelector('content breadcrumb');
 
     const breadcrumbElements = content.map(renderBreadcrumb)

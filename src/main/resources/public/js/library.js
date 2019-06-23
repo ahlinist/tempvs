@@ -3,7 +3,7 @@ import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 import {formValidator} from './validation/form-validator.js';
-import {breadcrumb} from './component/breadcrumb.js';
+import {pageBuilder} from './page/page-builder.js';
 
 window.onload = function() {
   library.init();
@@ -63,24 +63,16 @@ var library = {
     "OTHER"
   ],
   renderLibraryPage: function() {
-    const content = document.querySelector("content");
-    content.innerHTML = "";
-    const libraryTemplate = document.querySelector("template#library");
-    const libraryPage = libraryTemplate.content.querySelector('div');
-    const libraryPageNode = document.importNode(libraryPage, true);
-    content.appendChild(libraryPageNode);
-    window.history.pushState("", "", '/library');
+    pageBuilder.initPage('template#library', '/library', i18n.en.welcomePage.title);
 
-    document.querySelector('title').innerHTML = i18n.en.welcomePage.title;
     var periodsSection = document.querySelector('ul#periods-section');
     var periodTemplate = document.querySelector('template.period-template');
     var periodItem = periodTemplate.content.querySelector('li.period-list-item');
     var heading = document.querySelector('h1.period-list-heading');
 
-    const breadcrumbContent = [
+    pageBuilder.breadcrumb([
         {url: '/library', text: i18n.en.breadcrumb.library}
-    ]
-    breadcrumb.build(breadcrumbContent);
+    ]);
 
     heading.innerHTML = i18n.en.welcomePage.heading;
 
@@ -144,15 +136,8 @@ var library = {
   },
   renderAdminPage: function() {
     ajaxHandler.blockUI();
-    const content = document.querySelector("content");
-    content.innerHTML = "";
-    const libraryAdminTemplate = document.querySelector("template#library-admin");
-    const libraryAdminPage = libraryAdminTemplate.content.querySelector('div');
-    const libraryAdminPageNode = document.importNode(libraryAdminPage, true);
-    content.appendChild(libraryAdminPageNode);
-    window.history.pushState("", "", '/library/admin');
+    pageBuilder.initPage('template#library-admin', '/library/admin', i18n.en.adminPage.title);
 
-    document.querySelector('title').innerHTML = i18n.en.adminPage.title;
     var url = '/api/library/library/admin?page=0&size=40';
     var actions = {200: renderPage};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
@@ -163,11 +148,10 @@ var library = {
       var authorityHeader = document.querySelector('table th#authority-header');
       var actionsHeader = document.querySelector('table th#actions-header');
 
-      const breadcrumbContent = [
+      pageBuilder.breadcrumb([
           {url: '/library', text: i18n.en.breadcrumb.library},
           {url: '/library/admin', text: i18n.en.breadcrumb.admin}
-      ]
-      breadcrumb.build(breadcrumbContent);
+      ]);
 
       heading.innerHTML = i18n.en.adminPage.heading;
       userHeader.innerHTML = i18n.en.adminPage.user;
@@ -210,24 +194,15 @@ var library = {
     }
   },
   renderPeriodPage: function(periodKey) {
-    const content = document.querySelector("content");
-    content.innerHTML = "";
-    const libraryPeriodTemplate = document.querySelector("template#library-period");
-    const libraryPeriodPage = libraryPeriodTemplate.content.querySelector('div');
-    const libraryPeriodPageNode = document.importNode(libraryPeriodPage, true);
-    content.appendChild(libraryPeriodPageNode);
-    window.history.pushState("", "", '/library/period/' + periodKey);
-
     const period = periodKey.toUpperCase();
     const periodMessageSource = periodI18n.en.period[period];
+    pageBuilder.initPage('template#library-period', '/library/period/' + periodKey, i18n.en.welcomePage.title + ' - ' + periodMessageSource.name);
 
-    const breadcrumbContent = [
+    pageBuilder.breadcrumb([
         {url: '/library', text: i18n.en.breadcrumb.library},
         {url: '/library/period/' + periodKey, text: periodMessageSource.name}
-    ]
-    breadcrumb.build(breadcrumbContent);
+    ]);
 
-    document.querySelector('title').innerHTML = periodMessageSource.name;
     var srcProperties = i18n.en.source.properties;
     var classifications = classificationI18n.en.classifications;
     var types = i18n.en.source.types;
@@ -318,17 +293,11 @@ var library = {
     }
   },
   renderSourcePage: function(source, userInfo) {
+    pageBuilder.initPage('template#library-source', '/library/source/' + source.id, i18n.en.sourcePage.title + ' - ' + source.name);
+
     const sourceId = source.id;
     const sourceName = source.name;
-    const content = document.querySelector("content");
-    content.innerHTML = "";
-    const librarySourceTemplate = document.querySelector("template#library-source");
-    const librarySourcePage = librarySourceTemplate.content.querySelector('div');
-    const librarySourcePageNode = document.importNode(librarySourcePage, true);
-    content.appendChild(librarySourcePageNode);
-    window.history.pushState("", "", '/library/source/' + sourceId);
 
-    document.querySelector('title').innerHTML = i18n.en.sourcePage.title;
     const msgSource = i18n.en;
     const sourceForm = document.querySelector('div#source-form');
     const imageUploadForm = document.querySelector('form#image-upload-form');
@@ -338,12 +307,11 @@ var library = {
 
     const periodName = periodI18n['en'].period[source.period].name;
 
-    const breadcrumbContent = [
+    pageBuilder.breadcrumb([
         {url: '/library', text: i18n.en.breadcrumb.library},
         {url: '/library/period/' + source.period.toLowerCase(), text: periodName},
         {url: '/library/source/' + sourceId, text: sourceName}
-    ]
-    breadcrumb.build(breadcrumbContent);
+    ]);
 
     sourceForm.querySelector('div.source-name b').innerHTML = sourceNameLabel;
     sourceForm.querySelector('div.source-description b').innerHTML = sourceDescriptionLabel;

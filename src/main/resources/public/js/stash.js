@@ -2,7 +2,7 @@ import {i18n} from './i18n/stash-translations.js';
 import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {smartFormBuilder} from './smart-form/smart-form-builder.js';
-import {breadcrumb} from './component/breadcrumb.js';
+import {pageBuilder} from './page/page-builder.js';
 
 window.onload = function() {
   stash.init();
@@ -25,16 +25,10 @@ let stash = {
     }
   },
   renderStash: function(userId) {
-    const content = document.querySelector("content");
-    content.innerHTML = "";
-    const stashTemplate = document.querySelector("template#stash");
-    const stashPage = stashTemplate.content.querySelector('div');
-    const stashPageNode = document.importNode(stashPage, true);
-    content.appendChild(stashPageNode);
+    pageBuilder.initPage('template#stash', '/stash', i18n.en.stash.title);
 
     const stashSection = document.querySelector("#stash-section");
     const messageSource = i18n.en.stash;
-    document.querySelector('title').innerHTML = messageSource.title;
     stashSection.querySelector('h1#group-list-heading').innerHTML = messageSource.groups.heading;
     let url = '/api/stash/group';
 
@@ -55,10 +49,9 @@ let stash = {
         const userId = data.owner.id;
         const userName = data.owner.userName;
 
-        const breadcrumbContent = [
+        pageBuilder.breadcrumb([
             {url: '/stash/' + userId, text: messageSource.breadCrumb + " (" + userName + ")"}
-        ]
-        breadcrumb.build(breadcrumbContent);
+        ]);
 
         if (currentUserId == userId) {
           const createGroupSection = stashSection.querySelector("div#create-group-section");
@@ -103,28 +96,21 @@ let stash = {
     }
   },
   renderGroup: function(group, userInfo) {
-    const content = document.querySelector("content");
-    content.innerHTML = "";
+    pageBuilder.initPage('template#item-group', '/stash/group/' + group.id, i18n.en.stash.title + ' - ' + group.name);
+
     const groupId = group.id;
     const groupName = group.name;
     const groupDescription = group.description;
     const userId = userInfo.userId;
     const userName = userInfo.userName;
-    const stashTemplate = document.querySelector("template#item-group");
-    const stashPage = stashTemplate.content.querySelector('div');
-    const stashPageNode = document.importNode(stashPage, true);
-    content.appendChild(stashPageNode);
 
-    window.history.pushState("", "", '/stash/group/' + groupId);
     const groupSection = document.querySelector("#group-section");
     const messageSource = i18n.en.stash;
-    document.querySelector('title').innerHTML = messageSource.title;
 
-    const breadcrumbContent = [
+    pageBuilder.breadcrumb([
         {url: '/stash/' + userId, text: messageSource.breadCrumb + " (" + userName + ")"},
         {url: '/stash/group/' + groupId, text: groupName}
-    ]
-    breadcrumb.build(breadcrumbContent);
+    ]);
 
     groupSection.querySelector('h1.item-list-heading').innerHTML = messageSource.group.heading;
 
