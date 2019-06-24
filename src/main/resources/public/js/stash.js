@@ -16,6 +16,10 @@ let stash = {
       const n = location.lastIndexOf('/');
       const groupId = location.substring(n + 1);
       stash.loadGroup(groupId)
+    } else if (location.includes("/stash/item")) {
+      const n = location.lastIndexOf('/');
+      const itemId = location.substring(n + 1);
+      stash.loadItem(itemId);
     } else if (location.includes("/stash/") && !location.endsWith("/stash")) {
       const n = location.lastIndexOf('/');
       const userId = location.substring(n + 1);
@@ -101,18 +105,14 @@ let stash = {
     const groupId = group.id;
     const groupName = group.name;
     const groupDescription = group.description;
-    const userId = userInfo.userId;
-    const userName = userInfo.userName;
-
-    const groupSection = document.querySelector("#group-section");
-    const messageSource = i18n.en.stash;
 
     pageBuilder.breadcrumb([
-        {url: '/stash/' + userId, text: messageSource.breadCrumb + " (" + userName + ")"},
+        {url: '/stash/' + userInfo.userId, text: i18n.en.stash.breadCrumb + " (" + userInfo.userName + ")"},
         {url: '/stash/group/' + groupId, text: groupName}
     ]);
 
-    groupSection.querySelector('h1.item-list-heading').innerHTML = messageSource.group.heading;
+    const groupSection = document.querySelector("#group-section");
+    groupSection.querySelector('h1.item-list-heading').innerHTML = i18n.en.stash.group.heading;
 
     const groupNameLabel = i18n.en.stash.group.nameLabel;
     const groupDescriptionLabel = i18n.en.stash.group.descriptionLabel;
@@ -120,7 +120,7 @@ let stash = {
     const updateDescriptionAction = '/api/stash/group/' + groupId + '/description';
     const groupForm = groupSection.querySelector(".group-form");
 
-    const editAllowed = group.owner.id == userId;
+    const editAllowed = group.owner.id == userInfo.userId;
     smartFormBuilder.build(groupForm, '.group-name', groupNameLabel, groupName, updateNameAction, editAllowed);
     smartFormBuilder.build(groupForm, '.group-description', groupDescriptionLabel, groupDescription, updateDescriptionAction, editAllowed);
 
@@ -160,7 +160,7 @@ let stash = {
 
       const createItemButton = document.querySelector('button.create-item-button');
       createItemButton.classList.remove('hidden');
-      createItemButton.querySelector('span.text-holder').innerHTML = messageSource.items.createButton;
+      createItemButton.querySelector('span.text-holder').innerHTML = i18n.en.stash.items.createButton;
     }
 
     const url = '/api/stash/group/' + groupId + '/item?page=0&size=40';
@@ -192,8 +192,46 @@ let stash = {
       });
     }
   },
+  loadItem: function(itemId) {
+    ajaxHandler.blockUI();
+    const url = '/api/stash/item/' + itemId;
+    const actions = {200: renderPage};
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+
+    function renderPage(response) {
+      const userInfo = JSON.parse(response.headers.get("User-Info"));
+
+      response.json().then(function(data) {
+        stash.renderItem(data, userInfo);
+      });
+    }
+  },
   renderItem: function(item, userInfo) {
-    alert('item details page!');
+    pageBuilder.initPage('template#item', '/stash/item/' + item.id, i18n.en.stash.title + ' - ' + item.name);
+
+    pageBuilder.breadcrumb([
+      {url: '/stash/' + userInfo.userId, text: i18n.en.stash.breadCrumb + " (" + userInfo.userName + ")"},
+      {url: '/stash/group/' + item.itemGroup.id, text: item.itemGroup.name},
+      {url: '/stash/item/' + item.id, text: item.name}
+    ]);
+
+    const itemForm = document.querySelector('.item-form');
+
+    const editAllowed = item.itemGroup.owner.id == userInfo.userId;
+    const updateNameAction = '/api/stash/item/' + item.id + '/name';
+    const updateDescriptionAction = '/api/stash/item/' + item.id + '/description';
+    const itemNameLabel = i18n.en.stash.items.properties.name;
+    const itemDescriptionLabel = i18n.en.stash.items.properties.description;
+    const itemClassificationLabel = i18n.en.stash.items.properties.classification;
+    const itemPeriodLabel = i18n.en.stash.items.properties.period;
+
+    const periodName = periodI18n.en.period[item.period].name;
+    const classificationName = classificationI18n.en.classifications[item.classification];
+
+    smartFormBuilder.build(itemForm, '.item-name', itemNameLabel, item.name, updateNameAction, editAllowed);
+    smartFormBuilder.build(itemForm, '.item-description', itemDescriptionLabel, item.description, updateDescriptionAction, editAllowed);
+    smartFormBuilder.build(itemForm, '.item-classification', itemClassificationLabel, classificationName, null, false, true);
+    smartFormBuilder.build(itemForm, '.item-period', itemPeriodLabel, periodName, null, false, true);
   },
   createItem: function(form) {
     const messageSource = i18n.en.stash.items.create.validation;

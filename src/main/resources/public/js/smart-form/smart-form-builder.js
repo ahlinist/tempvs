@@ -1,10 +1,14 @@
 import {formValidator} from '../validation/form-validator.js';
 
 export const smartFormBuilder = {
-  build: function(container, selector, label, value, formAction, isEditable) {
+  build: function(container, selector, label, value, formAction, isEditable, isDisabled) {
     const form = container.querySelector(selector + ' form');
     container.querySelector(selector + '-label').innerHTML = label;
     container.querySelector(selector + ' .text-holder').innerHTML = value;
+
+    if (isDisabled) {
+      return;
+    }
 
     if (isEditable) {
       container.querySelector(selector + ' input').value = value;
