@@ -117,18 +117,7 @@
             </form>
           </div>
           <div class="col-sm-4">
-            <div class="row hidden conversation-name">
-              <b class="conversation-name-label"></b>
-              <form class="conversation-name-form" style="display: inline;">
-                <span class="hovering text-wrapper">
-                  <span class="text-holder" style="line-height: 40px; padding-left: 15px;"></span>
-                  <span class="fa fa-pencil smart-form-activator hidden"></span>
-                </span>
-                <span class="hidden input-wrapper">
-                  <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
-                </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
-              </form>
-            </div>
+            <div class="row conversation-name"></div>
             <div class="row participants-container">
               <b></b>
               <template class="participant-template">

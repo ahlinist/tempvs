@@ -1,7 +1,6 @@
 import {i18n} from './i18n/library-translations.js';
 import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
-import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
 
@@ -124,7 +123,7 @@ var library = {
 
             button.onclick = function() {
               var url = '/api/library/library/role/' + role;
-              ajaxHandler.fetch(null, url, {method: method}, smartFormBuilder.hideSpinners);
+              ajaxHandler.fetch(null, url, {method: method});
             };
           }
 
@@ -301,10 +300,6 @@ var library = {
     const msgSource = i18n.en;
     const sourceForm = document.querySelector('div#source-form');
     const imageUploadForm = document.querySelector('form#image-upload-form');
-
-    const sourceNameLabel = msgSource.source.properties.name;
-    const sourceDescriptionLabel = msgSource.source.properties.description;
-
     const periodName = periodI18n['en'].period[source.period].name;
 
     pageBuilder.breadcrumb([
@@ -313,11 +308,6 @@ var library = {
         {url: '/library/source/' + sourceId, text: sourceName}
     ]);
 
-    sourceForm.querySelector('div.source-name b').innerHTML = sourceNameLabel;
-    sourceForm.querySelector('div.source-description b').innerHTML = sourceDescriptionLabel;
-    sourceForm.querySelector('div#source-classification b').innerHTML = msgSource.source.properties.classification;
-    sourceForm.querySelector('div#source-type b').innerHTML = msgSource.source.properties.type;
-    sourceForm.querySelector('div#source-period b').innerHTML = msgSource.source.properties.period;
     imageUploadForm.action = '/api/library/source/' + sourceId + '/images';
     imageUploadForm.querySelector('label[for=image]').innerHTML = i18n.en.sourcePage.uploadImage.imageLabel;
     imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = i18n.en.sourcePage.uploadImage.imageInfoLabel;
@@ -383,9 +373,19 @@ var library = {
 
     const updateNameAction = '/api/library/source/' + sourceId + '/name';
     const updateDescriptionAction = '/api/library/source/' + sourceId + '/description';
+    const sourceNameLabel = msgSource.source.properties.name;
+    const sourceDescriptionLabel = msgSource.source.properties.description;
+    const classificationLabel = msgSource.source.properties.classification;
+    const classificationValue = classificationI18n.en.classifications[source.classification];
+    const periodLabel = msgSource.source.properties.period;
+    const typeLabel = msgSource.source.properties.type;
+    const typeValue = msgSource.source.types[source.type];
 
-    smartFormBuilder.build(sourceForm, '.source-name', sourceNameLabel, sourceName, updateNameAction, isEditable);
-    smartFormBuilder.build(sourceForm, '.source-description', sourceDescriptionLabel, source.description, updateDescriptionAction, isEditable);
+    pageBuilder.smartForm(sourceForm, sourceNameLabel + ' *', sourceName, 'name', updateNameAction, isEditable);
+    pageBuilder.smartForm(sourceForm, sourceDescriptionLabel, source.description, 'description', updateDescriptionAction, isEditable);
+    pageBuilder.smartForm(sourceForm, classificationLabel, classificationValue);
+    pageBuilder.smartForm(sourceForm, typeLabel, typeValue);
+    pageBuilder.smartForm(sourceForm, periodLabel, periodName);
 
     if (isEditable) {
       var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
@@ -413,10 +413,6 @@ var library = {
         return false;
       };
     }
-
-    sourceForm.querySelector('#source-classification .text-holder').innerHTML = classificationI18n.en.classifications[source.classification];
-    sourceForm.querySelector('#source-type .text-holder').innerHTML = msgSource.source.types[source.type];
-    sourceForm.querySelector('#source-period .text-holder').innerHTML = periodName;
   },
   createSource: function(form) {
     var formData = new FormData(form);

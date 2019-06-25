@@ -69,40 +69,7 @@
           <breadcrumb></breadcrumb>
         </div>
         <div class="row">
-          <div class="ajax-form group-form col-sm-6">
-            <div class="row group-name">
-              <span class="col-sm-5">
-                <b class="group-name-label"></b> *
-              </span>
-              <span class="col-sm-7">
-                <form style="display: inline;">
-                  <span class="hovering text-wrapper">
-                    <span class="text-holder" style="line-height: 39px; padding-left: 15px;"></span>
-                    <span class="fa fa-pencil smart-form-activator hidden"></span>
-                  </span>
-                  <span class="hidden input-wrapper">
-                    <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
-                  </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
-                </form>
-              </span>
-            </div>
-            <div class="row group-description">
-              <span class="col-sm-5">
-                <b class="group-description-label"></b>
-              </span>
-              <span class="col-sm-7">
-                <form style="display: inline;">
-                  <span class="hovering text-wrapper">
-                    <span class="text-holder" style="line-height: 39px; padding-left: 15px;"></span>
-                    <span class="fa fa-pencil smart-form-activator hidden"></span>
-                  </span>
-                  <span class="hidden input-wrapper">
-                    <input style="margin: 4px 0px 3px 0px;" type="text" name="description" value="" autocomplete="off">
-                  </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
-                </form>
-              </span>
-            </div>
-          </div>
+          <div class="ajax-form group-form col-sm-6"></div>
           <div class="col-sm-6">
             <button style="position: absolute; right: 0;" class="create-item-button btn btn-default hidden" data-toggle="modal" data-target="#create-item-popup">
               <span class="fa fa-plus"></span>
@@ -204,56 +171,7 @@
           <breadcrumb></breadcrumb>
         </div>
         <div class="row">
-          <div class="ajax-form item-form col-sm-4">
-            <div class="row item-name">
-              <span class="col-sm-5">
-                <b class="item-name-label"></b> *
-              </span>
-              <span class="col-sm-7">
-                <form style="display: inline;">
-                  <span class="hovering text-wrapper">
-                    <span class="text-holder" style="line-height: 39px; padding-left: 15px;"></span>
-                    <span class="fa fa-pencil smart-form-activator hidden"></span>
-                  </span>
-                  <span class="hidden input-wrapper">
-                    <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
-                  </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
-                </form>
-              </span>
-            </div>
-            <div class="row item-description">
-              <span class="col-sm-5">
-                <b class="item-description-label"></b>
-              </span>
-              <span class="col-sm-7">
-                <form style="display: inline;">
-                  <span class="hovering text-wrapper">
-                    <span class="text-holder" style="line-height: 39px; padding-left: 15px;"></span>
-                    <span class="fa fa-pencil smart-form-activator hidden"></span>
-                  </span>
-                  <span class="hidden input-wrapper">
-                    <input style="margin: 4px 0px 3px 0px;" type="text" name="description" value="" autocomplete="off">
-                  </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
-                </form>
-              </span>
-            </div>
-            <div class="row item-classification">
-              <span class="col-sm-5">
-                <b class="item-classification-label"></b>
-              </span>
-              <span class="col-sm-7">
-                <span class="text-holder" style="padding-left: 15px;"></span>
-              </span>
-            </div>
-            <div class="row item-period">
-              <span class="col-sm-5">
-                <b class="item-period-label"></b>
-              </span>
-              <span class="col-sm-7">
-                <span class="text-holder" style="padding-left: 15px;"></span>
-              </span>
-            </div>
-          </div>
+          <div class="ajax-form item-form col-sm-4"></div>
           <div class="col-sm-4"></div>
           <div class="col-sm-4"></div>
         </div>

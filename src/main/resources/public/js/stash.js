@@ -1,7 +1,6 @@
 import {i18n} from './i18n/stash-translations.js';
 import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
-import {smartFormBuilder} from './smart-form/smart-form-builder.js';
 import {pageBuilder} from './page/page-builder.js';
 
 window.onload = function() {
@@ -120,11 +119,11 @@ let stash = {
     const updateDescriptionAction = '/api/stash/group/' + groupId + '/description';
     const groupForm = groupSection.querySelector(".group-form");
 
-    const editAllowed = group.owner.id == userInfo.userId;
-    smartFormBuilder.build(groupForm, '.group-name', groupNameLabel, groupName, updateNameAction, editAllowed);
-    smartFormBuilder.build(groupForm, '.group-description', groupDescriptionLabel, groupDescription, updateDescriptionAction, editAllowed);
+    const isEditable = group.owner.id == userInfo.userId;
+    pageBuilder.smartForm(groupForm, groupNameLabel + ' *', groupName, 'name', updateNameAction, isEditable);
+    pageBuilder.smartForm(groupForm, groupDescriptionLabel, groupDescription, 'description', updateDescriptionAction, isEditable);
 
-    if (editAllowed) {
+    if (isEditable) {
       const createItemForm = document.querySelector('.create-item-form');
       const itemProperties = i18n.en.stash.items.properties;
       const classifications = classificationI18n.en.classifications;
@@ -217,7 +216,7 @@ let stash = {
 
     const itemForm = document.querySelector('.item-form');
 
-    const editAllowed = item.itemGroup.owner.id == userInfo.userId;
+    const isEditable = item.itemGroup.owner.id == userInfo.userId;
     const updateNameAction = '/api/stash/item/' + item.id + '/name';
     const updateDescriptionAction = '/api/stash/item/' + item.id + '/description';
     const itemNameLabel = i18n.en.stash.items.properties.name;
@@ -228,10 +227,10 @@ let stash = {
     const periodName = periodI18n.en.period[item.period].name;
     const classificationName = classificationI18n.en.classifications[item.classification];
 
-    smartFormBuilder.build(itemForm, '.item-name', itemNameLabel, item.name, updateNameAction, editAllowed);
-    smartFormBuilder.build(itemForm, '.item-description', itemDescriptionLabel, item.description, updateDescriptionAction, editAllowed);
-    smartFormBuilder.build(itemForm, '.item-classification', itemClassificationLabel, classificationName, null, false, true);
-    smartFormBuilder.build(itemForm, '.item-period', itemPeriodLabel, periodName, null, false, true);
+    pageBuilder.smartForm(itemForm, itemNameLabel + ' *', item.name, 'name', updateNameAction, isEditable);
+    pageBuilder.smartForm(itemForm, itemDescriptionLabel, item.description, 'description', updateDescriptionAction, isEditable);
+    pageBuilder.smartForm(itemForm, itemClassificationLabel, classificationName);
+    pageBuilder.smartForm(itemForm, itemPeriodLabel, periodName);
   },
   createItem: function(form) {
     const messageSource = i18n.en.stash.items.create.validation;

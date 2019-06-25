@@ -261,64 +261,7 @@
         </div>
         <div class="row">
           <div class="col-sm-4">
-            <div id="source-form" class="ajax-form">
-              <div class="row source-name">
-                <span class="col-sm-5">
-                  <b class="source-name-label"></b> *
-                </span>
-                <span class="col-sm-7">
-                  <form style="display: inline;">
-                    <span class="hovering text-wrapper">
-                      <span class="text-holder" style="line-height: 39px; padding-left: 15px;"></span>
-                      <span class="fa fa-pencil smart-form-activator hidden"></span>
-                    </span>
-                    <span class="hidden input-wrapper">
-                      <input style="margin: 4px 0px 3px 0px;" type="text" name="name" value="" autocomplete="off">
-                    </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
-                  </form>
-                </span>
-              </div>
-              <div class="row source-description">
-                <span class="col-sm-5">
-                  <b class="source-description-label"></b>
-                </span>
-                <span class="col-sm-7">
-                  <form style="display: inline;">
-                    <span class="hovering text-wrapper">
-                      <span class="text-holder" style="line-height: 39px; padding-left: 15px;"></span>
-                      <span class="fa fa-pencil smart-form-activator hidden"></span>
-                    </span>
-                    <span class="hidden input-wrapper">
-                      <input style="margin: 4px 0px 3px 0px;" type="text" name="description" value="" autocomplete="off">
-                    </span><img style="width: 15px; height: 15px;" class="spinner hidden" src="/static/images/spinner-sm.gif">
-                  </form>
-                </span>
-              </div>
-              <div class="row" id="source-classification">
-                <span class="col-sm-5">
-                  <b></b>
-                </span>
-                <span class="col-sm-7">
-                  <span class="text-holder" style="padding-left: 15px;"></span>
-                </span>
-              </div>
-              <div class="row" id="source-type">
-                <span class="col-sm-5">
-                  <b></b>
-                </span>
-                <span class="col-sm-7">
-                  <span class="text-holder" style="padding-left: 15px;"></span>
-                </span>
-              </div>
-              <div class="row" id="source-period">
-                <span class="col-sm-5">
-                  <b></b>
-                </span>
-                <span class="col-sm-7">
-                  <span class="text-holder" style="padding-left: 15px;"></span>
-                </span>
-              </div>
-            </div>
+            <div id="source-form" class="ajax-form"></div>
           </div>
           <div class="col-sm-4">
           </div>
