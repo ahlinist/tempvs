@@ -8,7 +8,7 @@ window.onload = function() {
   library.init();
 };
 
-var library = {
+export let library = {
   init: function() {
     const location = window.location.href;
 

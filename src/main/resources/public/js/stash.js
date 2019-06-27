@@ -7,7 +7,7 @@ window.onload = function() {
   stash.init();
 };
 
-let stash = {
+export let stash = {
   init: function() {
     const location = window.location.href;
 
