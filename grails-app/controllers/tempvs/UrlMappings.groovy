@@ -14,7 +14,7 @@ class UrlMappings {
         "404"(view:'/notFound')
 
         "/library**"(view: "/index")
-        "/messaging**"(view: "/messaging")
+        "/messaging**"(view: "/index")
         "/stash**"(view: "/index")
 
         "/api/${service}/${uri}**"(controller: 'api', action: 'call')

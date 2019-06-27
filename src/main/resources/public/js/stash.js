@@ -3,10 +3,6 @@ import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {pageBuilder} from './page/page-builder.js';
 
-window.onload = function() {
-  stash.init();
-};
-
 export let stash = {
   init: function() {
     const location = window.location.href;

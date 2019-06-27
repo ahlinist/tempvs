@@ -3,11 +3,7 @@ import {profileSearcher} from './profile-searcher.js';
 import {pageBuilder} from './page/page-builder.js';
 import {formValidator} from './validation/form-validator.js';
 
-window.onload = function() {
-  messaging.init();
-};
-
-var messaging = {
+export let messaging = {
   conversationId: null,
   defaultPageNumber: 0,
   defaultConversationsSize: 40,
@@ -16,18 +12,22 @@ var messaging = {
   currentMessagesPage: 0,
   didScroll: false,
   init: function() {
-    messaging.displayNewMessagesCounter();
-    messaging.clearForms();
     const location = window.location.href;
-    const appendConversations = true;
 
-    if (!location.endsWith("/messaging") && !location.endsWith("/messaging/")) {
+    if (location.endsWith("/messaging") || location.endsWith("/messaging/")) {
+      pageBuilder.initPage('template#message', '/messaging', i18n.en.messaging.title);
+    } else if (location.includes("/messaging/") && !location.endsWith("/messaging/")) {
       const n = location.lastIndexOf('/');
       const conversationId = location.substring(n + 1);
+      pageBuilder.initPage('template#message', '/messaging/' + conversationId, i18n.en.messaging.title);
       messaging.conversation(conversationId, messaging.defaultPageNumber, messaging.defaultMessagesSize);
     }
 
-    messaging.loadConversations(appendConversations);
+    if (location.includes("/messaging")) {
+      messaging.clearForms();
+      messaging.displayNewMessagesCounter();
+      messaging.loadConversations(true);
+    }
   },
   actions: {
     200: function(response) {
@@ -69,6 +69,7 @@ var messaging = {
           const conversationNameContainer = document.querySelector('div.conversation-name');
           const conversationNameLabel = i18n[lang].messaging.conversation;
           const updateNameAction = '/api/message/conversations/' + conversation.id + '/name';
+          conversationNameContainer.innerHTML = '';
           pageBuilder.smartForm(conversationNameContainer, conversationNameLabel, conversation.name, 'name', updateNameAction, true);
         }
 

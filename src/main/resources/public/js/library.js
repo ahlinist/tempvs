@@ -4,10 +4,6 @@ import {i18n as classificationI18n} from './i18n/classification-translations.js'
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
 
-window.onload = function() {
-  library.init();
-};
-
 export let library = {
   init: function() {
     const location = window.location.href;
@@ -87,6 +83,7 @@ export let library = {
       detailsLink.href = '/library/period/' + periodKey.toLowerCase();
       detailsLink.onclick = function() {
         library.renderPeriodPage(periodKey.toLowerCase());
+        return false;
       };
       thumbnailImg.src = '/static/images/library/thumbnails/' + periodKey.toLowerCase() + '.jpg';
       periodName.innerHTML = periodI18n.en.period[periodKey].name;
