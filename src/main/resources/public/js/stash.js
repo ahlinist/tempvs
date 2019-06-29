@@ -192,7 +192,7 @@ export let stash = {
   loadItem: function(itemId) {
     ajaxHandler.blockUI();
     const url = '/api/stash/item/' + itemId;
-    const actions = {200: stash.parseItemResponse(response)};
+    const actions = {200: stash.parseItemResponse};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   },
   parseItemResponse(response) {
