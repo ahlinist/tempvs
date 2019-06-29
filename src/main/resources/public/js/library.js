@@ -4,7 +4,6 @@ import {i18n as classificationI18n} from './i18n/classification-translations.js'
 import {i18n as imageI18n} from './i18n/image-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
-import {modalCarousel} from './page/modal-carousel.js';
 
 export let library = {
   init: function() {

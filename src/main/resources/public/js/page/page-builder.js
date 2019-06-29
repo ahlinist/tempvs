@@ -1,5 +1,4 @@
 import {formValidator} from '../validation/form-validator.js';
-import {modalCarousel} from '../page/modal-carousel.js';
 
 export const pageBuilder = {
   initPage: function(selector, url, title) {
@@ -232,6 +231,9 @@ export const pageBuilder = {
 
     const firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
 
+    const slideMapping = {};
+    let currentSlide = 0;
+
     if (images.length) {
       imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
       imageContainer.querySelector('img#default-image').classList.add('hidden');
@@ -263,13 +265,16 @@ export const pageBuilder = {
         carouselInner.appendChild(carouselInnerNode);
       });
 
-      const slideMapping = {};
 
       images.forEach(function(entry, index) {
         slideMapping[index] = entry.objectId;
       });
 
-      modalCarousel.init(slideMapping);
+      const carousel = $('.carousel');
+      carousel.carousel(0);
+      carousel.on('slide.bs.carousel', function(event) {
+          currentSlide = $(event.relatedTarget).index();
+      });
     }
 
     if (isEditable) {
@@ -280,7 +285,12 @@ export const pageBuilder = {
       carouselHeader.querySelector('span.no').innerHTML = messageSource.deleteImage.no;
       carouselHeader.querySelector('form').action = uploadAction;
       carouselHeader.querySelector('form').onsubmit = function() {
-        modalCarousel.deleteImage(this, {200: onDeleteFunction});
+        $('.carousel').off('slide.bs.carousel');
+        ajaxHandler.hideModals();
+        ajaxHandler.blockUI();
+        const objectId = slideMapping[currentSlide];
+        const url = this.action + '/' + objectId;
+        ajaxHandler.fetch(this, url, {method: 'DELETE'}, {200: onDeleteFunction});
         return false;
       };
     }
