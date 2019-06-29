@@ -4,6 +4,7 @@ import {i18n as classificationI18n} from './i18n/classification-translations.js'
 import {i18n as imageI18n} from './i18n/image-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
+import {image} from './image/image.js';
 
 export let library = {
   init: function() {
@@ -309,7 +310,8 @@ export let library = {
     const uploadImageAction = '/api/library/source/' + sourceId + '/images';
 
     function onSubmitUploadImageForm() {
-      library.uploadImage(this);
+      const actions = {200: library.parseSourceResponse};
+      image.uploadImage(this, actions);
       return false;
     }
 
@@ -470,46 +472,5 @@ export let library = {
 
     ajaxHandler.blockUI();
     ajaxHandler.fetch(form, form.action, {method: 'DELETE'}, actions);
-  },
-  uploadImage: function(form) {
-    var formData = new FormData(form);
-    var image = formData.get('image');
-    var imageInfo = formData.get('imageInfo');
-
-    var actions = {200: library.parseSourceResponse};
-
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(image);
-      reader.onload = () => {
-        let encoded = reader.result.replace(/^data:(.*;base64,)?/, '');
-        if ((encoded.length % 4) > 0) {
-          encoded += '='.repeat(4 - (encoded.length % 4));
-        }
-
-        var object = {
-          imageInfo: imageInfo,
-          content: encoded,
-          fileName: image.name
-        };
-
-        resolve(object);
-      };
-      reader.onerror = error => reject(error);
-    })
-    .then(
-      data => {
-        var payload = {
-          method: 'POST',
-          headers:{
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(data)
-        };
-
-        ajaxHandler.blockUI();
-        ajaxHandler.fetch(form, form.action, payload, actions);
-      }
-    );
   }
 };

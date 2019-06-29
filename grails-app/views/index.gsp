@@ -436,7 +436,9 @@
         <div class="row">
           <div class="ajax-form item-form col-sm-4"></div>
           <div class="col-sm-4"></div>
-          <div class="col-sm-4"></div>
+          <div class="col-sm-4">
+            <div id="image-container"></div>
+          </div>
         </div>
         <div class="row">
           <h1 class="item-list-heading"></h1>

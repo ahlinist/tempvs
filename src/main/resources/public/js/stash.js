@@ -1,7 +1,9 @@
 import {i18n} from './i18n/stash-translations.js';
 import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
+import {i18n as imageI18n} from './i18n/image-translations.js';
 import {pageBuilder} from './page/page-builder.js';
+import {image} from './image/image.js';
 
 export let stash = {
   init: function() {
@@ -190,16 +192,15 @@ export let stash = {
   loadItem: function(itemId) {
     ajaxHandler.blockUI();
     const url = '/api/stash/item/' + itemId;
-    const actions = {200: renderPage};
+    const actions = {200: stash.parseItemResponse(response)};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+  },
+  parseItemResponse(response) {
+    const userInfo = JSON.parse(response.headers.get("User-Info"));
 
-    function renderPage(response) {
-      const userInfo = JSON.parse(response.headers.get("User-Info"));
-
-      response.json().then(function(data) {
-        stash.renderItem(data, userInfo);
-      });
-    }
+    response.json().then(function(data) {
+      stash.renderItem(data, userInfo);
+    });
   },
   renderItem: function(item, userInfo) {
     pageBuilder.initPage('template#item', '/stash/item/' + item.id, i18n.en.stash.title + ' - ' + item.name);
@@ -227,6 +228,17 @@ export let stash = {
     pageBuilder.smartForm(itemForm, itemDescriptionLabel, item.description, 'description', updateDescriptionAction, isEditable);
     pageBuilder.smartForm(itemForm, itemClassificationLabel, classificationName);
     pageBuilder.smartForm(itemForm, itemPeriodLabel, periodName);
+
+    const imageContainer = document.querySelector('div#image-container');
+    const uploadImageAction = '/api/stash/item/' + item.id + '/images';
+
+    function onSubmitUploadImageForm() {
+      const actions = {200: stash.parseItemResponse};
+      image.uploadImage(this, actions);
+      return false;
+    }
+
+    pageBuilder.imageSection(imageContainer, uploadImageAction, item.images, imageI18n['en'], onSubmitUploadImageForm, isEditable, stash.parseItemResponse);
   },
   createItem: function(form) {
     const messageSource = i18n.en.stash.items.create.validation;
