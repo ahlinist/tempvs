@@ -92,43 +92,44 @@ export let library = {
       periodsSection.appendChild(periodNode);
     }
 
-    var url = '/api/library/library';
-      var actions = {200: renderPage};
-      ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+    const welcomeSection = document.querySelector('div#welcome-section');
+    const welcomeTemplate = document.querySelector('template.welcome-block');
+    const welcomeBlock = welcomeTemplate.content.querySelector('div');
 
-      function renderPage(response) {
-        response.json().then(function(data) {
-          var welcomeSection = document.querySelector('div#welcome-section');
-          var welcomeTemplate = document.querySelector('template.welcome-block');
-          var welcomeBlock = welcomeTemplate.content.querySelector('div');
-          var welcomeBlockNode = document.importNode(welcomeBlock, true);
-          var greetingBlock = welcomeBlockNode.querySelector('span.greeting-block');
-          var button = welcomeBlockNode.querySelector('a.role-button');
-          var buttonText = data.buttonText;
-          var role = data.role;
+    const url = '/api/library/library';
+    const actions = {200: renderPage};
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
 
-          welcomeSection.innerHTML = '';
+    function renderPage(response) {
+      response.json().then(function(data) {
+        var welcomeBlockNode = document.importNode(welcomeBlock, true);
+        var greetingBlock = welcomeBlockNode.querySelector('span.greeting-block');
+        var button = welcomeBlockNode.querySelector('a.role-button');
+        var buttonText = data.buttonText;
+        var role = data.role;
 
-          if (data.adminPanelAvailable) {
-            button.href = "/library/admin";
+        welcomeSection.innerHTML = '';
 
-            button.onclick = function() {
-              library.renderAdminPage();
-            };
-          } else {
-            var method = data.roleRequestAvailable ? 'POST' : 'DELETE';
+        if (data.adminPanelAvailable) {
+          button.href = "/library/admin";
 
-            button.onclick = function() {
-              var url = '/api/library/library/role/' + role;
-              ajaxHandler.fetch(null, url, {method: method});
-            };
-          }
+          button.onclick = function() {
+            library.renderAdminPage();
+          };
+        } else {
+          var method = data.roleRequestAvailable ? 'POST' : 'DELETE';
 
-          greetingBlock.innerHTML = data.greeting;
-          button.innerHTML = buttonText;
-          welcomeSection.appendChild(welcomeBlockNode);
-        });
-      }
+          button.onclick = function() {
+            var url = '/api/library/library/role/' + role;
+            ajaxHandler.fetch(null, url, {method: method});
+          };
+        }
+
+        greetingBlock.innerHTML = data.greeting;
+        button.innerHTML = buttonText;
+        welcomeSection.appendChild(welcomeBlockNode);
+      });
+    }
   },
   renderAdminPage: function() {
     ajaxHandler.blockUI();
