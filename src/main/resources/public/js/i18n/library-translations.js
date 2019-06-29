@@ -46,11 +46,6 @@ export const i18n = {
         confirmation: 'Are you sure you want to delete this source?',
         yes: 'Yes',
         no: 'No'
-      },
-      deleteImage: {
-        confirmation: 'Are you sure you want to delete this image?',
-        yes: 'Yes',
-        no: 'No'
       }
     },
     breadcrumb: {

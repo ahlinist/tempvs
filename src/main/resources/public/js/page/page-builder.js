@@ -196,7 +196,7 @@ export const pageBuilder = {
       }
     }
   },
-  imageSection: function(imageContainer, uploadAction, images, messageSource, onSubmitFunction) {
+  imageSection: function(imageContainer, uploadAction, images, messageSource, onUploadFunction, isEditable, onDeleteFunction) {
     imageContainer.innerHTML = '';
     const template = document.querySelector('template#image-section');
     const imageSection = template.content.querySelector('div');
@@ -205,7 +205,7 @@ export const pageBuilder = {
 
     const imageUploadForm = document.querySelector('form.image-upload-form');
     imageUploadForm.action = uploadAction;
-    imageUploadForm.onsubmit = onSubmitFunction;
+    imageUploadForm.onsubmit = onUploadFunction;
     imageUploadForm.querySelector('label[for=image]').innerHTML = messageSource.uploadImage.imageLabel;
     imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = messageSource.uploadImage.imageInfoLabel;
     imageUploadForm.querySelector('span#select-file-button i').innerHTML = messageSource.uploadImage.selectFileButton;
@@ -270,6 +270,19 @@ export const pageBuilder = {
       });
 
       modalCarousel.init(slideMapping);
+    }
+
+    if (isEditable) {
+      var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
+      carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
+      carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = messageSource.deleteImage.confirmation;
+      carouselHeader.querySelector('span.yes').innerHTML = messageSource.deleteImage.yes;
+      carouselHeader.querySelector('span.no').innerHTML = messageSource.deleteImage.no;
+      carouselHeader.querySelector('form').action = uploadAction;
+      carouselHeader.querySelector('form').onsubmit = function() {
+        modalCarousel.deleteImage(this, {200: onDeleteFunction});
+        return false;
+      };
     }
   }
 };

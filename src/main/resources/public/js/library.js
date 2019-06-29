@@ -314,10 +314,10 @@ export let library = {
       return false;
     }
 
-    pageBuilder.imageSection(imageContainer, uploadImageAction, source.images, imageI18n['en'], onSubmitUploadImageForm);
-
     const roles = userInfo ? userInfo.roles : null;
     const isEditable = library.isEditAllowed(roles)
+
+    pageBuilder.imageSection(imageContainer, uploadImageAction, source.images, imageI18n['en'], onSubmitUploadImageForm, isEditable, library.parseSourceResponse);
 
     const updateNameAction = '/api/library/source/' + sourceId + '/name';
     const updateDescriptionAction = '/api/library/source/' + sourceId + '/description';
@@ -334,19 +334,6 @@ export let library = {
     pageBuilder.smartForm(sourceForm, classificationLabel, classificationValue);
     pageBuilder.smartForm(sourceForm, typeLabel, typeValue);
     pageBuilder.smartForm(sourceForm, periodLabel, periodName);
-
-    if (isEditable) {
-      var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
-      carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
-      carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = i18n.en.sourcePage.deleteImage.confirmation;
-      carouselHeader.querySelector('span.yes').innerHTML = i18n.en.sourcePage.deleteImage.yes;
-      carouselHeader.querySelector('span.no').innerHTML = i18n.en.sourcePage.deleteImage.no;
-      carouselHeader.querySelector('form').action = '/api/library/source/' + sourceId + '/images';
-      carouselHeader.querySelector('form').onsubmit = function() {
-        modalCarousel.deleteImage(this, {200: library.parseSourceResponse});
-        return false;
-      };
-    }
 
     if (library.isAdmin(roles)) {
       var deleteSrcMessages = i18n.en.sourcePage.deleteSource;
