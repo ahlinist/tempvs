@@ -1,4 +1,5 @@
 import {formValidator} from '../validation/form-validator.js';
+import {modalCarousel} from '../page/modal-carousel.js';
 
 export const pageBuilder = {
   initPage: function(selector, url, title) {
@@ -209,6 +210,14 @@ export const pageBuilder = {
     imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = messageSource.uploadImage.imageInfoLabel;
     imageUploadForm.querySelector('span#select-file-button i').innerHTML = messageSource.uploadImage.selectFileButton;
     imageUploadForm.querySelector('button.submit-button').innerHTML = messageSource.uploadImage.submitButton;
+
+    const fileInput = imageUploadForm.querySelector('input[name=image]');
+    fileInput.onchange = function() {
+      const element = this;
+      const fileName = element.value.split(/(\\|\/)/g).pop(); //cutting off "fakepath"
+      const placeholder = element.parentNode.querySelector(".placeholder");
+      placeholder.innerHTML = "<b>" + fileName + "</b>";
+    }
 
     const carouselInner = imageContainer.querySelector('div.carousel-inner');
     const modalActivateButton = imageContainer.querySelector('div#modal-activate-button');

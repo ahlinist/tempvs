@@ -4,6 +4,7 @@ import {i18n as classificationI18n} from './i18n/classification-translations.js'
 import {i18n as imageI18n} from './i18n/image-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
+import {modalCarousel} from './page/modal-carousel.js';
 
 export let library = {
   init: function() {
@@ -342,7 +343,7 @@ export let library = {
       carouselHeader.querySelector('span.no').innerHTML = i18n.en.sourcePage.deleteImage.no;
       carouselHeader.querySelector('form').action = '/api/library/source/' + sourceId + '/images';
       carouselHeader.querySelector('form').onsubmit = function() {
-        modalCarousel.deleteImage(this, {200: library.loadSource});
+        modalCarousel.deleteImage(this, {200: library.parseSourceResponse});
         return false;
       };
     }

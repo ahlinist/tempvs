@@ -3,8 +3,6 @@
   <head>
     <meta name="layout" content="main"/>
     <script type="module" src="/static/js/application.js"></script>
-    <script src="/static/js/image.js"></script>
-    <script src="/static/js/modal-carousel.js"></script>
   </head>
   <body>
     <content></content>
@@ -720,7 +718,7 @@
                 <div class="col-sm-7">
                   <label class="btn btn-default col-sm-12">
                     <span id="select-file-button" class="placeholder"><i></i></span>
-                    <input type="file" name="image" onchange="img.setFileUploadPlaceholder(this);" hidden>
+                    <input type="file" name="image" hidden>
                   </label>
                 </div>
               </div>

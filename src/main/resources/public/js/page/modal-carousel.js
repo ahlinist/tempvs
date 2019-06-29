@@ -1,6 +1,6 @@
-var modalCarousel = {
+export const modalCarousel = {
   init: function(slideMapping) {
-    var carousel = $('.carousel');
+    const carousel = $('.carousel');
     modalCarousel.currentSlide = 0;
     modalCarousel.slideMapping = slideMapping;
     carousel.carousel(0);
@@ -12,8 +12,8 @@ var modalCarousel = {
     $('.carousel').off('slide.bs.carousel');
     ajaxHandler.hideModals();
     ajaxHandler.blockUI();
-    var objectId = modalCarousel.slideMapping[modalCarousel.currentSlide];
-    var url = form.action + '/' + objectId;
+    const objectId = modalCarousel.slideMapping[modalCarousel.currentSlide];
+    const url = form.action + '/' + objectId;
     ajaxHandler.fetch(form, url, {method: 'DELETE'}, actions);
   }
 };
