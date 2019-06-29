@@ -194,5 +194,73 @@ export const pageBuilder = {
         window.addEventListener("keydown", keyPressEventListener);
       }
     }
+  },
+  imageSection: function(imageContainer, uploadAction, images, messageSource, onSubmitFunction) {
+    imageContainer.innerHTML = '';
+    const template = document.querySelector('template#image-section');
+    const imageSection = template.content.querySelector('div');
+    const imageSectionNode = document.importNode(imageSection, true);
+    imageContainer.appendChild(imageSectionNode);
+
+    const imageUploadForm = document.querySelector('form.image-upload-form');
+    imageUploadForm.action = uploadAction;
+    imageUploadForm.onsubmit = onSubmitFunction;
+    imageUploadForm.querySelector('label[for=image]').innerHTML = messageSource.uploadImage.imageLabel;
+    imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = messageSource.uploadImage.imageInfoLabel;
+    imageUploadForm.querySelector('span#select-file-button i').innerHTML = messageSource.uploadImage.selectFileButton;
+    imageUploadForm.querySelector('button.submit-button').innerHTML = messageSource.uploadImage.submitButton;
+
+    const carouselInner = imageContainer.querySelector('div.carousel-inner');
+    const modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
+    const carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
+    const imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
+    const imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
+    const carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
+    const carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
+
+    carouselInner.innerHTML = '';
+    carouselIndicatorList.innerHTML = '';
+
+    const firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
+
+    if (images.length) {
+      imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
+      imageContainer.querySelector('img#default-image').classList.add('hidden');
+      modalActivateButton.querySelector('.badge-notify').innerHTML = images.length;
+
+      images.forEach(function(image, index) {
+        var indicatorNode = document.importNode(imageIndicatorItem, true);
+        var carouselInnerNode = document.importNode(carouselInnerItem, true);
+
+        indicatorNode.setAttribute('data-slide-to', index);
+        carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
+        var htmlImage = new Image();
+        htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
+        htmlImage.src = "/api/image/image/" + image.objectId;
+
+        if (index === 0) {
+          indicatorNode.classList.add('active');
+          carouselInnerNode.classList.add('active');
+
+          const htmlFirstImage = new Image();
+          htmlFirstImage.setAttribute("style", "width: 30vw;");
+          htmlFirstImage.src = "/api/image/image/" + image.objectId;
+          firstImageHolder.innerHTML = '';
+          firstImageHolder.appendChild(htmlFirstImage);
+        }
+
+        carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
+        carouselIndicatorList.appendChild(indicatorNode);
+        carouselInner.appendChild(carouselInnerNode);
+      });
+
+      const slideMapping = {};
+
+      images.forEach(function(entry, index) {
+        slideMapping[index] = entry.objectId;
+      });
+
+      modalCarousel.init(slideMapping);
+    }
   }
 };

@@ -42,12 +42,6 @@ export const i18n = {
     },
     sourcePage: {
       title: 'Source',
-      uploadImage: {
-        imageLabel: 'Image',
-        imageInfoLabel: 'Image Info',
-        selectFileButton: 'Select file',
-        submitButton: 'Submit'
-      },
       deleteSource: {
         confirmation: 'Are you sure you want to delete this source?',
         yes: 'Yes',

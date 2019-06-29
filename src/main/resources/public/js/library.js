@@ -1,6 +1,7 @@
 import {i18n} from './i18n/library-translations.js';
 import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
+import {i18n as imageI18n} from './i18n/image-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
 
@@ -276,28 +277,26 @@ export let library = {
       });
     }
   },
+
   loadSource: function(sourceId) {
     ajaxHandler.blockUI();
     const url = '/api/library/source/' + sourceId;
-    ajaxHandler.fetch(null, url, {method: 'GET'}, {200: renderPage});
+    ajaxHandler.fetch(null, url, {method: 'GET'}, {200: library.parseSourceResponse});
+  },
+  parseSourceResponse(response) {
+    const userInfo = JSON.parse(response.headers.get("User-Info"));
 
-    function renderPage(response) {
-      const userInfo = JSON.parse(response.headers.get("User-Info"));
-
-      response.json().then(function(data) {
-        library.renderSourcePage(data, userInfo);
-      });
-    }
+    response.json().then(function(data) {
+      library.renderSourcePage(data, userInfo);
+    });
   },
   renderSourcePage: function(source, userInfo) {
     pageBuilder.initPage('template#library-source', '/library/source/' + source.id, i18n.en.sourcePage.title + ' - ' + source.name);
 
     const sourceId = source.id;
     const sourceName = source.name;
-
     const msgSource = i18n.en;
     const sourceForm = document.querySelector('div#source-form');
-    const imageUploadForm = document.querySelector('form#image-upload-form');
     const periodName = periodI18n['en'].period[source.period].name;
 
     pageBuilder.breadcrumb([
@@ -306,65 +305,15 @@ export let library = {
         {url: '/library/source/' + sourceId, text: sourceName}
     ]);
 
-    imageUploadForm.action = '/api/library/source/' + sourceId + '/images';
-    imageUploadForm.querySelector('label[for=image]').innerHTML = i18n.en.sourcePage.uploadImage.imageLabel;
-    imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = i18n.en.sourcePage.uploadImage.imageInfoLabel;
-    imageUploadForm.querySelector('span#select-file-button i').innerHTML = i18n.en.sourcePage.uploadImage.selectFileButton;
-    imageUploadForm.querySelector('button.submit-button').innerHTML = i18n.en.sourcePage.uploadImage.submitButton;
+    const imageContainer = document.querySelector('div#image-container');
+    const uploadImageAction = '/api/library/source/' + sourceId + '/images';
 
-    var imageContainer = document.querySelector('div#image-container');
-    var carouselInner = imageContainer.querySelector('div.carousel-inner');
-    var modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
-    var carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
-    var imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
-    var imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
-    var carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
-    var carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
-
-    carouselInner.innerHTML = '';
-    carouselIndicatorList.innerHTML = '';
-
-    var firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
-
-    if (source.images.length) {
-      imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
-      imageContainer.querySelector('img#default-image').classList.add('hidden');
-      modalActivateButton.querySelector('.badge-notify').innerHTML = source.images.length;
-
-      source.images.forEach(function(image, index) {
-        var indicatorNode = document.importNode(imageIndicatorItem, true);
-        var carouselInnerNode = document.importNode(carouselInnerItem, true);
-
-        indicatorNode.setAttribute('data-slide-to', index);
-        carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
-        var htmlImage = new Image();
-        htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
-        htmlImage.src = "/api/image/image/" + image.objectId;
-
-        if (index === 0) {
-          indicatorNode.classList.add('active');
-          carouselInnerNode.classList.add('active');
-
-          var htmlFirstImage = new Image();
-          htmlFirstImage.setAttribute("style", "width: 30vw;");
-          htmlFirstImage.src = "/api/image/image/" + image.objectId;
-          firstImageHolder.innerHTML = '';
-          firstImageHolder.appendChild(htmlFirstImage);
-        }
-
-        carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
-        carouselIndicatorList.appendChild(indicatorNode);
-        carouselInner.appendChild(carouselInnerNode);
-      });
-
-      var slideMapping = {};
-
-      source.images.forEach(function(entry, index) {
-        slideMapping[index] = entry.objectId;
-      });
-
-      modalCarousel.init(slideMapping);
+    function onSubmitUploadImageForm() {
+      library.uploadImage(this);
+      return false;
     }
+
+    pageBuilder.imageSection(imageContainer, uploadImageAction, source.images, imageI18n['en'], onSubmitUploadImageForm);
 
     const roles = userInfo ? userInfo.roles : null;
     const isEditable = library.isEditAllowed(roles)
@@ -540,7 +489,7 @@ export let library = {
     var image = formData.get('image');
     var imageInfo = formData.get('imageInfo');
 
-    var actions = {200: library.loadSource};
+    var actions = {200: library.parseSourceResponse};
 
     new Promise((resolve, reject) => {
       const reader = new FileReader();
