@@ -412,6 +412,7 @@
       <div id="item-section">
         <div class="row">
           <breadcrumb></breadcrumb>
+          <span id="delete-item-button" class="pull-right"></span>
         </div>
         <div class="row">
           <div class="ajax-form item-form col-sm-4"></div>

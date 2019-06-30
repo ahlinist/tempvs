@@ -29,6 +29,11 @@ export const i18n = {
             periodMissing: "Please choose a period",
           }
         },
+        delete: {
+          confirmation: 'Are you sure you want to delete this item?',
+          yes: 'Yes',
+          no: 'No'
+        },
         properties: {
           name: "Name",
           description: "Description",

@@ -229,6 +229,22 @@ export let stash = {
     pageBuilder.smartForm(itemForm, itemClassificationLabel, classificationName);
     pageBuilder.smartForm(itemForm, itemPeriodLabel, periodName);
 
+    if (isEditable) {
+      const deleteItemButton = document.querySelector('span#delete-item-button');
+      const confirmationMessage = i18n.en.stash.items.delete.confirmation;
+      const yesMessage = i18n.en.stash.items.delete.yes;
+      const noMessage = i18n.en.stash.items.delete.no;
+      const submitAction = '/api/stash/item/' + item.id;
+      const submitFunction = function() {
+        stash.deleteItem(this, item, userInfo);
+        return false;
+      }
+
+      pageBuilder.modalButton(deleteItemButton, ['fa', 'fa-trash'], null, confirmationMessage, yesMessage, noMessage,
+        submitAction, submitFunction
+      );
+    }
+
     const imageContainer = document.querySelector('div#image-container');
     const uploadImageAction = '/api/stash/item/' + item.id + '/images';
 
@@ -239,6 +255,19 @@ export let stash = {
     }
 
     pageBuilder.imageSection(imageContainer, uploadImageAction, item.images, imageI18n['en'], onSubmitUploadImageForm, isEditable, stash.parseItemResponse);
+  },
+  deleteItem: function(form, item, userInfo) {
+    var actions = {
+      200: successfulDeletion
+    };
+
+    function successfulDeletion() {
+      stash.renderGroup(item.itemGroup, userInfo);
+      ajaxHandler.hideModals();
+    }
+
+    ajaxHandler.blockUI();
+    ajaxHandler.fetch(form, form.action, {method: 'DELETE'}, actions);
   },
   createItem: function(form) {
     const messageSource = i18n.en.stash.items.create.validation;

@@ -343,7 +343,7 @@ export let library = {
       const noMessage = i18n.en.sourcePage.deleteSource.no;
       const submitAction = '/api/library/source/' + sourceId;
       const submitFunction = function() {
-        library.deleteSource(this, source.period.toLowerCase());
+        library.deleteSource(this, source);
         return false;
       }
 
@@ -463,13 +463,14 @@ export let library = {
       });
     }
   },
-  deleteSource: function(form, period) {
+  deleteSource: function(form, source) {
     var actions = {
       200: redirectToPeriodPage
     };
 
     function redirectToPeriodPage() {
-      window.location.href = '/library/period/' + period;
+      library.renderPeriodPage(source.period.toLowerCase());
+      ajaxHandler.hideModals();
     }
 
     ajaxHandler.blockUI();
