@@ -337,17 +337,19 @@ export let library = {
     pageBuilder.smartForm(sourceForm, periodLabel, periodName);
 
     if (library.isAdmin(roles)) {
-      var deleteSrcMessages = i18n.en.sourcePage.deleteSource;
-      var deleteSrcSection = document.querySelector('span#delete-source-section');
-      deleteSrcSection.classList.remove('hidden');
-      deleteSrcSection.querySelector('span#source-deletion-confirmation').innerHTML = deleteSrcMessages.confirmation;
-      deleteSrcSection.querySelector('form span.yes').innerHTML = deleteSrcMessages.yes;
-      deleteSrcSection.querySelector('form span.no').innerHTML = deleteSrcMessages.no;
-      deleteSrcSection.querySelector('form').action = '/api/library/source/' + sourceId;
-      deleteSrcSection.querySelector('form').onsubmit = function() {
+      const deleteSrcButton = document.querySelector('span#delete-source-button');
+      const confirmationMessage = i18n.en.sourcePage.deleteSource.confirmation;
+      const yesMessage = i18n.en.sourcePage.deleteSource.yes;
+      const noMessage = i18n.en.sourcePage.deleteSource.no;
+      const submitAction = '/api/library/source/' + sourceId;
+      const submitFunction = function() {
         library.deleteSource(this, source.period.toLowerCase());
         return false;
-      };
+      }
+
+      pageBuilder.modalButton(deleteSrcButton, ['fa', 'fa-trash'], null, confirmationMessage, yesMessage, noMessage,
+        submitAction, submitFunction
+      );
     }
   },
   createSource: function(form) {

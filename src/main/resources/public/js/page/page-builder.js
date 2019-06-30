@@ -294,5 +294,25 @@ export const pageBuilder = {
         return false;
       };
     }
+  },
+  modalButton: function(container, classList, buttonText, confirmationMsg, yesMsg, noMsg, submitAction, submitFunction) {
+    const template = document.querySelector('template#modal-button');
+    const templateContent = template.content.querySelector('span');
+    const contentNode = document.importNode(templateContent, true);
+    container.appendChild(contentNode);
+
+    const modalButton = container.querySelector('button[data-toggle=modal]');
+    classList.forEach(entry => modalButton.classList.add(entry));
+    modalButton.innerHTML = buttonText;
+    const modalId = Math.random().toString(36).slice(2);
+    modalButton.setAttribute('data-target', '#' + modalId);
+
+    const modalDialog = container.querySelector('div[role=dialog]');
+    modalDialog.setAttribute('id', modalId);
+    modalDialog.querySelector('.message').innerHTML = confirmationMsg;
+    modalDialog.querySelector('.yes').innerHTML = yesMsg;
+    modalDialog.querySelector('.no').innerHTML = noMsg;
+    modalDialog.querySelector('form').action = submitAction;
+    modalDialog.querySelector('form').onsubmit = submitFunction;
   }
 };

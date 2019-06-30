@@ -235,27 +235,7 @@
       <div>
         <div class="row" style="height:40px; padding: 0 15px;">
           <breadcrumb></breadcrumb>
-          <span id="delete-source-section" class="hidden pull-right">
-            <button class="btn btn-default fa fa-trash" data-toggle="modal" data-target="#delete-source-button"></button>
-            <div id="delete-source-button" class="modal fade" role="dialog">
-              <div class="modal-dialog modal-sm">
-                <div class="modal-content">
-                  <div class="modal-body">
-                    <span id="source-deletion-confirmation"></span>
-                    <br/>
-                    <form>
-                      <button class="btn btn-default submit-button">
-                        <span class="yes"></span>
-                      </button>
-                      <span class="btn btn-default" data-dismiss="modal">
-                        <span class="no"></span>
-                      </span>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </span>
+          <span id="delete-source-button" class="pull-right"></span>
         </div>
         <div class="row">
           <div class="col-sm-4">
@@ -738,6 +718,29 @@
           </div>
         </div>
       </div>
+    </template>
+    <template id="modal-button">
+      <span>
+        <button class="btn btn-default" data-toggle="modal"></button>
+        <div class="modal fade" role="dialog">
+          <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+              <div class="modal-body">
+                <span class="message"></span>
+                <br/>
+                <form>
+                  <button class="btn btn-default submit-button">
+                    <span class="yes"></span>
+                  </button>
+                  <span class="btn btn-default" data-dismiss="modal">
+                    <span class="no"></span>
+                  </span>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </span>
     </template>
   </body>
 </html>
