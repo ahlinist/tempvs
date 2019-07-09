@@ -240,14 +240,15 @@ export const pageBuilder = {
       modalActivateButton.querySelector('.badge-notify').innerHTML = images.length;
 
       images.forEach(function(image, index) {
-        var indicatorNode = document.importNode(imageIndicatorItem, true);
-        var carouselInnerNode = document.importNode(carouselInnerItem, true);
+        const imageUri = "data:image/jpeg;base64, " + image.content;
+        const indicatorNode = document.importNode(imageIndicatorItem, true);
+        const carouselInnerNode = document.importNode(carouselInnerItem, true);
 
         indicatorNode.setAttribute('data-slide-to', index);
         carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
-        var htmlImage = new Image();
+        const htmlImage = new Image();
         htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
-        htmlImage.src = "/api/image/image/" + image.objectId;
+        htmlImage.src = imageUri;
 
         if (index === 0) {
           indicatorNode.classList.add('active');
@@ -255,7 +256,7 @@ export const pageBuilder = {
 
           const htmlFirstImage = new Image();
           htmlFirstImage.setAttribute("style", "width: 30vw;");
-          htmlFirstImage.src = "/api/image/image/" + image.objectId;
+          htmlFirstImage.src = imageUri;
           firstImageHolder.innerHTML = '';
           firstImageHolder.appendChild(htmlFirstImage);
         }

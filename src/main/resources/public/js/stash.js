@@ -254,7 +254,15 @@ export let stash = {
       return false;
     }
 
-    pageBuilder.imageSection(imageContainer, uploadImageAction, item.images, imageI18n['en'], onSubmitUploadImageForm, isEditable, stash.parseItemResponse);
+    const imageFetchActions = {
+      200: function(response) {
+        response.json().then(function(data) {
+          pageBuilder.imageSection(imageContainer, uploadImageAction, data, imageI18n['en'], onSubmitUploadImageForm, isEditable, stash.parseItemResponse);
+        });
+      }
+    };
+
+    ajaxHandler.fetch(null, '/api/image/image/item/' + item.id, {method: 'GET'}, imageFetchActions);
   },
   deleteItem: function(form, item, userInfo) {
     var actions = {
