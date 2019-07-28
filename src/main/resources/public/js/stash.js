@@ -57,9 +57,15 @@ export let stash = {
         if (currentUserId == userId) {
           const createGroupSection = stashSection.querySelector("div#create-group-section");
           createGroupSection.classList.remove("hidden");
-          createGroupSection.querySelector("form label[for=name]").innerHTML = messageSource.groups.create.name;
-          createGroupSection.querySelector("form label[for=description]").innerHTML = messageSource.groups.create.description;
-          createGroupSection.querySelector("form button.submit-button").innerHTML = messageSource.groups.create.createButton;
+          const form = createGroupSection.querySelector('form');
+          form.querySelector("label[for=name]").innerHTML = messageSource.groups.create.name;
+          form.querySelector("label[for=description]").innerHTML = messageSource.groups.create.description;
+          form.querySelector("button.submit-button").innerHTML = messageSource.groups.create.createButton;
+          form.action = '/api/stash/group';
+          form.onsubmit = function() {
+            stash.createGroup(this, userInfo);
+            return false;
+          }
         }
 
         for (const group of data.groups) {
@@ -356,7 +362,7 @@ export let stash = {
     ajaxHandler.blockUI();
     ajaxHandler.fetch(form, form.action, payload, actions);
   },
-  createGroup: function(form) {
+  createGroup: function(form, userInfo) {
     const formData = new FormData(form);
 
     const object = {
@@ -390,7 +396,7 @@ export let stash = {
 
     function renderGroupItems(response) {
       response.json().then(function(data) {
-        window.location.href = '/item/group/' + data.id;
+        stash.renderGroup(data, userInfo)
       });
     }
 

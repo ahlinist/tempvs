@@ -262,7 +262,7 @@
                 <div class="modal-content">
                   <div class="modal-body">
                     <div class="row ajax-form">
-                      <form action="/api/stash/group" onsubmit="stash.createGroup(this); return false;">
+                      <form>
                         <div class="row">
                           <div class="col-sm-6">
                             <label for="name"></label>
