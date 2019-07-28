@@ -97,6 +97,7 @@ export let stash = {
     }
   },
   renderGroup: function(group, userInfo) {
+    ajaxHandler.hideModals();
     pageBuilder.initPage('template#item-group', '/stash/group/' + group.id, i18n.en.stash.title + ' - ' + group.name);
 
     const groupId = group.id;
@@ -203,6 +204,7 @@ export let stash = {
     });
   },
   renderItem: function(item, userInfo) {
+    ajaxHandler.hideModals();
     pageBuilder.initPage('template#item', '/stash/item/' + item.id, i18n.en.stash.title + ' - ' + item.name);
 
     pageBuilder.breadcrumb([
@@ -271,7 +273,6 @@ export let stash = {
 
     function successfulDeletion() {
       stash.renderGroup(item.itemGroup, userInfo);
-      ajaxHandler.hideModals();
     }
 
     ajaxHandler.blockUI();
@@ -324,15 +325,17 @@ export let stash = {
     };
 
     const actions = {
-      200: renderItem,
+      200: renderItemPage,
       400: function(response, form) {
         ajaxHandler.handleBadRequest(response, form);
       }
     };
 
-    function renderItem(response) {
+    function renderItemPage(response) {
+      const userInfo = JSON.parse(response.headers.get("User-Info"));
+
       response.json().then(function(data) {
-        alert("item created!");
+        stash.renderItem(data, userInfo);
       });
     }
 
