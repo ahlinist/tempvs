@@ -105,7 +105,7 @@ export let stash = {
     const groupDescription = group.description;
 
     pageBuilder.breadcrumb([
-        {url: '/stash/' + userInfo.userId, text: i18n.en.stash.breadCrumb + " (" + userInfo.userName + ")"},
+        {url: '/stash/' + group.owner.id, text: i18n.en.stash.breadCrumb + " (" + group.owner.userName + ")"},
         {url: '/stash/group/' + groupId, text: groupName}
     ]);
 
@@ -196,7 +196,7 @@ export let stash = {
     const actions = {200: stash.parseItemResponse};
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   },
-  parseItemResponse(response) {
+  parseItemResponse: function(response) {
     const userInfo = JSON.parse(response.headers.get("User-Info"));
 
     response.json().then(function(data) {
@@ -207,15 +207,17 @@ export let stash = {
     ajaxHandler.hideModals();
     pageBuilder.initPage('template#item', '/stash/item/' + item.id, i18n.en.stash.title + ' - ' + item.name);
 
+    const itemGroup = item.itemGroup;
+
     pageBuilder.breadcrumb([
-      {url: '/stash/' + userInfo.userId, text: i18n.en.stash.breadCrumb + " (" + userInfo.userName + ")"},
-      {url: '/stash/group/' + item.itemGroup.id, text: item.itemGroup.name},
+      {url: '/stash/' + itemGroup.owner.id, text: i18n.en.stash.breadCrumb + " (" + itemGroup.owner.userName + ")"},
+      {url: '/stash/group/' + itemGroup.id, text: itemGroup.name},
       {url: '/stash/item/' + item.id, text: item.name}
     ]);
 
     const itemForm = document.querySelector('.item-form');
 
-    const isEditable = item.itemGroup.owner.id == userInfo.userId;
+    const isEditable = itemGroup.owner.id == userInfo.userId;
     const updateNameAction = '/api/stash/item/' + item.id + '/name';
     const updateDescriptionAction = '/api/stash/item/' + item.id + '/description';
     const itemNameLabel = i18n.en.stash.items.properties.name;
