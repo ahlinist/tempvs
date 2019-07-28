@@ -253,7 +253,11 @@ export let stash = {
     const uploadImageAction = '/api/stash/item/' + item.id + '/images';
 
     function onSubmitUploadImageForm() {
-      const actions = {200: stash.parseItemResponse};
+      const actions = {
+        200: function() {
+          ajaxHandler.fetch(null, '/api/image/image/item/' + item.id, {method: 'GET'}, imageFetchActions);
+        }
+      };
       image.uploadImage(this, actions);
       return false;
     }
@@ -261,7 +265,15 @@ export let stash = {
     const imageFetchActions = {
       200: function(response) {
         response.json().then(function(data) {
-          pageBuilder.imageSection(imageContainer, uploadImageAction, data, imageI18n['en'], onSubmitUploadImageForm, isEditable, stash.parseItemResponse);
+          pageBuilder.imageSection(
+            imageContainer,
+            uploadImageAction,
+            data,
+            imageI18n['en'],
+            onSubmitUploadImageForm,
+            isEditable,
+            stash.parseItemResponse
+          );
         });
       }
     };
