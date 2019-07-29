@@ -306,19 +306,20 @@ export let library = {
         {url: '/library/source/' + sourceId, text: sourceName}
     ]);
 
-    const imageContainer = document.querySelector('div#image-container');
-    const uploadImageAction = '/api/library/source/' + sourceId + '/images';
-
-    function onSubmitUploadImageForm() {
-      const actions = {200: library.parseSourceResponse};
-      image.uploadImage(this, actions);
-      return false;
-    }
-
     const roles = userInfo ? userInfo.roles : null;
     const isEditable = library.isEditAllowed(roles)
 
-    pageBuilder.imageSection(imageContainer, uploadImageAction, source.images, imageI18n['en'], onSubmitUploadImageForm, isEditable, library.parseSourceResponse);
+    const imageContainer = document.querySelector('div#image-container');
+    const uploadImageAction = '/api/library/source/' + sourceId + '/images';
+    const fetchImagesUrl = '/api/image/image/source/' + sourceId;
+
+    pageBuilder.imageSection(
+      imageContainer,
+      uploadImageAction,
+      imageI18n['en'],
+      fetchImagesUrl,
+      isEditable
+    );
 
     const updateNameAction = '/api/library/source/' + sourceId + '/name';
     const updateDescriptionAction = '/api/library/source/' + sourceId + '/description';
