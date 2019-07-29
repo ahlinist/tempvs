@@ -3,7 +3,6 @@ import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {i18n as imageI18n} from './i18n/image-translations.js';
 import {pageBuilder} from './page/page-builder.js';
-import {image} from './image/image.js';
 
 export let stash = {
   init: function() {
@@ -257,34 +256,15 @@ export let stash = {
 
     const imageContainer = document.querySelector('div#image-container');
     const uploadImageAction = '/api/stash/item/' + item.id + '/images';
+    const fetchImagesUrl = '/api/image/image/item/' + item.id;
 
-    function onSubmitUploadImageForm() {
-      const actions = {
-        200: function() {
-          ajaxHandler.fetch(null, '/api/image/image/item/' + item.id, {method: 'GET'}, imageFetchActions);
-        }
-      };
-      image.uploadImage(this, actions);
-      return false;
-    }
-
-    const imageFetchActions = {
-      200: function(response) {
-        response.json().then(function(data) {
-          pageBuilder.imageSection(
-            imageContainer,
-            uploadImageAction,
-            data,
-            imageI18n['en'],
-            onSubmitUploadImageForm,
-            isEditable,
-            stash.parseItemResponse
-          );
-        });
-      }
-    };
-
-    ajaxHandler.fetch(null, '/api/image/image/item/' + item.id, {method: 'GET'}, imageFetchActions);
+    pageBuilder.imageSection(
+      imageContainer,
+      uploadImageAction,
+      imageI18n['en'],
+      fetchImagesUrl,
+      isEditable
+    );
   },
   deleteItem: function(form, item, userInfo) {
     var actions = {

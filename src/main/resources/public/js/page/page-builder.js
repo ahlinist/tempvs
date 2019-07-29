@@ -1,4 +1,5 @@
 import {formValidator} from '../validation/form-validator.js';
+import {image} from '../image/image.js';
 
 export const pageBuilder = {
   initPage: function(selector, url, title) {
@@ -195,106 +196,125 @@ export const pageBuilder = {
       }
     }
   },
-  imageSection: function(imageContainer, uploadAction, images, messageSource, onUploadFunction, isEditable, onDeleteFunction) {
-    imageContainer.innerHTML = '';
-    const template = document.querySelector('template#image-section');
-    const imageSection = template.content.querySelector('div');
-    const imageSectionNode = document.importNode(imageSection, true);
-    imageContainer.appendChild(imageSectionNode);
-
-    const imageUploadForm = document.querySelector('form.image-upload-form');
-    imageUploadForm.action = uploadAction;
-    imageUploadForm.onsubmit = onUploadFunction;
-    imageUploadForm.querySelector('label[for=image]').innerHTML = messageSource.uploadImage.imageLabel;
-    imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = messageSource.uploadImage.imageInfoLabel;
-    imageUploadForm.querySelector('span#select-file-button i').innerHTML = messageSource.uploadImage.selectFileButton;
-    imageUploadForm.querySelector('button.submit-button').innerHTML = messageSource.uploadImage.submitButton;
-
-    const fileInput = imageUploadForm.querySelector('input[name=image]');
-    fileInput.onchange = function() {
-      const element = this;
-      const fileName = element.value.split(/(\\|\/)/g).pop(); //cutting off "fakepath"
-      const placeholder = element.parentNode.querySelector(".placeholder");
-      placeholder.innerHTML = "<b>" + fileName + "</b>";
+  imageSection: function(imageContainer, uploadAction, messageSource, fetchImagesUrl, isEditable) {
+    function callSelf() {
+      pageBuilder.imageSection(imageContainer, uploadAction, messageSource, fetchImagesUrl, isEditable);
     }
 
-    const carouselInner = imageContainer.querySelector('div.carousel-inner');
-    const modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
-    const carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
-    const imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
-    const imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
-    const carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
-    const carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
+    const imageFetchActions = {
+      200: function(response) {
+        response.json().then(function(data) {
+          buildImageSection(data);
+        });
+      }
+    };
 
-    carouselInner.innerHTML = '';
-    carouselIndicatorList.innerHTML = '';
+    function buildImageSection(images) {
+      imageContainer.innerHTML = '';
+      const template = document.querySelector('template#image-section');
+      const imageSection = template.content.querySelector('div');
+      const imageSectionNode = document.importNode(imageSection, true);
+      imageContainer.appendChild(imageSectionNode);
 
-    const firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
-
-    const slideMapping = {};
-    let currentSlide = 0;
-
-    if (images.length) {
-      imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
-      imageContainer.querySelector('img#default-image').classList.add('hidden');
-      modalActivateButton.querySelector('.badge-notify').innerHTML = images.length;
-
-      images.forEach(function(image, index) {
-        const imageUri = "data:image/jpeg;base64, " + image.content;
-        const indicatorNode = document.importNode(imageIndicatorItem, true);
-        const carouselInnerNode = document.importNode(carouselInnerItem, true);
-
-        indicatorNode.setAttribute('data-slide-to', index);
-        carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
-        const htmlImage = new Image();
-        htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
-        htmlImage.src = imageUri;
-
-        if (index === 0) {
-          indicatorNode.classList.add('active');
-          carouselInnerNode.classList.add('active');
-
-          const htmlFirstImage = new Image();
-          htmlFirstImage.setAttribute("style", "width: 30vw;");
-          htmlFirstImage.src = imageUri;
-          firstImageHolder.innerHTML = '';
-          firstImageHolder.appendChild(htmlFirstImage);
-        }
-
-        carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
-        carouselIndicatorList.appendChild(indicatorNode);
-        carouselInner.appendChild(carouselInnerNode);
-      });
-
-
-      images.forEach(function(entry, index) {
-        slideMapping[index] = entry.objectId;
-      });
-
-      const carousel = $('.carousel');
-      carousel.carousel(0);
-      carousel.on('slide.bs.carousel', function(event) {
-          currentSlide = $(event.relatedTarget).index();
-      });
-    }
-
-    if (isEditable) {
-      var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
-      carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
-      carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = messageSource.deleteImage.confirmation;
-      carouselHeader.querySelector('span.yes').innerHTML = messageSource.deleteImage.yes;
-      carouselHeader.querySelector('span.no').innerHTML = messageSource.deleteImage.no;
-      carouselHeader.querySelector('form').action = uploadAction;
-      carouselHeader.querySelector('form').onsubmit = function() {
-        $('.carousel').off('slide.bs.carousel');
-        ajaxHandler.hideModals();
-        ajaxHandler.blockUI();
-        const objectId = slideMapping[currentSlide];
-        const url = this.action + '/' + objectId;
-        ajaxHandler.fetch(this, url, {method: 'DELETE'}, {200: onDeleteFunction});
+      const imageUploadForm = document.querySelector('form.image-upload-form');
+      imageUploadForm.action = uploadAction;
+      imageUploadForm.onsubmit = function() {
+        image.uploadImage(this, {200: callSelf});
         return false;
       };
+      imageUploadForm.querySelector('label[for=image]').innerHTML = messageSource.uploadImage.imageLabel;
+      imageUploadForm.querySelector('label[for=imageInfo]').innerHTML = messageSource.uploadImage.imageInfoLabel;
+      imageUploadForm.querySelector('span#select-file-button i').innerHTML = messageSource.uploadImage.selectFileButton;
+      imageUploadForm.querySelector('button.submit-button').innerHTML = messageSource.uploadImage.submitButton;
+
+      const fileInput = imageUploadForm.querySelector('input[name=image]');
+      fileInput.onchange = function() {
+        const element = this;
+        const fileName = element.value.split(/(\\|\/)/g).pop(); //cutting off "fakepath"
+        const placeholder = element.parentNode.querySelector(".placeholder");
+        placeholder.innerHTML = "<b>" + fileName + "</b>";
+      }
+
+      const carouselInner = imageContainer.querySelector('div.carousel-inner');
+      const modalActivateButton = imageContainer.querySelector('div#modal-activate-button');
+      const carouselIndicatorList = imageContainer.querySelector('ol.carousel-indicators');
+      const imageIndicatorTemplate = imageContainer.querySelector('template#image-indicator');
+      const imageIndicatorItem = imageIndicatorTemplate.content.querySelector('li');
+      const carouselInnerTemplate = imageContainer.querySelector('template#carousel-inner');
+      const carouselInnerItem = carouselInnerTemplate.content.querySelector('div');
+
+      carouselInner.innerHTML = '';
+      carouselIndicatorList.innerHTML = '';
+
+      const firstImageHolder = modalActivateButton.querySelector('div#first-image-holder');
+
+      const slideMapping = {};
+      let currentSlide = 0;
+
+      if (images.length) {
+        imageContainer.querySelector('div#image-carousel').classList.remove('hidden');
+        imageContainer.querySelector('img#default-image').classList.add('hidden');
+        modalActivateButton.querySelector('.badge-notify').innerHTML = images.length;
+
+        images.forEach(function(image, index) {
+          const imageUri = "data:image/jpeg;base64, " + image.content;
+          const indicatorNode = document.importNode(imageIndicatorItem, true);
+          const carouselInnerNode = document.importNode(carouselInnerItem, true);
+
+          indicatorNode.setAttribute('data-slide-to', index);
+          carouselInnerNode.querySelector('p.image-info').innerHTML = image.imageInfo;
+          const htmlImage = new Image();
+          htmlImage.setAttribute("style", "height: 90vh; max-width: 90vw; width: auto; margin-left: auto; margin-right: auto;");
+          htmlImage.src = imageUri;
+
+          if (index === 0) {
+            indicatorNode.classList.add('active');
+            carouselInnerNode.classList.add('active');
+
+            const htmlFirstImage = new Image();
+            htmlFirstImage.setAttribute("style", "width: 30vw;");
+            htmlFirstImage.src = imageUri;
+            firstImageHolder.innerHTML = '';
+            firstImageHolder.appendChild(htmlFirstImage);
+          }
+
+          carouselInnerNode.insertBefore(htmlImage, carouselInnerNode.firstChild);
+          carouselIndicatorList.appendChild(indicatorNode);
+          carouselInner.appendChild(carouselInnerNode);
+        });
+
+
+        images.forEach(function(entry, index) {
+          slideMapping[index] = entry.objectId;
+        });
+
+        const carousel = $('.carousel');
+        carousel.carousel(0);
+        carousel.on('slide.bs.carousel', function(event) {
+            currentSlide = $(event.relatedTarget).index();
+        });
+      }
+
+      if (isEditable) {
+        var carouselHeader = imageContainer.querySelector('div#carousel-modal-header');
+        carouselHeader.querySelector('span#delete-image-wrapper').classList.remove('hidden');
+        carouselHeader.querySelector('span#image-deletion-confirmation').innerHTML = messageSource.deleteImage.confirmation;
+        carouselHeader.querySelector('span.yes').innerHTML = messageSource.deleteImage.yes;
+        carouselHeader.querySelector('span.no').innerHTML = messageSource.deleteImage.no;
+        carouselHeader.querySelector('form').action = uploadAction;
+        carouselHeader.querySelector('form').onsubmit = function() {
+          $('.carousel').off('slide.bs.carousel');
+          ajaxHandler.hideModals();
+          ajaxHandler.blockUI();
+          const objectId = slideMapping[currentSlide];
+          const url = this.action + '/' + objectId;
+          ajaxHandler.fetch(this, url, {method: 'DELETE'}, {200: callSelf});
+          return false;
+        };
+      }
     }
+
+    ajaxHandler.fetch(null, fetchImagesUrl, {method: 'GET'}, imageFetchActions);
   },
   modalButton: function(container, classList, buttonText, confirmationMsg, yesMsg, noMsg, submitAction, submitFunction) {
     const template = document.querySelector('template#modal-button');
