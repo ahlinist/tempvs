@@ -184,7 +184,7 @@
         <br/>
         <div class="row" style="border-top: 1px solid #CCC;">
           <div class="col-sm-2" id="search-section" style="border-right: 1px solid #CCC;">
-            <form action="/api/library/source" onsubmit="library.search(this); return false;" autocomplete="off">
+            <form class="search-form" autocomplete="off">
               <br/>
               <div>
                 <input type="text" name="query">
@@ -416,7 +416,55 @@
         </div>
         <div class="row">
           <div class="ajax-form item-form col-sm-4"></div>
-          <div class="col-sm-4"></div>
+          <div class="ajax-form linked-sources col-sm-4">
+            <p class="text-center message-container"></p>
+            <div class="row find-sources-container" style="margin:10px 0px;">
+              <button class="btn btn-default col-sm-6 pull-right" data-toggle="modal" data-target="#find-sources-popup">
+                <span class="pull-left find-sources-popup-text"></span>
+                <span class="pull-right">
+                  <span class="fa fa-plus"></span>
+                </span>
+              </button>
+              <div id="find-sources-popup" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-body">
+                      <div class="row">
+                        <form class="search-form" autocomplete="off">
+                          <div>
+                            <input type="text" name="query" style="width: 525px;">
+                            <button class="btn btn-default pull-right"><span class="fa fa-search"></span></button>
+                          </div>
+                          <div class="find-source-type row" style="margin: 10px 0 10px 0;">
+                            <h4 class="well well-sm"></h4>
+                            <span class="col-sm-3">
+                              <label class="type-written"></label>
+                              <input class="pull-right" name="type" value="WRITTEN" type="checkbox">
+                            </span>
+                            <span class="col-sm-3">
+                              <label class="type-graphic"></label>
+                              <input class="pull-right" name="type" value="GRAPHIC" type="checkbox">
+                            </span>
+                            <span class="col-sm-3">
+                              <label class="type-archaeological"></label>
+                              <input class="pull-right" name="type" value="ARCHAEOLOGICAL" type="checkbox">
+                            </span>
+                            <span class="col-sm-3">
+                              <label class="type-other"></label>
+                              <input class="pull-right" name="type" value="OTHER" type="checkbox">
+                            </span>
+                          </div>
+                          <hr/>
+                          <input type="hidden" name="period">
+                          <input type="hidden" name="classification">
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="col-sm-4">
             <div id="image-container"></div>
           </div>

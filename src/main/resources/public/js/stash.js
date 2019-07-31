@@ -3,6 +3,7 @@ import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
 import {i18n as imageI18n} from './i18n/image-translations.js';
 import {pageBuilder} from './page/page-builder.js';
+import {linkedSources} from './source/linked-sources.js';
 
 export let stash = {
   init: function() {
@@ -253,6 +254,10 @@ export let stash = {
         submitAction, submitFunction
       );
     }
+
+    const linkedSourcesContainer = document.querySelector('.linked-sources');
+
+    linkedSources.build(linkedSourcesContainer, item, isEditable);
 
     const imageContainer = document.querySelector('div#image-container');
     const uploadImageAction = '/api/stash/item/' + item.id + '/images';

@@ -5,6 +5,7 @@ import {i18n as imageI18n} from './i18n/image-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
 import {image} from './image/image.js';
+import {sourceSearch} from './source/source-search.js';
 
 export let library = {
   init: function() {
@@ -258,8 +259,14 @@ export let library = {
     buildcheckboxSearch(classifications, 'classification');
     buildcheckboxSearch(types, 'type');
 
-    var searchForm = searchSection.querySelector('form');
+    const searchForm = searchSection.querySelector('form.search-form');
     searchForm.querySelector('input[name=period]').value = period;
+    searchForm.action = '/api/library/source';
+    searchForm.onsubmit = function() {
+      library.search(this);
+      return false;
+    };
+
     library.search(searchForm);
 
     function buildcheckboxSearch(checkboxGroup, checkboxType) {
@@ -416,29 +423,18 @@ export let library = {
     ajaxHandler.fetch(form, form.action, payload, actions);
   },
   search: function(form) {
-    var spinner = document.querySelector('img.load-sources-spinner');
-    var sourceTable = document.querySelector('table#source-table');
-    var formData = new FormData(form);
-    var tableBody = sourceTable.querySelector('tbody');
-
-    var object = {
-      query: formData.get('query'),
-      period: formData.get('period').toUpperCase(),
-      classifications: formData.getAll('classification'),
-      types: formData.getAll('type')
-    };
-
-    var q = window.btoa(JSON.stringify(object));
-    var url = '/api/library/source?page=0&size=40&q=' + q;
-
-    var actions = {
+    const actions = {
       200: displaySearchResult
     };
 
-    spinner.classList.remove('hidden');
-    tableBody.innerHTML = '';
-
+    const url = sourceSearch.buildUrl(form);
     ajaxHandler.fetch(form, url, {method: 'GET'}, actions);
+
+    const spinner = document.querySelector('img.load-sources-spinner');
+    spinner.classList.remove('hidden');
+    const sourceTable = document.querySelector('table#source-table');
+    const tableBody = sourceTable.querySelector('tbody');
+    tableBody.innerHTML = '';
 
     function displaySearchResult(response) {
       const userInfo = JSON.parse(response.headers.get("User-Info"));
