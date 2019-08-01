@@ -9,7 +9,7 @@ export const sourceSearch = {
       types: formData.getAll('type')
     };
 
-    const q = window.btoa(JSON.stringify(object));
+    const q = window.btoa(encodeURIComponent(JSON.stringify(object)));
     return form.action + '?page=0&size=40&q=' + q;
   }
 };
