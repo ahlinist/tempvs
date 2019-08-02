@@ -3,10 +3,10 @@ export const i18n = {
     noSources: "No sources linked",
     findSourcesButton: "Find sources",
     findSourcesPlaceholder: "Find a source...",
+    noResultsMessage: "No results found",
     sourceTypeHeading: "Type",
-    typeWritten: "Written",
-    typeGraphic: "Graphic",
-    typeArchaeological: "Artifact",
-    typeOther: "Other"
+    sourceNameLabel: "Name",
+    sourceDescriptionLabel: "Description",
+    sourceTypeLabel: "Type"
   }
 }

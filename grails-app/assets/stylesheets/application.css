@@ -147,3 +147,8 @@ footer {
 .popover-title {
   display: none;
 }
+
+.table-cell {
+  padding: 5px;
+  border: solid 1px #EEE;
+}

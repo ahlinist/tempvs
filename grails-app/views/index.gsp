@@ -437,27 +437,45 @@
                           </div>
                           <div class="find-source-type row" style="margin: 10px 0 10px 0;">
                             <h4 class="well well-sm"></h4>
-                            <span class="col-sm-3">
+                            <span class="col-sm-3 table-cell">
                               <label class="type-written"></label>
                               <input class="pull-right" name="type" value="WRITTEN" type="checkbox">
                             </span>
-                            <span class="col-sm-3">
+                            <span class="col-sm-3 table-cell">
                               <label class="type-graphic"></label>
                               <input class="pull-right" name="type" value="GRAPHIC" type="checkbox">
                             </span>
-                            <span class="col-sm-3">
+                            <span class="col-sm-3 table-cell">
                               <label class="type-archaeological"></label>
                               <input class="pull-right" name="type" value="ARCHAEOLOGICAL" type="checkbox">
                             </span>
-                            <span class="col-sm-3">
+                            <span class="col-sm-3 table-cell">
                               <label class="type-other"></label>
                               <input class="pull-right" name="type" value="OTHER" type="checkbox">
                             </span>
                           </div>
-                          <hr/>
                           <input type="hidden" name="period">
                           <input type="hidden" name="classification">
                         </form>
+                        <p class="text-center no-results-message hidden"></p>
+                        <img class="center-block spinner hidden" src="/static/images/spinner.gif">
+                        <table class="table table-hover result-table hidden">
+                          <thead>
+                            <tr>
+                              <th class="source-name"></th>
+                              <th class="source-description"></th>
+                              <th class="source-type"></th>
+                            </tr>
+                          </thead>
+                          <tbody></tbody>
+                          <template class="source-template">
+                            <tr style="cursor: pointer;">
+                              <td class="source-name"></td>
+                              <td class="source-description"></td>
+                              <td class="source-type"></td>
+                            </tr>
+                          </template>
+                        </table>
                       </div>
                     </div>
                   </div>

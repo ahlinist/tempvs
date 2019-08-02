@@ -1,6 +1,7 @@
 import {i18n} from './i18n/library-translations.js';
 import {i18n as periodI18n} from './i18n/period-translations.js';
 import {i18n as classificationI18n} from './i18n/classification-translations.js';
+import {i18n as typeI18n} from './i18n/type-translations.js';
 import {i18n as imageI18n} from './i18n/image-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
@@ -194,6 +195,7 @@ export let library = {
     }
   },
   renderPeriodPage: function(periodKey) {
+    const lang = 'en';
     const period = periodKey.toUpperCase();
     const periodMessageSource = periodI18n.en.period[period];
     pageBuilder.initPage('template#library-period', '/library/period/' + periodKey, i18n.en.welcomePage.title + ' - ' + periodMessageSource.name);
@@ -205,7 +207,7 @@ export let library = {
 
     var srcProperties = i18n.en.source.properties;
     var classifications = classificationI18n.en.classifications;
-    var types = i18n.en.source.types;
+    const types = typeI18n[lang].types;
     var createSourceSection = document.querySelector('div#create-source-section');
     var labels = Object.keys(srcProperties);
     var searchSection = document.querySelector('div#search-section');
@@ -299,13 +301,14 @@ export let library = {
     });
   },
   renderSourcePage: function(source, userInfo) {
-    pageBuilder.initPage('template#library-source', '/library/source/' + source.id, i18n.en.sourcePage.title + ' - ' + source.name);
+    const lang = 'en';
+    pageBuilder.initPage('template#library-source', '/library/source/' + source.id, i18n[lang].sourcePage.title + ' - ' + source.name);
 
     const sourceId = source.id;
     const sourceName = source.name;
-    const msgSource = i18n.en;
+    const msgSource = i18n[lang];
     const sourceForm = document.querySelector('div#source-form');
-    const periodName = periodI18n['en'].period[source.period].name;
+    const periodName = periodI18n[lang].period[source.period].name;
 
     pageBuilder.breadcrumb([
         {url: '/library', text: i18n.en.breadcrumb.library},
@@ -336,7 +339,7 @@ export let library = {
     const classificationValue = classificationI18n.en.classifications[source.classification];
     const periodLabel = msgSource.source.properties.period;
     const typeLabel = msgSource.source.properties.type;
-    const typeValue = msgSource.source.types[source.type];
+    const typeValue = typeI18n[lang].types[source.type];
 
     pageBuilder.smartForm(sourceForm, sourceNameLabel + ' *', sourceName, 'name', updateNameAction, isEditable);
     pageBuilder.smartForm(sourceForm, sourceDescriptionLabel, source.description, 'description', updateDescriptionAction, isEditable);
@@ -423,6 +426,7 @@ export let library = {
     ajaxHandler.fetch(form, form.action, payload, actions);
   },
   search: function(form) {
+    const lang = 'en';
     const actions = {
       200: displaySearchResult
     };
@@ -453,8 +457,8 @@ export let library = {
             library.renderSourcePage(source, userInfo);
           };
           sourceNode.querySelector('td.source-description').innerHTML = source.description;
-          sourceNode.querySelector('td.source-classification').innerHTML = classificationI18n.en.classifications[source.classification];
-          sourceNode.querySelector('td.source-type').innerHTML = i18n.en.source.types[source.type];
+          sourceNode.querySelector('td.source-classification').innerHTML = classificationI18n[lang].classifications[source.classification];
+          sourceNode.querySelector('td.source-type').innerHTML = typeI18n[lang].types[source.type];
           tableBody.appendChild(sourceNode);
         });
       });

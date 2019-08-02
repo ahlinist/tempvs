@@ -7,13 +7,6 @@ export const i18n = {
         classification: 'Classification',
         type: 'Type',
         period: 'Period'
-      },
-      types: {
-        "": "-",
-        WRITTEN: "Written",
-        GRAPHIC: "Graphic",
-        ARCHAEOLOGICAL: "Archaeological",
-        OTHER: "Other"
       }
     },
     adminPage: {
