@@ -1,6 +1,7 @@
 import {i18n} from '../i18n/linked-sources-translations.js';
 import {i18n as typeI18n} from '../i18n/type-translations.js';
 import {sourceSearch} from './source-search.js';
+import {library} from '../library.js';
 
 export const linkedSources = {
   build: function(linkedSourcesContainer, item, isEditable) {
@@ -58,14 +59,27 @@ export const linkedSources = {
           return;
         }
 
+        const userInfo = JSON.parse(response.headers.get("User-Info"));
+
         const resultTemplate = document.querySelector('template.source-template');
         const tr = resultTemplate.content.querySelector('tr');
 
         for (const row of data) {
           const entry = document.importNode(tr, true);
-          entry.querySelector('td.source-name').innerHTML = row.name;
-          entry.querySelector('td.source-description').innerHTML = row.description;
-          entry.querySelector('td.source-type').innerHTML = typeI18n[lang].types[row.type];
+          const sourceName = entry.querySelector('td.source-name');
+          const sourceDescription = entry.querySelector('td.source-description');
+          const sourceType = entry.querySelector('td.source-type');
+          sourceName.innerHTML = row.name;
+          sourceDescription.innerHTML = row.description;
+          sourceType.innerHTML = typeI18n[lang].types[row.type];
+          sourceName.onclick = function() {library.renderSourcePage(row, userInfo);};
+          sourceDescription.onclick = function() {library.renderSourcePage(row, userInfo);};
+          sourceType.onclick = function() {library.renderSourcePage(row, userInfo);};
+
+          entry.querySelector('td.link-button').onclick = function() {
+            alert('linked!');
+          };
+
           tbody.appendChild(entry);
         }
 

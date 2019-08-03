@@ -462,6 +462,7 @@
                         <table class="table table-hover result-table hidden">
                           <thead>
                             <tr>
+                              <th></th>
                               <th class="source-name"></th>
                               <th class="source-description"></th>
                               <th class="source-type"></th>
@@ -470,6 +471,7 @@
                           <tbody></tbody>
                           <template class="source-template">
                             <tr style="cursor: pointer;">
+                              <td class="link-button"><span class="fa fa-link btn btn-default"></span></td>
                               <td class="source-name"></td>
                               <td class="source-description"></td>
                               <td class="source-type"></td>

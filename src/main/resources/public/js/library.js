@@ -8,7 +8,7 @@ import {pageBuilder} from './page/page-builder.js';
 import {image} from './image/image.js';
 import {sourceSearch} from './source/source-search.js';
 
-export let library = {
+export const library = {
   init: function() {
     const location = window.location.href;
 
@@ -195,6 +195,7 @@ export let library = {
     }
   },
   renderPeriodPage: function(periodKey) {
+    ajaxHandler.hideModals();
     const lang = 'en';
     const period = periodKey.toUpperCase();
     const periodMessageSource = periodI18n.en.period[period];
@@ -258,8 +259,8 @@ export let library = {
     sourceTable.querySelector('th#table-classification').innerHTML = srcProperties.classification;
     sourceTable.querySelector('th#table-type').innerHTML = srcProperties.type;
 
-    buildcheckboxSearch(classifications, 'classification');
-    buildcheckboxSearch(types, 'type');
+    buildCheckboxSearch(classifications, 'classification');
+    buildCheckboxSearch(types, 'type');
 
     const searchForm = searchSection.querySelector('form.search-form');
     searchForm.querySelector('input[name=period]').value = period;
@@ -271,7 +272,7 @@ export let library = {
 
     library.search(searchForm);
 
-    function buildcheckboxSearch(checkboxGroup, checkboxType) {
+    function buildCheckboxSearch(checkboxGroup, checkboxType) {
       Object.keys(checkboxGroup).forEach(function(checkboxGroupItem) {
         if (checkboxGroupItem) {
           var searchItem = document.importNode(searchCriterion, true);
@@ -301,6 +302,7 @@ export let library = {
     });
   },
   renderSourcePage: function(source, userInfo) {
+    ajaxHandler.hideModals();
     const lang = 'en';
     pageBuilder.initPage('template#library-source', '/library/source/' + source.id, i18n[lang].sourcePage.title + ' - ' + source.name);
 
@@ -471,7 +473,6 @@ export let library = {
 
     function redirectToPeriodPage() {
       library.renderPeriodPage(source.period.toLowerCase());
-      ajaxHandler.hideModals();
     }
 
     ajaxHandler.blockUI();
