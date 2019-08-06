@@ -421,12 +421,12 @@
             <ul class="linked-sources-list"></ul>
             <template class="linked-source-item">
               <li class="row linked-source-list-item">
-                <a class="btn btn-default col-sm-11"></a>
-                <a class="btn btn-default fa fa-unlink col-sm-1"></a>
+                <a class="btn btn-default col-sm-11 source-link"></a>
+                <a class="btn btn-default fa fa-unlink col-sm-1 hidden"></a>
               </li>
             </template>
             <p class="text-center message-container hidden"></p>
-            <div class="row find-sources-container" style="margin:10px 0px;">
+            <div class="row find-sources-container hidden" style="margin:10px 0px;">
               <button class="btn btn-default col-sm-6 pull-right" data-toggle="modal" data-target="#find-sources-popup">
                 <span class="pull-left find-sources-popup-text"></span>
                 <span class="pull-right">

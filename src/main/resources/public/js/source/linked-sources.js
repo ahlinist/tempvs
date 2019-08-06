@@ -31,12 +31,18 @@ export const linkedSources = {
 
           for (let source of data) {
             const entry = document.importNode(li, true);
-            const a = entry.querySelector('a');
-            a.href = '/api/library/source/' + source.id;
-            a.innerHTML = source.name;
-            a.onclick = function() {
+            const sourceLink = entry.querySelector('a.source-link');
+            sourceLink.href = '/api/library/source/' + source.id;
+            sourceLink.innerHTML = source.name;
+            sourceLink.onclick = function() {
               library.renderSourcePage(source, userInfo);
             }
+
+            if (isEditable) {
+              const unlinkButton = entry.querySelector('a.fa-unlink');
+              unlinkButton.classList.remove('hidden');
+            }
+
             ul.appendChild(entry);
           }
         });
@@ -48,6 +54,7 @@ export const linkedSources = {
     }
 
     const findSourcesContainer = linkedSourcesContainer.querySelector('div.find-sources-container');
+    findSourcesContainer.classList.remove('hidden');
     findSourcesContainer.querySelector('span.find-sources-popup-text').innerHTML = i18n[lang].findSourcesButton;
     findSourcesContainer.querySelector('div.find-source-type > h4').innerHTML = i18n[lang].sourceTypeHeading;
     findSourcesContainer.querySelector('input[name=query]').placeholder = i18n[lang].findSourcesPlaceholder;
