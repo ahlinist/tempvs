@@ -6,10 +6,45 @@ import {library} from '../library.js';
 export const linkedSources = {
   build: function(linkedSourcesContainer, item, isEditable) {
     let lang = 'en';
+    linkedSourcesContainer.querySelector('h2.linked-sources-heading').innerHTML = i18n[lang].linkedSourcesHeading;
 
     if (!item.sources || !item.sources.length) {
       const messageContainer = linkedSourcesContainer.querySelector('p.message-container');
       messageContainer.innerHTML = i18n[lang].noSources;
+      messageContainer.classList.remove('hidden');
+    } else {
+      const object = {ids: item.sources}
+      const q = window.btoa(encodeURIComponent(JSON.stringify(object)));
+      const url = '/api/library/source?q=' + q;
+      const actions = {200: renderLinkedSources}
+
+      ajaxHandler.fetch(this, url, {method: 'GET'}, actions);
+
+      function renderLinkedSources(response) {
+        const listItem = document.querySelector('template.linked-source-item');
+        const li = listItem.content.querySelector('li');
+        const ul = linkedSourcesContainer.querySelector('ul.linked-sources-list');
+        ul.innerHTML = '';
+
+        response.json().then(function(data) {
+          const userInfo = JSON.parse(response.headers.get("User-Info"));
+
+          for (let source of data) {
+            const entry = document.importNode(li, true);
+            const a = entry.querySelector('a');
+            a.href = '/api/library/source/' + source.id;
+            a.innerHTML = source.name;
+            a.onclick = function() {
+              library.renderSourcePage(source, userInfo);
+            }
+            ul.appendChild(entry);
+          }
+        });
+      }
+    }
+
+    if (!isEditable) {
+      return;
     }
 
     const findSourcesContainer = linkedSourcesContainer.querySelector('div.find-sources-container');
@@ -21,7 +56,7 @@ export const linkedSources = {
     searchForm.querySelector('label.type-graphic').innerHTML = typeI18n[lang].types['GRAPHIC'];
     searchForm.querySelector('label.type-archaeological').innerHTML = typeI18n[lang].types['ARCHAEOLOGICAL'];
     searchForm.querySelector('label.type-other').innerHTML = typeI18n[lang].types['OTHER'];
-    searchForm.action = '/api/library/source';
+    searchForm.action = '/api/library/source/find';
 
     const resultTable = findSourcesContainer.querySelector('table.result-table');
     resultTable.querySelector('th.source-name').innerHTML = i18n[lang].sourceNameLabel;
@@ -77,7 +112,17 @@ export const linkedSources = {
           sourceType.onclick = function() {library.renderSourcePage(row, userInfo);};
 
           entry.querySelector('td.link-button').onclick = function() {
-            alert('linked!');
+            const url = '/api/stash/item/' + item.id + '/source/' + row.id;
+            const actions = {
+              200: function(response) {
+                response.json().then(function(data) {
+                  ajaxHandler.hideModals();
+                  linkedSources.build(linkedSourcesContainer, item, isEditable);
+                });
+              }
+            };
+
+            ajaxHandler.fetch(this, url, {method: 'POST'}, actions);
           };
 
           tbody.appendChild(entry);

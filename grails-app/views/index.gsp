@@ -417,7 +417,15 @@
         <div class="row">
           <div class="ajax-form item-form col-sm-4"></div>
           <div class="ajax-form linked-sources col-sm-4">
-            <p class="text-center message-container"></p>
+            <h2 class="linked-sources-heading"></h2>
+            <ul class="linked-sources-list"></ul>
+            <template class="linked-source-item">
+              <li class="row linked-source-list-item">
+                <a class="btn btn-default col-sm-11"></a>
+                <a class="btn btn-default fa fa-unlink col-sm-1"></a>
+              </li>
+            </template>
+            <p class="text-center message-container hidden"></p>
             <div class="row find-sources-container" style="margin:10px 0px;">
               <button class="btn btn-default col-sm-6 pull-right" data-toggle="modal" data-target="#find-sources-popup">
                 <span class="pull-left find-sources-popup-text"></span>
