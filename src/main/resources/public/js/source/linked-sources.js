@@ -7,9 +7,12 @@ export const linkedSources = {
   build: function(linkedSourcesContainer, item, isEditable) {
     let lang = 'en';
     linkedSourcesContainer.querySelector('h2.linked-sources-heading').innerHTML = i18n[lang].linkedSourcesHeading;
+    const messageContainer = linkedSourcesContainer.querySelector('p.message-container');
+    messageContainer.classList.add('hidden');
+    const sourceList = linkedSourcesContainer.querySelector('ul.linked-sources-list');
+    sourceList.innerHTML = '';
 
     if (!item.sources || !item.sources.length) {
-      const messageContainer = linkedSourcesContainer.querySelector('p.message-container');
       messageContainer.innerHTML = i18n[lang].noSources;
       messageContainer.classList.remove('hidden');
     } else {
@@ -23,8 +26,6 @@ export const linkedSources = {
       function renderLinkedSources(response) {
         const listItem = document.querySelector('template.linked-source-item');
         const li = listItem.content.querySelector('li');
-        const ul = linkedSourcesContainer.querySelector('ul.linked-sources-list');
-        ul.innerHTML = '';
 
         response.json().then(function(data) {
           const userInfo = JSON.parse(response.headers.get("User-Info"));
@@ -41,9 +42,12 @@ export const linkedSources = {
             if (isEditable) {
               const unlinkButton = entry.querySelector('a.fa-unlink');
               unlinkButton.classList.remove('hidden');
+              unlinkButton.onclick = function() {
+                linkedSources.execute(linkedSourcesContainer, item, isEditable, source.id, 'DELETE');
+              };
             }
 
-            ul.appendChild(entry);
+            sourceList.appendChild(entry);
           }
         });
       }
@@ -119,19 +123,7 @@ export const linkedSources = {
           sourceType.onclick = function() {library.renderSourcePage(row, userInfo);};
 
           entry.querySelector('td.link-button').onclick = function() {
-            ajaxHandler.blockUI();
-            ajaxHandler.hideModals();
-
-            const url = '/api/stash/item/' + item.id + '/source/' + row.id;
-            const actions = {
-              200: function(response) {
-                response.json().then(function(data) {
-                  linkedSources.build(linkedSourcesContainer, item, isEditable);
-                });
-              }
-            };
-
-            ajaxHandler.fetch(this, url, {method: 'POST'}, actions);
+            linkedSources.execute(linkedSourcesContainer, item, isEditable, row.id, 'POST');
           };
 
           tbody.appendChild(entry);
@@ -140,5 +132,20 @@ export const linkedSources = {
         resultTable.classList.remove('hidden');
       });
     }
+  },
+  execute: function(linkedSourcesContainer, item, isEditable, sourceId, method) {
+    ajaxHandler.blockUI();
+    ajaxHandler.hideModals();
+
+    const url = '/api/stash/item/' + item.id + '/source/' + sourceId;
+    const actions = {
+      200: function(response) {
+        response.json().then(function(data) {
+          linkedSources.build(linkedSourcesContainer, data, isEditable);
+        });
+      }
+    };
+
+    ajaxHandler.fetch(this, url, {method: method}, actions);
   }
 };
