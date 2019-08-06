@@ -119,11 +119,13 @@ export const linkedSources = {
           sourceType.onclick = function() {library.renderSourcePage(row, userInfo);};
 
           entry.querySelector('td.link-button').onclick = function() {
+            ajaxHandler.blockUI();
+            ajaxHandler.hideModals();
+
             const url = '/api/stash/item/' + item.id + '/source/' + row.id;
             const actions = {
               200: function(response) {
                 response.json().then(function(data) {
-                  ajaxHandler.hideModals();
                   linkedSources.build(linkedSourcesContainer, item, isEditable);
                 });
               }
