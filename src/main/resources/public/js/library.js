@@ -264,7 +264,7 @@ export const library = {
 
     const searchForm = searchSection.querySelector('form.search-form');
     searchForm.querySelector('input[name=period]').value = period;
-    searchForm.action = '/api/library/source';
+    searchForm.action = '/api/library/source/find';
     searchForm.onsubmit = function() {
       library.search(this);
       return false;
