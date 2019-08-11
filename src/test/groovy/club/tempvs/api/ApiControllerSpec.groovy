@@ -2,7 +2,6 @@ package club.tempvs.api
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
-import com.netflix.discovery.EurekaClient
 import grails.converters.JSON
 import grails.testing.web.controllers.ControllerUnitTest
 import org.springframework.http.HttpMethod
@@ -12,12 +11,10 @@ import spock.lang.Specification
 class ApiControllerSpec extends Specification implements ControllerUnitTest<ApiController> {
 
     RestCaller restCaller = Mock RestCaller
-    EurekaClient eurekaClient = Mock EurekaClient
     RestResponse restResponse = Mock RestResponse
 
     def setup() {
         controller.restCaller = restCaller
-        controller.eurekaClient = eurekaClient
     }
 
     def cleanup() {
@@ -35,7 +32,6 @@ class ApiControllerSpec extends Specification implements ControllerUnitTest<ApiC
         controller.call(service, uri)
 
         then:
-        1 * eurekaClient.getApplication(service)
         1 * restCaller.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> httpStatus
         1 * restResponse.headers

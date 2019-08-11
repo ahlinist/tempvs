@@ -2,7 +2,6 @@ package club.tempvs.image
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
-import com.netflix.discovery.EurekaClient
 import grails.converters.JSON
 import grails.testing.gorm.DomainUnitTest
 import grails.testing.services.ServiceUnitTest
@@ -25,13 +24,11 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
     def imageUploadBean = Mock ImageUploadBean
     def gormStaticApi = Mock GormStaticApi
     def multipartFile = new MockMultipartFile('1234567', "1234567" as byte[])
-    def eurekaClient = Mock EurekaClient
 
     def setup() {
         GroovySpy(Image, global: true)
 
         service.restCaller = restCaller
-        service.eurekaClient = eurekaClient
     }
 
     def cleanup() {
@@ -56,7 +53,6 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
 
         then:
         1 * image.objectId >> OBJECT_ID
-        1 * eurekaClient.getApplication('image')
         1 * restCaller.call(_ as String, HttpMethod.DELETE) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
@@ -70,7 +66,6 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         def result = service.deleteImages([image, image])
 
         then:
-        1 * eurekaClient.getApplication('image')
         1 * restCaller.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         0 * _
@@ -86,7 +81,6 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * eurekaClient.getApplication('image')
         1 * restCaller.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> "{}".bytes
@@ -100,7 +94,6 @@ class ImageServiceSpec extends Specification implements ServiceUnitTest<ImageSer
         then:
         2 * imageUploadBean.image >> multipartFile
         1 * imageUploadBean.imageInfo >> IMAGE_INFO
-        1 * eurekaClient.getApplication('image')
         1 * restCaller.call(_ as String, HttpMethod.POST, _ as JSON) >> restResponse
         1 * restResponse.statusCode >> HttpStatus.OK
         1 * restResponse.responseBody >> "{}".bytes

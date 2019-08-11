@@ -2,7 +2,6 @@ package club.tempvs.image
 
 import club.tempvs.rest.RestCaller
 import club.tempvs.rest.RestResponse
-import com.netflix.discovery.EurekaClient
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import groovy.json.JsonSlurper
@@ -22,7 +21,6 @@ class ImageService {
     private static final String IMAGE_SERVICE_NAME = 'image'
 
     RestCaller restCaller
-    EurekaClient eurekaClient
 
     Image getImage(Long id) {
         Image.get id
@@ -33,8 +31,7 @@ class ImageService {
             return Boolean.TRUE
         }
 
-        String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
-        String url = "${serviceUrl}/api/image/${image.objectId}"
+        String url = "http://${IMAGE_SERVICE_NAME}/api/image/${image.objectId}"
         RestResponse response = restCaller.call(url, HttpMethod.DELETE)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
@@ -55,8 +52,7 @@ class ImageService {
     }
 
     Boolean deleteImages(List<Image> images) {
-        String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
-        String url = serviceUrl + '/api/image/delete'
+        String url = "http://${IMAGE_SERVICE_NAME}/api/image/delete"
         JSON payload = [images: images] as JSON
 
         RestResponse response = restCaller.call(url, HttpMethod.POST, payload)
@@ -87,8 +83,7 @@ class ImageService {
         }
 
         List<Image> images = []
-        String serviceUrl = eurekaClient.getApplication(IMAGE_SERVICE_NAME)?.instances?.find()?.homePageUrl
-        String url = serviceUrl + '/api/image'
+        String url = "http://${IMAGE_SERVICE_NAME}/api/image"
         List<Map<String, String>> entries = []
 
         for (ImageUploadBean imageUploadBean in imageUploadBeans) {

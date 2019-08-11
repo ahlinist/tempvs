@@ -3,7 +3,6 @@ package club.tempvs.user
 import grails.compiler.GrailsCompileStatic
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import groovy.transform.TypeCheckingMode
 import org.springframework.security.access.prepost.PreAuthorize
