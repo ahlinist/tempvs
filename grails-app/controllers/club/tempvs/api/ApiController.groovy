@@ -16,7 +16,7 @@ class ApiController {
     def call(String service, String uri) {
         HttpMethod httpMethod = HttpMethod.valueOf(request.method)
         String getParams = (httpMethod == HttpMethod.GET) ? '?' + params.collect { "${it.key}=${it.value}" }.join('&') : ""
-        String url = "http://${service}/api/" + uri + getParams
+        String url = "https://${service}/api/" + uri + getParams
         RestResponse restResponse = restCaller.call(url, httpMethod, request.JSON as JSON)
         Integer status = restResponse?.statusCode?.value()
 
