@@ -31,7 +31,7 @@ class ImageService {
             return Boolean.TRUE
         }
 
-        String url = "https://${IMAGE_SERVICE_NAME}/api/image/${image.objectId}"
+        String url = "${IMAGE_SERVICE_NAME}/api/image/${image.objectId}"
         RestResponse response = restCaller.call(url, HttpMethod.DELETE)
         HttpStatus statusCode = response?.statusCode
         Boolean success = (statusCode == HttpStatus.OK)
@@ -52,7 +52,7 @@ class ImageService {
     }
 
     Boolean deleteImages(List<Image> images) {
-        String url = "https://${IMAGE_SERVICE_NAME}/api/image/delete"
+        String url = "${IMAGE_SERVICE_NAME}/api/image/delete"
         JSON payload = [images: images] as JSON
 
         RestResponse response = restCaller.call(url, HttpMethod.POST, payload)
@@ -83,7 +83,7 @@ class ImageService {
         }
 
         List<Image> images = []
-        String url = "https://${IMAGE_SERVICE_NAME}/api/image"
+        String url = "${IMAGE_SERVICE_NAME}/api/image"
         List<Map<String, String>> entries = []
 
         for (ImageUploadBean imageUploadBean in imageUploadBeans) {

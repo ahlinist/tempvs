@@ -51,7 +51,7 @@ class RestCaller {
         HttpEntity<String> httpEntity = new HttpEntity(payload?.toString(), httpHeaders)
 
         try {
-            ResponseEntity<byte[]> responseEntity = restTemplate.exchange(url, httpMethod, httpEntity, byte[].class)
+            ResponseEntity<byte[]> responseEntity = restTemplate.exchange("http://${url}".toString(), httpMethod, httpEntity, byte[].class)
             return new RestResponse(responseEntity.statusCode, responseEntity.body, responseEntity.headers)
         } catch(ResourceAccessException e) {
             log.error e.message

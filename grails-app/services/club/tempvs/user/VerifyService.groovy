@@ -24,7 +24,7 @@ class VerifyService {
     private static final String REGISTRATION_ACTION = 'registration'
     private static final String PROFILE_EMAIL_ACTION = 'profileEmail'
     private static final String EMAIL_USED_CODE = 'emailVerification.email.used.error'
-    private static final String SEND_EMAIL_API_URI = "https://email/api/send"
+    private static final String SEND_EMAIL_API_URI = "email/api/send"
 
     UserService userService
     ProfileService profileService
