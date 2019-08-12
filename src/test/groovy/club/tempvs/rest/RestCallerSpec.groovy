@@ -59,7 +59,7 @@ class RestCallerSpec extends Specification {
         1 * user.userProfile >> profile
         1 * profile.toString()
         1 * user.timeZone >> TIMEZONE
-        1 * restTemplate.exchange(URL, HttpMethod.POST, _ as HttpEntity, byte[].class) >> responseEntity
+        1 * restTemplate.exchange("http://${URL}", HttpMethod.POST, _ as HttpEntity, byte[].class) >> responseEntity
         1 * responseEntity.statusCode >> HttpStatus.OK
         1 * responseEntity.body >> body
         1 * responseEntity.headers >> httpHeaders
@@ -87,7 +87,7 @@ class RestCallerSpec extends Specification {
         1 * user.userProfile >> profile
         1 * profile.toString()
         1 * user.timeZone >> TIMEZONE
-        1 * restTemplate.exchange(URL, HttpMethod.GET, _ as HttpEntity, byte[].class) >> responseEntity
+        1 * restTemplate.exchange("http://${URL}", HttpMethod.GET, _ as HttpEntity, byte[].class) >> responseEntity
         1 * responseEntity.statusCode >> HttpStatus.OK
         1 * responseEntity.body >> body
         1 * responseEntity.headers >> httpHeaders

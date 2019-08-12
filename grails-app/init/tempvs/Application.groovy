@@ -21,8 +21,8 @@ class Application extends GrailsAutoConfiguration {
 
     @Bean
     @LoadBalanced
-    RestTemplate restTemplate(RestTemplateBuilder builder) {
-        builder.build()
+    RestTemplate restTemplate() {
+        new RestTemplate()
     }
 
     @Bean
