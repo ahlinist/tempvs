@@ -138,6 +138,7 @@ var ajaxHandler = {
       }
     }
   },
+  //new api
   fetch: function(form, url, payload, actions) {
     fetch(url, payload)
       .then(

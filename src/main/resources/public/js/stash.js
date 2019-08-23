@@ -332,7 +332,7 @@ export let stash = {
     const actions = {
       200: renderItemPage,
       400: function(response, form) {
-        ajaxHandler.handleBadRequest(response, form);
+        formValidator.handleBadRequest(response, form);
       }
     };
 
@@ -375,7 +375,7 @@ export let stash = {
     const actions = {
       200: renderGroupItems,
       400: function(response, form) {
-        ajaxHandler.handleBadRequest(response, form);
+        formValidator.handleBadRequest(response, form);
       }
     };
 

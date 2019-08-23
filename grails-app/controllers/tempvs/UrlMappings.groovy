@@ -16,6 +16,7 @@ class UrlMappings {
         "/library**"(view: "/index")
         "/messaging**"(view: "/index")
         "/stash**"(view: "/index")
+        "/profile**"(view: "/index")
 
         "/api/${service}/${uri}**"(controller: 'api', action: 'call')
     }

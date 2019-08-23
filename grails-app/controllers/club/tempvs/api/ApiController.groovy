@@ -26,7 +26,7 @@ class ApiController {
             }
         }
 
-        if (status in [200, 400]) {
+        if (status in [200, 400, 404]) {
             if (restResponse.image) {
                 response.with {
                     setHeader('Content-length', restResponse?.responseBody?.length?.toString())

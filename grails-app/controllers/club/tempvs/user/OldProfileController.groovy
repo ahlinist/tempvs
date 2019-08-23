@@ -19,7 +19,7 @@ import org.springframework.security.access.AccessDeniedException
  */
 @Secured('isAuthenticated()')
 @GrailsCompileStatic
-class ProfileController {
+class OldProfileController {
 
     private static final String NO_ACTION = 'none'
     private static final String REFERER = 'referer'
