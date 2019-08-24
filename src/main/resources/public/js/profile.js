@@ -39,6 +39,20 @@ export const profile = {
     const submitButton = form.querySelector('button.submit-button').innerHTML = messageSource.submitButton;
 
     form.onsubmit = function() {
+      const firstNameBlank = formValidator.validateBlank(
+          form.querySelector('[name=firstName]'),
+          messageSource.firstNameBlank
+      );
+
+      const lastNameBlank = formValidator.validateBlank(
+          form.querySelector('[name=lastName]'),
+          messageSource.lastNameBlank
+      );
+
+      if (firstNameBlank || lastNameBlank) {
+        return false;
+      }
+
       ajaxHandler.blockUI();
       const formData = new FormData(this);
 
@@ -52,7 +66,7 @@ export const profile = {
       const object = {
         firstName: formData.get('firstName'),
         lastName: formData.get('lastName'),
-        nickName: formData.get('nickName'),
+        nickName: formData.get('nickName') | null,
         type: 'USER'
       };
 

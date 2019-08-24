@@ -31,5 +31,16 @@ export const formValidator = {
         specificAction();
       }
     });
+  },
+  validateBlank: function(field, message) {
+    if (!field.value || !/\S/.test(field.value)) {
+      field.setAttribute('data-toggle', 'tooltip');
+      field.setAttribute('data-placement', 'top');
+      field.setAttribute('title', message);
+      $(field).tooltip('show');
+      return true;
+    }
+
+    return false;
   }
 };

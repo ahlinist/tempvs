@@ -3,7 +3,9 @@ export const i18n = {
     createProfile: {
       heading: "Create user profile",
       title: "Create User Profile",
-      submitButton: "Submit"
+      submitButton: "Submit",
+      firstNameBlank: "First name can not be blank",
+      lastNameBlank: "Last name can not be blank"
     },
     properties: {
       firstName: "First Name",

@@ -389,18 +389,18 @@ export const library = {
       var fieldName = entry[0];
       var validationMessage = entry[1];
 
-      if (!object[fieldName] || !/\S/.test(object[fieldName])) {
-        var field = form.querySelector('[name=' + fieldName + ']');
-        field.setAttribute('data-toggle', 'tooltip');
-        field.setAttribute('data-placement', 'top');
-        field.setAttribute('title', validationMessage);
-        $(field).tooltip('show');
+      const isInvalid = formValidator.validateBlank(
+          form.querySelector('[name=' + fieldName + ']'),
+          validationMessage
+      );
+
+      if (isInvalid) {
         inputIsValid = false;
       }
     }
 
     if (!inputIsValid) {
-      return;
+      return false;
     }
 
     var payload = {

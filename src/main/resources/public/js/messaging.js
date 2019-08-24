@@ -227,27 +227,18 @@ export let messaging = {
     }
   },
   createConversation: function(form) {
-    var profileSearchField = document.querySelector('#create-conversation-popup input[name="query"]');
-    var textarea = form.querySelector('textarea[name=text]');
-    var blankMessageError = !textarea.value || !textarea.value.trim();
-    var noParticipantsError = !form.querySelector('input[name=participants]');
+    const textBlank = formValidator.validateBlank(
+        form.querySelector('textarea[name=text]'),
+        i18n.en.messaging.blankMessage
+    );
 
-    if (blankMessageError) {
-      textarea.setAttribute('data-toggle', 'tooltip');
-      textarea.setAttribute('data-placement', 'top');
-      textarea.setAttribute('title', i18n.en.messaging.blankMessage);
-      $(textarea).tooltip('show');
-    }
+    const noParticipants = formValidator.validateBlank(
+        form.querySelector('input[name=participants]'),
+        i18n.en.messaging.noParticipantsChosen
+    );
 
-    if (noParticipantsError) {
-      profileSearchField.setAttribute('data-toggle', 'tooltip');
-      profileSearchField.setAttribute('data-placement', 'top');
-      profileSearchField.setAttribute('title', i18n.en.messaging.noParticipantsChosen);
-      $(profileSearchField).tooltip('show');
-    }
-
-    if (blankMessageError || noParticipantsError) {
-      return;
+    if (textBlank || noParticipants) {
+      return false;
     }
 
     ajaxHandler.blockUI();

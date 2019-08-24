@@ -4,6 +4,7 @@ import {i18n as classificationI18n} from './i18n/classification-translations.js'
 import {i18n as imageI18n} from './i18n/image-translations.js';
 import {pageBuilder} from './page/page-builder.js';
 import {linkedSources} from './source/linked-sources.js';
+import {formValidator} from './validation/form-validator.js';
 
 export let stash = {
   init: function() {
@@ -307,18 +308,18 @@ export let stash = {
       const fieldName = entry[0];
       const validationMessage = entry[1];
 
-      if (!object[fieldName] || !/\S/.test(object[fieldName])) {
-        let field = form.querySelector('[name=' + fieldName + ']');
-        field.setAttribute('data-toggle', 'tooltip');
-        field.setAttribute('data-placement', 'top');
-        field.setAttribute('title', validationMessage);
-        $(field).tooltip('show');
+      const isInvalid = formValidator.validateBlank(
+          form.querySelector('[name=' + fieldName + ']'),
+          validationMessage
+      );
+
+      if (isInvalid) {
         inputIsValid = false;
       }
     }
 
     if (!inputIsValid) {
-      return;
+      return false;
     }
 
     const payload = {
@@ -355,13 +356,13 @@ export let stash = {
       description: formData.get('description'),
     };
 
-    if (!object.name) {
-      const field = form.querySelector('[name=name]');
-      field.setAttribute('data-toggle', 'tooltip');
-      field.setAttribute('data-placement', 'top');
-      field.setAttribute('title', i18n.en.stash.groups.create.validation.nameBlank);
-      $(field).tooltip('show');
-      return;
+    const nameBlank = formValidator.validateBlank(
+        form.querySelector('[name=name]'),
+        i18n.en.stash.groups.create.validation.nameBlank
+    );
+
+    if (nameBlank) {
+      return false;
     }
 
     const payload = {
