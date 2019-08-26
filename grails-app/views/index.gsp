@@ -704,6 +704,46 @@
         </template>
       </div>
     </template>
+    <template id="create-user-profile">
+      <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4 ajax-form">
+          <h1 class="create-user-profile-heading"></h1>
+          <form class="create-user-profile-form" action="/api/profile/profile">
+            <div class="row">
+              <div class="col-sm-6">
+                <label for="firstName"></label>
+              </div>
+              <div class="col-sm-6">
+                <input class="col-sm-12 tempvs-form-field" type="text" name="firstName">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label for="lastName"></label>
+              </div>
+              <div class="col-sm-6">
+                <input class="col-sm-12 tempvs-form-field" type="text" name="lastName">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-6">
+                <label for="nickName"></label>
+              </div>
+              <div class="col-sm-6">
+                <input class="col-sm-12 tempvs-form-field" type="text" name="nickName">
+              </div>
+            </div>
+            <button class="btn btn-default submit-button"></button>
+          </form>
+        </div>
+        <div class="col-sm-4"></div>
+      </div>
+    </template>
+    <template id="profile">
+      <div>
+      </div>
+    </template>
     <template id="image-section">
       <div>
         <img id="default-image" src="/static/images/default_image.gif" style="width: 30vw;">
@@ -818,42 +858,6 @@
           </div>
         </div>
       </span>
-    </template>
-    <template id="create-user-profile">
-      <div class="row">
-        <div class="col-sm-4"></div>
-        <div class="col-sm-4 ajax-form">
-          <h1 class="create-user-profile-heading"></h1>
-          <form class="create-user-profile-form" action="/api/profile/profile">
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="firstName"></label>
-              </div>
-              <div class="col-sm-6">
-                <input class="col-sm-12 tempvs-form-field" type="text" name="firstName">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="lastName"></label>
-              </div>
-              <div class="col-sm-6">
-                <input class="col-sm-12 tempvs-form-field" type="text" name="lastName">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-6">
-                <label for="nickName"></label>
-              </div>
-              <div class="col-sm-6">
-                <input class="col-sm-12 tempvs-form-field" type="text" name="nickName">
-              </div>
-            </div>
-            <button class="btn btn-default submit-button"></button>
-          </form>
-        </div>
-        <div class="col-sm-4"></div>
-      </div>
     </template>
   </body>
 </html>

@@ -8,16 +8,22 @@ export const profile = {
 
     if (location === "/profile" || location === "/profile/") {
       profile.loadProfile();
+    } else if (location.includes("/profile/")) {
+      const n = location.lastIndexOf('/');
+      const profileId = location.substring(n + 1);
+      profile.loadProfile(profileId);
     }
   },
   loadProfile: function(profileId) {
     ajaxHandler.blockUI();
     let url;
+
     if (profileId) {
       url = '/api/profile/profile/' + profileId;
     } else {
       url = '/api/profile/profile';
     }
+
     const actions = {
       200: profile.parseProfileResponse,
       404: profile.renderCreateUserProfile
@@ -77,9 +83,22 @@ export const profile = {
         },
         body: JSON.stringify(object)
       };
-      //TODO: apply both server and client validation
       ajaxHandler.fetch(this, this.action, payload, actions);
       return false;
     };
+  },
+  parseProfileResponse: function(response) {
+    const userInfo = JSON.parse(response.headers.get("User-Info"));
+
+    response.json().then(function(data) {
+      profile.renderProfile(data, userInfo);
+    });
+  },
+  renderProfile: function(profile, userInfo) {
+    const lang = 'en';
+    ajaxHandler.hideModals();
+    pageBuilder.initPage('template#profile', '/profile/' + profile.id, profile.firstName + ' ' + profile.lastName);
+
+
   }
 };
