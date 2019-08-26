@@ -96,9 +96,31 @@ export const profile = {
   },
   renderProfile: function(profile, userInfo) {
     const lang = 'en';
+    const properties = i18n[lang].properties;
+    const profileId = profile.id;
+    const firstName = profile.firstName;
+    const lastName = profile.lastName;
+    const nickName = profile.nickName;
+    const period = profile.period;
     ajaxHandler.hideModals();
-    pageBuilder.initPage('template#profile', '/profile/' + profile.id, profile.firstName + ' ' + profile.lastName);
+    pageBuilder.initPage('template#profile', '/profile/' + profileId, firstName + ' ' + lastName);
 
+    const firstNameLabel = properties.firstName;
+    const lastNameLabel = properties.lastName;
+    const nickNameLabel = properties.nickName;
+    const periodLabel = properties.period;
+    const updateFirstNameAction = '/api/profile/' + profileId + '/firstName';
+    const updateLastNameAction = '/api/profile/' + profileId + '/lastName';
+    const updateNickNameAction = '/api/profile/' + profileId + '/nickName';
+    const profileForm = document.querySelector(".profile-form");
 
+    const isEditable = profile.id == userInfo.profileId;
+    pageBuilder.smartForm(profileForm, firstNameLabel, firstName, 'firstName', updateFirstNameAction, isEditable);
+    pageBuilder.smartForm(profileForm, lastNameLabel, lastName, 'lastName', updateLastNameAction, isEditable);
+    pageBuilder.smartForm(profileForm, nickNameLabel, nickName, 'nickName', updateNickNameAction, isEditable);
+
+    if (profile.type === 'CLUB') {
+      pageBuilder.smartForm(profileForm, periodLabel, period, 'period', null, isEditable);
+    }
   }
 };

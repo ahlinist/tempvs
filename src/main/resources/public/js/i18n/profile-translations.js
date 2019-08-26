@@ -11,6 +11,7 @@ export const i18n = {
       firstName: "First Name",
       lastName: "Last Name",
       nickName: "Nick Name",
+      period: "Period",
     }
   }
 }

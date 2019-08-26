@@ -741,7 +741,12 @@
       </div>
     </template>
     <template id="profile">
-      <div>
+      <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+          <div class="ajax-form profile-form"></div>
+        </div>
+        <div class="col-sm-4"></div>
       </div>
     </template>
     <template id="image-section">
