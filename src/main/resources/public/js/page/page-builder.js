@@ -1,5 +1,6 @@
-import {formValidator} from '../validation/form-validator.js';
 import {image} from '../image/image.js';
+import {i18n} from '../i18n/validation-translations.js';
+import {formValidator} from '../validation/form-validator.js';
 
 export const pageBuilder = {
   initPage: function(selector, url, title) {
@@ -39,7 +40,8 @@ export const pageBuilder = {
       return span;
     }
   },
-  smartForm: function(container, label, value, name, formAction, isEditable) {
+  smartForm: function(container, label, value, name, formAction, isEditable, isMandatory) {
+    const lang = 'en';
     const div = document.createElement('div');
     div.classList.add('row');
 
@@ -54,6 +56,11 @@ export const pageBuilder = {
       labelWrapper.style.height = '32px';
       const b = document.createElement('b');
       b.innerHTML = label;
+
+      if (isEditable && isMandatory) {
+        b.innerHTML += ' *';
+      }
+
       labelWrapper.appendChild(b);
       div.appendChild(labelWrapper);
     }
@@ -152,6 +159,12 @@ export const pageBuilder = {
 
         function submitSmartForm() {
           if(!!(inputWrapper.offsetWidth || inputWrapper.offsetHeight || inputWrapper.getClientRects().length)) {
+            const blankValueMessage = i18n[lang].blankValue;
+            if (isMandatory && formValidator.validateBlank(value, blankValueMessage)) {
+              cancelEdit();
+              return;
+            }
+
             const value = input.value;
             textHolder.innerHTML = value;
             inputWrapper.classList.add('hidden');
