@@ -9,7 +9,6 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.validation.ValidationException
 import groovy.transform.TypeCheckingMode
-import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * Service for {@link Profile} managing.
@@ -52,7 +51,6 @@ class ProfileService {
         Profile.findAllByProfileEmail(email)
     }
 
-    @PreAuthorize('(#profile == null) or (#user.email == authentication.name)')
     void setCurrentProfile(User user, Profile profile) {
         if (user) {
             user.currentProfileId = profile?.id
@@ -124,14 +122,12 @@ class ProfileService {
         return profile
     }
 
-    @PreAuthorize('#profile.user.email == authentication.name')
     Profile deactivateProfile(Profile profile) {
         profile.active = Boolean.FALSE
         profile.save()
         profile
     }
 
-    @PreAuthorize('#profile.user.email == authentication.name')
     Profile activateProfile(Profile profile) {
         profile.active = Boolean.TRUE
         profile.save()
@@ -139,7 +135,6 @@ class ProfileService {
     }
 
     @GrailsCompileStatic(TypeCheckingMode.SKIP)
-    @PreAuthorize('#profile.user.email == authentication.name')
     Profile editProfileField(Profile profile, String fieldName, String fieldValue) {
         if (fieldName == PERIOD_FIELD) {
             throw new IllegalArgumentException("Forbidden operation")
@@ -157,7 +152,6 @@ class ProfileService {
         return profile
     }
 
-    @PreAuthorize('#profile.user.email == authentication.name')
     Profile uploadAvatar(Profile profile, Image avatar) {
         Image currentAvatar = profile.avatar
 
@@ -170,7 +164,6 @@ class ProfileService {
         profile
     }
 
-    @PreAuthorize('#profile.user.email == authentication.name')
     Profile deleteAvatar(Profile profile) {
         imageService.deleteImage(profile.avatar)
         profile.avatar = null

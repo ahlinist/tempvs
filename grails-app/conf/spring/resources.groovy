@@ -3,7 +3,6 @@ import club.tempvs.ampq.AmqpProcessor
 import club.tempvs.json.JsonConverter
 import club.tempvs.object.ObjectFactory
 import club.tempvs.rest.RestCaller
-import club.tempvs.user.EmailVerificationCleanupJob
 import club.tempvs.user.RoleRefreshJob
 import club.tempvs.user.UserPasswordEncoderListener
 import org.grails.plugins.web.taglib.ValidationTagLib
@@ -33,5 +32,4 @@ beans = {
     passwordEncoder(BCryptPasswordEncoder)
     userPasswordEncoderListener(UserPasswordEncoderListener)
     jsonConverter(JsonConverter)
-    emailVerificationCleanupJob(EmailVerificationCleanupJob)
 }

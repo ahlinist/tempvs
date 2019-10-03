@@ -9,10 +9,10 @@ class UrlMappings {
             }
         }
 
-        "/"(controller:'user')
         "500"(view:'/error')
         "404"(view:'/notFound')
 
+        "/"(redirect: "/profile")
         "/library**"(view: "/index")
         "/messaging**"(view: "/index")
         "/stash**"(view: "/index")

@@ -11,49 +11,6 @@ grails:
             # Whether to translate GORM events into Reactor events
             # Disabled by default for performance reasons
             events: false
-    plugin:
-        springsecurity:
-            roleHierarchy:
-                ROLE_ADMIN > ROLE_ARCHIVARIUS
-                ROLE_ARCHIVARIUS > ROLE_SCRIBE
-                ROLE_SCRIBE > ROLE_CONTRIBUTOR
-            rememberMe:
-                cookieName: tempvs_remember_me
-            userLookup:
-                userDomainClassName: club.tempvs.user.User
-                usernamePropertyName: email
-                passwordPropertyName: password
-                authorityJoinClassName: club.tempvs.user.UserRole
-            auth:
-                loginFormUrl: /auth/index
-            failureHandler:
-                defaultFailureUrl: /auth/index
-            successHandler:
-                defaultTargetUrl: /profile/
-            authority:
-                className: club.tempvs.user.Role
-            requestMap:
-                className: club.tempvs.user.RequestMap
-            controllerAnnotations:
-                staticRules:
-                    - pattern: /assets/**
-                      access:
-                          - permitAll
-                    - pattern: /**/js/**
-                      access:
-                          - permitAll
-                    - pattern: /**/css/**
-                      access:
-                          - permitAll
-                    - pattern: /**/images/**
-                      access:
-                          - permitAll
-                    - pattern: /**/favicon.ico
-                      access:
-                          - permitAll
-                    - pattern: /**
-                      access:
-                          - isAuthenticated()
 info:
     app:
         name: '@info.app.name@'

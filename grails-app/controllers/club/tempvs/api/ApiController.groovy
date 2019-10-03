@@ -5,9 +5,7 @@ import club.tempvs.rest.RestResponse
 import grails.compiler.GrailsCompileStatic
 import grails.converters.JSON
 import org.springframework.http.HttpMethod
-import org.springframework.security.access.annotation.Secured
 
-@Secured('permitAll')
 @GrailsCompileStatic
 class ApiController {
 

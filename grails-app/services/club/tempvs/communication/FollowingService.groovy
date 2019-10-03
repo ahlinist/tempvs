@@ -3,10 +3,8 @@ package club.tempvs.communication
 import club.tempvs.object.ObjectFactory
 import club.tempvs.user.Profile
 import club.tempvs.user.ProfileService
-import club.tempvs.user.ProfileType
 import grails.compiler.GrailsCompileStatic
 import grails.gorm.transactions.Transactional
-import org.springframework.security.access.prepost.PreAuthorize
 
 /**
  * A service to handle {@link Following}-related operations.
@@ -30,7 +28,6 @@ class FollowingService {
         }
     }
 
-    @PreAuthorize('#follower.user.email == authentication.name')
     Following createFollowing(Profile follower, Profile followed) {
         Following following = objectFactory.getInstance(Following)
         following.follower = follower
@@ -39,7 +36,6 @@ class FollowingService {
         return following
     }
 
-    @PreAuthorize('#follower.user.email == authentication.name')
     void deleteFollowing(Profile follower, Profile followed) {
         Following following = getFollowing(follower, followed)
         following?.delete()

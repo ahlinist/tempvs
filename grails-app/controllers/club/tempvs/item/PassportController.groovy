@@ -14,13 +14,10 @@ import grails.converters.JSON
 import grails.gsp.PageRenderer
 import grails.validation.ValidationException
 import grails.web.mapping.LinkGenerator
-import org.springframework.security.access.AccessDeniedException
-import org.springframework.security.access.annotation.Secured
 
 /**
  * A controller that handles operations related to {@link Passport}.
  */
-@Secured('isAuthenticated()')
 @GrailsCompileStatic
 class PassportController {
 
@@ -85,7 +82,6 @@ class PassportController {
         render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'passport', action: 'show', id: passport.id))
     }
 
-    @Secured('permitAll')
     def show(Long id) {
         Passport passport = passportService.getPassport id
 
@@ -296,14 +292,6 @@ class PassportController {
 
         String template = groovyPageRenderer.render(template: '/image/templates/modalCarousel', model: model)
         render([action: REPLACE_ACTION, template: template] as JSON)
-    }
-
-    def accessDeniedThrown(AccessDeniedException exception) {
-        if (request.xhr) {
-            render ajaxResponseHelper.renderRedirect(grailsLinkGenerator.link(controller: 'auth'))
-        } else {
-            redirect(controller: 'auth')
-        }
     }
 
     private Map<ItemType,List<Item2Passport>> composeItemMap(Passport passport) {
