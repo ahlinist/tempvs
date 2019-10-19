@@ -3,6 +3,14 @@ import {i18n} from '../i18n/validation-translations.js';
 import {formValidator} from '../validation/form-validator.js';
 
 export const pageBuilder = {
+  initHeader: function(selector) {
+    const header = document.querySelector('header');
+    header.innerHTML = '';
+    const template = document.querySelector(selector);
+    const element = template.content.querySelector('div');
+    const elementNode = document.importNode(element, true);
+    header.appendChild(elementNode);
+  },
   initPage: function(selector, url, title) {
     const content = document.querySelector('content');
     content.innerHTML = '';
@@ -11,7 +19,7 @@ export const pageBuilder = {
     const pageNode = document.importNode(page, true);
     content.appendChild(pageNode);
     window.history.pushState('', '', url);
-    document.querySelector('title').innerHTML = title;
+    document.title = title;
   },
   breadcrumb: function(content) {
     const breadcrumb = document.querySelector('content breadcrumb');
