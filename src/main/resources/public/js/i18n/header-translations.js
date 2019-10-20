@@ -8,7 +8,9 @@ export const i18n = {
       loginTab: 'Log in',
       registerTab: 'Register',
       email: 'Email',
-      registerButton: 'Request registration'
+      registerButton: 'Request registration',
+      emailInvalidMessage: 'Please enter a valid email',
+      verificationSentMessage: '<p class="text-center">Thanks for registration! </p><p class="text-center">You will receive the details by email.</p>'
     }
   }
 };

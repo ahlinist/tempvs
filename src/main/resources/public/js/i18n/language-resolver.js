@@ -4,9 +4,11 @@ export const langResolver = {
 
     if (response) {
         const userInfo = JSON.parse(response.headers.get("User-Info"));
-        const userLang = userInfo.lang;
-        document.cookie = `${langCookieName}=${userLang}`;
-        return userLang;
+        if (userInfo) {
+          const userLang = userInfo.lang;
+          document.cookie = `${langCookieName}=${userLang}`;
+          return userLang;
+        }
     }
 
     const cookieMatcher = document.cookie.match('(^|;) ?' + langCookieName + '=([^;]*)(;|$)');

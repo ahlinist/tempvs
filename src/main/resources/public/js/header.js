@@ -26,6 +26,14 @@ export const header = {
       registerForm.action = '/api/user/register';
       registerForm.onsubmit = function() {
         const form = this;
+        const emailInvalidMessage = messageSource.login.emailInvalidMessage;
+        const isEmailValid = formValidator.validateEmail(
+            form.querySelector('input[name=email]'),
+            emailInvalidMessage
+        );
+        if (!isEmailValid) {
+          return false;
+        }
         const formData = new FormData(form);
         const object = {
           email: formData.get('email'),
@@ -38,11 +46,16 @@ export const header = {
           body: JSON.stringify(object)
         };
         const actions = {
-          //TODO: Add success message
-          //200: asd,
-          /*400: function(response, form) {
+          200: function(response) {
+            ajaxHandler.hideModals();
+            const lang = langResolver.resolve(response);
+            const messageSource = i18n[lang] || i18n['en'];
+            const content = document.querySelector('content');
+            content.innerHTML = messageSource.login.verificationSentMessage;
+          },
+          400: function(response, form) {
             formValidator.handleBadRequest(response, form);
-          }*/
+          }
         };
         ajaxHandler.blockUI();
         ajaxHandler.fetch(form, form.action, payload, actions);

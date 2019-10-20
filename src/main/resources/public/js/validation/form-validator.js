@@ -42,5 +42,16 @@ export const formValidator = {
     }
 
     return false;
+  },
+  validateEmail: function(field, message) {
+    var re = /\S+@\S+\.\S+/;
+    if (!field.value || !re.test(field.value)) {
+      field.setAttribute('data-toggle', 'tooltip');
+      field.setAttribute('data-placement', 'top');
+      field.setAttribute('title', message);
+      $(field).tooltip('show');
+      return false;
+    }
+    return true;
   }
 };
