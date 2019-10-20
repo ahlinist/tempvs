@@ -65,24 +65,65 @@
             </div>
           </span>
         </div>
-        <div class="col-sm-4">
-          <span class="pull-right">
-            <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
-              <g:message code="auth.logout.button"/>
-            </g:link>
-          </span>
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
-            <g:link class="btn btn-default disableable" controller="user" action="edit">
-              <span class="glyphicon glyphicon-cog"></span>
-            </g:link>
-          </span>
-          <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'library.tooltip')}">
-            <g:link class="btn btn-default disableable pull-right" controller="library" action=" ">
-              <span class="glyphicon glyphicon-book"></span>
-            </g:link>
-          </span>
-        </div>
       </sec:ifLoggedIn>
+      <div class="col-sm-4">
+        <span class="pull-right logout hidden">
+          <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
+            <g:message code="auth.logout.button"/>
+          </g:link>
+        </span>
+        <span class="pull-right login hidden" data-toggle="tooltip" data-placement="bottom">
+          <button class="btn btn-default" data-toggle="modal" data-target="#login-popup">
+            <span class="fa fa-sign-in"></span>
+          </button>
+          <div id="login-popup" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <ul class="nav nav-tabs">
+                    <li style="padding:0px; margin:0px;" class="col-sm-6 pull-left active">
+                      <a data-toggle="tab" href="#login-tab"></a>
+                    </li>
+                    <li style="padding:0px; margin:0px;" class="col-sm-6 pull-right">
+                      <a data-toggle="tab" href="#register-tab"></a>
+                    </li>
+                  </ul>
+                  <div class="tab-content">
+                    <div id="login-tab" class="tab-pane fade in active">
+                      <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'login']}">
+                        <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
+                        <g:render template="/common/templates/formField" model="${[type: 'password', name: 'password', label: 'auth.password.label', mandatory: true, editAllowed: true]}"/>
+                        <g:render template="/common/templates/formField" model="${[type: 'checkbox', name: 'remember', label: 'auth.remember.label']}"/>
+                        <g:render template="/ajax/templates/submitButton">
+                          <g:message code="auth.login.button"/>
+                        </g:render>
+                      </g:render>
+                    </div>
+                    <div id="register-tab" class="tab-pane fade">
+                      <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'register']}">
+                        <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
+                        <g:render template="/ajax/templates/submitButton">
+                          <g:message code="auth.request.registration.button"/>
+                        </g:render>
+                      </g:render>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </span>
+        <span class="pull-right user hidden" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
+          <g:link class="btn btn-default disableable" controller="user" action="edit">
+            <span class="glyphicon glyphicon-cog"></span>
+          </g:link>
+        </span>
+        <span class="pull-right library" data-toggle="tooltip" data-placement="bottom">
+          <a href="/library" class="btn btn-default">
+            <span class="glyphicon glyphicon-book"></span>
+          </a>
+        </span>
+      </div>
     </header>
     <hr/>
     <content></content>
@@ -90,52 +131,6 @@
       <hr/>
       Tempvs
     </footer>
-    <template id="header-anonymous">
-      <div class="col-sm-12">
-        <span class="pull-right">
-          <g:render template="/common/templates/modalButton"
-              model="${[elementId: 'loginForm', message: g.message(code: 'auth.login.signup.button')]}">
-            <ul class="nav nav-tabs">
-              <li style="padding:0px; margin:0px;" class="col-sm-6 pull-left active">
-                <a data-toggle="tab" href="#login">
-                  <g:message code="auth.login.link"/>
-                </a>
-              </li>
-              <li style="padding:0px; margin:0px;" class="col-sm-6 pull-right">
-                <a data-toggle="tab" href="#register">
-                  <g:message code="auth.register.link"/>
-                </a>
-              </li>
-            </ul>
-            <div class="tab-content">
-              <div id="login" class="tab-pane fade in active">
-                <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'login']}">
-                  <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
-                  <g:render template="/common/templates/formField" model="${[type: 'password', name: 'password', label: 'auth.password.label', mandatory: true, editAllowed: true]}"/>
-                  <g:render template="/common/templates/formField" model="${[type: 'checkbox', name: 'remember', label: 'auth.remember.label']}"/>
-                  <g:render template="/ajax/templates/submitButton">
-                    <g:message code="auth.login.button"/>
-                  </g:render>
-                </g:render>
-              </div>
-              <div id="register" class="tab-pane fade">
-                <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'register']}">
-                  <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
-                  <g:render template="/ajax/templates/submitButton">
-                    <g:message code="auth.request.registration.button"/>
-                  </g:render>
-                </g:render>
-              </div>
-            </div>
-          </g:render>
-        </span>
-        <span class="pull-right" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'library.tooltip')}">
-          <a href="/library" class="btn btn-default pull-right">
-            <span class="glyphicon glyphicon-book"></span>
-          </a>
-        </span>
-      </div>
-    </template>
     <template id="library">
       <div>
         <div class="row">
