@@ -6,7 +6,9 @@ export const i18n = {
     login: {
       tooltip: 'Log in',
       loginTab: 'Log in',
-      registerTab: 'Register'
+      registerTab: 'Register',
+      email: 'Email',
+      registerButton: 'Request registration'
     }
   }
 };

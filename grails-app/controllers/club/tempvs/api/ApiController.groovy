@@ -24,19 +24,15 @@ class ApiController {
             }
         }
 
-        if (status in [200, 400, 404]) {
-            if (restResponse.image) {
-                response.with {
-                    setHeader('Content-length', restResponse?.responseBody?.length?.toString())
-                    contentType = 'image/jpg' // or the appropriate image content type
-                    outputStream << restResponse?.responseBody
-                    outputStream.flush()
-                }
-            } else {
-                render(status: status, text: new String(restResponse?.responseBody ?: "".bytes))
+        if (restResponse.image) {
+            response.with {
+                setHeader('Content-length', restResponse?.responseBody?.length?.toString())
+                contentType = 'image/jpg' // or the appropriate image content type
+                outputStream << restResponse?.responseBody
+                outputStream.flush()
             }
         } else {
-            response.sendError(500)
+            render(status: status, text: new String(restResponse?.responseBody ?: "".bytes))
         }
     }
 }

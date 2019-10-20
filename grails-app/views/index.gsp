@@ -72,6 +72,16 @@
             <g:message code="auth.logout.button"/>
           </g:link>
         </span>
+        <span class="pull-left user hidden" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
+          <g:link class="btn btn-default disableable" controller="user" action="edit">
+            <span class="glyphicon glyphicon-cog"></span>
+          </g:link>
+        </span>
+        <span class="pull-left library" data-toggle="tooltip" data-placement="bottom">
+          <a href="/library" class="btn btn-default">
+            <span class="glyphicon glyphicon-book"></span>
+          </a>
+        </span>
         <span class="pull-right login hidden" data-toggle="tooltip" data-placement="bottom">
           <button class="btn btn-default" data-toggle="modal" data-target="#login-popup">
             <span class="fa fa-sign-in"></span>
@@ -100,28 +110,23 @@
                       </g:render>
                     </div>
                     <div id="register-tab" class="tab-pane fade">
-                      <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'register']}">
-                        <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
-                        <g:render template="/ajax/templates/submitButton">
-                          <g:message code="auth.request.registration.button"/>
-                        </g:render>
-                      </g:render>
+                      <form class="ajax-form registration">
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="email"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="text" name="email">
+                          </div>
+                        </div>
+                        <button class="btn btn-light submit-button"></button>
+                      </form>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </span>
-        <span class="pull-right user hidden" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
-          <g:link class="btn btn-default disableable" controller="user" action="edit">
-            <span class="glyphicon glyphicon-cog"></span>
-          </g:link>
-        </span>
-        <span class="pull-right library" data-toggle="tooltip" data-placement="bottom">
-          <a href="/library" class="btn btn-default">
-            <span class="glyphicon glyphicon-book"></span>
-          </a>
         </span>
       </div>
     </header>
