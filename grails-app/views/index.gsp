@@ -136,6 +136,25 @@
       <hr/>
       Tempvs
     </footer>
+    <template id="create-user">
+      <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+          <form class="ajax-form register-user">
+            <div class="row">
+              <div class="col-sm-6">
+                <label for="password"></label>
+              </div>
+              <div class="col-sm-6">
+                <input class="col-sm-12 tempvs-form-field" type="text" name="password">
+              </div>
+            </div>
+            <button class="btn btn-light submit-button"></button>
+          </form>
+        </div>
+        <div class="col-sm-4"></div>
+      </div>
+    </template>
     <template id="library">
       <div>
         <div class="row">
