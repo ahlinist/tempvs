@@ -6,11 +6,6 @@ grails:
     spring:
         transactionManagement:
             proxies: false
-    gorm:
-        reactor:
-            # Whether to translate GORM events into Reactor events
-            # Disabled by default for performance reasons
-            events: false
 info:
     app:
         name: '@info.app.name@'
@@ -96,55 +91,6 @@ endpoints:
     jmx:
         unique-names: true
 ---
-hibernate:
-    cache:
-        queries: false
-        use_second_level_cache: false
-        use_query_cache: false
-dataSource:
-    pooled: true
-    jmxExport: true
-    driverClassName: org.postgresql.Driver
-    dialect: org.hibernate.dialect.PostgreSQLDialect
-    username: ${JDBC_DATABASE_USERNAME}
-    password: ${JDBC_DATABASE_PASSWORD}
-
-environments:
-    development:
-        dataSource:
-            dbCreate: none
-            url: ${JDBC_DATABASE_URL}?sslmode=require
-    test:
-        dataSource:
-            dbCreate: create-drop
-            url: ${JDBC_DATABASE_URL}?sslmode=require
-    production:
-        dataSource:
-            dbCreate: none
-            url: ${JDBC_DATABASE_URL}?sslmode=require
-            properties:
-                jmxEnabled: true
-                initialSize: 5
-                maxActive: 50
-                minIdle: 5
-                maxIdle: 25
-                maxWait: 10000
-                maxAge: 600000
-                timeBetweenEvictionRunsMillis: 5000
-                minEvictableIdleTimeMillis: 60000
-                validationQuery: SELECT 1
-                validationQueryTimeout: 3
-                validationInterval: 15000
-                testOnBorrow: true
-                testWhileIdle: true
-                testOnReturn: false
-                jdbcInterceptors: ConnectionState
-                defaultTransactionIsolation: 2 # TRANSACTION_READ_COMMITTED
-grails:
-    plugin:
-        databasemigration:
-            updateOnStart: true
-            updateOnStartFileNames: changelog.groovy
 eureka:
     client:
         serviceUrl:
