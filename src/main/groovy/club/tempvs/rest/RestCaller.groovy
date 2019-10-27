@@ -1,12 +1,11 @@
 package club.tempvs.rest
 
+import javax.servlet.http.HttpServletRequest
+
 import static org.springframework.http.HttpMethod.POST
 import static org.springframework.http.HttpMethod.PATCH
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 
-import club.tempvs.user.Profile
-import club.tempvs.user.User
-import club.tempvs.user.UserService
 import grails.converters.JSON
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
@@ -18,7 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
-import org.springframework.context.i18n.LocaleContextHolder
+import org.grails.web.util.WebUtils
 
 @Slf4j
 @CompileStatic
@@ -30,7 +29,6 @@ class RestCaller {
     private static final String AUTHORIZATION_HEADER = 'Authorization'
     private static final String CONTENT_TYPE_HEADER = 'Content-Type'
 
-    UserService userService
     RestTemplate restTemplate
 
     @Value('${security.token}')
@@ -62,25 +60,7 @@ class RestCaller {
     }
 
     private String getUserInfoJson() {
-        Profile currentProfile = userService.currentProfile
-
-        JSON userInfoJson
-
-        if (currentProfile) {
-            User user = currentProfile.user
-            Profile userProfile = user.userProfile
-
-            userInfoJson = [
-                    userId: user.id as String,
-                    profileId: currentProfile?.id as String,
-                    userProfileId: userProfile?.id,
-                    userName: userProfile.toString(),
-                    timezone: user.timeZone,
-                    lang: LocaleContextHolder.locale.language,
-                    roles: userService.roles
-            ] as JSON
-        }
-
-        return userInfoJson?.toString()
+        HttpServletRequest request = WebUtils.retrieveGrailsWebRequest().getCurrentRequest()
+        return request.getHeader(USER_INFO_HEADER)
     }
 }

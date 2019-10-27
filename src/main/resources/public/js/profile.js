@@ -1,6 +1,8 @@
 import {pageBuilder} from './page/page-builder.js';
 import {i18n} from './i18n/profile-translations.js';
 import {formValidator} from './validation/form-validator.js';
+import {langResolver} from './i18n/language-resolver.js';
+import {user} from './user.js';
 
 export const profile = {
   init: function() {
@@ -16,43 +18,38 @@ export const profile = {
   },
   loadProfile: function(profileId) {
     ajaxHandler.blockUI();
-    let url;
-
-    if (profileId) {
-      url = '/api/profile/profile/' + profileId;
-    } else {
-      url = '/api/profile/profile';
-    }
+    let url = profileId ? '/api/profile/profile/' + profileId : '/api/profile/profile';
 
     const actions = {
       200: profile.parseProfileResponse,
+      401: user.loginPopup,
       404: profile.renderCreateUserProfile
     };
     ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
   },
   renderCreateUserProfile: function(response) {
-    const userInfo = JSON.parse(response.headers.get("User-Info"));
-    const lang = 'en';
-    const messageSource = i18n[lang].createProfile;
-    const properties = i18n[lang].properties;
+    const lang = langResolver.resolve(response);
+    const messageSource = i18n[lang] || i18n['en'];
+    const messages = messageSource.createProfile;
+    const properties = messageSource.properties;
     ajaxHandler.hideModals();
-    pageBuilder.initPage('template#create-user-profile', '/profile', messageSource.title);
-    document.querySelector('h1.create-user-profile-heading').innerHTML = messageSource.heading;
+    pageBuilder.initPage('template#create-user-profile', '/profile', messages.title);
+    document.querySelector('h1.create-user-profile-heading').innerHTML = messages.heading;
     const form = document.querySelector('form.create-user-profile-form');
     form.querySelector('label[for=firstName]').innerHTML = properties.firstName + ' *';
     form.querySelector('label[for=lastName]').innerHTML = properties.lastName + ' *';
     form.querySelector('label[for=nickName]').innerHTML = properties.nickName;
-    const submitButton = form.querySelector('button.submit-button').innerHTML = messageSource.submitButton;
+    const submitButton = form.querySelector('button.submit-button').innerHTML = messages.submitButton;
 
     form.onsubmit = function() {
       const firstNameBlank = formValidator.validateBlank(
           form.querySelector('[name=firstName]'),
-          messageSource.firstNameBlank
+          messages.firstNameBlank
       );
 
       const lastNameBlank = formValidator.validateBlank(
           form.querySelector('[name=lastName]'),
-          messageSource.lastNameBlank
+          messages.lastNameBlank
       );
 
       if (firstNameBlank || lastNameBlank) {
@@ -91,12 +88,13 @@ export const profile = {
     const userInfo = JSON.parse(response.headers.get("User-Info"));
 
     response.json().then(function(data) {
-      profile.renderProfile(data, userInfo);
+      const lang = langResolver.resolve(response) || 'en';
+      profile.renderProfile(data, userInfo, lang);
     });
   },
-  renderProfile: function(profile, userInfo) {
-    const lang = 'en';
-    const properties = i18n[lang].properties;
+  renderProfile: function(profile, userInfo, lang) {
+    const messageSource = i18n[lang] || i18n['en'];
+    const properties = messageSource.properties;
     const profileId = profile.id;
     const firstName = profile.firstName;
     const lastName = profile.lastName;

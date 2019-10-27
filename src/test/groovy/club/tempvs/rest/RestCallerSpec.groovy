@@ -34,7 +34,6 @@ class RestCallerSpec extends Specification {
 
     def setup() {
         restCaller = new RestCaller()
-        restCaller.userService = userService
         restCaller.restTemplate = restTemplate
     }
 
@@ -51,14 +50,6 @@ class RestCallerSpec extends Specification {
         def result = restCaller.call(URL, HttpMethod.POST, json)
 
         then:
-        1 * userService.currentProfile >> profile
-        1 * userService.roles >> roles
-        1 * profile.user >> user
-        2 * profile.id >> LONG_ONE
-        1 * user.id >> LONG_TWO
-        1 * user.userProfile >> profile
-        1 * profile.toString()
-        1 * user.timeZone >> TIMEZONE
         1 * restTemplate.exchange("http://${URL}", HttpMethod.POST, _ as HttpEntity, byte[].class) >> responseEntity
         1 * responseEntity.statusCode >> HttpStatus.OK
         1 * responseEntity.body >> body
@@ -79,14 +70,6 @@ class RestCallerSpec extends Specification {
         def result = restCaller.call(URL, HttpMethod.GET, json)
 
         then:
-        1 * userService.currentProfile >> profile
-        1 * userService.roles >> roles
-        1 * profile.user >> user
-        2 * profile.id >> LONG_ONE
-        1 * user.id >> LONG_TWO
-        1 * user.userProfile >> profile
-        1 * profile.toString()
-        1 * user.timeZone >> TIMEZONE
         1 * restTemplate.exchange("http://${URL}", HttpMethod.GET, _ as HttpEntity, byte[].class) >> responseEntity
         1 * responseEntity.statusCode >> HttpStatus.OK
         1 * responseEntity.body >> body

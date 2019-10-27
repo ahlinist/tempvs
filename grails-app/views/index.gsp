@@ -83,7 +83,7 @@
           </a>
         </span>
         <span class="pull-right login hidden" data-toggle="tooltip" data-placement="bottom">
-          <button class="btn btn-default" data-toggle="modal" data-target="#login-popup">
+          <button class="btn btn-default login-popup" data-toggle="modal" data-target="#login-popup">
             <span class="fa fa-sign-in"></span>
           </button>
           <div id="login-popup" class="modal fade" role="dialog">
@@ -136,6 +136,13 @@
       <hr/>
       Tempvs
     </footer>
+    <template id="unauthorized">
+      <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4 message text-center"></div>
+        <div class="col-sm-4"></div>
+      </div>
+    </template>
     <template id="create-user">
       <div class="row">
         <div class="col-sm-4"></div>

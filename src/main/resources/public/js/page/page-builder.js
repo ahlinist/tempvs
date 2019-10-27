@@ -10,8 +10,12 @@ export const pageBuilder = {
     const page = template.content.querySelector('div');
     const pageNode = document.importNode(page, true);
     content.appendChild(pageNode);
-    window.history.pushState('', '', url);
-    document.title = title;
+    if (url !== undefined) {
+      window.history.pushState('', '', url);
+    }
+    if (title !== undefined) {
+      document.title = title;
+    }
   },
   breadcrumb: function(content) {
     const breadcrumb = document.querySelector('content breadcrumb');

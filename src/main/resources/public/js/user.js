@@ -8,7 +8,7 @@ export const user = {
   init: function() {
     const location = window.location.pathname;
 
-    if (location.startsWith("/user/registration/")) {
+    if (location.startsWith('/user/registration/')) {
       const idPosition = location.lastIndexOf('/');
       const verificationId = location.substring(idPosition + 1);
       user.create(verificationId);
@@ -47,5 +47,12 @@ export const user = {
       ajaxHandler.fetch(form, form.action, payload, actions);
       return false;
     }
+  },
+  loginPopup: function() {
+    const lang = langResolver.resolve();
+    const messageSource = i18n[lang] || i18n['en'];
+    pageBuilder.initPage('template#unauthorized');
+    document.querySelector('content div.message').innerHTML = messageSource.login.loginRequiredMessage;
+    document.querySelector('header button.login-popup').click();
   }
 };

@@ -14,7 +14,6 @@ beans = {
     }
 
     restCaller(RestCaller) {
-        userService = ref "userService"
         restTemplate = ref "restTemplate"
     }
 

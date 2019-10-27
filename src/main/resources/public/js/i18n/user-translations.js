@@ -4,6 +4,9 @@ export const i18n = {
       title: 'Create user',
       password: 'Password',
       submitButton: 'Create'
+    },
+    login: {
+      loginRequiredMessage: 'Please login to proceed'
     }
   }
 };
