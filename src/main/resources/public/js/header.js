@@ -13,25 +13,27 @@ export const header = {
     const library = header.querySelector('.library');
     library.setAttribute('title', messageSource.library.tooltip);
 
-    //login
+    //login popup
     const login = header.querySelector('.login');
     if (!isAuthenticated) {
       login.classList.remove('hidden');
       login.setAttribute('title', messageSource.login.tooltip);
       login.querySelector('[href=\\#login-tab]').innerHTML = messageSource.login.loginTab;
       login.querySelector('[href=\\#register-tab]').innerHTML = messageSource.login.registerTab;
+
+      //registration
       const registerForm = login.querySelector('form.registration');
       registerForm.querySelector('label[for=email]').innerHTML = messageSource.login.email + ' *';
-      registerForm.querySelector('button.submit-button').innerHTML = messageSource.login.registerButton;
+      registerForm.querySelector('button.register').innerHTML = messageSource.login.registerButton;
       registerForm.action = '/api/user/register';
       registerForm.onsubmit = function() {
         const form = this;
         const emailInvalidMessage = messageSource.login.emailInvalidMessage;
-        const isEmailValid = formValidator.validateEmail(
+        const isEmailBlank = formValidator.validateBlank(
             form.querySelector('input[name=email]'),
             emailInvalidMessage
         );
-        if (!isEmailValid) {
+        if (isEmailBlank) {
           return false;
         }
         const formData = new FormData(form);
@@ -59,6 +61,17 @@ export const header = {
         };
         ajaxHandler.blockUI();
         ajaxHandler.fetch(form, form.action, payload, actions);
+        return false;
+      }
+
+      //login
+      const loginForm = login.querySelector('form.login');
+      loginForm.querySelector('label[for=email]').innerHTML = messageSource.login.email + ' *';
+      loginForm.querySelector('label[for=password]').innerHTML = messageSource.login.password + ' *';
+      loginForm.querySelector('button.login').innerHTML = messageSource.login.loginButton;
+      loginForm.action = '/api/user/login';
+      loginForm.onsubmit = function() {
+        alert(123);
         return false;
       }
     }

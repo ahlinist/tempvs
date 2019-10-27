@@ -100,14 +100,25 @@
                   </ul>
                   <div class="tab-content">
                     <div id="login-tab" class="tab-pane fade in active">
-                      <g:render template="/ajax/templates/ajaxForm" model="${[controller: 'auth', action: 'login']}">
-                        <g:render template="/common/templates/formField" model="${[type: 'email', name: 'email', label: 'auth.email.label', mandatory: true, editAllowed: true]}"/>
-                        <g:render template="/common/templates/formField" model="${[type: 'password', name: 'password', label: 'auth.password.label', mandatory: true, editAllowed: true]}"/>
-                        <g:render template="/common/templates/formField" model="${[type: 'checkbox', name: 'remember', label: 'auth.remember.label']}"/>
-                        <g:render template="/ajax/templates/submitButton">
-                          <g:message code="auth.login.button"/>
-                        </g:render>
-                      </g:render>
+                      <form class="ajax-form login">
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="email"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="email" name="email">
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-sm-6">
+                            <label for="password"></label>
+                          </div>
+                          <div class="col-sm-6">
+                            <input class="col-sm-12 tempvs-form-field" type="password" name="password">
+                          </div>
+                        </div>
+                        <button class="btn btn-light submit-button login"></button>
+                      </form>
                     </div>
                     <div id="register-tab" class="tab-pane fade">
                       <form class="ajax-form registration">
@@ -116,10 +127,10 @@
                             <label for="email"></label>
                           </div>
                           <div class="col-sm-6">
-                            <input class="col-sm-12 tempvs-form-field" type="text" name="email">
+                            <input class="col-sm-12 tempvs-form-field" type="email" name="email">
                           </div>
                         </div>
-                        <button class="btn btn-light submit-button"></button>
+                        <button class="btn btn-light submit-button register"></button>
                       </form>
                     </div>
                   </div>
