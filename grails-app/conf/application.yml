@@ -161,9 +161,6 @@ security:
     user:
         password: ${eureka.password}
     token: ${SECURITY_TOKEN:security_token}
-amqp:
-    url: ${CLOUDAMQP_URL}
-    timeout: 30000
 ---
 spring:
     profiles: local
