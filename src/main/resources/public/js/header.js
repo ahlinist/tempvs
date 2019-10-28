@@ -1,6 +1,7 @@
 import {langResolver} from './i18n/language-resolver.js';
 import {i18n} from './i18n/header-translations.js';
 import {formValidator} from './validation/form-validator.js';
+import {profile} from './profile.js';
 
 export const header = {
   init: function() {
@@ -28,10 +29,9 @@ export const header = {
       registerForm.action = '/api/user/register';
       registerForm.onsubmit = function() {
         const form = this;
-        const emailInvalidMessage = messageSource.login.emailInvalidMessage;
         const isEmailBlank = formValidator.validateBlank(
             form.querySelector('input[name=email]'),
-            emailInvalidMessage
+            messageSource.login.emailBlankMessage
         );
         if (isEmailBlank) {
           return false;
@@ -71,7 +71,41 @@ export const header = {
       loginForm.querySelector('button.login').innerHTML = messageSource.login.loginButton;
       loginForm.action = '/api/user/login';
       loginForm.onsubmit = function() {
-        alert(123);
+        const form = this;
+        const isEmailBlank = formValidator.validateBlank(
+            form.querySelector('input[name=email]'),
+            messageSource.login.emailBlankMessage
+        );
+        const isPasswordBlank = formValidator.validateBlank(
+            form.querySelector('input[name=password]'),
+            messageSource.login.passwordBlankMessage
+        );
+        if (isEmailBlank || isPasswordBlank) {
+          return false;
+        }
+        const formData = new FormData(form);
+        const object = {
+          email: formData.get('email'),
+          password: formData.get('password')
+        };
+        const payload = {
+          method: 'POST',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(object)
+        };
+        const actions = {
+          200: function(response) {
+            ajaxHandler.hideModals();
+            profile.loadProfile();
+          },
+          400: function(response, form) {
+            formValidator.handleBadRequest(response, form);
+          }
+        };
+        ajaxHandler.blockUI();
+        ajaxHandler.fetch(form, form.action, payload, actions);
         return false;
       }
     }

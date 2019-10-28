@@ -11,7 +11,8 @@ export const i18n = {
       password: 'Password',
       registerButton: 'Request registration',
       loginButton: 'Login',
-      emailInvalidMessage: 'Please enter a valid email',
+      emailBlankMessage: 'Please enter a valid email',
+      passwordBlankMessage: 'Please enter a password',
       verificationSentMessage: '<p class="text-center">Thanks for registration! </p><p class="text-center">You will receive the details by email.</p>'
     }
   }
