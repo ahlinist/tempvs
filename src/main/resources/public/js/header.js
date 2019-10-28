@@ -111,6 +111,7 @@ export const header = {
     }
 
     function isUserAuthenticated() {
+      //TODO: create a different cookie accessible from js and check it
       const authCookieName = 'TEMPVS_AUTH';
       const cookieMatcher = document.cookie.match('(^|;) ?' + authCookieName + '=([^;]*)(;|$)');
       return cookieMatcher && cookieMatcher[2]
