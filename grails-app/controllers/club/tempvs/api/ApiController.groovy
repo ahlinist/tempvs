@@ -15,6 +15,7 @@ class ApiController {
         HttpMethod httpMethod = HttpMethod.valueOf(request.method)
         String getParams = (httpMethod == HttpMethod.GET) ? '?' + params.collect { "${it.key}=${it.value}" }.join('&') : ""
         String url = "${service}/api/" + uri + getParams
+        //TODO: pass all headers downstream
         RestResponse restResponse = restCaller.call(url, httpMethod, request.cookies, request.JSON as JSON)
         Integer status = restResponse?.statusCode?.value()
 
