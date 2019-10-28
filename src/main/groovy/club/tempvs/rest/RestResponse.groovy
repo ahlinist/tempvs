@@ -10,8 +10,6 @@ import org.springframework.http.HttpStatus
 @CompileStatic
 class RestResponse {
 
-    private static final String CONTENT_TYPE_HEADER = 'Content-Type'
-
     HttpStatus statusCode
     byte[] responseBody
     HttpHeaders headers
@@ -20,9 +18,5 @@ class RestResponse {
         this.statusCode = statusCode
         this.responseBody = responseBody
         this.headers = headers
-    }
-
-    boolean isImage() {
-        this.headers?.get(CONTENT_TYPE_HEADER)?.contains 'image/jpeg'
     }
 }

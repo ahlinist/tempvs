@@ -1,6 +1,6 @@
 package club.tempvs.rest
 
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.Cookie
 
 import static org.springframework.http.HttpMethod.POST
 import static org.springframework.http.HttpMethod.PATCH
@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.client.HttpStatusCodeException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.client.RestTemplate
-import org.grails.web.util.WebUtils
 
 @Slf4j
 @CompileStatic
@@ -25,6 +24,7 @@ class RestCaller {
 
     private static final String MOZILLA_USER_AGENT_VALUE = 'Mozilla/5.0'
     private static final String USER_AGENT_HEADER = 'User-Agent'
+    private static final String AUTH_COOKIE_NAME = 'TEMPVS_AUTH'
     private static final String USER_INFO_HEADER = 'User-Info'
     private static final String AUTHORIZATION_HEADER = 'Authorization'
     private static final String CONTENT_TYPE_HEADER = 'Content-Type'
@@ -34,12 +34,12 @@ class RestCaller {
     @Value('${security.token}')
     private final String securityToken
 
-    RestResponse call(String url, HttpMethod httpMethod, JSON payload = null) {
+    RestResponse call(String url, HttpMethod httpMethod, Cookie[] cookies, JSON payload = null) {
         String encodedToken = securityToken.encodeAsMD5() as String
 
         HttpHeaders httpHeaders = new HttpHeaders()
         httpHeaders.set(USER_AGENT_HEADER, MOZILLA_USER_AGENT_VALUE)
-        httpHeaders.set(USER_INFO_HEADER, userInfoJson)
+        httpHeaders.set(USER_INFO_HEADER, getUserInfoJson(cookies))
         httpHeaders.set(AUTHORIZATION_HEADER, encodedToken)
 
         if (httpMethod in [POST, PATCH]) {
@@ -59,8 +59,9 @@ class RestCaller {
         }
     }
 
-    private String getUserInfoJson() {
-        HttpServletRequest request = WebUtils.retrieveGrailsWebRequest().getCurrentRequest()
-        return request.getHeader(USER_INFO_HEADER)
+    private String getUserInfoJson(Cookie[] cookies) {
+        String rawAuthCookie = cookies?.find { it.name == AUTH_COOKIE_NAME}?.value
+        byte[] cookieValueBytes = rawAuthCookie?.decodeBase64()
+        return cookieValueBytes ? new String(cookieValueBytes) : ''
     }
 }

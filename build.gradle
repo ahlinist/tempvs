@@ -38,23 +38,16 @@ dependencyManagement {
 }
 
 dependencies {
-    compile "org.springframework.boot:spring-boot-autoconfigure"
-    compile "org.springframework.boot:spring-boot-starter-tomcat"
-    compile "org.springframework.boot:spring-boot-starter-logging"
     compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     compile "org.grails:grails-core"
     compile "org.grails:grails-web-boot"
     compile "org.grails:grails-plugin-rest"
     compile "org.grails:grails-plugin-i18n"
     compile "org.grails:grails-plugin-url-mappings"
-    compile "org.grails:grails-plugin-interceptors"
-    compile "org.grails.plugins:async"
     compile "org.grails.plugins:gsp"
-    compile 'org.grails.plugins:converters:3.3.1'
     compile "com.bertramlabs.plugins:asset-pipeline-grails:2.15.1"
     testCompile "org.grails:grails-test-mixins:3.3.0.RC1"
     testCompile "org.grails:grails-web-testing-support"
-    testCompile "org.grails.plugins:geb:1.1.2"
 }
 
 bootRun {

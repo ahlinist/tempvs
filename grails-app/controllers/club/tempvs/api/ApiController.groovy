@@ -15,7 +15,7 @@ class ApiController {
         HttpMethod httpMethod = HttpMethod.valueOf(request.method)
         String getParams = (httpMethod == HttpMethod.GET) ? '?' + params.collect { "${it.key}=${it.value}" }.join('&') : ""
         String url = "${service}/api/" + uri + getParams
-        RestResponse restResponse = restCaller.call(url, httpMethod, request.JSON as JSON)
+        RestResponse restResponse = restCaller.call(url, httpMethod, request.cookies, request.JSON as JSON)
         Integer status = restResponse?.statusCode?.value()
 
         restResponse?.headers?.each { String key, List values ->
@@ -24,15 +24,6 @@ class ApiController {
             }
         }
 
-        if (restResponse.image) {
-            response.with {
-                setHeader('Content-length', restResponse?.responseBody?.length?.toString())
-                contentType = 'image/jpg' // or the appropriate image content type
-                outputStream << restResponse?.responseBody
-                outputStream.flush()
-            }
-        } else {
-            render(status: status, text: new String(restResponse?.responseBody ?: "".bytes))
-        }
+        render(status: status, text: new String(restResponse?.responseBody ?: "".bytes))
     }
 }
