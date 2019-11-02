@@ -21,7 +21,7 @@ class ApiController {
 
         restResponse?.headers?.each { String key, List values ->
             values.each { value ->
-                response.setHeader(key, (String) value)
+                response.addHeader(key, (String) value)
             }
         }
 
