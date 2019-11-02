@@ -1,6 +1,6 @@
 export const i18n = {
   en: {
-    createProfile: {
+    create: {
       heading: "Create user profile",
       title: "Create User Profile",
       submitButton: "Submit",

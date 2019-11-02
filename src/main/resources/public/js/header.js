@@ -46,6 +46,14 @@ export const header = {
       loginForm.onsubmit = user.login;
     }
 
+    //profile search
+    if (isAuthenticated) {
+      const profileSearch = header.querySelector('span.profile-search');
+      profileSearch.classList.remove('hidden');
+      profileSearch.querySelector('input.profile-search-box').setAttribute('placeholder', messageSource.profileSearch.placeholder);
+      const profileSearchButton = profileSearch.querySelector('button.profile-search-button');
+    }
+
     function isUserAuthenticated() {
       const authCookieName = 'TEMPVS_LOGGED_IN';
       const cookieMatcher = document.cookie.match('(^|;) ?' + authCookieName + '=([^;]*)(;|$)');

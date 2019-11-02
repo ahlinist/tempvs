@@ -31,7 +31,7 @@ export const profile = {
   renderCreateUserProfile: function(response) {
     const lang = langResolver.resolve(response);
     const messageSource = i18n[lang] || i18n['en'];
-    const messages = messageSource.createProfile;
+    const messages = messageSource.create;
     const properties = messageSource.properties;
     ajaxHandler.hideModals();
     pageBuilder.initPage('template#create-user-profile', '/profile', messages.title);

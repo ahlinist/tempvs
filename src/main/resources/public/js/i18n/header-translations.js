@@ -11,6 +11,9 @@ export const i18n = {
       password: 'Password',
       registerButton: 'Request registration',
       loginButton: 'Login'
+    },
+    profileSearch: {
+      placeholder: 'Search profile'
     }
   }
 };

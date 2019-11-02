@@ -51,22 +51,24 @@
             </g:link>
           </span>
         </div>
-        <div class="col-sm-4">
-          <span class="dropdown" style="margin:10px;">
-            <input style="width: 300px;" placeholder="${g.message(code: 'profile.search.placeholder')}" type="text" class="profile-search-box" name="query"/>
-            <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, profileSearcher.actions);">
-              <span class="glyphicon glyphicon-search"></span>
-            </button>
-            <div class="dropdown-menu" style="width: 300px;">
-              <ul class="profile-search-result">
-              </ul>
-              <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, profileSearcher.actions);">
-                <i><g:message code="profile.search.loadMore.link"/></i>
-              </button>
-            </div>
-          </span>
-        </div>
       </sec:ifLoggedIn>
+
+
+      <div class="col-sm-4">
+        <span class="dropdown profile-search" style="margin:10px;">
+          <input style="width: 300px;" class="profile-search-box" name="query"/>
+          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, profileSearcher.actions);">
+            <span class="fa fa-search"></span>
+          </button>
+          <div class="dropdown-menu" style="width: 300px;">
+            <ul class="profile-search-result">
+            </ul>
+            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, profileSearcher.actions);">
+              <i><g:message code="profile.search.loadMore.link"/></i>
+            </button>
+          </div>
+        </span>
+      </div>
       <div class="col-sm-4">
         <span class="pull-left user hidden" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
           <g:link class="btn btn-default disableable" controller="user" action="edit">
