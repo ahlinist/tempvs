@@ -68,11 +68,6 @@
         </div>
       </sec:ifLoggedIn>
       <div class="col-sm-4">
-        <span class="pull-right logout hidden">
-          <g:link class="btn btn-secondary disableable" controller="auth" action="logout">
-            <g:message code="auth.logout.button"/>
-          </g:link>
-        </span>
         <span class="pull-left user hidden" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
           <g:link class="btn btn-default disableable" controller="user" action="edit">
             <span class="glyphicon glyphicon-cog"></span>
@@ -81,6 +76,11 @@
         <span class="pull-left library" data-toggle="tooltip" data-placement="bottom">
           <a href="/library" class="btn btn-default">
             <span class="glyphicon glyphicon-book"></span>
+          </a>
+        </span>
+        <span class="pull-right logout hidden">
+          <a class="btn btn-secondary disableable" href="/user/logout">
+            <span class="fa fa-sign-out"></span>
           </a>
         </span>
         <span class="pull-right login hidden" data-toggle="tooltip" data-placement="bottom">

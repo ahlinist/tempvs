@@ -1,6 +1,7 @@
 import {langResolver} from './i18n/language-resolver.js';
 import {i18n} from './i18n/header-translations.js';
 import {formValidator} from './validation/form-validator.js';
+import {user} from './user.js';
 import {profile} from './profile.js';
 
 export const header = {
@@ -14,9 +15,13 @@ export const header = {
     const library = header.querySelector('.library');
     library.setAttribute('title', messageSource.library.tooltip);
 
-    //login popup
+    //login/logout
     const login = header.querySelector('.login');
-    if (!isAuthenticated) {
+    if (isAuthenticated) {
+      login.classList.add('hidden');
+      const logout = header.querySelector('.logout');
+      logout.classList.remove('hidden');
+    } else {
       login.classList.remove('hidden');
       login.setAttribute('title', messageSource.login.tooltip);
       login.querySelector('[href=\\#login-tab]').innerHTML = messageSource.login.loginTab;
@@ -96,10 +101,7 @@ export const header = {
           body: JSON.stringify(object)
         };
         const actions = {
-          200: function(response) {
-            ajaxHandler.hideModals();
-            profile.loadProfile();
-          },
+          200: user.login,
           400: function(response, form) {
             formValidator.handleBadRequest(response, form);
           }
@@ -111,8 +113,7 @@ export const header = {
     }
 
     function isUserAuthenticated() {
-      //TODO: create a different cookie accessible from js and check it
-      const authCookieName = 'TEMPVS_AUTH';
+      const authCookieName = 'TEMPVS_LOGGED_IN';
       const cookieMatcher = document.cookie.match('(^|;) ?' + authCookieName + '=([^;]*)(;|$)');
       return cookieMatcher && cookieMatcher[2]
     }

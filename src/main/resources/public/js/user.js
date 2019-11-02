@@ -1,6 +1,7 @@
 import {pageBuilder} from './page/page-builder.js';
 import {langResolver} from './i18n/language-resolver.js';
 import {i18n} from './i18n/user-translations.js';
+import {header} from './header.js';
 import {profile} from './profile.js';
 import {formValidator} from './validation/form-validator.js';
 
@@ -54,5 +55,10 @@ export const user = {
     pageBuilder.initPage('template#unauthorized');
     document.querySelector('content div.message').innerHTML = messageSource.login.loginRequiredMessage;
     document.querySelector('header button.login-popup').click();
+  },
+  login: function() {
+    ajaxHandler.hideModals();
+    header.init();
+    profile.loadProfile();
   }
 };
