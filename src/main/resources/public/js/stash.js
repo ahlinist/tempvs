@@ -7,7 +7,7 @@ import {linkedSources} from './source/linked-sources.js';
 import {formValidator} from './validation/form-validator.js';
 import {ajaxHandler} from './ajax/ajax-handler.js';
 
-export let stash = {
+export const stash = {
   init: function() {
     const location = window.location.href;
 

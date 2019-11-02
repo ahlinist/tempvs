@@ -3,6 +3,7 @@ import {profileSearcher} from './profile/profile-searcher.js';
 import {pageBuilder} from './page/page-builder.js';
 import {formValidator} from './validation/form-validator.js';
 import {ajaxHandler} from './ajax/ajax-handler.js';
+import {langResolver} from './i18n/language-resolver.js';
 
 export let messaging = {
   conversationId: null,
@@ -16,7 +17,7 @@ export let messaging = {
     const location = window.location.href;
 
     if (location.endsWith("/messaging") || location.endsWith("/messaging/")) {
-      pageBuilder.initPage('template#message', '/messaging', i18n.en.messaging.title);
+      messaging.renderMessaging();
     } else if (location.includes("/messaging/") && !location.endsWith("/messaging/")) {
       const n = location.lastIndexOf('/');
       const conversationId = location.substring(n + 1);
@@ -29,6 +30,11 @@ export let messaging = {
       messaging.displayNewMessagesCounter();
       messaging.loadConversations(true);
     }
+  },
+  renderMessaging: function() {
+    const lang = langResolver.resolve();
+    const messageSource = i18n[lang] || i18n['en'];
+    pageBuilder.initPage('template#message', '/messaging', messageSource.messaging.title);
   },
   actions: {
     200: function(response) {

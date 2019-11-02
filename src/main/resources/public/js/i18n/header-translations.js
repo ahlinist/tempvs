@@ -1,5 +1,17 @@
 export const i18n = {
   en: {
+    profile: {
+      tooltip: 'Profile'
+    },
+    followings: {
+      tooltip: 'Followings'
+    },
+    stash: {
+      tooltip: 'Stash'
+    },
+    messaging: {
+      tooltip: 'Messaging'
+    },
     library: {
       tooltip: 'Library'
     },
@@ -11,6 +23,9 @@ export const i18n = {
       password: 'Password',
       registerButton: 'Request registration',
       loginButton: 'Login'
+    },
+    logout: {
+      tooltip: 'Logout'
     },
     profileSearch: {
       placeholder: 'Search profile',

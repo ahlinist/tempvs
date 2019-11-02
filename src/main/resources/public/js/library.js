@@ -14,7 +14,7 @@ export const library = {
     const location = window.location.href;
 
     if (location.endsWith("/library")) {
-      library.renderLibraryPage();
+      library.renderLibrary();
     } else if (location.endsWith("/library/admin")) {
       library.renderAdminPage();
     } else if (location.includes('period')) {
@@ -62,7 +62,7 @@ export const library = {
     "CONTEMPORARY",
     "OTHER"
   ],
-  renderLibraryPage: function() {
+  renderLibrary: function() {
     pageBuilder.initPage('template#library', '/library', i18n.en.welcomePage.title);
 
     var periodsSection = document.querySelector('ul#periods-section');

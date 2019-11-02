@@ -11,49 +11,46 @@
   </head>
   <body>
     <header class="row" style="height:35px;">
-      <sec:ifLoggedIn>
-        <div class="col-sm-4">
-          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'profile.show.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="profile" action=" ">
-              <span class="glyphicon glyphicon-user"></span>
-            </g:link>
-          </span>
-          <span id="profile-dropdown" class="dropdown pull-left">
-            <button style="width: 180px;" id="current-profile" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-              <span id="current-profile-name"></span>
-              <span class="caret"></span>
-            </button>
-            <ul id="profiles" class="dropdown-menu list-group">
-              <li id="user-profile">
-                <a class="list-group-item disableable" href=""></a>
-              </li>
-            </ul>
-          </span>
-          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'following.list.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="following" action=" ">
-              <span class="fa fa-users">
-                <span id="new-followings" class="badge badge-notify hidden counter" style="position: absolute;"></span>
-              </span>
-            </g:link>
-          </span>
-          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'item.stash.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="stash" action=" ">
-              <span class="glyphicon glyphicon-tent"></span>
-            </g:link>
-          </span>
-          <span class="pull-left" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'message.tooltip')}">
-            <g:link class="btn btn-secondary disableable" controller="messaging" action=" ">
-              <span class="fa fa-envelope">
-                <span id="new-conversations" class="badge badge-notify hidden counter" style="position: absolute;"></span>
-              </span>
-            </g:link>
-          </span>
-        </div>
-      </sec:ifLoggedIn>
-
+      <div class="col-sm-4">
+        <span class="pull-left profile hidden" data-toggle="tooltip" data-placement="bottom">
+          <a class="btn btn-secondary profile-link" href="/profile">
+            <span class="fa fa-user"></span>
+          </a>
+        </span>
+        <span class="profile-dropdown dropdown pull-left hidden">
+          <button style="width: 180px;" class="current-profile btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+            <span class="current-profile-name"></span>
+            <span class="caret"></span>
+          </button>
+          <ul class="profiles dropdown-menu list-group">
+            <li class="user-profile">
+              <a class="list-group-item" href=""></a>
+            </li>
+          </ul>
+        </span>
+        <span class="pull-left followings hidden" data-toggle="tooltip" data-placement="bottom">
+          <a class="btn btn-secondary" href="/profile/followings">
+            <span class="fa fa-users">
+              <span id="new-followings" class="badge badge-notify hidden counter" style="position: absolute;"></span>
+            </span>
+          </a>
+        </span>
+        <span class="pull-left stash hidden " data-toggle="tooltip" data-placement="bottom">
+          <a class="btn btn-secondary stash-link" href="/stash">
+            <span class="fa fa-briefcase"></span>
+          </a>
+        </span>
+        <span class="pull-left hidden messaging" data-toggle="tooltip" data-placement="bottom"">
+          <a class="btn btn-secondary messaging-link" href="/messaging">
+            <span class="fa fa-envelope">
+              <span id="new-conversations" class="badge badge-notify hidden counter" style="position: absolute;"></span>
+            </span>
+          </a>
+        </span>
+      </div>
 
       <div class="col-sm-4">
-        <span class="dropdown profile-search" style="margin:10px;">
+        <span class="dropdown profile-search hidden" style="margin:10px;">
           <input style="width: 300px;" class="profile-search-box" name="query"/>
           <button class="btn btn-default dropdown-toggle profile-search-button">
             <span class="fa fa-search"></span>
@@ -65,17 +62,17 @@
         </span>
       </div>
       <div class="col-sm-4">
-        <span class="pull-left user hidden" data-toggle="tooltip" data-placement="bottom" title="${g.message(code: 'settings.tooltip')}">
-          <g:link class="btn btn-default disableable" controller="user" action="edit">
-            <span class="glyphicon glyphicon-cog"></span>
-          </g:link>
-        </span>
-        <span class="pull-left library" data-toggle="tooltip" data-placement="bottom">
-          <a href="/library" class="btn btn-default">
-            <span class="glyphicon glyphicon-book"></span>
+        <span class="pull-left user hidden" data-toggle="tooltip">
+          <a class="btn btn-default" href="/user/settings">
+            <span class="fa fa-cog"></span>
           </a>
         </span>
-        <span class="pull-right logout hidden">
+        <span class="pull-left library" data-toggle="tooltip" data-placement="bottom">
+          <a href="/library" class="btn btn-default library-link">
+            <span class="fa fa-book"></span>
+          </a>
+        </span>
+        <span class="pull-right logout hidden" data-toggle="tooltip" data-placement="bottom">
           <a class="btn btn-secondary">
             <span class="fa fa-sign-out"></span>
           </a>
