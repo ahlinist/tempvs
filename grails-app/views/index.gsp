@@ -79,7 +79,7 @@
           </a>
         </span>
         <span class="pull-right logout hidden">
-          <a class="btn btn-secondary disableable" href="/user/logout">
+          <a class="btn btn-secondary">
             <span class="fa fa-sign-out"></span>
           </a>
         </span>

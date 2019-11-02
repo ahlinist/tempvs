@@ -36,9 +36,6 @@ $(function (){
 
     //populate profile dropdown
     profileDropdown.displayDropdown();
-
-    //display horizontal menu counters
-    horizontalMenuCounter.displayCounter('span#new-followings', '/following/getNewFollowersCount');
 });
 
 function setFileUploadPlaceholder(element) {
