@@ -13,7 +13,8 @@ export const i18n = {
       loginButton: 'Login'
     },
     profileSearch: {
-      placeholder: 'Search profile'
+      placeholder: 'Search profile',
+      loadMore: 'Load more...'
     }
   }
 };

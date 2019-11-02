@@ -1,5 +1,5 @@
 import {i18n} from './i18n/messaging-translations.js';
-import {profileSearcher} from './profile-searcher.js';
+import {profileSearcher} from './profile/profile-searcher.js';
 import {pageBuilder} from './page/page-builder.js';
 import {formValidator} from './validation/form-validator.js';
 import {ajaxHandler} from './ajax/ajax-handler.js';

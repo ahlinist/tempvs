@@ -3,6 +3,7 @@ import {i18n} from './i18n/header-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {user} from './user.js';
 import {profile} from './profile.js';
+import {profileSearcher} from './profile/profile-searcher.js';
 
 export const header = {
   init: function() {
@@ -52,6 +53,11 @@ export const header = {
       profileSearch.classList.remove('hidden');
       profileSearch.querySelector('input.profile-search-box').setAttribute('placeholder', messageSource.profileSearch.placeholder);
       const profileSearchButton = profileSearch.querySelector('button.profile-search-button');
+      profileSearchButton.onclick = function() {
+        profileSearcher.search(this, 0);
+      }
+      const loadMoreButton = profileSearch.querySelector('button.load-more-button');
+      loadMoreButton.innerHTML = messageSource.profileSearch.loadMore.italics();
     }
 
     function isUserAuthenticated() {

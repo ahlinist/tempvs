@@ -1,4 +1,4 @@
-import {ajaxHandler} from './ajax/ajax-handler.js';
+import {ajaxHandler} from '../ajax/ajax-handler.js';
 
 export const profileSearcher = {
   offsetCounter: 0,
@@ -26,7 +26,7 @@ export const profileSearcher = {
 
     var profileSearchBox = profileSearcher.searchPanel.querySelector('.profile-search-box');
     var url = '/profile/search?query=' + profileSearchBox.value + '&offset=' + profileSearcher.offsetCounter;
-    ajaxHandler.fetch(null, url, {method: 'GET'}, actions);
+    ajaxHandler.fetch(null, url, {method: 'GET'}, actions || profileSearcher.actions);
   },
   recoverUI: function() {
     var eventListener = function(event) {

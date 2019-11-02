@@ -7,8 +7,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="module" src="/static/js/application.js"></script>
-    <asset:stylesheet src="application.css"/>
-    <asset:javascript src="application.js"/>
     <link rel="shortcut icon" type="image/x-icon" href="/static/favicon.ico">
   </head>
   <body>
@@ -57,15 +55,12 @@
       <div class="col-sm-4">
         <span class="dropdown profile-search" style="margin:10px;">
           <input style="width: 300px;" class="profile-search-box" name="query"/>
-          <button class="btn btn-default dropdown-toggle profile-search-button" onclick="profileSearcher.search(this, 0, profileSearcher.actions);">
+          <button class="btn btn-default dropdown-toggle profile-search-button">
             <span class="fa fa-search"></span>
           </button>
           <div class="dropdown-menu" style="width: 300px;">
-            <ul class="profile-search-result">
-            </ul>
-            <button class="btn btn-secondary col-sm-12 load-more-button" onclick="profileSearcher.search(this, 10, profileSearcher.actions);">
-              <i><g:message code="profile.search.loadMore.link"/></i>
-            </button>
+            <ul class="profile-search-result"></ul>
+            <button class="btn btn-secondary col-sm-12 load-more-button"></button>
           </div>
         </span>
       </div>
