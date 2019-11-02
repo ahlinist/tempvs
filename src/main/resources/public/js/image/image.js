@@ -1,3 +1,5 @@
+import {ajaxHandler} from '../ajax/ajax-handler.js';
+
 export const image = {
   uploadImage: function(form, actions) {
     const formData = new FormData(form);

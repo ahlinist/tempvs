@@ -1,6 +1,7 @@
 import {image} from '../image/image.js';
 import {i18n} from '../i18n/validation-translations.js';
 import {formValidator} from '../validation/form-validator.js';
+import {ajaxHandler} from '../ajax/ajax-handler.js';
 
 export const pageBuilder = {
   initPage: function(selector, url, title) {

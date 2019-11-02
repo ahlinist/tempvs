@@ -103,15 +103,6 @@ label {
      margin: 0 0.25em 0 0;
 }
 
-main {
-    margin-bottom: 35px;
-}
-
-footer {
-    background-color: #fff;
-    height: 35px;
-}
-
 .well {
     margin : 0px;
 }
@@ -145,6 +136,7 @@ html, code, kbd, pre, samp {
 
 html, body {
     height: 100%;
+    background: white;
     overflow: auto
     -webkit-overflow-scrolling: touch;
 }
@@ -269,15 +261,6 @@ ul.nav-sidebar li.active a {
     box-sizing: border-box
 }
 
-body {
-    background: white;
-    color: #333333;
-    overflow-x: hidden; /* prevents box-shadow causing a horizontal scrollbar in firefox when viewport < 960px wide */
-    -moz-box-shadow: 0 0 0.3em #4D8618;
-    -webkit-box-shadow: 0 0 0.3em #4D8618;
-    box-shadow: 0 0 0.3em #4D8618;
-}
-
 html.noScroll {
     overflow: hidden
 }
@@ -295,7 +278,6 @@ input, select, textarea {
 /* BASE LAYOUT */
 
 html {
-    background-color: #ddd;
     background-image: -moz-linear-gradient(center top, #aaa, #ddd);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #ddd));
     background-image: linear-gradient(top, #aaa, #ddd);

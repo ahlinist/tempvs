@@ -1,3 +1,5 @@
+import {ajaxHandler} from './ajax/ajax-handler.js';
+
 export const profileSearcher = {
   offsetCounter: 0,
   searchPanel: '',

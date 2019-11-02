@@ -144,10 +144,6 @@
     </header>
     <hr/>
     <content></content>
-    <footer class="navbar-fixed-bottom text-center text-muted col-sm-12" style="height:35px;">
-      <hr/>
-      Tempvs
-    </footer>
     <template id="unauthorized">
       <div class="row">
         <div class="col-sm-4"></div>

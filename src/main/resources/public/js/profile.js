@@ -3,6 +3,7 @@ import {i18n} from './i18n/profile-translations.js';
 import {formValidator} from './validation/form-validator.js';
 import {langResolver} from './i18n/language-resolver.js';
 import {user} from './user.js';
+import {ajaxHandler} from './ajax/ajax-handler.js';
 
 export const profile = {
   init: function() {

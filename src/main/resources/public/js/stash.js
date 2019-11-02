@@ -5,6 +5,7 @@ import {i18n as imageI18n} from './i18n/image-translations.js';
 import {pageBuilder} from './page/page-builder.js';
 import {linkedSources} from './source/linked-sources.js';
 import {formValidator} from './validation/form-validator.js';
+import {ajaxHandler} from './ajax/ajax-handler.js';
 
 export let stash = {
   init: function() {

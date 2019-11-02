@@ -2,6 +2,7 @@ import {i18n} from '../i18n/linked-sources-translations.js';
 import {i18n as typeI18n} from '../i18n/type-translations.js';
 import {sourceSearch} from './source-search.js';
 import {library} from '../library.js';
+import {ajaxHandler} from '../ajax/ajax-handler.js';
 
 export const linkedSources = {
   build: function(linkedSourcesContainer, item, isEditable) {

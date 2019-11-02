@@ -4,6 +4,7 @@ import {i18n} from './i18n/user-translations.js';
 import {header} from './header.js';
 import {profile} from './profile.js';
 import {formValidator} from './validation/form-validator.js';
+import {ajaxHandler} from './ajax/ajax-handler.js';
 
 export const user = {
   init: function() {

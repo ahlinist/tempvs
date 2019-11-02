@@ -7,6 +7,7 @@ import {formValidator} from './validation/form-validator.js';
 import {pageBuilder} from './page/page-builder.js';
 import {image} from './image/image.js';
 import {sourceSearch} from './source/source-search.js';
+import {ajaxHandler} from './ajax/ajax-handler.js';
 
 export const library = {
   init: function() {

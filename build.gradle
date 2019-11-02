@@ -9,7 +9,6 @@ buildscript {
 
     dependencies {
         classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-        classpath "com.bertramlabs.plugins:asset-pipeline-gradle:2.15.1"
     }
 }
 
@@ -18,7 +17,6 @@ group "tempvs"
 
 apply plugin:"idea"
 apply plugin:"org.grails.grails-web"
-apply plugin:"asset-pipeline"
 apply plugin:"org.grails.grails-gsp"
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
@@ -42,10 +40,8 @@ dependencies {
     compile "org.grails:grails-core"
     compile "org.grails:grails-web-boot"
     compile "org.grails:grails-plugin-rest"
-    compile "org.grails:grails-plugin-i18n"
     compile "org.grails:grails-plugin-url-mappings"
     compile "org.grails.plugins:gsp"
-    compile "com.bertramlabs.plugins:asset-pipeline-grails:2.15.1"
     testCompile "org.grails:grails-test-mixins:3.3.0.RC1"
     testCompile "org.grails:grails-web-testing-support"
 }
@@ -55,11 +51,6 @@ bootRun {
     addResources = true
     String springProfilesActive = 'spring.profiles.active'
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
-}
-
-assets {
-    minifyJs = true
-    minifyCss = true
 }
 
 task stage() {
